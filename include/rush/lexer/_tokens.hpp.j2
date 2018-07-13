@@ -1,0 +1,37 @@
+#pragma once
+
+#ifndef RUSH_LEXER_TOKENS_HPP
+#define RUSH_LEXER_TOKENS_HPP
+
+#include "rush/lexer/keywords.hpp"
+#include "rush/lexer/symbols.hpp"
+
+namespace rush {
+
+	namespace tokens {
+	{% for symbol in symbols %}
+		lexical_token {{ symbol/name }}(lexical_token_info const& info = {}) {
+			return { lexical_token_value { symbols::{{ symbol/name }} }, info };
+		}
+	{% endfor %}
+
+		lexical_token identifier(std::string ident, lexical_token_info const& info = {}) {
+			return { lexical_token_value { ident }, info };
+		}
+
+	{% for type in types %}
+		lexical_token {{ type/name }}_keyword(lexical_token_info const& info = {}) {
+			return { lexical_token_value { keywords::{{ type/name }}_ }, info };
+		}
+	{% endfor %}
+
+	{% for keyword in keywords %}
+		lexical_token {{ keyword/name }}_keyword(lexical_token_info const& info = {}) {
+			return { lexical_token_value { keywords::{{ keyword/name }}_ }, info };
+		}
+	{% endfor %}
+	}
+
+}
+
+#endif RUSH_LEXER_TOKENS_HPP

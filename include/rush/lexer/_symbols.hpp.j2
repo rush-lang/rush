@@ -1,0 +1,19 @@
+#pragma once
+
+#ifndef RUSH_LEXER__SYMBOLS_HPP
+#define RUSH_LEXER__SYMBOLS_HPP
+
+namespace rush {
+	namespace symbols {
+		enum symbol_t {
+		{% for symbol in symbols %}
+			{{ symbol/name }},
+		{% endfor %}
+		};
+
+		char const* map_to(symbol_t);
+		symbol_t map_to(char const*);
+	}
+}
+
+#endif // RUSH_LEXER__SYMBOLS_HPP

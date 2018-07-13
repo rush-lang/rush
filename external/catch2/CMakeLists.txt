@@ -1,0 +1,1 @@
+add_library(catch2 OBJECT catch.cpp)
