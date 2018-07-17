@@ -8,16 +8,15 @@
 #include <string_view>
 #include <variant>
 
-// #include "rush/lexer/_symbols.hpp.gen"
-// #include "rush/lexer/_keywords.hpp.gen"
+#include "rush/core/source.hpp"
+
+// #include "rush/lexer/_symbols.hpp"
+// #include "rush/lexer/_keywords.hpp"
 
 namespace rush {
 
 	enum class symbol_t {};
 	enum class keyword_t {};
-
-	using line_index_t = std::size_t;
-	using column_index_t = std::size_t;
 
 	enum class lexical_token_type {
 		symbol,
@@ -29,16 +28,24 @@ namespace rush {
 	};
 
 	struct lexical_token_info {
-		line_index_t line() const noexcept { return _line; }
-		column_index_t column() const noexcept { return _column; }
 
-		lexical_token_info(line_index_t ln, column_index_t col)
-			: _line(ln)
+		source_index_t line() const noexcept { return _line; }
+		source_index_t column() const noexcept { return _column; }
+
+		lexical_token_info()
+			: _src(nullptr)
+			, _line(0)
+			, _column(0) {}
+
+		lexical_token_info(source const& src, source_index_t ln, source_index_t col)
+			: _src(&src)
+			, _line(ln)
 			, _column(col) {}
 
 	private:
-		line_index_t const _line;
-		column_index_t const _column;
+		source const* _src;
+		source_index_t const _line;
+		source_index_t const _column;
 	};
 
 	struct lexical_token_value {
@@ -68,10 +75,14 @@ namespace rush {
 		std::string_view raw() const noexcept;
 		std::string_view text() const noexcept;
 
-		line_index_t line() const noexcept { return _info.line(); }
-		column_index_t column() const noexcept { return _info.column(); }
+		// \brief Returns the line
+		source_index_t line() const noexcept { return _info.line(); }
+		source_index_t column() const noexcept { return _info.column(); }
 
+		// \brief Returns the categorical type of the token based on its value.
 		lexical_token_type type() const noexcept { return _type; }
+
+		// \brief Returns the metadata information of the token.
 		lexical_token_info const& info() const noexcept { return _info; }
 
 
@@ -120,6 +131,6 @@ namespace rush {
 
 } // rush
 
-// #include "_tokens.hpp.gen"
+// #include "_tokens.hpp"
 
 #endif // RUSH_LEXER_TOKEN_HPP

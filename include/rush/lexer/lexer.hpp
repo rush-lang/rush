@@ -16,6 +16,7 @@ namespace rush {
 	};
 
 	class lexical_analysis final {
+		friend lexical_analysis lex(char const*, lexer_options const&);
 		friend lexical_analysis lex(std::string const&, lexer_options const&);
 		friend lexical_analysis lex(std::istream&, lexer_options const&);
 

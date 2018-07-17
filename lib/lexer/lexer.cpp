@@ -13,53 +13,48 @@ using namespace rush::charinfo;
 // namespace rtok = rush::tokens;
 
 
-
 namespace rush {
 
-	class lexer_iterator {
+	template <typename InIter>
+	void _lex(InIter first, InIter last, lexer_options const& opts);
 
-	private:
-		std::size_t _currentIndent;
-	};
+	lexical_analysis lex(char const* input, lexer_options const& opts) {
+		auto last = input + std::strlen(input);
+		// auto l = lexer { input, last, opts };
+		// return { begin(l), end(l) };
+		return {};
+	}
 
-	class lexer {
-	public:
-		using iterator = lexer_iterator;
-		using const_iterator = lexer_iterator;
+	lexical_analysis lex(std::string const& input, lexer_options const& opts) {
+		auto first = begin(input);
+		auto last = end(input);
+		_lex(first, last, opts);
+		return {};
+	}
 
-		auto peek() -> lexical_token;
-		auto next() -> lexical_token;
+	lexical_analysis lex(std::istream& input, lexer_options const& opts) {
+		std::istream_iterator<char> it { input >> std::noskipws }, eof;
+		_lex(it, eof, opts);
+		return {};
+	}
 
-
-
-	private:
-		std::size_t _currentIndent;
-
-	};
 
 
 	template <typename InIter>
-	auto lex(InIter first, InIter last, lexer_options const& opts) -> void {
+	void lex(InIter first, InIter last, lexer_options const& opts) {
 		std::cout << "hello world!" << std::endl;
 	}
 
-	auto lex(std::string const& input, lexer_options const& opts) -> lexical_analysis {
-		auto first = begin(input);
-		auto last = end(input);
-		lex(first, last, opts);
-		return {};
+	template <typename InIter>
+	auto scan_integer_literal(InIter& first, InIter const& last) {
+		assert(first != last && is_digit(*first) && "expected a leading digit while scanning an integer literal.");
+		return advance_if(first, last, is_digit);
 	}
-
-	auto lex(std::istream& input, lexer_options const& opts) -> lexical_analysis {
-		std::istream_iterator<char> it(input >> std::noskipws), eof;
-		lex(it, eof, opts);
-		return {};
-	}
-
 
 	template <typename InIter>
-	auto scan_integer(InIter& first, InIter const& last) {
-		return advance_if(first, last, is_digit);
+	auto scan_string_literal(InIter& first, InIter const& last) {
+		assert(first != last && *first == '"' && "expected a leading double quotation mark while scanning a string literal.");
+		return advance_if(first, last, [](auto& ch) { return ch != '"'; });
 	}
 
 	template <typename InIter>
