@@ -6,7 +6,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/modules")
 
-include(Catch)
 include(GNUInstallDirs)
 
 find_package(LLVM REQUIRED CONFIG)
@@ -48,12 +47,13 @@ endif()
 # 	${CMAKE_CURRENT_SOURCE_DIR}/include/rush/lexer/keywords.hpp)
 
 
-
+add_subdirectory(external)
+add_subdirectory(utils)
 add_subdirectory(lib)
 add_subdirectory(tools)
 
 if(RUSH_BUILD_TESTS)
+	include(Catch)
 	enable_testing()
-	add_subdirectory(external/catch2)
 	add_subdirectory(tests)
 endif()
