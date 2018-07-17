@@ -1,4 +1,4 @@
-#include "catch.hpp"
+#include "catch2/catch.hpp"
 #include "rush/parser/parser.hpp"
 
 TEST_CASE("parser should generate a valid AST", "[unit][parser]") {
