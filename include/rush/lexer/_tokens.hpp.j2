@@ -10,22 +10,26 @@ namespace rush {
 
 	namespace tokens {
 	{% for symbol in symbols %}
+		// \brief Returns an instance of rush::lexical_token representing {{ symbol/description }} {% if existsIn(symbol, "symbol") %}({{ symbol/symbol }}) {% endif %}symbol.
 		inline lexical_token {{ symbol/name }}() {
 			return { lexical_token_value { symbols::{{ symbol/name }} } };
 		}
 	{% endfor %}
 
+		// \brief Returns an instance of rush::lexical_token representing an identifier.
 		inline lexical_token identifier(std::string ident) {
 			return { lexical_token_value { ident } };
 		}
 
 	{% for type in types %}
+		// \brief Returns an instance of rush::lexical_token representing {{ type/description }} type.
 		inline lexical_token {{ type/name }}_keyword() {
 			return { lexical_token_value { keywords::{{ type/name }}_ } };
 		}
 	{% endfor %}
 
 	{% for keyword in keywords %}
+		// \brief Returns an instance of rush::lexical_token representing {{ keyword/name }} keyword.
 		inline lexical_token {{ keyword/name }}_keyword() {
 			return { lexical_token_value { keywords::{{ keyword/name }}_ } };
 		}
