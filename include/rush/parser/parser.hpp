@@ -6,6 +6,9 @@
 #include <string>
 #include <iostream>
 
+#include "rush/lexer/token.hpp"
+#include "rush/lexer/lexer.hpp"
+
 namespace rush {
 
 	struct parser_options { };

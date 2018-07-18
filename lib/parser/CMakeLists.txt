@@ -9,3 +9,5 @@ target_include_directories(rush-parser PUBLIC
 	$<INSTALL_INTERFACE:../../include>
 )
 
+target_link_libraries(rush-parser PUBLIC rush-lexer)
+
