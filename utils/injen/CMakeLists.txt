@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.11)
-project(injen VERSION 1.0.0 LANGUAGES CXX)
+project(injen VERSION ${RUSH_VERSION} LANGUAGES CXX)
 
 add_executable(injen
 	src/main.cpp

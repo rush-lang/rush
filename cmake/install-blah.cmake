@@ -1,6 +1,6 @@
 include(GNUInstallDirs)
-install(TARGETS rush-lexer
-	EXPORT rush-lexer-export
+install(TARGETS lexer
+	EXPORT lexer-export
 	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )

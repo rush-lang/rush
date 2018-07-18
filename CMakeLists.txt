@@ -1,5 +1,11 @@
 cmake_minimum_required(VERSION 3.11)
-project(rush VERSION 1.0.0 LANGUAGES CXX)
+set(RUSH_VERSION 1.0.0)
+
+option(RUSH_BUILD_TESTS "Generate build targets for Rush unit tests." ON)
+option(RUSH_BUILD_STATIC_LIBS "Generate build targets for static libraries." ON)
+option(RUSH_BUILD_SHARED_LIBS "Generate build targets for shared libraries." OFF)
+
+project(rush VERSION ${RUSH_VERSION} LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -17,9 +23,6 @@ include_directories(${LLVM_INCLUDE_DIRS})
 add_definitions(${LLVM_DEFINITIONS})
 
 
-option(RUSH_BUILD_TESTS "Generate build targets for Rush unit tests." ON)
-option(RUSH_BUILD_STATIC_LIBS "Generate build targets for static libraries." ON)
-option(RUSH_BUILD_SHARED_LIBS "Generate build targets for shared libraries." OFF)
 
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
@@ -51,6 +54,7 @@ add_subdirectory(external)
 add_subdirectory(utils)
 add_subdirectory(lib)
 add_subdirectory(tools)
+
 
 if(RUSH_BUILD_TESTS)
 	include(Catch)
