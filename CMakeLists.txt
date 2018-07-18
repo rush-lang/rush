@@ -6,10 +6,6 @@ option(RUSH_BUILD_STATIC_LIBS "Generate build targets for static libraries." ON)
 option(RUSH_BUILD_SHARED_LIBS "Generate build targets for shared libraries." OFF)
 
 project(rush VERSION ${RUSH_VERSION} LANGUAGES CXX)
-
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/modules")
 
 include(GNUInstallDirs)
