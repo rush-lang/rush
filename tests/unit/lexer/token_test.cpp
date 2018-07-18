@@ -3,7 +3,7 @@
 #include "rush/lexer/token.hpp"
 #include "rush/lexer/lexer.hpp"
 
+namespace rtok = rush::tokens;
 
-TEST_CASE( "", "[lexer]" ) {
-	rush::lexical_token_value val("");
+TEST_CASE( "rush::lexical_token", "[unit][lexer]" ) {
 }
