@@ -10,7 +10,6 @@ rush_render_templates(
 	${CMAKE_SOURCE_DIR}/include/rush/lexer/_symbols.hpp.j2
 	${CMAKE_SOURCE_DIR}/include/rush/lexer/_keywords.hpp.j2
 	JSON ${CMAKE_SOURCE_DIR}/include/rush/lexer/tokens.json
-	OUTDIR ${CMAKE_BINARY_DIR}/include/rush/lexer
 	DEPENDENTS lexer
 )
 

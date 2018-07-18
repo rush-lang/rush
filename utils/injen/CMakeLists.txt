@@ -13,32 +13,32 @@ target_link_libraries(injen PRIVATE inja)
 
 include(CMakeParseArguments)
 
+
 function(rush_render_templates)
-	set(oneValueOptions
-		JSON
-		OUTDIR)
-	set(multiValueOptions
-		DEPENDENTS)
+	set(oneValueOptions JSON)
+	set(multiValueOptions DEPENDENTS)
 
 	cmake_parse_arguments(ARG "" "${oneValueOptions}" "${multiValueOptions}" ${ARGN})
 
 	# For some reason inja::Environment::load_json, and by extension
 	# nlohmann json throws with absolute paths. So we build a relative one here.
 	file(RELATIVE_PATH ARG_JSON ${CMAKE_CURRENT_BINARY_DIR} ${ARG_JSON})
-	file(RELATIVE_PATH ARG_OUTDIR ${CMAKE_CURRENT_BINARY_DIR} ${ARG_OUTDIR})
 
 	foreach(tpl_header ${ARG_UNPARSED_ARGUMENTS})
-		string(REGEX REPLACE "^(.*\.hpp)\.j2$" "\\1" gen_header ${tpl_header})
 		file(RELATIVE_PATH rel_tpl_header ${CMAKE_CURRENT_BINARY_DIR} ${tpl_header})
+
+		# Build the generated header path.
+		string(REGEX REPLACE "^(.*\.hpp)\.j2$" "\\1" gen_header ${tpl_header})
 		file(RELATIVE_PATH rel_gen_header ${CMAKE_SOURCE_DIR} ${gen_header})
-		list(APPEND rel_template_headers ${rel_tpl_header})
-		list(APPEND template_headers ${tpl_header})
+		string(CONCAT gen_header ${CMAKE_BINARY_DIR}/ ${rel_gen_header})
 		list(APPEND generated_headers ${gen_header})
 
+		# Build custom command to generate source file from template.
+		get_filename_component(outdir ${gen_header} DIRECTORY)
 		add_custom_command(
-			COMMAND mkdir --parents ${ARG_OUTDIR}
+			COMMAND ${CMAKE_COMMAND} -E make_directory ${outdir}
 			COMMAND injen ${rel_tpl_header} --json ${ARG_JSON}
-			COMMAND mv ${gen_header} --target-directory=${ARG_OUTDIR}
+			COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_SOURCE_DIR}/${rel_gen_header} ${gen_header}
 			DEPENDS injen ${tpl_header}
 			OUTPUT ${gen_header}
 			COMMENT "Generating source file ${rel_gen_header}")
