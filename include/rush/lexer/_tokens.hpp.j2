@@ -10,7 +10,7 @@ namespace rush {
 
 	namespace tokens {
 	{% for symbol in symbols %}
-		// \brief Returns an instance of rush::lexical_token representing {{ symbol/description }} {% if existsIn(symbol, "symbol") %}({{ symbol/symbol }}) {% endif %}symbol.
+		// \brief Returns an instance of rush::lexical_token representing {{ symbol/description }}{% if existsIn(symbol, "symbol") %} ({{ symbol/symbol }}) symbol{% endif %}.
 		inline lexical_token {{ symbol/name }}() {
 			return lexical_token { symbols::{{ symbol/name }} };
 		}
@@ -29,7 +29,7 @@ namespace rush {
 	{% endfor %}
 
 	{% for keyword in keywords %}
-		// \brief Returns an instance of rush::lexical_token representing {{ keyword/name }} keyword.
+		// \brief Returns an instance of rush::lexical_token representing {{ keyword/description }} keyword.
 		inline lexical_token {{ keyword/name }}_keyword() {
 			return lexical_token { keywords::{{ keyword/name }}_ };
 		}
