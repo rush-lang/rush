@@ -5,4 +5,5 @@ add_executable(injen
 	src/main.cpp
 )
 
+target_include_directories(injen PRIVATE include)
 target_link_libraries(injen PRIVATE inja)
