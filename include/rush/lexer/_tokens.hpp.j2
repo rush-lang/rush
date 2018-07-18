@@ -10,28 +10,28 @@ namespace rush {
 
 	namespace tokens {
 	{% for symbol in symbols %}
-		lexical_token {{ symbol/name }}(lexical_token_info const& info = {}) {
-			return { lexical_token_value { symbols::{{ symbol/name }} }, info };
+		inline lexical_token {{ symbol/name }}() {
+			return { lexical_token_value { symbols::{{ symbol/name }} } };
 		}
 	{% endfor %}
 
-		lexical_token identifier(std::string ident, lexical_token_info const& info = {}) {
-			return { lexical_token_value { ident }, info };
+		inline lexical_token identifier(std::string ident) {
+			return { lexical_token_value { ident } };
 		}
 
 	{% for type in types %}
-		lexical_token {{ type/name }}_keyword(lexical_token_info const& info = {}) {
-			return { lexical_token_value { keywords::{{ type/name }}_ }, info };
+		inline lexical_token {{ type/name }}_keyword() {
+			return { lexical_token_value { keywords::{{ type/name }}_ } };
 		}
 	{% endfor %}
 
 	{% for keyword in keywords %}
-		lexical_token {{ keyword/name }}_keyword(lexical_token_info const& info = {}) {
-			return { lexical_token_value { keywords::{{ keyword/name }}_ }, info };
+		inline lexical_token {{ keyword/name }}_keyword() {
+			return { lexical_token_value { keywords::{{ keyword/name }}_ } };
 		}
 	{% endfor %}
 	}
 
 }
 
-#endif RUSH_LEXER_TOKENS_HPP
+#endif // RUSH_LEXER_TOKENS_HPP
