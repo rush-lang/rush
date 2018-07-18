@@ -28,7 +28,7 @@ function(rush_render_templates)
 		file(RELATIVE_PATH rel_tpl_header ${CMAKE_CURRENT_BINARY_DIR} ${tpl_header})
 
 		# Build the generated header path.
-		string(REGEX REPLACE "^(.*\.hpp)\.j2$" "\\1" gen_header ${tpl_header})
+		string(REGEX REPLACE "^(.*)\.j2$" "\\1" gen_header ${tpl_header})
 		file(RELATIVE_PATH rel_gen_header ${CMAKE_SOURCE_DIR} ${gen_header})
 		string(CONCAT gen_header ${CMAKE_BINARY_DIR}/ ${rel_gen_header})
 		list(APPEND generated_headers ${gen_header})
