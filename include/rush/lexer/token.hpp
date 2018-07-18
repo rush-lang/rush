@@ -22,27 +22,14 @@ namespace rush {
 		floating_literal,
 	};
 
-	struct lexical_token_value {
 
-		lexical_token_value() = default;
-		explicit lexical_token_value(symbol_t) {}
-		explicit lexical_token_value(keyword_t) {}
-		explicit lexical_token_value(std::string) {}
-		explicit lexical_token_value(std::uint64_t) {}
-		explicit lexical_token_value(double) {}
-
-	private:
-		std::variant<
-			symbol_t,
-			keyword_t,
-			std::string,
-			std::uint64_t,
-			double> _val; // todo: guarantee double is 64-bit
-	};
-
-	class lexical_token {
+	class lexical_token final {
 	public:
-		lexical_token(lexical_token_value) {}
+		explicit lexical_token(symbol_t) {}
+		explicit lexical_token(keyword_t) {}
+		explicit lexical_token(std::string) {}
+		explicit lexical_token(std::uint64_t) {}
+		explicit lexical_token(double) {}
 
 		// \brief Returns the length of the token
 		std::size_t size() const noexcept;
@@ -95,7 +82,12 @@ namespace rush {
 
 	private:
 		lexical_token_type _type;
-		lexical_token_value _value;
+		std::variant<
+			symbol_t,
+			keyword_t,
+			std::string,
+			std::uint64_t,
+			double> _val; // todo: guarantee double is 64-bit
 	};
 
 } // rush
