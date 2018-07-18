@@ -1,0 +1,3 @@
+add_subdirectory(unit-tests/core)
+add_subdirectory(unit-tests/lexer)
+add_subdirectory(unit-tests/parser)
