@@ -1,11 +1,12 @@
 #include "catch2/catch.hpp"
 #include "rush/core/iterator.hpp"
 
+#include <array>
 
-TEST_CASE( "iterator advance if", "[unit][core]" ) {
-	std::vector<int> v { 1, 2, 3 };
-	auto const last = std::end(v);
-	auto first = std::begin(v);
+TEST_CASE( "rush::iterators::advance_if", "[unit][core]" ) {
+	std::array<int, 3> a { 1, 2, 3 };
+	auto const last = std::end(a);
+	auto first = std::begin(a);
 
 	SECTION("should not advance past the end") {
 		rush::advance_if(first, last, [](auto& x) { return true; });
