@@ -1,0 +1,20 @@
+#pragma once
+
+#ifndef RUSH_INTERNAL_LEXER_KEYWORD_MAP
+#define RUSH_INTERNAL_LEXER_KEYWORD_MAP
+
+#include "rush/lexer/_keywords.hpp"
+#include <unordered_map>
+
+namespace rush {
+	static std::unordered_map<char const*, rush::keywords::keyword_t> _keyword_map {
+	{% for type in types %}
+		{ "{{ type/name }}", rush::keywords::{{ type/name }}_ },
+	{% endfor %}
+	{% for keyword in keywords %}
+		{ "{{ keyword/name }}", rush::keywords::{{ keyword/name }}_ },
+	{% endfor %}
+	};
+}
+
+#endif // RUSH_INTERNAL_LEXER_KEYWORD_MAP
