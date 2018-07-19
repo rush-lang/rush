@@ -6,6 +6,8 @@
 #include <cstdint>
 #include <cstdlib>
 
+#include <cctype>
+
 namespace rush {
 	namespace charinfo {
 
@@ -16,11 +18,24 @@ namespace rush {
 		}
 
 		inline bool is_letter(codepoint_t cp) {
-			return false;
+			// change to unicode codepoints.
+			return std::isalpha(cp);
 		}
 
 		inline bool is_digit(codepoint_t cp) {
-			return false;
+			return std::isdigit(cp);
+		}
+
+		inline bool is_quote(codepoint_t cp) {
+			return cp == '"';
+		}
+
+		inline bool is_zero_digit(codepoint_t cp) {
+			return cp == '0';
+		}
+
+		inline bool is_non_zero_digit(codepoint_t cp) {
+			return !is_zero_digit(cp) && is_digit(cp);
 		}
 
 		inline bool is_bin_digit(codepoint_t cp) {
@@ -32,11 +47,11 @@ namespace rush {
 		}
 
 		inline bool is_hspace(codepoint_t cp) {
-			return false;
+			return std::isspace(cp);
 		}
 
 		inline bool is_vspace(codepoint_t cp) {
-			return false;
+			return std::isspace(cp);
 		}
 
 		inline bool is_space(codepoint_t cp) {

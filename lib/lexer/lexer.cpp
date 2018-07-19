@@ -45,23 +45,4 @@ namespace rush {
 		std::cout << "hello world!" << std::endl;
 	}
 
-	template <typename InIter>
-	auto scan_integer_literal(InIter& first, InIter const& last) {
-		assert(first != last && is_digit(*first) && "expected a leading digit while attempting to scan an integer literal.");
-		return advance_if(first, last, is_digit);
-	}
-
-	template <typename InIter>
-	auto scan_string_literal(InIter& first, InIter const& last) {
-		assert(first != last && *first == '"' && "expected a leading, double quotation mark, while attempting to scan a string literal.");
-		return advance_if(first, last, [](auto& ch) { return ch != '"'; });
-	}
-
-	template <typename InIter>
-	auto scan_identifier(InIter& first, InIter const& last) {
-		bool result = false;
-		if (result = advance_if(first, last, is_ident_head); result)
-			advance_if(first, last, is_ident_body);
-		return result;
-	}
 } // namespace rush
