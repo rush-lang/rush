@@ -17,7 +17,7 @@ TEST_CASE( "rush::lex", "[unit][lexer]" ) {
 
 	SECTION( "identifiers" ) {
 
-		SECTION( "string with an underscore" ) {
+		SECTION( "string with a leading underscore" ) {
 			check_valid_lex("_ _a _1 _a1", {
 				rtok::identifier("_"),
 				rtok::identifier("_a"),
@@ -26,7 +26,7 @@ TEST_CASE( "rush::lex", "[unit][lexer]" ) {
 			});
 		}
 
-		SECTION( "string with a letter" ) {
+		SECTION( "string with a leading letter" ) {
 			check_valid_lex("a b1 c_ d2_ e_3", {
 				rtok::identifier("a"),
 				rtok::identifier("b1"),
@@ -37,7 +37,7 @@ TEST_CASE( "rush::lex", "[unit][lexer]" ) {
 			});
 		}
 
-		SECTION( "identifier like-joined" ) {
+		SECTION( "identifier like-characters joined" ) {
 			check_valid_lex("abc123___ abc___123 ___abc123 ___123abc", {
 				rtok::identifier("abc123___"),
 				rtok::identifier("abc___123"),
@@ -46,7 +46,7 @@ TEST_CASE( "rush::lex", "[unit][lexer]" ) {
 			});
 		}
 
-		SECTION( "identifier interspersed" ) {
+		SECTION( "identifier like-characters interspersed" ) {
 			check_valid_lex("a1_b2_c3_ a_1b_2c_3 _a1_b2_c3 _1a_2b_3c", {
 				rtok::identifier("a_1b_2c_3"),
 				rtok::identifier("_a1_b2_c3"),

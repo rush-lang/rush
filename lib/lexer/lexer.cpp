@@ -47,13 +47,13 @@ namespace rush {
 
 	template <typename InIter>
 	auto scan_integer_literal(InIter& first, InIter const& last) {
-		assert(first != last && is_digit(*first) && "expected a leading digit while scanning an integer literal.");
+		assert(first != last && is_digit(*first) && "expected a leading digit while attempting to scan an integer literal.");
 		return advance_if(first, last, is_digit);
 	}
 
 	template <typename InIter>
 	auto scan_string_literal(InIter& first, InIter const& last) {
-		assert(first != last && *first == '"' && "expected a leading double quotation mark while scanning a string literal.");
+		assert(first != last && *first == '"' && "expected a leading, double quotation mark, while attempting to scan a string literal.");
 		return advance_if(first, last, [](auto& ch) { return ch != '"'; });
 	}
 
