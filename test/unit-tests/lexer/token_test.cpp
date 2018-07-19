@@ -1,7 +1,5 @@
 #include "catch2/catch.hpp"
-
 #include "rush/lexer/token.hpp"
-#include "rush/lexer/lexer.hpp"
 
 namespace rtok = rush::tokens;
 
