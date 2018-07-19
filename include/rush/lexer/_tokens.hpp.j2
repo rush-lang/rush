@@ -16,6 +16,21 @@ namespace rush {
 		}
 	{% endfor %}
 
+		// \brief Returns an instance of rush::lexical_token representing a string literal.
+		inline lexical_token string_literal(std::string val) {
+			return lexical_token { val };
+		}
+
+		// \brief Returns an instance of rush::lexical_token representing a floating point literal.
+		inline lexical_token floating_literal(double val) {
+			return lexical_token { val };
+		}
+
+		// \brief Returns an instance of rush::lexical_token representing an integer literal.
+		inline lexical_token integer_literal(std::uint64_t val) {
+			return lexical_token { val };
+		}
+
 		// \brief Returns an instance of rush::lexical_token representing an identifier.
 		inline lexical_token identifier(std::string ident) {
 			return lexical_token { ident };
