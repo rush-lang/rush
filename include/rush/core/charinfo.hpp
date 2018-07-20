@@ -47,11 +47,11 @@ namespace rush {
 		}
 
 		inline bool is_hspace(codepoint_t cp) {
-			return std::isspace(cp);
+			return cp == ' ' || cp == '\t';
 		}
 
 		inline bool is_vspace(codepoint_t cp) {
-			return std::isspace(cp);
+			return cp == '\r' || cp == '\n' || cp == '\v';
 		}
 
 		inline bool is_space(codepoint_t cp) {

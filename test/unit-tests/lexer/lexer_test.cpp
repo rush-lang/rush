@@ -4,16 +4,28 @@
 #include <string_view>
 
 
+
 template <typename Iter>
 bool check_iterators(Iter first, Iter last, Iter out, std::size_t offset = -1) {
-	if (offset != -1) {
-		std::advance(first, offset);
-		return out == first;
-	}
-
-	return out == last;
+	if (offset == -1) return out == last;
+	std::advance(first, offset);
+	return out == first;
 }
 
+bool skipped_hspace(std::string_view input, std::size_t offset = -1) {
+	auto first = begin(input);
+	auto last = end(input);
+	rush::skip_hspace(first, last);
+	return check_iterators(begin(input), last, first, offset);
+}
+
+
+bool skipped_vspace(std::string_view input, std::size_t offset = -1) {
+	auto first = begin(input);
+	auto last = end(input);
+	rush::skip_vspace(first, last);
+	return check_iterators(begin(input), last, first, offset);
+}
 
 bool valid_integer_literal(std::string_view input, std::size_t offset = -1) {
 	auto first = std::begin(input);
@@ -43,6 +55,48 @@ bool valid_identifier(std::string_view input, std::size_t offset = -1) {
 	return check_iterators(first, last, out, offset);
 }
 
+
+TEST_CASE( "rush::skip_hspace", "[unit][lexer]" ) {
+	// space
+	CHECK( skipped_hspace(" . ", 1) );
+	CHECK( skipped_hspace(" ( ", 1) );
+	CHECK( skipped_hspace(" abc ", 1) );
+	CHECK( skipped_hspace(" 123 ", 1) );
+	CHECK( skipped_hspace(" \r ", 1) );
+	CHECK( skipped_hspace(" \n ", 1) );
+
+	CHECK( skipped_hspace("   . ", 3) );
+	CHECK( skipped_hspace("   ( ", 3) );
+	CHECK( skipped_hspace("   abc ", 3) );
+	CHECK( skipped_hspace("   123 ", 3) );
+	CHECK( skipped_hspace("   \r ", 3) );
+	CHECK( skipped_hspace("   \n ", 3) );
+
+	CHECK_FALSE( skipped_hspace(". ", 1) );
+	CHECK_FALSE( skipped_hspace("() ", 1) );
+	CHECK_FALSE( skipped_hspace("abc ", 1) );
+	CHECK_FALSE( skipped_hspace("123 ", 1) );
+
+	// tab
+	CHECK( skipped_hspace("\t.\t", 1) );
+	CHECK( skipped_hspace("\t(\t", 1) );
+	CHECK( skipped_hspace("\tabc\t", 1) );
+	CHECK( skipped_hspace("\t123\t", 1) );
+	CHECK( skipped_hspace("\t\r\t", 1) );
+	CHECK( skipped_hspace("\t\n\t", 1) );
+
+	CHECK( skipped_hspace("\t\t\t.\t ", 3) );
+	CHECK( skipped_hspace("\t\t\t(\t", 3) );
+	CHECK( skipped_hspace("\t\t\tabc\t", 3) );
+	CHECK( skipped_hspace("\t\t\t123\t", 3) );
+	CHECK( skipped_hspace("\t\t\t\r\t", 3) );
+	CHECK( skipped_hspace("\t\t\t\n\t", 3) );
+
+	CHECK_FALSE( skipped_hspace(".\t", 1) );
+	CHECK_FALSE( skipped_hspace("()\t", 1) );
+	CHECK_FALSE( skipped_hspace("abc\t", 1) );
+	CHECK_FALSE( skipped_hspace("123\t", 1) );
+}
 
 
 TEST_CASE( "rush::scan_integer_literal", "[unit][lexer]") {
