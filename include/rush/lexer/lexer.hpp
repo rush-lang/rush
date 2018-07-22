@@ -69,8 +69,8 @@ namespace rush {
 
 	template <typename InIter>
 	InIter scan_integer_literal(InIter first, InIter const& last) {
-		assert(first != last && charinfo::is_digit(*first)
-			&& "expected a leading digit while attempting to scan an integer literal.");
+		assert(first != last && "unexpected end of range.");
+		assert(charinfo::is_digit(*first) && "expected a leading digit while attempting to scan an integer literal.");
 
 		if (charinfo::is_zero_digit(*first)) return ++first;
 		advance_if(first, last, charinfo::is_digit);
@@ -79,7 +79,8 @@ namespace rush {
 
 	template <typename InIter>
 	InIter scan_floating_literal(InIter first, InIter const& last) {
-		assert(first != last && (charinfo::is_digit(*first) || *first == '.')
+		assert(first != last && "unexpected end of range.");
+		assert((charinfo::is_digit(*first) || *first == '.')
 			&& "expected a leading digit, or dot, while attempting to scan a floating literal.");
 
 		return first;
@@ -87,24 +88,23 @@ namespace rush {
 
 	template <typename InIter>
 	InIter scan_string_literal(InIter first, InIter const& last) {
-		assert(first != last && charinfo::is_quote(*first)
-			&& "expected a leading, double quotation mark, while attempting to scan a string literal.");
+		assert(first != last && "unexpected end of range.");
+		assert(charinfo::is_quote(*first) && "expected a leading, double quotation mark, while attempting to scan a string literal.");
 
 		auto prev = *first;
-		advance_if(++first, last, [&prev](auto& cp) {
-			if (prev != '\\' && charinfo::is_quote(cp)) return false;
-			prev = cp;
-			return true;
+		advance_if(++first, last, [&first, &prev](auto const& cp) {
+			if (prev != '\\' && charinfo::is_quote(cp))
+			{ ++first; return false; }
+			prev = cp; return true;
 		});
 
-		if (charinfo::is_quote(*first)) ++first;
 		return first;
 	}
 
 	template <typename InIter>
 	InIter scan_identifier(InIter first, InIter const& last) {
 		assert(first != last && charinfo::is_ident_head(*first));
-		advance_if(first, last, charinfo::is_ident_body);
+		advance_if(++first, last, charinfo::is_ident_body);
 		return first;
 	}
 }
