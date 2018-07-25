@@ -14,7 +14,7 @@ namespace rush {
 		using codepoint_t = std::uint32_t;
 
 		inline bool is_ascii(codepoint_t cp) {
-			return false;
+			return cp <= 127;
 		}
 
 		inline bool is_letter(codepoint_t cp) {
@@ -39,11 +39,17 @@ namespace rush {
 		}
 
 		inline bool is_bin_digit(codepoint_t cp) {
-			return false;
+			return cp == '1' || cp == '0';
 		}
 
 		inline bool is_hex_digit(codepoint_t cp) {
-			return false;
+			return is_digit(cp)
+				|| cp == 'a' || cp == 'A'
+				|| cp == 'b' || cp == 'B'
+				|| cp == 'c' || cp == 'C'
+				|| cp == 'd' || cp == 'D'
+				|| cp == 'e' || cp == 'E'
+				|| cp == 'f' || cp == 'F';
 		}
 
 		inline bool is_hspace(codepoint_t cp) {
@@ -59,7 +65,7 @@ namespace rush {
 		}
 
 		inline bool is_ident_head(codepoint_t cp) {
-			return is_letter(cp) || cp == '_';
+			return (is_ascii(cp) && is_letter(cp)) || cp == '_';
 		}
 
 		inline bool is_ident_body(codepoint_t cp) {
