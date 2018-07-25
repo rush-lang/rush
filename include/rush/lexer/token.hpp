@@ -22,12 +22,11 @@ namespace rush {
 		floating_literal,
 	};
 
-
 	class lexical_token final {
 	public:
 		explicit lexical_token(symbol_t) {}
 		explicit lexical_token(keyword_t) {}
-		explicit lexical_token(std::string) {}
+		explicit lexical_token(std::string, bool ident = true) {}
 		explicit lexical_token(std::uint64_t) {}
 		explicit lexical_token(double) {}
 
@@ -81,13 +80,13 @@ namespace rush {
 		}
 
 	private:
-		lexical_token_type _type;
 		std::variant<
-			symbol_t,
-			keyword_t,
-			std::string,
-			std::uint64_t,
-			double> _val; // todo: guarantee double is 64-bit
+			keyword_t,		// symbols.
+			symbol_t,		// keywords.
+			std::string,	// identifiers.
+			std::string,	// string literals.
+			std::uint64_t, // integer literals.
+			double> _val; // floating literals. (todo: guarantee double is 64-bit)
 	};
 
 } // rush

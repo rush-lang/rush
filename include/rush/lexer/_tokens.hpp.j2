@@ -9,16 +9,16 @@
 namespace rush {
 
 	namespace tokens {
-	{% for symbol in symbols %}
+		{% for symbol in symbols %}
 		// \brief Returns an instance of rush::lexical_token representing {{ symbol/description }}{% if existsIn(symbol, "symbol") %} ({{ symbol/symbol }}) symbol{% endif %}.
 		inline lexical_token {{ symbol/name }}() {
 			return lexical_token { symbols::{{ symbol/name }} };
 		}
-	{% endfor %}
+		{% endfor %}
 
 		// \brief Returns an instance of rush::lexical_token representing a string literal.
 		inline lexical_token string_literal(std::string val) {
-			return lexical_token { val };
+			return lexical_token { val, false };
 		}
 
 		// \brief Returns an instance of rush::lexical_token representing a floating point literal.
@@ -36,19 +36,19 @@ namespace rush {
 			return lexical_token { ident };
 		}
 
-	{% for type in types %}
+		{% for type in types %}
 		// \brief Returns an instance of rush::lexical_token representing {{ type/description }} type.
 		inline lexical_token {{ type/name }}_keyword() {
 			return lexical_token { keywords::{{ type/name }}_ };
 		}
-	{% endfor %}
+		{% endfor %}
 
-	{% for keyword in keywords %}
+		{% for keyword in keywords %}
 		// \brief Returns an instance of rush::lexical_token representing {{ keyword/description }} keyword.
 		inline lexical_token {{ keyword/name }}_keyword() {
 			return lexical_token { keywords::{{ keyword/name }}_ };
 		}
-	{% endfor %}
+		{% endfor %}
 	}
 
 }
