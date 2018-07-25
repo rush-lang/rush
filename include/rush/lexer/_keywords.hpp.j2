@@ -3,22 +3,26 @@
 #ifndef RUSH_LEXER__KEYWORDS_HPP
 #define RUSH_LEXER__KEYWORDS_HPP
 
+#include <string>
+
 namespace rush {
 	namespace keywords {
 		enum keyword_t {
-		{% for type in types %}
+			unknown,
+			{% for type in types %}
 			{{ type/name }}_,
-		{% endfor %}
-		{% for keyword in keywords %}
+			{% endfor %}
+			{% for keyword in keywords %}
 			{{ keyword/name }}_,
-		{% endfor %}
+			{% endfor %}
 		};
 
-		char const* map_to(keyword_t);
-		keyword_t map_to(char const*);
+		std::string to_string(keyword_t);
+		keyword_t to_value(std::string const&);
 	}
 
 	using keywords::keyword_t;
 }
+
 
 #endif // RUSH_LEXER__KEYWORDS_HPP
