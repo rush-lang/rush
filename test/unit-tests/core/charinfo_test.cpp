@@ -4,7 +4,7 @@
 
 using namespace rush::charinfo;
 
-TEST_CASE( "letter characters", "[unit][core]" ) {
+TEST_CASE( "rush::charinfo::is_letter", "[unit][core]" ) {
 	CHECK_FALSE( is_letter('0') );
 	CHECK_FALSE( is_letter('9') );
 
@@ -16,7 +16,7 @@ TEST_CASE( "letter characters", "[unit][core]" ) {
 	CHECK_FALSE( is_letter('.') );
 	CHECK_FALSE( is_letter('_') );
 
-	// FIXME: Current causing segfault.
+	// FIXME: Currently causing segfault.
 	// CHECK_FALSE( is_letter(0x0) );
 	// CHECK_FALSE( is_letter(0xffffff) );
 
@@ -26,7 +26,7 @@ TEST_CASE( "letter characters", "[unit][core]" ) {
 }
 
 
-TEST_CASE( "digit characters", "[unit][core]" ) {
+TEST_CASE( "rush::charinfo::is_digit", "[unit][core]" ) {
 	CHECK_FALSE( is_digit('a') );
 	CHECK_FALSE( is_digit('A') );
 	CHECK_FALSE( is_digit('z') );
@@ -60,8 +60,7 @@ TEST_CASE( "rush::charinfo::is_zero_digit", "[unit][core]" ) {
 	CHECK_FALSE( is_non_zero_digit('_') );
 }
 
-
-TEST_CASE( "white space characters", "[unit][core]" ) {
+TEST_CASE( "rush::charinfo::is_space", "[unit][core]" ) {
 	CHECK_FALSE( is_space('a') );
 	CHECK_FALSE( is_space('_') );
 	CHECK_FALSE( is_space('0') );
@@ -71,8 +70,8 @@ TEST_CASE( "white space characters", "[unit][core]" ) {
 
 	CHECK( is_space(' ') );
 	CHECK( is_space('\t') );
-	CHECK( is_space('\f') );
 	CHECK( is_space('\v') );
+	// CHECK( is_space('\f') );
 
 	CHECK( is_space('\n') );
 	CHECK( is_space('\r') );
@@ -94,7 +93,7 @@ TEST_CASE( "identifier head characters", "[unit][core]" ) {
 	CHECK( is_ident_head('z') );
 	CHECK( is_ident_head('Z') );
 
-	// FIXME: Current causing segfault.
+	// FIXME: Currently causing segfault.
 	// CHECK_FALSE( is_ident_head(0x0) );
 	// CHECK_FALSE( is_ident_head(0xffffff) );
 
@@ -116,7 +115,7 @@ TEST_CASE( "identifier body characters", "[unit][core]" ) {
 	CHECK( is_ident_body('z') );
 	CHECK( is_ident_body('Z') );
 
-	// FIXME: Current causing segfault.
+	// FIXME: Currently causing segfault.
 	// CHECK_FALSE( is_ident_body(0x0) );
 	// CHECK_FALSE( is_ident_body(0xffffff) );
 
