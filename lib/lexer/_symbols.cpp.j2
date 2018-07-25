@@ -1,0 +1,15 @@
+#include "rush/lexer/_symbols.hpp"
+#include "rush/lexer/token.hpp"
+
+#include <string>
+
+namespace rush {
+	namespace symbols {
+		symbol_t to_value(std::string const& sy) {
+			{% for symbol in symbols %}
+
+			{% endfor %}
+			return symbols::left_paren;
+		}
+	}
+}

@@ -3,19 +3,28 @@
 #ifndef RUSH_LEXER__SYMBOLS_HPP
 #define RUSH_LEXER__SYMBOLS_HPP
 
+#include <string>
+
 namespace rush {
 	namespace symbols {
 		enum symbol_t {
-		{% for symbol in symbols %}
+			unknown,
+			{% for symbol in symbols %}
 			{{ symbol/name }},
-		{% endfor %}
+			{% if existsIn(symbol, "compounded") %}
+			{% for compounded in symbol/compounded %}
+			{{ compounded/name }},
+			{% endfor %}
+			{% endif %}
+			{% endfor %}
 		};
 
-		char const* map_to(symbol_t);
-		symbol_t map_to(char const*);
+		std::string to_string(symbol_t);
+		symbol_t to_value(std::string const&);
 	}
 
 	using symbols::symbol_t;
 }
+
 
 #endif // RUSH_LEXER__SYMBOLS_HPP
