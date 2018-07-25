@@ -36,6 +36,16 @@ namespace rush {
 	}
 
 	template <typename InIter>
+	void skip_line_comment(InIter& first, InIter const& last) {
+		assert(first != last && "unexpected end of range.");
+		assert(*first++ == '/' && "expected a leading forward slash");
+
+		if (*first == '/')
+			advance_if(first, last, [](auto const& cp) { return !charinfo::is_vspace(cp); });
+		skip_vspace(first, last);
+	}
+
+	template <typename InIter>
 	InIter scan_integer_literal(InIter first, InIter const& last) {
 		assert(first != last && "unexpected end of range.");
 		assert(charinfo::is_digit(*first) && "expected a leading digit while attempting to scan an integer literal.");
@@ -75,6 +85,6 @@ namespace rush {
 		advance_if(++first, last, charinfo::is_ident_body);
 		return first;
 	}
-	}
+} // rush
 
 #endif // RUSH_LEXER_LEXER_HPP
