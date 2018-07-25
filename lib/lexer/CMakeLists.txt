@@ -1,15 +1,20 @@
 project(lexer VERSION ${RUSH_VERSION} LANGUAGES CXX)
 
+
 add_library(lexer
 	lexer.cpp
 	token.cpp
+	${CMAKE_CURRENT_BINARY_DIR}/_symbols.cpp
+	${CMAKE_CURRENT_BINARY_DIR}/_keywords.cpp
 )
+
 
 rush_render_templates(
 	${CMAKE_SOURCE_DIR}/include/rush/lexer/_tokens.hpp.j2
 	${CMAKE_SOURCE_DIR}/include/rush/lexer/_symbols.hpp.j2
 	${CMAKE_SOURCE_DIR}/include/rush/lexer/_keywords.hpp.j2
-	${CMAKE_SOURCE_DIR}/lib/lexer/_keyword_map.hpp.j2
+	${CMAKE_SOURCE_DIR}/lib/lexer/_symbols.cpp.j2
+	${CMAKE_SOURCE_DIR}/lib/lexer/_keywords.cpp.j2
 	JSON ${CMAKE_SOURCE_DIR}/include/rush/lexer/tokens.json
 	DEPENDENTS lexer
 )
