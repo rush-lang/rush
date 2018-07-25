@@ -40,7 +40,7 @@ namespace rush {
 		std::string_view text() const noexcept;
 
 		// \brief Returns the categorical type of the token based on its value.
-		lexical_token_type type() const noexcept { return _type; }
+		lexical_token_type type() const noexcept;
 
 		// \brief Returns true if the token is an instance of the specified symbol; false otherwise.
 		bool is(symbol_t kw) const noexcept;
