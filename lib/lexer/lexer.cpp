@@ -100,7 +100,7 @@ private:
 		assert(!eof() && "unexpected end of source.");
 		assert(is_digit(peek()) && "expected a leading digit while attempting to scan an integer literal.");
 
-		if (is_zero_digit(*_iters.first)) {
+		if (is_zero_digit(peek())) {
 			return tok::integer_literal(0, location());
 		}
 

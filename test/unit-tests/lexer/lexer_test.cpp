@@ -2,8 +2,9 @@
 #include "rush/lexer/lexer.hpp"
 
 #include <string_view>
+#include <initializer_list>
 
-
+namespace tok = rush::tokens;
 
 template <typename Iter>
 bool check_iterators(Iter first, Iter last, Iter out, std::size_t offset = -1) {
