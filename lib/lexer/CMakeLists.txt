@@ -2,8 +2,9 @@ project(lexer VERSION ${RUSH_VERSION} LANGUAGES CXX)
 
 
 add_library(lexer
-	lexer.cpp
+	analysis.cpp
 	token.cpp
+	lexer.cpp
 	${CMAKE_CURRENT_BINARY_DIR}/_symbols.cpp
 	${CMAKE_CURRENT_BINARY_DIR}/_keywords.cpp
 )
