@@ -55,72 +55,107 @@ bool valid_identifier(std::string_view input, std::size_t offset = -1) {
 	return check_iterators(first, last, out, offset);
 }
 
-bool valid_lex(std::string_view input, std::initializer_list<rush::lexical_token> tokens) {
-	return false;
+bool valid_lex(std::string input, std::initializer_list<rush::lexical_token> tokens) {
+	auto lxa = rush::lex(input);
+	return lxa.size() == tokens.size() && std::equal(
+		lxa.begin(), lxa.end(),
+		tokens.begin(), tokens.end(),
+		[](auto& x, auto& y) {
+			return x.is_literal();
+		});
 }
 
 TEST_CASE( "rush::lex", "[unit][lexer]" ) {
 
-	SECTION( "keywords" ) {
-		CHECK( valid_lex("if else while", {
-			tok::if_keyword(),
-			tok::else_keyword(),
-			tok::while_keyword()
+	SECTION( "integer literals" ) {
+		CHECK( valid_lex("0 1 9 10 1234567890 9876543210", {
+			tok::integer_literal(0),
+			tok::integer_literal(1),
+			tok::integer_literal(9),
+			tok::integer_literal(10),
+			tok::integer_literal(1234567890LL),
+			tok::integer_literal(9876543210LL),
 		}));
 
-		CHECK_FALSE( valid_lex("_let var_ const1", {
-			tok::let_keyword(),
-			tok::var_keyword(),
-			tok::const_keyword()
-		}));
+		// any leading-zero or non-digit should stop the scan,
+		// and proceed to scan the next character as a seperate token.
+		CHECK( valid_lex("01", { tok::integer_literal(0), tok::integer_literal(1) }) );
+		CHECK( valid_lex("09", { tok::integer_literal(0), tok::integer_literal(9) }) );
+		CHECK( valid_lex("0123456789", { tok::integer_literal(0), tok::integer_literal(123456789LL) }) );
+		CHECK( valid_lex("0987654321", { tok::integer_literal(0), tok::integer_literal(987654321LL) }) );
+		// CHECK( valid_lex("0_", 1) );
+		// CHECK( valid_lex("1a", 1) );
+		// CHECK( valid_lex("123_", 3) );
+		// CHECK( valid_lex("123a", 3) );
+		// CHECK( valid_lex("1.0", 1) );
+		// CHECK( valid_lex("123.0", 3) );
+
+		// FIXME: The following cause assert/terminate to be triggered. Currently no way to test this in Catch2
+		// CHECK_FALSE( valid_integer_literal("_0") );
+		// CHECK_FALSE( valid_integer_literal("a1") );
+		// CHECK_FALSE( valid_integer_literal(".1") );
 	}
 
-	SECTION( "identifiers" ) {
+	// SECTION( "keywords" ) {
+	// 	CHECK( valid_lex("if else while", {
+	// 		tok::if_keyword(),
+	// 		tok::else_keyword(),
+	// 		tok::while_keyword()
+	// 	}));
 
-		CHECK( valid_lex("a z A Z abc XYZ", {
-			tok::identifier("a"),
-			tok::identifier("z"),
-			tok::identifier("A"),
-			tok::identifier("Z"),
-			tok::identifier("abc"),
-			tok::identifier("XYZ"),
-		}));
+	// 	CHECK_FALSE( valid_lex("_let var_ const1", {
+	// 		tok::let_keyword(),
+	// 		tok::var_keyword(),
+	// 		tok::const_keyword()
+	// 	}));
+	// }
 
-		CHECK( valid_lex("_ _a _z _0 _9 _a0 _z0 _a9 _z9", {
-			tok::identifier("_"),
-			tok::identifier("_a"),
-			tok::identifier("_z"),
-			tok::identifier("_0"),
-			tok::identifier("_9"),
-			tok::identifier("_a0"),
-			tok::identifier("_z0"),
-			tok::identifier("_a9"),
-			tok::identifier("_z9"),
-		}));
+	// SECTION( "identifiers" ) {
 
-		CHECK( valid_lex("a1 c_ d2_ e_3 f4_ab12__", {
-			tok::identifier("a1"),
-			tok::identifier("c_"),
-			tok::identifier("d2_"),
-			tok::identifier("e_3"),
-			tok::identifier("f4_ab12__"),
-		}));
+	// 	CHECK( valid_lex("a z A Z abc XYZ", {
+	// 		tok::identifier("a"),
+	// 		tok::identifier("z"),
+	// 		tok::identifier("A"),
+	// 		tok::identifier("Z"),
+	// 		tok::identifier("abc"),
+	// 		tok::identifier("XYZ"),
+	// 	}));
 
-		// like-joined
-		CHECK( valid_lex("abc123__ abc__123 __abc123 __123abc", {
-			tok::identifier("abc123___"),
-			tok::identifier("abc___123"),
-			tok::identifier("___abc123"),
-			tok::identifier("___123abc"),
-		}));
+	// 	CHECK( valid_lex("_ _a _z _0 _9 _a0 _z0 _a9 _z9", {
+	// 		tok::identifier("_"),
+	// 		tok::identifier("_a"),
+	// 		tok::identifier("_z"),
+	// 		tok::identifier("_0"),
+	// 		tok::identifier("_9"),
+	// 		tok::identifier("_a0"),
+	// 		tok::identifier("_z0"),
+	// 		tok::identifier("_a9"),
+	// 		tok::identifier("_z9"),
+	// 	}));
 
-		// like-interspersed
-		CHECK( valid_lex("abc123__ abc__123 __abc123 __123abc", {
-			tok::identifier("a_1b_2c_3"),
-			tok::identifier("_a1_b2_c3"),
-			tok::identifier("_1a_2b_3c"),
-		}));
-	}
+	// 	CHECK( valid_lex("a1 c_ d2_ e_3 f4_ab12__", {
+	// 		tok::identifier("a1"),
+	// 		tok::identifier("c_"),
+	// 		tok::identifier("d2_"),
+	// 		tok::identifier("e_3"),
+	// 		tok::identifier("f4_ab12__"),
+	// 	}));
+
+	// 	// like-joined
+	// 	CHECK( valid_lex("abc123__ abc__123 __abc123 __123abc", {
+	// 		tok::identifier("abc123___"),
+	// 		tok::identifier("abc___123"),
+	// 		tok::identifier("___abc123"),
+	// 		tok::identifier("___123abc"),
+	// 	}));
+
+	// 	// like-interspersed
+	// 	CHECK( valid_lex("abc123__ abc__123 __abc123 __123abc", {
+	// 		tok::identifier("a_1b_2c_3"),
+	// 		tok::identifier("_a1_b2_c3"),
+	// 		tok::identifier("_1a_2b_3c"),
+	// 	}));
+	// }
 }
 
 

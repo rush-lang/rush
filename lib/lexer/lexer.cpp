@@ -49,6 +49,7 @@ public:
 		};
 
 		while (!this->eof()) {
+			skip_whitespace();
 			_tokens.push_back(next_token());
 		}
 	}
@@ -78,10 +79,14 @@ private:
 	}
 
 	codepoint_t peek() {
-		assert(!this->eof() && "unexpected end of source.");
+		assert(!eof() && "unexpected end of source.");
 		return *_iters.first;
 	}
 
+	void skip_whitespace() {
+		assert(!eof() && "unexpected end of range.");
+		advance_if(_iters.first, _iters.second, is_space);
+	}
 
 	lexical_token next_token() {
 		auto cp = peek();
@@ -101,6 +106,7 @@ private:
 		assert(is_digit(peek()) && "expected a leading digit while attempting to scan an integer literal.");
 
 		if (is_zero_digit(peek())) {
+			++_iters.first;
 			return tok::integer_literal(0, location());
 		}
 

@@ -22,12 +22,12 @@ public:
 	using difference_type = typename std::iterator_traits<FwdIter>::difference_type;
 
 	lexer_iterator()
-		: _iter { nullptr }
+		: _iter { }
 		, _last { nullptr }
 		, _loc {} {}
 
-	explicit lexer_iterator(FwdIter& it, FwdIter const& last, location loc = {})
-		: _iter { std::addressof(it) }
+	explicit lexer_iterator(FwdIter it, FwdIter const& last, location loc = {})
+		: _iter { it }
 		, _last { std::addressof(last) }
 		, _loc { loc } {}
 
@@ -36,7 +36,7 @@ public:
 	}
 
 	reference operator *() const {
-		return **_iter;
+		return *_iter;
 	}
 
 	pointer operator ->() const {
@@ -57,7 +57,7 @@ public:
 	friend bool operator == (
 		lexer_iterator const& lhs,
 		lexer_iterator const& rhs) noexcept {
-		return *lhs._iter == *rhs._iter;
+		return lhs._iter == rhs._iter;
 	}
 
 	friend bool operator != (
@@ -67,14 +67,14 @@ public:
 	}
 
 private:
-	FwdIter* _iter;
+	FwdIter _iter;
 	FwdIter const* _last;
 	struct location _loc;
 
 	void _increment() {
-		assert(*_iter != *_last && "lexer_iterator passed end of range");
-		++(*_iter);
-		_loc = is_newline(**_iter)
+		assert(_iter != *_last && "lexer_iterator passed end of range");
+		++_iter;
+		_loc = is_newline(*_iter)
 			? _loc.next_line()
 			: _loc.next_column();
 	}
