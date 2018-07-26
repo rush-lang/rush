@@ -4,6 +4,7 @@
 #define RUSH_CORE_SOURCE_HPP
 
 #include "rush/core/path.hpp"
+#include "rush/core/location.hpp"
 
 #include <iostream>
 #include <cstdlib>
@@ -11,7 +12,6 @@
 #include <iterator>
 
 namespace rush {
-	using source_index_t = std::size_t;
 
 	namespace detail {
 		template <typename Iter>
