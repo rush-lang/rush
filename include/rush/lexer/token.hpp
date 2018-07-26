@@ -91,30 +91,38 @@ namespace rush {
 		lexical_token_type type() const noexcept;
 
 		// \brief Returns true if the token is an instance of the specified symbol; false otherwise.
-		bool is(symbol_t kw) const noexcept;
+		bool is(symbol_t sym) const noexcept {
+			return is_symbol() && std::get<symbol_t>(_val) == sym;
+		}
 
 		// \brief Returns true if the token is an instance of the specified keyword; false otherwise.
-		bool is(keyword_t kw) const noexcept;
+		bool is(keyword_t kw) const noexcept {
+			return is_keyword() && std::get<keyword_t>(_val) == kw;
+		}
 
 		// \brief Returns true if the token is not an instance of the specified symbol; false otherwise.
-		bool is_not(symbol_t kw) const noexcept;
+		bool is_not(symbol_t sym) const noexcept {
+			return !is(sym);
+		}
 
 		// \brief Returns true if the token is not an instance of the specified keyword; false otherwise.
-		bool is_not(keyword_t kw) const noexcept;
+		bool is_not(keyword_t kw) const noexcept {
+			return !is(kw);
+		}
 
 		// \brief Returns true if the token is categorically a symbol; false otherwise.
 		bool is_symbol() const noexcept {
-			return type() == lexical_token_type::symbol;
+			return std::holds_alternative<symbol_t>(_val);
 		}
 
 		// \brief Returns true if the token is categorically a keyword; false otherwise.
 		bool is_keyword() const noexcept {
-			return type() == lexical_token_type::keyword;
+			return std::holds_alternative<keyword_t>(_val);
 		}
 
 		// \brief Returns true if the token is categorically an identifier; false otherwise.
 		bool is_identifier() const noexcept {
-			return type() == lexical_token_type::identifier;
+			return std::holds_alternative<identifier_t>(_val);
 		}
 
 		// \brief Returns true if the token is categorically a literal; false otherwise.
