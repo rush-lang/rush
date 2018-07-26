@@ -10,6 +10,10 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/modules")
 
 include(GNUInstallDirs)
 
+# Clang does not respect LIBRARY_PATH in the way that it should
+# forcing me to use an -L flag directly; not good, remove asap.
+link_directories(/usr/local/lib)
+
 find_package(LLVM REQUIRED CONFIG)
 
 message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
