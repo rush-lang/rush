@@ -9,44 +9,61 @@
 namespace rush {
 
 	namespace tokens {
-		{% for symbol in symbols %}
-		// \brief Returns an instance of rush::lexical_token representing {{ symbol/description }}{% if existsIn(symbol, "symbol") %} ({{ symbol/symbol }}) symbol{% endif %}.
-		inline lexical_token {{ symbol/name }}() {
-			return lexical_token { symbols::{{ symbol/name }} };
+
+		// \brief Returns an instance of rush::lexical_token representing the specified symbol.
+		inline lexical_token make_symbol_token(symbol_t val, location const& loc) {
+			return lexical_token { val, loc };
 		}
-		{% endfor %}
+
+		// \brief Returns an instance of rush::lexical_token representing the specified keyword.
+		inline lexical_token make_keyword_token(keyword_t val, location const& loc) {
+			return lexical_token { val, loc };
+		}
 
 		// \brief Returns an instance of rush::lexical_token representing a string literal.
-		inline lexical_token string_literal(std::string val) {
-			return lexical_token { val, false };
-		}
-
-		// \brief Returns an instance of rush::lexical_token representing a floating point literal.
-		inline lexical_token floating_literal(double val) {
-			return lexical_token { val };
+		inline lexical_token string_literal(std::string_view val, location const& loc) {
+			return lexical_token { val, loc };
 		}
 
 		// \brief Returns an instance of rush::lexical_token representing an integer literal.
-		inline lexical_token integer_literal(std::uint64_t val) {
-			return lexical_token { val };
+		inline lexical_token integer_literal(std::uint64_t val, location const& loc) {
+			return lexical_token { val, loc };
+		}
+
+		// \brief Returns an instance of rush::lexical_token representing a floating point literal.
+		inline lexical_token floating_literal(double val, location const& loc) {
+			return lexical_token { val, loc };
 		}
 
 		// \brief Returns an instance of rush::lexical_token representing an identifier.
-		inline lexical_token identifier(std::string ident) {
-			return lexical_token { ident };
+		inline lexical_token identifier(std::string_view val, location const& loc) {
+			return lexical_token { lexical_token::identifier_t { val }, loc };
 		}
 
-		{% for type in types %}
-		// \brief Returns an instance of rush::lexical_token representing {{ type/description }} type.
-		inline lexical_token {{ type/name }}_keyword() {
-			return lexical_token { keywords::{{ type/name }}_ };
+		{% for symbol in symbols %}
+		// \brief Returns an instance of rush::lexical_token representing {{ symbol/description }}{% if existsIn(symbol, "symbol") %} ({{ symbol/symbol }}) symbol{% endif %}.
+		inline lexical_token {{ symbol/name }}(location const& loc = {}) {
+			return make_symbol_token(symbols::{{ symbol/name }}, loc);
+		}
+		{% if existsIn(symbol, "compounded") %}
+		{% for inner in symbol/compounded %}
+		inline lexical_token {{ inner/name }}(location const& loc = {}) {
+			return make_symbol_token(symbols::{{ inner/name }}, loc);
 		}
 		{% endfor %}
+		{% endif %}
 
+		{% endfor %}
+		{% for type in types %}
+		// \brief Returns an instance of rush::lexical_token representing {{ type/description }} type.
+		inline lexical_token {{ type/name }}_keyword(location const& loc = {}) {
+			return make_keyword_token(keywords::{{ type/name }}_, loc);
+		}
+		{% endfor %}
 		{% for keyword in keywords %}
 		// \brief Returns an instance of rush::lexical_token representing {{ keyword/description }} keyword.
-		inline lexical_token {{ keyword/name }}_keyword() {
-			return lexical_token { keywords::{{ keyword/name }}_ };
+		inline lexical_token {{ keyword/name }}_keyword(location const& loc = {}) {
+			return make_keyword_token(keywords::{{ keyword/name }}_, loc);
 		}
 		{% endfor %}
 	}

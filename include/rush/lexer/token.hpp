@@ -10,8 +10,11 @@
 
 #include "rush/lexer/_symbols.hpp"
 #include "rush/lexer/_keywords.hpp"
+#include "rush/core/location.hpp"
 
 namespace rush {
+
+	class lexical_token;
 
 	enum class lexical_token_type {
 		symbol,
@@ -22,19 +25,58 @@ namespace rush {
 		floating_literal,
 	};
 
+	namespace tokens {
+		inline lexical_token make_error_token(std::string, location const& = {});
+		inline lexical_token make_symbol_token(symbol_t, location const& = {});
+		inline lexical_token make_keyword_token(keyword_t, location const& = {});
+
+		inline lexical_token identifier(std::string_view, location const& = {});
+		inline lexical_token string_literal(std::string_view, location const& = {});
+		inline lexical_token integer_literal(std::uint64_t, location const& = {});
+		inline lexical_token floating_literal(double, location const& = {});
+	}
+
 	class lexical_token final {
+		struct error_t { std::string_view _msg; };
+		struct identifier_t { std::string_view _text; };
+
+		using variant_type =
+		std::variant<
+			error_t,				// errors.
+			symbol_t,         // symbols.
+			keyword_t,        // keywords.
+			identifier_t,     // identifiers.
+			std::string_view, // string literals.
+			std::uint64_t,    // integer literals.
+			double>;          // floating literals. (todo: guarantee double is 64-bit)
+
+		friend lexical_token tokens::make_error_token(std::string, location const&);
+		friend lexical_token tokens::make_symbol_token(symbol_t, location const&);
+		friend lexical_token tokens::make_keyword_token(keyword_t, location const&);
+
+		friend lexical_token tokens::identifier(std::string_view, location const&);
+		friend lexical_token tokens::string_literal(std::string_view, location const&);
+		friend lexical_token tokens::integer_literal(std::uint64_t, location const&);
+		friend lexical_token tokens::floating_literal(double, location const&);
+
+
+		lexical_token(variant_type value, location const& loc)
+			: _val(std::move(value)), _loc(loc) {}
+
 	public:
-		explicit lexical_token(symbol_t) {}
-		explicit lexical_token(keyword_t) {}
-		explicit lexical_token(std::string, bool ident = true) {}
-		explicit lexical_token(std::uint64_t) {}
-		explicit lexical_token(double) {}
 
 		// \brief Returns the length of the token
 		std::size_t size() const noexcept;
 
 		// \brief Returns the length of the token.
-		std::size_t length() const noexcept;
+		std::size_t length() const noexcept {
+			return this->text().size();
+		}
+
+		// \brief Returns the location in source of the token.
+		location const& location() const noexcept {
+			return this->_loc;
+		}
 
 		// \brief Returns the plain text of the token.
 		std::string_view text() const noexcept;
@@ -80,13 +122,8 @@ namespace rush {
 		}
 
 	private:
-		std::variant<
-			keyword_t,		// symbols.
-			symbol_t,		// keywords.
-			std::string,	// identifiers.
-			std::string,	// string literals.
-			std::uint64_t, // integer literals.
-			double> _val; // floating literals. (todo: guarantee double is 64-bit)
+		variant_type _val;
+		struct location _loc;
 	};
 
 } // rush
