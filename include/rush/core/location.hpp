@@ -7,6 +7,7 @@
 
 namespace rush {
 	using source_index_t = std::size_t;
+	using source_difference_t = std::size_t;
 
 	class location;
 
@@ -32,6 +33,16 @@ namespace rush {
 		bool is_undefined() const noexcept {
 			static const location undef {};
 			return *this == undef;
+		}
+
+		// \brief Returns a copy of this location with line incremented by n, and the column reset to 1
+		location next_line(source_difference_t n = 1) {
+			return { _line + n, 1 };
+		}
+
+		// \brief Returns a copy of this location with column increment by n.
+		location next_column(source_difference_t n = 1) {
+			return { _line, _column + n };
 		}
 
 	private:
