@@ -54,11 +54,72 @@ bool valid_identifier(std::string_view input, std::size_t offset = -1) {
 	return check_iterators(first, last, out, offset);
 }
 
+bool valid_lex(std::string_view input, std::initializer_list<rush::lexical_token> tokens) {
+	return false;
+}
 
 TEST_CASE( "rush::lex", "[unit][lexer]" ) {
-	// auto lxa = rush::lex("__abc123 abc__123 abc123__")
 
-	auto lxa = rush::lex("let x = 10");
+	SECTION( "keywords" ) {
+		CHECK( valid_lex("if else while", {
+			tok::if_keyword(),
+			tok::else_keyword(),
+			tok::while_keyword()
+		}));
+
+		CHECK_FALSE( valid_lex("_let var_ const1", {
+			tok::let_keyword(),
+			tok::var_keyword(),
+			tok::const_keyword()
+		}));
+	}
+
+	SECTION( "identifiers" ) {
+
+		CHECK( valid_lex("a z A Z abc XYZ", {
+			tok::identifier("a"),
+			tok::identifier("z"),
+			tok::identifier("A"),
+			tok::identifier("Z"),
+			tok::identifier("abc"),
+			tok::identifier("XYZ"),
+		}));
+
+		CHECK( valid_lex("_ _a _z _0 _9 _a0 _z0 _a9 _z9", {
+			tok::identifier("_"),
+			tok::identifier("_a"),
+			tok::identifier("_z"),
+			tok::identifier("_0"),
+			tok::identifier("_9"),
+			tok::identifier("_a0"),
+			tok::identifier("_z0"),
+			tok::identifier("_a9"),
+			tok::identifier("_z9"),
+		}));
+
+		CHECK( valid_lex("a1 c_ d2_ e_3 f4_ab12__", {
+			tok::identifier("a1"),
+			tok::identifier("c_"),
+			tok::identifier("d2_"),
+			tok::identifier("e_3"),
+			tok::identifier("f4_ab12__"),
+		}));
+
+		// like-joined
+		CHECK( valid_lex("abc123__ abc__123 __abc123 __123abc", {
+			tok::identifier("abc123___"),
+			tok::identifier("abc___123"),
+			tok::identifier("___abc123"),
+			tok::identifier("___123abc"),
+		}));
+
+		// like-interspersed
+		CHECK( valid_lex("abc123__ abc__123 __abc123 __123abc", {
+			tok::identifier("a_1b_2c_3"),
+			tok::identifier("_a1_b2_c3"),
+			tok::identifier("_1a_2b_3c"),
+		}));
+	}
 }
 
 
