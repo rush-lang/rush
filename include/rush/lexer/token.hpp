@@ -17,6 +17,7 @@ namespace rush {
 	class lexical_token;
 
 	enum class lexical_token_type {
+		error,
 		symbol,
 		keyword,
 		identifier,
@@ -64,6 +65,11 @@ namespace rush {
 			: _val(std::move(value)), _loc(loc) {}
 
 	public:
+
+		// \brief Returns true if this token is erroneous
+		bool has_error() const noexcept {
+			return std::holds_alternative<error_t>(_val);
+		}
 
 		// \brief Returns the length of the token
 		std::size_t size() const noexcept;
