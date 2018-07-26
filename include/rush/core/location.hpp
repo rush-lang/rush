@@ -25,13 +25,13 @@ namespace rush {
 		source_index_t column() const noexcept { return _column; }
 
 		constexpr location() noexcept
-			: location(0, 0) {}
+			: location(1, 1) {}
 
 		constexpr location(source_index_t line, source_index_t column) noexcept
 			: _line(line), _column(column) {}
 
 		bool is_undefined() const noexcept {
-			static const location undef {};
+			static const location undef { 0, 0 };
 			return *this == undef;
 		}
 
