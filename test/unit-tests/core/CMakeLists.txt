@@ -2,6 +2,7 @@ add_executable(core-test
 	$<TARGET_OBJECTS:catch2>
 	charinfo_test.cpp
 	iterator_test.cpp
+	location_test.cpp
 	source_manager_test.cpp
 )
 
