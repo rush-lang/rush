@@ -4,8 +4,11 @@
 #define RUSH_LEXER_OPTIONS_HPP
 
 namespace rush {
-	class lexer_options {
+	struct lexer_options {
+		bool artificial_eof;
 
+		lexer_options()
+			: artificial_eof { true } {}
 	};
 } // rush
 

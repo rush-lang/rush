@@ -2,6 +2,9 @@
 #include "rush/core/iterator.hpp"
 #include "rush/lexer/token.hpp"
 #include "rush/lexer/lexer.hpp"
+#include "rush/lexer/indentation.hpp"
+
+#include "lexer_iterator.hpp"
 
 #include <string>
 #include <iostream>
@@ -10,36 +13,44 @@
 
 
 using namespace rush;
-namespace tok = rush::tokens;
-namespace ci = rush::charinfo;
+using namespace rush::charinfo;
 
+namespace tok = rush::tokens;
 
 template <typename FwdIter> class lexer;
 template <typename FwdIter> static lexer<FwdIter> lex(FwdIter first, FwdIter last, lexer_options const& opts);
 
 
-
 template <typename FwdIter>
-class lexer {
-	friend lexer<FwdIter> lex<FwdIter>(FwdIter first, FwdIter last, lexer_options const& opts);
+class lexer final {
+	friend lexer<FwdIter> lex<FwdIter>(FwdIter, FwdIter, lexer_options const&);
 
 public:
 	lexer(lexer const&) = delete;
 	void operator = (lexer const&) = delete;
 
 	lexer(lexer&& other)
-		: _opts(other._opts)
+		: _options {other._options }
+		, _indentation { }
 		, _tokens(std::move(other._tokens)) {}
 
 	void operator = (lexer&& other) {
 		// fixme: check other is not this.
-		_opts = other._opts;
+		_options = other._options;
+		_indentation = other._indentation;
 		_tokens = std::move(other._tokens);
 	}
 
 
 	void tokenize(FwdIter first, FwdIter last) {
+		_iters = {
+			lexer_iterator { first, last, { } },
+			lexer_iterator { last, last, location::undefined }
+		};
 
+		while (!this->eof()) {
+			_tokens.push_back(next_token());
+		}
 	}
 
 	std::vector<lexical_token> flush() {
@@ -47,10 +58,62 @@ public:
 	}
 
 private:
-	lexer(rush::lexer_options opts) : _opts(opts) {}
-
+	lexer_options _options;
+	indentation _indentation;
 	std::vector<lexical_token> _tokens;
-	lexer_options _opts;
+	std::pair<
+		lexer_iterator<FwdIter>,
+		lexer_iterator<FwdIter>> _iters;
+
+
+	lexer(rush::lexer_options opts)
+		: _options(opts) {}
+
+	inline bool eof() {
+		return _iters.first == _iters.second;
+	}
+
+	location location() const noexcept {
+		return _iters.first.location();
+	}
+
+	codepoint_t peek() {
+		assert(!this->eof() && "unexpected end of source.");
+		return *_iters.first;
+	}
+
+
+	lexical_token next_token() {
+		auto cp = peek();
+		if (is_digit(cp)) {
+			return scan_numeric_literal();
+		}
+
+		if (is_ident_head(cp)) {
+			return scan_identifier();
+		}
+
+		return tok::eof();
+	}
+
+	lexical_token scan_numeric_literal() {
+		assert(!eof() && "unexpected end of source.");
+		assert(is_digit(peek()) && "expected a leading digit while attempting to scan an integer literal.");
+
+		if (is_zero_digit(*_iters.first)) {
+			return tok::integer_literal(0, location());
+		}
+
+		auto temp = _iters.first;
+		advance_if(_iters.first, _iters.second, is_digit);
+		return tok::integer_literal(
+			std::stoll(std::string(temp, _iters.first)),
+			location());
+	}
+
+	lexical_token scan_identifier() {
+		return tok::identifier("x", location());
+	}
 };
 
 
@@ -60,20 +123,6 @@ static lexer<FwdIter> lex(FwdIter first, FwdIter last, lexer_options const& opts
 	auto l = lexer<FwdIter> { opts };
 	l.tokenize(first, last);
 	return std::move(l);
-}
-
-template <typename InIter>
-static lexical_token make_punctuation_token(InIter first, InIter last) {
-	assert(first != last && "unexpected end of range.");
-	assert(is_punct(*first) && "expected punctuation.");
-
-}
-
-template <typename InIter>
-static lexical_token make_compounded_punctuation_token(InIter first, InIter last, char const* comp_chars) {
-	assert(first != last && "unexpected end of range.");
-	assert(is_punct(*first) && "expected punctuation.");
-
 }
 
 
