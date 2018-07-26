@@ -128,12 +128,9 @@ namespace rush {
 
 		// \brief Returns true if the token is categorically a literal; false otherwise.
 		bool is_literal() const noexcept {
-			switch (type()) {
-				case lexical_token_type::integer_literal:
-				case lexical_token_type::floating_literal:
-				case lexical_token_type::string_literal: return true;
-				default: return false;
-			}
+			return std::holds_alternative<std::string_view>(_val)
+				|| std::holds_alternative<std::uint64_t>(_val)
+				|| std::holds_alternative<double>(_val);
 		}
 
 	private:
