@@ -30,16 +30,32 @@ namespace rush {
 		lexical_analysis(lexical_analysis&&);
 		void operator = (lexical_analysis&&);
 
-		using iterator = detail::lexical_analysis_iterator;
-		using const_iterator = detail::lexical_analysis_iterator;
+		using iterator = typename std::vector<lexical_token>::iterator;
+		using const_iterator = typename std::vector<lexical_token>::const_iterator;
 
-		bool empty() const noexcept;
-		std::size_t size() const noexcept;
+		bool empty() const noexcept {
+			return _tokens.empty();
+		}
 
-		const_iterator begin() const noexcept;
-		const_iterator end() const noexcept;
-		const_iterator cbegin() const noexcept;
-		const_iterator cend() const noexcept;
+		std::size_t size() const noexcept {
+			return _tokens.size();
+		}
+
+		const_iterator begin() const noexcept {
+			return _tokens.begin();
+		}
+
+		const_iterator end() const noexcept {
+			return _tokens.end();
+		}
+
+		const_iterator cbegin() const noexcept {
+			return _tokens.cbegin();
+		}
+
+		const_iterator cend() const noexcept {
+			return _tokens.cend();
+		}
 
 	private:
 		lexical_analysis(std::vector<lexical_token> toks)
