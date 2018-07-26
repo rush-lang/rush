@@ -66,13 +66,10 @@ namespace rush {
 
 	public:
 
-		// \brief Returns true if this token is erroneous
-		bool has_error() const noexcept {
-			return std::holds_alternative<error_t>(_val);
-		}
-
 		// \brief Returns the length of the token
-		std::size_t size() const noexcept;
+		std::size_t size() const noexcept {
+			return this->text().size();
+		}
 
 		// \brief Returns the length of the token.
 		std::size_t length() const noexcept {
@@ -108,6 +105,10 @@ namespace rush {
 		// \brief Returns true if the token is not an instance of the specified keyword; false otherwise.
 		bool is_not(keyword_t kw) const noexcept {
 			return !is(kw);
+		}
+
+		bool is_error() const noexcept {
+			return std::holds_alternative<error_t>(_val);
 		}
 
 		// \brief Returns true if the token is categorically a symbol; false otherwise.
