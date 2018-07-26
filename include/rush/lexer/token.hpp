@@ -82,7 +82,7 @@ namespace rush {
 		}
 
 		// \brief Returns the plain text of the token.
-		std::string_view text() const noexcept;
+		std::string text() const noexcept;
 
 		// \brief Returns the categorical type of the token based on its value.
 		lexical_token_type type() const noexcept;

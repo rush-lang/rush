@@ -3,7 +3,7 @@
 #ifndef RUSH_LEXER__KEYWORDS_HPP
 #define RUSH_LEXER__KEYWORDS_HPP
 
-#include <string>
+#include <string_view>
 
 namespace rush {
 	namespace keywords {
@@ -17,8 +17,8 @@ namespace rush {
 			{% endfor %}
 		};
 
-		std::string to_string(keyword_t);
-		keyword_t to_value(std::string const&);
+		std::string_view to_string(keyword_t);
+		keyword_t to_value(std::string_view);
 	}
 
 	using keywords::keyword_t;

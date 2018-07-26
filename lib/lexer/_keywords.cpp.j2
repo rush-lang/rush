@@ -2,9 +2,9 @@
 #include "rush/lexer/token.hpp"
 
 #include <unordered_map>
-#include <string>
+#include <string_view>
 
-static const std::unordered_map<std::string, rush::keywords::keyword_t>
+static const std::unordered_map<std::string_view, rush::keywords::keyword_t>
 	_keyword_map {
 		{% for type in types %}
 		{ "{{ type/name }}", rush::keywords::{{ type/name }}_ },
@@ -16,11 +16,11 @@ static const std::unordered_map<std::string, rush::keywords::keyword_t>
 
 namespace rush {
 	namespace keywords {
-		keyword_t to_value(std::string const& kw) {
+		keyword_t to_value(std::string_view kw) {
 			return _keyword_map.at(kw);
 		}
 
-		std::string to_string(keyword_t kw) {
+		std::string_view to_string(keyword_t kw) {
 			switch (kw) {
 				{% for type in types %}
 				case keywords::{{ type/name }}_: return "{{ type/name }}";

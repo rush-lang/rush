@@ -16,12 +16,12 @@ namespace rush {
 	};
 
 	class indentation final {
-		indentation(std::size_t depth, indentation_style style)
+		constexpr indentation(std::size_t depth, indentation_style style) noexcept
 			: _depth { depth }
 			, _style { style } {}
 
 	public:
-		indentation()
+		constexpr indentation() noexcept
 			: _depth { 0 }
 			, _style { indentation_style::unknown } {}
 
@@ -33,12 +33,14 @@ namespace rush {
 			return _style;
 		}
 
-		std::size_t increment() noexcept {
-			return ++_depth;
+		indentation& increment() noexcept {
+			++_depth;
+			return *this;
 		}
 
-		std::size_t decrement() noexcept {
-			return --_depth;
+		indentation& decrement() noexcept {
+			--_depth;
+			return *this;
 		}
 
 		static inline indentation spaces(std::size_t depth) noexcept {
