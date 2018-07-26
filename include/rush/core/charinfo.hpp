@@ -9,12 +9,16 @@
 #include <cctype>
 
 namespace rush {
-	namespace charinfo {
+	using codepoint_t = std::uint32_t;
 
-		using codepoint_t = std::uint32_t;
+	namespace charinfo {
 
 		inline bool is_ascii(codepoint_t cp) {
 			return cp <= 127;
+		}
+
+		inline bool is_newline(codepoint_t cp) {
+			return cp == '\n';
 		}
 
 		inline bool is_letter(codepoint_t cp) {
