@@ -85,7 +85,20 @@ namespace rush {
 		std::string text() const noexcept;
 
 		// \brief Returns the categorical type of the token based on its value.
-		lexical_token_type type() const noexcept;
+		lexical_token_type type() const noexcept {
+			return std::visit([](auto&& arg) {
+				using T = std::decay_t<decltype(arg)>;
+
+				if constexpr (std::is_same_v<T, error_t>) return lexical_token_type::error;
+				if constexpr (std::is_same_v<T, symbol_t>) return lexical_token_type::symbol;
+				if constexpr (std::is_same_v<T, keyword_t>) return lexical_token_type::keyword;
+				if constexpr (std::is_same_v<T, identifier_t>) return lexical_token_type::identifier;
+				if constexpr (std::is_same_v<T, std::string_view>) return lexical_token_type::string_literal;
+				if constexpr (std::is_same_v<T, std::uint64_t>) return lexical_token_type::integer_literal;
+				if constexpr (std::is_same_v<T, double>) return lexical_token_type::floating_literal;
+				assert("non-exhaustive visitor!");
+			}, _val);
+		}
 
 		// \brief Returns true if the token is an instance of the specified symbol; false otherwise.
 		bool is(symbol_t sym) const noexcept {
@@ -133,9 +146,18 @@ namespace rush {
 				|| std::holds_alternative<double>(_val);
 		}
 
+		bool is_same(lexical_token const& other) const noexcept {
+			return type() == other.type() && compare_value(other) == 0;
+		}
+
 	private:
 		variant_type _val;
 		struct location _loc;
+
+		int compare_value(lexical_token const& other) const noexcept {
+			assert(type() == other.type() && "cannot compare values of differing token types.");
+			return 0;
+		}
 	};
 
 } // rush

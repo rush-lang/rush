@@ -60,6 +60,7 @@ public:
 
 private:
 	lexer_options _options;
+	location _pinloc;
 	indentation _indentation;
 	std::vector<lexical_token> _tokens;
 	std::pair<
@@ -74,8 +75,12 @@ private:
 		return _iters.first == _iters.second;
 	}
 
-	location location() const noexcept {
-		return _iters.first.location();
+	location location() noexcept {
+		return _pinloc;
+	}
+
+	void pin_location() noexcept {
+		_pinloc = { _iters.first.location() };
 	}
 
 	codepoint_t peek() {
@@ -83,22 +88,48 @@ private:
 		return *_iters.first;
 	}
 
+	bool check(codepoint_t cp) {
+		return !eof() && peek() == cp;
+	}
+
+	void skip(std::size_t offset = 1) {
+		advance(_iters.first, _iters.second, offset);
+	}
+
 	void skip_whitespace() {
-		assert(!eof() && "unexpected end of range.");
 		advance_if(_iters.first, _iters.second, is_space);
 	}
 
 	lexical_token next_token() {
 		auto cp = peek();
-		if (is_digit(cp)) {
-			return scan_numeric_literal();
+
+		pin_location();
+
+		if (is_quote(cp)) return scan_string_literal();
+		if (is_digit(cp)) return scan_numeric_literal();
+		if (is_ident_head(cp)) return scan_identifier();
+
+		auto str = std::string { static_cast<char>(cp) };
+		auto symbol = symbols::to_value(str);
+		if (symbol != symbols::unknown) {
+			skip(); // consume symbol character.
+			return tok::make_symbol_token(symbol);
 		}
 
-		if (is_ident_head(cp)) {
-			return scan_identifier();
-		}
+		// return tok::make_error_token("unexpected token", location());
+		return tok::eof(location());
+	}
 
-		return tok::eof();
+	template <typename Pred>
+	auto scan_while(Pred predicate) -> decltype(predicate(*_iters.first), std::string()) {
+		auto temp = _iters.first;
+		advance_if(_iters.first, _iters.second, predicate);
+		return std::string(temp, _iters.first);
+	}
+
+	lexical_token scan_string_literal() {
+		skip();
+		return tok::string_literal("", location());
 	}
 
 	lexical_token scan_numeric_literal() {
@@ -106,19 +137,36 @@ private:
 		assert(is_digit(peek()) && "expected a leading digit while attempting to scan an integer literal.");
 
 		if (is_zero_digit(peek())) {
-			++_iters.first;
-			return tok::integer_literal(0, location());
+			skip(); // consume zero digit.
+			return check('.')
+				? scan_floating_literal()
+				: tok::integer_literal(0, location());
 		}
 
-		auto temp = _iters.first;
-		advance_if(_iters.first, _iters.second, is_digit);
-		return tok::integer_literal(
-			std::stoll(std::string(temp, _iters.first)),
-			location());
+		auto value = scan_while(is_digit);
+		return check('.')
+			? scan_floating_literal(value + ".")
+			: tok::integer_literal(std::stoll(value), location());
+	}
+
+	lexical_token scan_floating_literal(std::string prefix = "") {
+		assert(!eof() && "unexpected end of source.");
+		assert(peek() == '.' && "expected a leading decimal point while attempting to scan a floating literal.");
+
+		skip(); // consume decimal point.
+		auto value = scan_while(is_digit);
+		return tok::floating_literal(std::stod(prefix + value), location());
 	}
 
 	lexical_token scan_identifier() {
-		return tok::identifier("x", location());
+		assert(!eof() && "unexpected end of source.");
+		assert(is_ident_head(peek()) && "expected a leading identifier character while attempting to scan an identifier.");
+
+		auto ident = scan_while(is_ident_body);
+		auto kw_val = keywords::to_value(ident);
+		return kw_val != keywords::unknown
+			? tok::make_keyword_token(kw_val, location())
+			: tok::identifier(ident, location());
 	}
 };
 

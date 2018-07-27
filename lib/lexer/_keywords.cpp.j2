@@ -17,7 +17,10 @@ static const std::unordered_map<std::string_view, rush::keywords::keyword_t>
 namespace rush {
 	namespace keywords {
 		keyword_t to_value(std::string_view kw) {
-			return _keyword_map.at(kw);
+			auto it = _keyword_map.find(kw);
+			return it == _keyword_map.end()
+				? keywords::unknown
+				: it->second;
 		}
 
 		std::string_view to_string(keyword_t kw) {
@@ -28,6 +31,7 @@ namespace rush {
 				{% for keyword in keywords %}
 				case keywords::{{ keyword/name }}_: return "{{ keyword/name }}";
 				{% endfor %}
+				default: throw std::runtime_error("unknown keyword");
 			}
 		}
 	}

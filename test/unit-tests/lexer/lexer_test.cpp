@@ -27,31 +27,10 @@ bool skipped_vspace(std::string_view input, std::size_t offset = -1) {
 	return check_iterators(begin(input), last, first, offset);
 }
 
-bool valid_integer_literal(std::string_view input, std::size_t offset = -1) {
-	auto first = std::begin(input);
-	auto last = std::end(input);
-	auto out = rush::scan_integer_literal(first, last);
-	return check_iterators(first, last, out, offset);
-}
-
-bool valid_floating_literal(std::string_view input, std::size_t offset = -1) {
-	auto first = std::begin(input);
-	auto last = std::end(input);
-	auto out = rush::scan_floating_literal(first, last);
-	return check_iterators(first, last, out, offset);
-}
-
 bool valid_string_literal(std::string_view input, std::size_t offset = -1) {
 	auto first = std::begin(input);
 	auto last = std::end(input);
 	auto out = rush::scan_string_literal(first, last);
-	return check_iterators(first, last, out, offset);
-}
-
-bool valid_identifier(std::string_view input, std::size_t offset = -1) {
-	auto first = std::begin(input);
-	auto last = std::end(input);
-	auto out = rush::scan_identifier(first, last);
 	return check_iterators(first, last, out, offset);
 }
 
@@ -60,102 +39,114 @@ bool valid_lex(std::string input, std::initializer_list<rush::lexical_token> tok
 	return lxa.size() == tokens.size() && std::equal(
 		lxa.begin(), lxa.end(),
 		tokens.begin(), tokens.end(),
-		[](auto& x, auto& y) {
-			return x.is_literal();
-		});
+		[](auto& x, auto& y) { return x.location() == y.location() && x.is_same(y); });
 }
 
 TEST_CASE( "rush::lex", "[unit][lexer]" ) {
 
 	SECTION( "integer literals" ) {
 		CHECK( valid_lex("0 1 9 10 1234567890 9876543210", {
-			tok::integer_literal(0),
-			tok::integer_literal(1),
-			tok::integer_literal(9),
-			tok::integer_literal(10),
-			tok::integer_literal(1234567890LL),
-			tok::integer_literal(9876543210LL),
+			tok::integer_literal(0, { 1, 1 }),
+			tok::integer_literal(1, { 1, 3 }),
+			tok::integer_literal(9, { 1, 5 }),
+			tok::integer_literal(10, { 1, 7 }),
+			tok::integer_literal(1234567890LL, { 1, 10 }),
+			tok::integer_literal(9876543210LL, { 1, 21 }),
 		}));
 
 		// any leading-zero or non-digit should stop the scan,
 		// and proceed to scan the next character as a seperate token.
-		CHECK( valid_lex("01", { tok::integer_literal(0), tok::integer_literal(1) }) );
-		CHECK( valid_lex("09", { tok::integer_literal(0), tok::integer_literal(9) }) );
-		CHECK( valid_lex("0123456789", { tok::integer_literal(0), tok::integer_literal(123456789LL) }) );
-		CHECK( valid_lex("0987654321", { tok::integer_literal(0), tok::integer_literal(987654321LL) }) );
-		// CHECK( valid_lex("0_", 1) );
-		// CHECK( valid_lex("1a", 1) );
-		// CHECK( valid_lex("123_", 3) );
-		// CHECK( valid_lex("123a", 3) );
-		// CHECK( valid_lex("1.0", 1) );
-		// CHECK( valid_lex("123.0", 3) );
+		CHECK( valid_lex("01", { tok::integer_literal(0, { 1, 1 }), tok::integer_literal(1, { 1, 2 }) }) );
+		CHECK( valid_lex("09", { tok::integer_literal(0, { 1, 1 }), tok::integer_literal(9, { 1, 2 }) }) );
+		CHECK( valid_lex("0123456789", { tok::integer_literal(0, { 1, 1 }), tok::integer_literal(123456789LL, { 1, 2 }) }) );
+		CHECK( valid_lex("0987654321", { tok::integer_literal(0, { 1, 1 }), tok::integer_literal(987654321LL, { 1, 2 }) }) );
+		CHECK( valid_lex("0_", { tok::integer_literal(0, { 1, 1 }), tok::identifier("_", { 1, 2 }) }) );
+		CHECK( valid_lex("1a", { tok::integer_literal(1, { 1, 1 }), tok::identifier("a", { 1, 2 }) }) );
+		CHECK( valid_lex("123_", { tok::integer_literal(123, { 1, 1 }), tok::identifier("_", { 1, 4 }) }) );
+		CHECK( valid_lex("123a", { tok::integer_literal(123, { 1, 1 }), tok::identifier("a", { 1, 4 }) }) );
+		CHECK( valid_lex("1.0", { tok::floating_literal(1.0, { 1, 1 }) }) );
+		CHECK( valid_lex("123.9", { tok::floating_literal(123.9, { 1, 1 }) }) );
 
-		// FIXME: The following cause assert/terminate to be triggered. Currently no way to test this in Catch2
-		// CHECK_FALSE( valid_integer_literal("_0") );
-		// CHECK_FALSE( valid_integer_literal("a1") );
-		// CHECK_FALSE( valid_integer_literal(".1") );
+		// non-digit characters directly preceding a
+		// digit should generate seperate tokens.
+		CHECK( valid_lex("_0", { tok::identifier("_0", { 1, 1 }) }) );
+		CHECK( valid_lex("a1", { tok::identifier("a1", { 1, 1 }) }) );
+		CHECK( valid_lex("-1", { tok::minus({ 1, 1 }), tok::integer_literal(1, { 1, 2 }) }) );
+		CHECK( valid_lex("+1", { tok::plus({ 1, 1 }), tok::integer_literal(1, { 1, 2 }) }) );
 	}
 
-	// SECTION( "keywords" ) {
-	// 	CHECK( valid_lex("if else while", {
-	// 		tok::if_keyword(),
-	// 		tok::else_keyword(),
-	// 		tok::while_keyword()
-	// 	}));
+	// SECTION( "floating literals", "[unit][lexer]" ) {
+	// 	CHECK( valid_floating_literal("1.0") );
+	// 	CHECK( valid_floating_literal("9.0") );
+	// 	CHECK( valid_floating_literal(".0") );
+	// 	CHECK( valid_floating_literal(".013") );
 
-	// 	CHECK_FALSE( valid_lex("_let var_ const1", {
-	// 		tok::let_keyword(),
-	// 		tok::var_keyword(),
-	// 		tok::const_keyword()
-	// 	}));
+	// 	CHECK_FALSE( valid_floating_literal("0") );
+	// 	CHECK_FALSE( valid_floating_literal("1") );
+	// 	CHECK_FALSE( valid_floating_literal("9") );
+	// 	CHECK_FALSE( valid_floating_literal("123") );
 	// }
 
-	// SECTION( "identifiers" ) {
+	SECTION( "keywords" ) {
+		CHECK( valid_lex("if else while", {
+			tok::if_keyword({ 1, 1 }),
+			tok::else_keyword({ 1, 4 }),
+			tok::while_keyword({ 1, 9 })
+		}));
 
-	// 	CHECK( valid_lex("a z A Z abc XYZ", {
-	// 		tok::identifier("a"),
-	// 		tok::identifier("z"),
-	// 		tok::identifier("A"),
-	// 		tok::identifier("Z"),
-	// 		tok::identifier("abc"),
-	// 		tok::identifier("XYZ"),
-	// 	}));
+		CHECK_FALSE( valid_lex("_let var_ const1", {
+			tok::let_keyword({ 1, 1 }),
+			tok::var_keyword({ 1, 6 }),
+			tok::const_keyword({ 1, 11 })
+		}));
+	}
 
-	// 	CHECK( valid_lex("_ _a _z _0 _9 _a0 _z0 _a9 _z9", {
-	// 		tok::identifier("_"),
-	// 		tok::identifier("_a"),
-	// 		tok::identifier("_z"),
-	// 		tok::identifier("_0"),
-	// 		tok::identifier("_9"),
-	// 		tok::identifier("_a0"),
-	// 		tok::identifier("_z0"),
-	// 		tok::identifier("_a9"),
-	// 		tok::identifier("_z9"),
-	// 	}));
+	SECTION( "identifiers" ) {
 
-	// 	CHECK( valid_lex("a1 c_ d2_ e_3 f4_ab12__", {
-	// 		tok::identifier("a1"),
-	// 		tok::identifier("c_"),
-	// 		tok::identifier("d2_"),
-	// 		tok::identifier("e_3"),
-	// 		tok::identifier("f4_ab12__"),
-	// 	}));
+		CHECK( valid_lex("a z A Z abc XYZ", {
+			tok::identifier("a", { 1, 1 }),
+			tok::identifier("z", { 1, 3 }),
+			tok::identifier("A", { 1, 5 }),
+			tok::identifier("Z", { 1, 7 }),
+			tok::identifier("abc", { 1, 9 }),
+			tok::identifier("XYZ", { 1, 13 }),
+		}));
 
-	// 	// like-joined
-	// 	CHECK( valid_lex("abc123__ abc__123 __abc123 __123abc", {
-	// 		tok::identifier("abc123___"),
-	// 		tok::identifier("abc___123"),
-	// 		tok::identifier("___abc123"),
-	// 		tok::identifier("___123abc"),
-	// 	}));
+		CHECK( valid_lex("_ _a _z _0 _9 _a0 _z0 _a9 _z9", {
+			tok::identifier("_", { 1, 1 }),
+			tok::identifier("_a", { 1, 3 }),
+			tok::identifier("_z", { 1, 6 }),
+			tok::identifier("_0", { 1, 9 }),
+			tok::identifier("_9", { 1, 12 }),
+			tok::identifier("_a0", { 1, 15 }),
+			tok::identifier("_z0", { 1, 19 }),
+			tok::identifier("_a9", { 1, 23 }),
+			tok::identifier("_z9", { 1, 27 }),
+		}));
 
-	// 	// like-interspersed
-	// 	CHECK( valid_lex("abc123__ abc__123 __abc123 __123abc", {
-	// 		tok::identifier("a_1b_2c_3"),
-	// 		tok::identifier("_a1_b2_c3"),
-	// 		tok::identifier("_1a_2b_3c"),
-	// 	}));
-	// }
+		CHECK( valid_lex("a1 c_ d2_ e_3 f4_ab12__", {
+			tok::identifier("a1", { 1, 1 }),
+			tok::identifier("c_", { 1, 4 }),
+			tok::identifier("d2_", { 1, 7 }),
+			tok::identifier("e_3", { 1, 11 }),
+			tok::identifier("f4_ab12__", { 1, 15 }),
+		}));
+
+		// like-joined
+		CHECK( valid_lex("abc123___ abc___123 ___abc123 ___123abc", {
+			tok::identifier("abc123___", { 1, 1 }),
+			tok::identifier("abc___123", { 1, 11 }),
+			tok::identifier("___abc123", { 1, 21 }),
+			tok::identifier("___123abc", { 1, 31 }),
+		}));
+
+		// like-interspersed
+		CHECK( valid_lex("a_1b_2c_3 _a1_b2_c3 _1a_2b_3c", {
+			tok::identifier("a_1b_2c_3", { 1, 1 }),
+			tok::identifier("_a1_b2_c3", { 1, 11 }),
+			tok::identifier("_1a_2b_3c", { 1, 21 }),
+		}));
+	}
 }
 
 
@@ -250,43 +241,8 @@ TEST_CASE( "rush::skip_vspace", "[unit][lexer]" ) {
 	}
 }
 
-TEST_CASE( "rush::scan_integer_literal", "[unit][lexer]") {
-	CHECK( valid_integer_literal("0") );
-	CHECK( valid_integer_literal("9") );
-	CHECK( valid_integer_literal("10") );
-	CHECK( valid_integer_literal("123456789") );
-	CHECK( valid_integer_literal("987654321") );
 
-	// any leading-zero or non-digit should stop the scan,
-	// and proceed to scan the next character as a seperate token.
-	CHECK( valid_integer_literal("01", 1) );
-	CHECK( valid_integer_literal("09", 1) );
-	CHECK( valid_integer_literal("0123456789", 1) );
-	CHECK( valid_integer_literal("0987654321", 1) );
-	CHECK( valid_integer_literal("0_", 1) );
-	CHECK( valid_integer_literal("1a", 1) );
-	CHECK( valid_integer_literal("123_", 3) );
-	CHECK( valid_integer_literal("123a", 3) );
-	CHECK( valid_integer_literal("1.0", 1) );
-	CHECK( valid_integer_literal("123.0", 3) );
 
-	// FIXME: The following cause assert/terminate to be triggered. Currently no way to test this in Catch2
-	// CHECK_FALSE( valid_integer_literal("_0") );
-	// CHECK_FALSE( valid_integer_literal("a1") );
-	// CHECK_FALSE( valid_integer_literal(".1") );
-}
-
-TEST_CASE( "rush::floating_literal", "[unit][lexer]" ) {
-	CHECK( valid_floating_literal("1.0") );
-	CHECK( valid_floating_literal("9.0") );
-	CHECK( valid_floating_literal(".0") );
-	CHECK( valid_floating_literal(".013") );
-
-	CHECK_FALSE( valid_floating_literal("0") );
-	CHECK_FALSE( valid_floating_literal("1") );
-	CHECK_FALSE( valid_floating_literal("9") );
-	CHECK_FALSE( valid_floating_literal("123") );
-}
 
 TEST_CASE( "rush::scan_string_literal", "[unit][lexer]" ) {
 	CHECK( valid_string_literal("\"\"") ); 		// ""
@@ -299,45 +255,3 @@ TEST_CASE( "rush::scan_string_literal", "[unit][lexer]" ) {
 	CHECK( valid_string_literal("\"!\\\"£$%^&*(){}[]-=_+:;@~/?.,<>|\\\\\"") );
 }
 
-TEST_CASE( "rush::scan_identifier", "[unit][lexer]" ) {
-	CHECK( valid_identifier("_") );
-	CHECK( valid_identifier("_a") );
-	CHECK( valid_identifier("_z") );
-	CHECK( valid_identifier("_0") );
-	CHECK( valid_identifier("_9") );
-	CHECK( valid_identifier("_a0") );
-	CHECK( valid_identifier("_z0") );
-	CHECK( valid_identifier("_a9") );
-	CHECK( valid_identifier("_z9") );
-
-	CHECK( valid_identifier("a") );
-	CHECK( valid_identifier("z") );
-	CHECK( valid_identifier("A") );
-	CHECK( valid_identifier("Z") );
-
-	CHECK( valid_identifier("a") );
-	CHECK( valid_identifier("b1") );
-	CHECK( valid_identifier("c_") );
-	CHECK( valid_identifier("d2_") );
-	CHECK( valid_identifier("e_3") );
-	CHECK( valid_identifier("f4_ab12__") );
-
-	// like-joined
-	CHECK( valid_identifier("abc123___") );
-	CHECK( valid_identifier("abc___123") );
-	CHECK( valid_identifier("___abc123") );
-	CHECK( valid_identifier("___123abc") );
-
-	// like-interspersed
-	CHECK( valid_identifier("a_1b_2c_3") );
-	CHECK( valid_identifier("_a1_b2_c3") );
-	CHECK( valid_identifier("_1a_2b_3c") );
-
-	// FIXME: The following cause assert/terminate to be triggered. Currently no way to test this in Catch2
-	// REQUIRE_FALSE( valid_identifier("0") );
-	// REQUIRE_FALSE( valid_identifier("9") );
-	// REQUIRE_FALSE( valid_identifier("0a") );
-	// REQUIRE_FALSE( valid_identifier("9z") );
-	// REQUIRE_FALSE( valid_identifier("0a_") );
-	// REQUIRE_FALSE( valid_identifier("9z_") );
-}
