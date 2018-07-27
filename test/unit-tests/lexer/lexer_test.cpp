@@ -42,111 +42,111 @@ bool valid_lex(std::string input, std::initializer_list<rush::lexical_token> tok
 		[](auto& x, auto& y) { return x.location() == y.location() && x.is_same(y); });
 }
 
-TEST_CASE( "rush::lex", "[unit][lexer]" ) {
 
-	SECTION( "integer literals" ) {
-		CHECK( valid_lex("0 1 9 10 1234567890 9876543210", {
-			tok::integer_literal(0, { 1, 1 }),
-			tok::integer_literal(1, { 1, 3 }),
-			tok::integer_literal(9, { 1, 5 }),
-			tok::integer_literal(10, { 1, 7 }),
-			tok::integer_literal(1234567890LL, { 1, 10 }),
-			tok::integer_literal(9876543210LL, { 1, 21 }),
-		}));
+TEST_CASE( "rush::lex (keywords)", "[unit][lexer]" ) {
 
-		// any leading-zero or non-digit should stop the scan,
-		// and proceed to scan the next character as a seperate token.
-		CHECK( valid_lex("01", { tok::integer_literal(0, { 1, 1 }), tok::integer_literal(1, { 1, 2 }) }) );
-		CHECK( valid_lex("09", { tok::integer_literal(0, { 1, 1 }), tok::integer_literal(9, { 1, 2 }) }) );
-		CHECK( valid_lex("0123456789", { tok::integer_literal(0, { 1, 1 }), tok::integer_literal(123456789LL, { 1, 2 }) }) );
-		CHECK( valid_lex("0987654321", { tok::integer_literal(0, { 1, 1 }), tok::integer_literal(987654321LL, { 1, 2 }) }) );
-		CHECK( valid_lex("0_", { tok::integer_literal(0, { 1, 1 }), tok::identifier("_", { 1, 2 }) }) );
-		CHECK( valid_lex("1a", { tok::integer_literal(1, { 1, 1 }), tok::identifier("a", { 1, 2 }) }) );
-		CHECK( valid_lex("123_", { tok::integer_literal(123, { 1, 1 }), tok::identifier("_", { 1, 4 }) }) );
-		CHECK( valid_lex("123a", { tok::integer_literal(123, { 1, 1 }), tok::identifier("a", { 1, 4 }) }) );
-		CHECK( valid_lex("1.0", { tok::floating_literal(1.0, { 1, 1 }) }) );
-		CHECK( valid_lex("123.9", { tok::floating_literal(123.9, { 1, 1 }) }) );
+	CHECK( valid_lex("if else while", {
+		tok::if_keyword({ 1, 1 }),
+		tok::else_keyword({ 1, 4 }),
+		tok::while_keyword({ 1, 9 })
+	}));
 
-		// non-digit characters directly preceding a
-		// digit should generate seperate tokens.
-		CHECK( valid_lex("_0", { tok::identifier("_0", { 1, 1 }) }) );
-		CHECK( valid_lex("a1", { tok::identifier("a1", { 1, 1 }) }) );
-		CHECK( valid_lex("-1", { tok::minus({ 1, 1 }), tok::integer_literal(1, { 1, 2 }) }) );
-		CHECK( valid_lex("+1", { tok::plus({ 1, 1 }), tok::integer_literal(1, { 1, 2 }) }) );
-	}
+	CHECK_FALSE( valid_lex("_let var_ const1", {
+		tok::let_keyword({ 1, 1 }),
+		tok::var_keyword({ 1, 6 }),
+		tok::const_keyword({ 1, 11 })
+	}));
+}
 
-	// SECTION( "floating literals", "[unit][lexer]" ) {
-	// 	CHECK( valid_floating_literal("1.0") );
-	// 	CHECK( valid_floating_literal("9.0") );
-	// 	CHECK( valid_floating_literal(".0") );
-	// 	CHECK( valid_floating_literal(".013") );
+TEST_CASE( "rush::lex (identifiers)", "[unit][lexer]" ) {
 
-	// 	CHECK_FALSE( valid_floating_literal("0") );
-	// 	CHECK_FALSE( valid_floating_literal("1") );
-	// 	CHECK_FALSE( valid_floating_literal("9") );
-	// 	CHECK_FALSE( valid_floating_literal("123") );
-	// }
+	CHECK( valid_lex("a z A Z abc XYZ", {
+		tok::identifier("a", { 1, 1 }),
+		tok::identifier("z", { 1, 3 }),
+		tok::identifier("A", { 1, 5 }),
+		tok::identifier("Z", { 1, 7 }),
+		tok::identifier("abc", { 1, 9 }),
+		tok::identifier("XYZ", { 1, 13 }),
+	}));
 
-	SECTION( "keywords" ) {
-		CHECK( valid_lex("if else while", {
-			tok::if_keyword({ 1, 1 }),
-			tok::else_keyword({ 1, 4 }),
-			tok::while_keyword({ 1, 9 })
-		}));
+	CHECK( valid_lex("_ _a _z _0 _9 _a0 _z0 _a9 _z9", {
+		tok::identifier("_", { 1, 1 }),
+		tok::identifier("_a", { 1, 3 }),
+		tok::identifier("_z", { 1, 6 }),
+		tok::identifier("_0", { 1, 9 }),
+		tok::identifier("_9", { 1, 12 }),
+		tok::identifier("_a0", { 1, 15 }),
+		tok::identifier("_z0", { 1, 19 }),
+		tok::identifier("_a9", { 1, 23 }),
+		tok::identifier("_z9", { 1, 27 }),
+	}));
 
-		CHECK_FALSE( valid_lex("_let var_ const1", {
-			tok::let_keyword({ 1, 1 }),
-			tok::var_keyword({ 1, 6 }),
-			tok::const_keyword({ 1, 11 })
-		}));
-	}
+	CHECK( valid_lex("a1 c_ d2_ e_3 f4_ab12__", {
+		tok::identifier("a1", { 1, 1 }),
+		tok::identifier("c_", { 1, 4 }),
+		tok::identifier("d2_", { 1, 7 }),
+		tok::identifier("e_3", { 1, 11 }),
+		tok::identifier("f4_ab12__", { 1, 15 }),
+	}));
 
-	SECTION( "identifiers" ) {
+	// like-joined
+	CHECK( valid_lex("abc123___ abc___123 ___abc123 ___123abc", {
+		tok::identifier("abc123___", { 1, 1 }),
+		tok::identifier("abc___123", { 1, 11 }),
+		tok::identifier("___abc123", { 1, 21 }),
+		tok::identifier("___123abc", { 1, 31 }),
+	}));
 
-		CHECK( valid_lex("a z A Z abc XYZ", {
-			tok::identifier("a", { 1, 1 }),
-			tok::identifier("z", { 1, 3 }),
-			tok::identifier("A", { 1, 5 }),
-			tok::identifier("Z", { 1, 7 }),
-			tok::identifier("abc", { 1, 9 }),
-			tok::identifier("XYZ", { 1, 13 }),
-		}));
+	// like-interspersed
+	CHECK( valid_lex("a_1b_2c_3 _a1_b2_c3 _1a_2b_3c", {
+		tok::identifier("a_1b_2c_3", { 1, 1 }),
+		tok::identifier("_a1_b2_c3", { 1, 11 }),
+		tok::identifier("_1a_2b_3c", { 1, 21 }),
+	}));
+}
 
-		CHECK( valid_lex("_ _a _z _0 _9 _a0 _z0 _a9 _z9", {
-			tok::identifier("_", { 1, 1 }),
-			tok::identifier("_a", { 1, 3 }),
-			tok::identifier("_z", { 1, 6 }),
-			tok::identifier("_0", { 1, 9 }),
-			tok::identifier("_9", { 1, 12 }),
-			tok::identifier("_a0", { 1, 15 }),
-			tok::identifier("_z0", { 1, 19 }),
-			tok::identifier("_a9", { 1, 23 }),
-			tok::identifier("_z9", { 1, 27 }),
-		}));
+TEST_CASE( "rush::lex (floating literals)", "[unit][lexer]" ) {
+	// CHECK( valid_floating_literal("1.0") );
+	// CHECK( valid_floating_literal("9.0") );
+	// CHECK( valid_floating_literal(".0") );
+	// CHECK( valid_floating_literal(".013") );
 
-		CHECK( valid_lex("a1 c_ d2_ e_3 f4_ab12__", {
-			tok::identifier("a1", { 1, 1 }),
-			tok::identifier("c_", { 1, 4 }),
-			tok::identifier("d2_", { 1, 7 }),
-			tok::identifier("e_3", { 1, 11 }),
-			tok::identifier("f4_ab12__", { 1, 15 }),
-		}));
+	// CHECK_FALSE( valid_floating_literal("0") );
+	// CHECK_FALSE( valid_floating_literal("1") );
+	// CHECK_FALSE( valid_floating_literal("9") );
+	// CHECK_FALSE( valid_floating_literal("123") );
+}
 
-		// like-joined
-		CHECK( valid_lex("abc123___ abc___123 ___abc123 ___123abc", {
-			tok::identifier("abc123___", { 1, 1 }),
-			tok::identifier("abc___123", { 1, 11 }),
-			tok::identifier("___abc123", { 1, 21 }),
-			tok::identifier("___123abc", { 1, 31 }),
-		}));
+TEST_CASE( "rush::lex (integer literals)", "[unit][lexer]" ) {
 
-		// like-interspersed
-		CHECK( valid_lex("a_1b_2c_3 _a1_b2_c3 _1a_2b_3c", {
-			tok::identifier("a_1b_2c_3", { 1, 1 }),
-			tok::identifier("_a1_b2_c3", { 1, 11 }),
-			tok::identifier("_1a_2b_3c", { 1, 21 }),
-		}));
-	}
+	CHECK( valid_lex("0 1 9 10 1234567890 9876543210", {
+		tok::integer_literal(0, { 1, 1 }),
+		tok::integer_literal(1, { 1, 3 }),
+		tok::integer_literal(9, { 1, 5 }),
+		tok::integer_literal(10, { 1, 7 }),
+		tok::integer_literal(1234567890LL, { 1, 10 }),
+		tok::integer_literal(9876543210LL, { 1, 21 }),
+	}));
+
+	// any leading-zero or non-digit should stop the scan,
+	// and proceed to scan the next character as a seperate token.
+	CHECK( valid_lex("01", { tok::integer_literal(0, { 1, 1 }), tok::integer_literal(1, { 1, 2 }) }) );
+	CHECK( valid_lex("09", { tok::integer_literal(0, { 1, 1 }), tok::integer_literal(9, { 1, 2 }) }) );
+	CHECK( valid_lex("0123456789", { tok::integer_literal(0, { 1, 1 }), tok::integer_literal(123456789LL, { 1, 2 }) }) );
+	CHECK( valid_lex("0987654321", { tok::integer_literal(0, { 1, 1 }), tok::integer_literal(987654321LL, { 1, 2 }) }) );
+	CHECK( valid_lex("0_", { tok::integer_literal(0, { 1, 1 }), tok::identifier("_", { 1, 2 }) }) );
+	CHECK( valid_lex("1a", { tok::integer_literal(1, { 1, 1 }), tok::identifier("a", { 1, 2 }) }) );
+	CHECK( valid_lex("123_", { tok::integer_literal(123, { 1, 1 }), tok::identifier("_", { 1, 4 }) }) );
+	CHECK( valid_lex("123a", { tok::integer_literal(123, { 1, 1 }), tok::identifier("a", { 1, 4 }) }) );
+	CHECK( valid_lex("1.0", { tok::floating_literal(1.0, { 1, 1 }) }) );
+	CHECK( valid_lex("123.9", { tok::floating_literal(123.9, { 1, 1 }) }) );
+
+	// non-digit characters directly preceding a
+	// digit should generate seperate tokens.
+	CHECK( valid_lex("_0", { tok::identifier("_0", { 1, 1 }) }) );
+	CHECK( valid_lex("a1", { tok::identifier("a1", { 1, 1 }) }) );
+	CHECK( valid_lex("-1", { tok::minus({ 1, 1 }), tok::integer_literal(1, { 1, 2 }) }) );
+	CHECK( valid_lex("+1", { tok::plus({ 1, 1 }), tok::integer_literal(1, { 1, 2 }) }) );
 }
 
 
