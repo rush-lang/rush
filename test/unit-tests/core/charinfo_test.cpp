@@ -82,7 +82,7 @@ TEST_CASE( "rush::charinfo::is_space", "[unit][core]" ) {
 }
 
 
-TEST_CASE( "identifier head characters", "[unit][core]" ) {
+TEST_CASE( "rush::charinfo::is_ident_head", "[unit][core]" ) {
 	CHECK_FALSE( is_ident_head('.') );
 	CHECK_FALSE( is_ident_head('0') );
 	CHECK_FALSE( is_ident_head('9') );
@@ -103,7 +103,7 @@ TEST_CASE( "identifier head characters", "[unit][core]" ) {
 }
 
 
-TEST_CASE( "identifier body characters", "[unit][core]" ) {
+TEST_CASE( "rush::charinfo::is_ident_body", "[unit][core]" ) {
 	CHECK_FALSE( is_ident_body('.') );
 
 	CHECK( is_ident_body('0') );

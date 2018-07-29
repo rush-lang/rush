@@ -27,21 +27,57 @@ bool skipped_vspace(std::string_view input, std::size_t offset = -1) {
 	return check_iterators(begin(input), last, first, offset);
 }
 
-bool valid_string_literal(std::string_view input, std::size_t offset = -1) {
-	auto first = std::begin(input);
-	auto last = std::end(input);
-	auto out = rush::scan_string_literal(first, last);
-	return check_iterators(first, last, out, offset);
-}
-
-bool valid_lex(std::string input, std::initializer_list<rush::lexical_token> tokens) {
+bool valid_lex(std::string input, std::initializer_list<rush::lexical_token> expected) {
 	auto lxa = rush::lex(input);
-	return lxa.size() == tokens.size() && std::equal(
+	return lxa.size() == expected.size() && std::equal(
 		lxa.begin(), lxa.end(),
-		tokens.begin(), tokens.end(),
-		[](auto& x, auto& y) { return x.location() == y.location() && x.is_same(y); });
+		expected.begin(), expected.end(),
+		[](auto& x, auto& y) {
+			return x.location() == y.location()
+				 && x.is_same(y);
+		});
 }
 
+TEST_CASE( "rush::lex" ) {
+
+	CHECK( valid_lex("let xs = map(1...10, pow($, 2))", {
+		tok::let_keyword({ 1, 1 }),
+		tok::identifier("xs", { 1, 5 }),
+		tok::equals({ 1, 8 }),
+		tok::identifier("map", { 1, 10 }),
+		tok::left_parenthesis({ 1, 13 }),
+		tok::integer_literal(1, { 1, 14 }),
+		tok::ellipses({ 1, 15 }),
+		tok::integer_literal(10, { 1, 18 }),
+		tok::comma({ 1, 20 }),
+		tok::identifier("pow", { 1, 22 }),
+		tok::left_parenthesis({ 1, 25 }),
+		tok::dollar({ 1, 26 }),
+		tok::comma({ 1, 27 }),
+		tok::integer_literal(2, { 1, 29 }),
+		tok::right_parenthesis({ 1, 30 }),
+		tok::right_parenthesis({ 1, 31 }),
+	}));
+}
+
+TEST_CASE( "rush::lex (symbols)", "[unit][lexer]" ) {
+
+	SECTION( "ellipses" ) {
+		CHECK( valid_lex("...", { tok::ellipses({ 1, 1 }) }));
+
+		CHECK( valid_lex("1...10", {
+			tok::integer_literal(1, { 1, 1 }),
+			tok::ellipses({ 1, 2 }),
+			tok::integer_literal(10, { 1, 5 }),
+		}));
+
+		CHECK( valid_lex("x...y", {
+			tok::identifier("x", { 1, 1 }),
+			tok::ellipses({ 1, 2 }),
+			tok::identifier("y", { 1, 5 }),
+		}));
+	}
+}
 
 TEST_CASE( "rush::lex (keywords)", "[unit][lexer]" ) {
 
@@ -106,15 +142,15 @@ TEST_CASE( "rush::lex (identifiers)", "[unit][lexer]" ) {
 }
 
 TEST_CASE( "rush::lex (floating literals)", "[unit][lexer]" ) {
-	// CHECK( valid_floating_literal("1.0") );
-	// CHECK( valid_floating_literal("9.0") );
-	// CHECK( valid_floating_literal(".0") );
-	// CHECK( valid_floating_literal(".013") );
+	CHECK( valid_lex("1.0", { tok::floating_literal(1.0, { 1, 1 }) }) );
+	CHECK( valid_lex("9.0", { tok::floating_literal(9.0, { 1, 1 }) }) );
+	CHECK( valid_lex(".0", { tok::floating_literal(0.0, { 1, 1 }) }) );
+	CHECK( valid_lex(".013", { tok::floating_literal(0.013, { 1, 1 }) }) );
 
-	// CHECK_FALSE( valid_floating_literal("0") );
-	// CHECK_FALSE( valid_floating_literal("1") );
-	// CHECK_FALSE( valid_floating_literal("9") );
-	// CHECK_FALSE( valid_floating_literal("123") );
+	CHECK_FALSE( valid_lex("0", { tok::floating_literal(0, { 1, 1 }) }) );
+	CHECK_FALSE( valid_lex("1", { tok::floating_literal(1, { 1, 1 }) }) );
+	CHECK_FALSE( valid_lex("9", { tok::floating_literal(9, { 1, 1 }) }) );
+	CHECK_FALSE( valid_lex("123", { tok::floating_literal(123, { 1, 1 }) }) );
 }
 
 TEST_CASE( "rush::lex (integer literals)", "[unit][lexer]" ) {
@@ -147,6 +183,16 @@ TEST_CASE( "rush::lex (integer literals)", "[unit][lexer]" ) {
 	CHECK( valid_lex("a1", { tok::identifier("a1", { 1, 1 }) }) );
 	CHECK( valid_lex("-1", { tok::minus({ 1, 1 }), tok::integer_literal(1, { 1, 2 }) }) );
 	CHECK( valid_lex("+1", { tok::plus({ 1, 1 }), tok::integer_literal(1, { 1, 2 }) }) );
+}
+
+TEST_CASE( "rush::lex (string literal)", "[unit][lexer]" ) {
+	CHECK( valid_lex("\"\"", { tok::string_literal("", { 1, 1 }) }) );
+	CHECK( valid_lex("\"a\"", { tok::string_literal("a", { 1, 1 }) }) );
+	CHECK( valid_lex("\"abc\"", { tok::string_literal("abc", { 1, 1 })} ) );
+	CHECK( valid_lex("\"0\"", { tok::string_literal("0", { 1, 1 }) }) );
+	CHECK( valid_lex("\"123\"", { tok::string_literal("123", { 1, 1 }) }) );
+	CHECK( valid_lex("\"\\\"\"", { tok::string_literal("\\\"", { 1, 1 }) }) );
+	CHECK( valid_lex("\"!\\£$%^&*(){}[]-=_+:;@~/?.,<>|\\\\\"", { tok::string_literal("!\\£$%^&*(){}[]-=_+:;@~/?.,<>|\\\\", { 1, 1 }) }) );
 }
 
 
@@ -241,17 +287,4 @@ TEST_CASE( "rush::skip_vspace", "[unit][lexer]" ) {
 	}
 }
 
-
-
-
-TEST_CASE( "rush::scan_string_literal", "[unit][lexer]" ) {
-	CHECK( valid_string_literal("\"\"") ); 		// ""
-	CHECK( valid_string_literal("\"a\"") ); 		// "a"
-	CHECK( valid_string_literal("\"abc\"") ); 	// "abc"
-	CHECK( valid_string_literal("\"0\"") );		// "0"
-	CHECK( valid_string_literal("\"123\"") );		// "123"
-	CHECK( valid_string_literal("\"\\\"\"\"", 4) ); // "\""
-
-	CHECK( valid_string_literal("\"!\\\"£$%^&*(){}[]-=_+:;@~/?.,<>|\\\\\"") );
-}
 

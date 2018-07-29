@@ -44,21 +44,6 @@ namespace rush {
 			advance_if(first, last, [](auto const& cp) { return !charinfo::is_vspace(cp); });
 		skip_vspace(first, last);
 	}
-
-	template <typename InIter>
-	InIter scan_string_literal(InIter first, InIter const& last) {
-		assert(first != last && "unexpected end of range.");
-		assert(charinfo::is_quote(*first) && "expected a leading, double quotation mark, while attempting to scan a string literal.");
-
-		auto prev = *first;
-		advance_if(++first, last, [&first, &prev](auto const& cp) {
-			if (prev != '\\' && charinfo::is_quote(cp))
-			{ ++first; return false; }
-			prev = cp; return true;
-		});
-
-		return first;
-	}
 } // rush
 
 #endif // RUSH_LEXER_LEXER_HPP

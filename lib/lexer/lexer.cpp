@@ -10,6 +10,7 @@
 #include <iostream>
 #include <iterator>
 #include <vector>
+#include <optional>
 
 
 using namespace rush;
@@ -105,27 +106,7 @@ private:
 	}
 
 	void skip_whitespace() {
-		advance_if(_iters.first, _iters.second, is_space);
-	}
-
-	lexical_token next_token() {
-		auto cp = peek();
-
-		pin_location();
-
-		if (is_quote(cp)) return scan_string_literal();
-		if (is_digit(cp)) return scan_numeric_literal();
-		if (is_ident_head(cp)) return scan_identifier();
-
-		auto str = std::string { static_cast<char>(cp) };
-		auto symbol = symbols::to_value(str);
-		if (symbol != symbols::unknown) {
-			skip(); // consume symbol character.
-			return tok::make_symbol_token(symbol);
-		}
-
-		// return tok::make_error_token("unexpected token", location());
-		return tok::eof(location());
+		advance_if(_iters.first, _iters.second, is_hspace);
 	}
 
 	template <typename Pred>
@@ -135,46 +116,197 @@ private:
 		return std::string(temp, _iters.first);
 	}
 
-	lexical_token scan_string_literal() {
+
+	lexical_token next_token() {
+		auto cp = peek();
+		pin_location();
+
+		// if (is_newline(cp)) {
+		// 	auto indent = scan_indentation();
+		// 	if (indent) return *indent;
+		// }
+
+		if (is_quote(cp)) return scan_string_literal();
+		if (is_digit(cp)) return scan_numeric_literal();
+		if (is_ident_head(cp)) return scan_identifier();
+
+		auto symbol = symbols::to_value({ static_cast<char>(cp) });
+		if (symbol != symbols::unknown) { return scan_symbol(symbol); }
+
+		// return tok::make_error_token("unexpected token", location());
 		skip();
-		return tok::string_literal("", location());
+		return tok::eof(location());
 	}
 
-	lexical_token scan_numeric_literal() {
-		assert(!eof() && "unexpected end of source.");
-		assert(is_digit(peek()) && "expected a leading digit while attempting to scan an integer literal.");
 
-		if (is_zero_digit(peek())) {
-			skip(); // consume zero digit.
-			return check('.')
-				? scan_floating_literal()
-				: tok::integer_literal(0, location());
+	std::optional<lexical_token> scan_indentation() {
+		assert(!eof() && "unexpected end of source.");
+		assert(is_newline(peek()) && "expected a leading line-feed character while attempting to scan indentation.");
+
+		skip(); // consume the line-feed.
+
+		auto measured_indent = _indentation
+			.measure(_iters.first, _iters.second);
+
+		if (measured_indent < _indentation) {
+			_indentation = measured_indent;
+			return tok::dedent(location());
 		}
 
-		auto value = scan_while(is_digit);
-		return check('.')
-			? scan_floating_literal(value + ".")
-			: tok::integer_literal(std::stoll(value), location());
+		if (measured_indent > _indentation) {
+			_indentation = measured_indent;
+			return tok::indent(location());
+		}
+
+		return std::nullopt;
 	}
 
-	lexical_token scan_floating_literal(std::string prefix = "") {
-		assert(!eof() && "unexpected end of source.");
-		assert(peek() == '.' && "expected a leading decimal point while attempting to scan a floating literal.");
-
-		skip(); // consume decimal point.
-		auto value = scan_while(is_digit);
-		return tok::floating_literal(std::stod(prefix + value), location());
-	}
 
 	lexical_token scan_identifier() {
 		assert(!eof() && "unexpected end of source.");
 		assert(is_ident_head(peek()) && "expected a leading identifier character while attempting to scan an identifier.");
 
 		auto ident = scan_while(is_ident_body);
+		std::cout << ident << std::endl;
 		auto kw_val = keywords::to_value(ident);
 		return kw_val != keywords::unknown
 			? tok::make_keyword_token(kw_val, location())
 			: tok::identifier(ident, location());
+	}
+
+
+	lexical_token scan_string_literal() {
+		assert(!eof() && "unexpected end of source.");
+		assert(is_quote(peek()) && "expected a leading, double quotation mark, while attempting to scan a string literal.");
+
+		auto prev = *_iters.first;
+		auto escape = false;
+
+		skip(); // consume quotation mark.
+
+		auto temp = _iters.first;
+		advance_if(_iters.first, _iters.second, [&](auto const& cp) {
+			escape = (prev == '\\' && !escape);
+			if (is_quote(cp) && !escape)
+			{ prev = cp; return false; }
+			prev = cp; return true;
+		});
+
+		if (!check(is_quote))
+			return tok::make_error_token("expected closing \'\"\'");
+
+		auto str = std::string(temp, _iters.first);
+		skip(); // consume end quotation mark.
+		return tok::string_literal(str, location());
+	}
+
+
+	lexical_token scan_numeric_literal() {
+		assert(!eof() && "unexpected end of source.");
+		assert(check('.') || is_digit(peek()) && "expected a leading digit while attempting to scan an integer literal.");
+
+		if (is_zero_digit(peek())) {
+			skip(); // consume zero digit.
+
+			if (check('x') || check('X')) {
+				skip(); // consume hexadecimal prefix.
+				auto value = scan_while(is_hex_digit);
+				return tok::integer_literal(std::stoll(value, 0, 16));
+			}
+
+			if (check('b') || check('B')) {
+				skip(); // consume binary prefix
+				auto value = scan_while(is_bin_digit);
+				return tok::integer_literal(std::stoll(value, 0, 2));
+			}
+
+			if (check('.') && check(is_digit, 1)) {
+				skip(); // consume decimal point.
+				auto value = scan_while(is_digit);
+				return tok::floating_literal(std::stod("." + value), location());
+			}
+
+			return tok::integer_literal(0, location());
+		}
+
+		auto integer_part = scan_while(is_digit);
+		if (check('.') && check(is_digit, 1)) {
+			skip(); // consume decimal point.
+			auto fractional_part = scan_while(is_digit);
+			return tok::floating_literal(std::stod(integer_part + "." + fractional_part), location());
+		}
+
+		assert(!integer_part.empty() && "expected an integer digit");
+		return tok::integer_literal(std::stoll(integer_part), location());
+	}
+
+
+	lexical_token scan_symbol(symbol_t symbol) {
+		assert(symbol != symbols::unknown && "unknown symbol");
+
+		switch (symbol) {
+			case symbols::ampersand: {
+				if (check('&', 1)) { skip(2); return tok::logical_and(location()); }
+				if (check('=', 1)) { skip(2); return tok::ampersand_equals(location()); }
+			} break;
+
+			case symbols::pipe: {
+				if (check('|', 1)) { skip(2); return tok::logical_or(location()); }
+				if (check('=', 1)) { skip(2); return tok::pipe_equals(location()); }
+			} break;
+
+			case symbols::plus: {
+				if (check('+', 1)) { skip(2); return tok::increment(location()); }
+				if (check('=', 1)) { skip(2); return tok::plus_equals(location()); }
+			} break;
+
+			case symbols::minus: {
+				if (check('-', 1)) { skip(2); return tok::decrement(location()); }
+				if (check('=', 1)) { skip(2); return tok::minus_equals(location()); }
+			} break;
+
+			case symbols::multiplication: {
+				if (check('=', 1)) { skip(2); return tok::multiplication_equals(location()); }
+			} break;
+
+			case symbols::division: {
+				if (check('=', 1)) { skip(2); return tok::division_equals(location()); }
+			} break;
+
+			case symbols::modulo: {
+				if (check('=', 1)) { skip(2); return tok::modulo_equals(location()); }
+			} break;
+
+			case symbols::equals: {
+				if (check('>', 1)) { skip(2); return tok::arrow(location()); }
+				if (check('=', 1)) { skip(2); return tok::equality(location()); }
+			} break;
+
+			case symbols::exclamation_mark: {
+				if (check('=', 1)) { skip(2); return tok::inequality(location()); }
+			} break;
+
+			case symbols::left_chevron: {
+				if (check('=', 1)) { skip(2); return tok::left_chevron_equals(location()); }
+			} break;
+
+			case symbols::right_chevron: {
+				if (check('=', 1)) { skip(2); return tok::right_chevron_equals(location()); }
+			} break;
+
+			case symbols::period: {
+				if (check('.', 1) && check('.', 2)) {
+					skip(3); return tok::ellipses(location());
+				}
+
+				if (check(is_digit, 1)) return scan_numeric_literal();
+			} break;
+
+			default:;
+		}
+
+		skip(); // conume symbol.
+		return tok::make_symbol_token(symbol, location());
 	}
 };
 
