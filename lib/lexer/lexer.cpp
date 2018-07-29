@@ -83,13 +83,21 @@ private:
 		_pinloc = { _iters.first.location() };
 	}
 
-	codepoint_t peek() {
+	codepoint_t peek(std::size_t offset = 0) {
 		assert(!eof() && "unexpected end of source.");
-		return *_iters.first;
+		auto temp = _iters.first;
+		if (advance(temp, _iters.second, offset))
+			return temp != _iters.second ? *temp : npos_codepoint;
+		return *temp;
 	}
 
-	bool check(codepoint_t cp) {
-		return !eof() && peek() == cp;
+	bool check(codepoint_t cp, std::size_t offset = 0) {
+		return !eof() && peek(offset) == cp;
+	}
+
+	template <typename Pred>
+	auto check(Pred predicate, std::size_t offset = 0) -> decltype(predicate(codepoint_t{}), bool{}) {
+		return !eof() && predicate(peek(offset));
 	}
 
 	void skip(std::size_t offset = 1) {

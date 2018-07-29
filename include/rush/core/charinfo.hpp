@@ -10,6 +10,7 @@
 
 namespace rush {
 	using codepoint_t = std::uint32_t;
+	static const codepoint_t npos_codepoint = -1;
 
 	namespace charinfo {
 
