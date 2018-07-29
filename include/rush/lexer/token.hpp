@@ -27,14 +27,14 @@ namespace rush {
 	};
 
 	namespace tokens {
-		inline lexical_token make_error_token(std::string, location const& = {});
-		inline lexical_token make_symbol_token(symbol_t, location const& = {});
-		inline lexical_token make_keyword_token(keyword_t, location const& = {});
+		inline lexical_token make_error_token(std::string, location const& = location::undefined);
+		inline lexical_token make_symbol_token(symbol_t, location const& = location::undefined);
+		inline lexical_token make_keyword_token(keyword_t, location const& = location::undefined);
 
-		inline lexical_token identifier(std::string_view, location const& = {});
-		inline lexical_token string_literal(std::string_view, location const& = {});
-		inline lexical_token integer_literal(std::uint64_t, location const& = {});
-		inline lexical_token floating_literal(double, location const& = {});
+		inline lexical_token identifier(std::string, location const& = location::undefined);
+		inline lexical_token string_literal(std::string, location const& = location::undefined);
+		inline lexical_token integer_literal(std::uint64_t, location const& = location::undefined);
+		inline lexical_token floating_literal(double, location const& = location::undefined);
 	}
 
 	class lexical_token final {
