@@ -10,6 +10,11 @@ namespace rush {
 
 	namespace tokens {
 
+		// \brief Returns an instance of rush::lexical_token representing an error.
+		inline lexical_token make_error_token(std::string val, location const& loc) {
+			return lexical_token { lexical_token::error_t { val }, loc };
+		}
+
 		// \brief Returns an instance of rush::lexical_token representing the specified symbol.
 		inline lexical_token make_symbol_token(symbol_t val, location const& loc) {
 			return lexical_token { val, loc };

@@ -37,8 +37,12 @@ namespace rush {
 	}
 
 	class lexical_token final {
-		struct error_t { std::string_view _msg; };
-		struct identifier_t { std::string_view _text; };
+		struct error_t {
+			std::string _msg;
+			friend bool operator == (error_t const& lhs, error_t const& rhs) {
+				return lhs._msg == rhs._msg;
+			}
+		};
 
 		using variant_type =
 		std::variant<
