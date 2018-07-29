@@ -15,6 +15,8 @@ namespace rush {
 		tabs
 	};
 
+	// \brief Simple class that tracks indentation depth and style.
+	// handles measuring, increases, and decreases of indentation.
 	class indentation final {
 		constexpr indentation(std::size_t depth, indentation_style style) noexcept
 			: _depth { depth }
@@ -43,6 +45,19 @@ namespace rush {
 			return *this;
 		}
 
+		template <typename InIter>
+		indentation measure(InIter first, InIter last) {
+			auto pin = first;
+
+			if (advance_if(first, last, [this](auto cp) { return this->is_indent_char(cp); })) {
+				auto d = distance_to_depth(pin, first);
+				if (d < _depth) return { _depth - 1, _style };
+				if (d > _depth) return { _depth + 1, _style };
+			}
+
+			return *this;
+		}
+
 		static inline indentation spaces(std::size_t depth) noexcept {
 			return { depth, indentation_style::spaces };
 		}
@@ -54,7 +69,64 @@ namespace rush {
 	private:
 		std::size_t _depth;
 		indentation_style _style;
+
+		bool is_indent_char(codepoint_t cp) {
+			switch (_style) {
+				case indentation_style::tabs: return cp == '\t';
+				case indentation_style::spaces: return cp == ' ';
+				default:
+					if (cp == '\t') {
+						_style = indentation_style::tabs;
+						return true;
+					}
+
+					else if (cp == ' ') {
+						_style = indentation_style::spaces;
+						return true;
+					}
+
+				return false;
+			}
+		}
+
+		template <typename InIter>
+		std::size_t distance_to_depth(InIter first, InIter last) {
+			assert(_style != indentation_style::unknown && "expected a known indentation style.");
+			auto dist = std::distance(first, last);
+			switch (_style) {
+				case indentation_style::spaces: return dist / 3;
+				case indentation_style::tabs: return dist;
+				default: throw;
+			}
+		}
 	};
+
+	bool operator == (indentation const& lhs, indentation const& rhs) {
+		// todo: throw/assert the styles are the same (maybe? haven't decided how to handle this yet.)
+		return lhs.style() == rhs.style() && lhs.depth() == rhs.depth();
+	}
+
+	bool operator != (indentation const& lhs, indentation const& rhs) {
+		return !(lhs == rhs);
+	}
+
+
+	bool operator < (indentation const& lhs, indentation const& rhs) {
+		return lhs.depth() < rhs.depth();
+	}
+
+	bool operator > (indentation const& lhs, indentation const& rhs) {
+		return rhs < lhs;
+	}
+
+	bool operator <= (indentation const& lhs, indentation const& rhs) {
+		return !(rhs < lhs);
+	}
+
+	bool operator >= (indentation const& lhs, indentation const& rhs) {
+		return !(lhs < rhs);
+	}
+
 } // rush
 
 
