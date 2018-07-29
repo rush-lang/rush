@@ -44,6 +44,13 @@ namespace rush {
 			}
 		};
 
+		struct identifier_t {
+			std::string _text;
+			friend bool operator == (identifier_t const& lhs, identifier_t const& rhs) {
+				return lhs._text == rhs._text;
+			}
+		};
+
 		using variant_type =
 		std::variant<
 			error_t,				// errors.
@@ -150,17 +157,12 @@ namespace rush {
 		}
 
 		bool is_same(lexical_token const& other) const noexcept {
-			return type() == other.type() && compare_value(other) == 0;
+			return _val == other._val;
 		}
 
 	private:
 		variant_type _val;
 		struct location _loc;
-
-		int compare_value(lexical_token const& other) const noexcept {
-			assert(type() == other.type() && "cannot compare values of differing token types.");
-			return 0;
-		}
 	};
 
 } // rush
