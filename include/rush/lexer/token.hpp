@@ -5,7 +5,6 @@
 
 #include <cstdlib>
 #include <string>
-#include <string_view>
 #include <variant>
 
 #include "rush/lexer/_symbols.hpp"
@@ -47,7 +46,7 @@ namespace rush {
 			symbol_t,         // symbols.
 			keyword_t,        // keywords.
 			identifier_t,     // identifiers.
-			std::string_view, // string literals.
+			std::string, // string literals.
 			std::uint64_t,    // integer literals.
 			double>;          // floating literals. (todo: guarantee double is 64-bit)
 
@@ -55,8 +54,8 @@ namespace rush {
 		friend lexical_token tokens::make_symbol_token(symbol_t, location const&);
 		friend lexical_token tokens::make_keyword_token(keyword_t, location const&);
 
-		friend lexical_token tokens::identifier(std::string_view, location const&);
-		friend lexical_token tokens::string_literal(std::string_view, location const&);
+		friend lexical_token tokens::identifier(std::string, location const&);
+		friend lexical_token tokens::string_literal(std::string, location const&);
 		friend lexical_token tokens::integer_literal(std::uint64_t, location const&);
 		friend lexical_token tokens::floating_literal(double, location const&);
 
@@ -93,7 +92,7 @@ namespace rush {
 				if constexpr (std::is_same_v<T, symbol_t>) return lexical_token_type::symbol;
 				if constexpr (std::is_same_v<T, keyword_t>) return lexical_token_type::keyword;
 				if constexpr (std::is_same_v<T, identifier_t>) return lexical_token_type::identifier;
-				if constexpr (std::is_same_v<T, std::string_view>) return lexical_token_type::string_literal;
+				if constexpr (std::is_same_v<T, std::string>) return lexical_token_type::string_literal;
 				if constexpr (std::is_same_v<T, std::uint64_t>) return lexical_token_type::integer_literal;
 				if constexpr (std::is_same_v<T, double>) return lexical_token_type::floating_literal;
 				assert("non-exhaustive visitor!");
@@ -141,7 +140,7 @@ namespace rush {
 
 		// \brief Returns true if the token is categorically a literal; false otherwise.
 		bool is_literal() const noexcept {
-			return std::holds_alternative<std::string_view>(_val)
+			return std::holds_alternative<std::string>(_val)
 				|| std::holds_alternative<std::uint64_t>(_val)
 				|| std::holds_alternative<double>(_val);
 		}
