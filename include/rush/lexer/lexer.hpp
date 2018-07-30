@@ -23,17 +23,6 @@ namespace rush {
 #include "rush/core/iterator.hpp"
 
 namespace rush {
-	template <typename InIter>
-	void skip_hspace(InIter& first, InIter const& last) {
-		assert(first != last && "unexpected end of range.");
-		advance_if(first, last, charinfo::is_hspace);
-	}
-
-	template <typename InIter>
-	void skip_vspace(InIter& first, InIter const& last) {
-		assert(first != last && "unexpected end of range.");
-		advance_if(first, last, charinfo::is_vspace);
-	}
 
 	template <typename InIter>
 	void skip_line_comment(InIter& first, InIter const& last) {

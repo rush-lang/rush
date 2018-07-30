@@ -6,27 +6,6 @@
 
 namespace tok = rush::tokens;
 
-template <typename Iter>
-bool check_iterators(Iter first, Iter last, Iter out, std::size_t offset = -1) {
-	if (offset == -1) return out == last;
-	std::advance(first, offset);
-	return out == first;
-}
-
-bool skipped_hspace(std::string_view input, std::size_t offset = -1) {
-	auto first = begin(input);
-	auto last = end(input);
-	rush::skip_hspace(first, last);
-	return check_iterators(begin(input), last, first, offset);
-}
-
-bool skipped_vspace(std::string_view input, std::size_t offset = -1) {
-	auto first = begin(input);
-	auto last = end(input);
-	rush::skip_vspace(first, last);
-	return check_iterators(begin(input), last, first, offset);
-}
-
 bool valid_lex(std::string input, std::initializer_list<rush::lexical_token> expected) {
 	auto lxa = rush::lex(input);
 	return lxa.size() == expected.size() && std::equal(
@@ -196,95 +175,95 @@ TEST_CASE( "rush::lex (string literal)", "[unit][lexer]" ) {
 }
 
 
-TEST_CASE( "rush::skip_hspace", "[unit][lexer]" ) {
+// TEST_CASE( "rush::skip_hspace", "[unit][lexer]" ) {
 
-	SECTION( "leading space characters should be skipped." ) {
-		CHECK( skipped_hspace(" . \t", 1) );
-		CHECK( skipped_hspace(" ( \t", 1) );
-		CHECK( skipped_hspace(" abc\t ", 1) );
-		CHECK( skipped_hspace(" 123\t ", 1) );
-		CHECK( skipped_hspace(" \r \t", 1) );
-		CHECK( skipped_hspace(" \n \t", 1) );
+// 	SECTION( "leading space characters should be skipped." ) {
+// 		CHECK( skipped_hspace(" . \t", 1) );
+// 		CHECK( skipped_hspace(" ( \t", 1) );
+// 		CHECK( skipped_hspace(" abc\t ", 1) );
+// 		CHECK( skipped_hspace(" 123\t ", 1) );
+// 		CHECK( skipped_hspace(" \r \t", 1) );
+// 		CHECK( skipped_hspace(" \n \t", 1) );
 
-		CHECK( skipped_hspace("   . \t", 3) );
-		CHECK( skipped_hspace("   ( \t", 3) );
-		CHECK( skipped_hspace("   abc\t ", 3) );
-		CHECK( skipped_hspace("   123\t ", 3) );
-		CHECK( skipped_hspace("   \r \t", 3) );
-		CHECK( skipped_hspace("   \n \t", 3) );
+// 		CHECK( skipped_hspace("   . \t", 3) );
+// 		CHECK( skipped_hspace("   ( \t", 3) );
+// 		CHECK( skipped_hspace("   abc\t ", 3) );
+// 		CHECK( skipped_hspace("   123\t ", 3) );
+// 		CHECK( skipped_hspace("   \r \t", 3) );
+// 		CHECK( skipped_hspace("   \n \t", 3) );
 
-		CHECK_FALSE( skipped_hspace(". \t", 1) );
-		CHECK_FALSE( skipped_hspace("() \t", 1) );
-		CHECK_FALSE( skipped_hspace("abc\t ", 1) );
-		CHECK_FALSE( skipped_hspace("123\t ", 1) );
-	}
+// 		CHECK_FALSE( skipped_hspace(". \t", 1) );
+// 		CHECK_FALSE( skipped_hspace("() \t", 1) );
+// 		CHECK_FALSE( skipped_hspace("abc\t ", 1) );
+// 		CHECK_FALSE( skipped_hspace("123\t ", 1) );
+// 	}
 
-	SECTION( "leading tab characters should be skipped." ) {
-		CHECK( skipped_hspace("\t.\t ", 1) );
-		CHECK( skipped_hspace("\t(\t ", 1) );
-		CHECK( skipped_hspace("\tabc \t", 1) );
-		CHECK( skipped_hspace("\t123 \t", 1) );
-		CHECK( skipped_hspace("\t\r\t ", 1) );
-		CHECK( skipped_hspace("\t\n\t ", 1) );
+// 	SECTION( "leading tab characters should be skipped." ) {
+// 		CHECK( skipped_hspace("\t.\t ", 1) );
+// 		CHECK( skipped_hspace("\t(\t ", 1) );
+// 		CHECK( skipped_hspace("\tabc \t", 1) );
+// 		CHECK( skipped_hspace("\t123 \t", 1) );
+// 		CHECK( skipped_hspace("\t\r\t ", 1) );
+// 		CHECK( skipped_hspace("\t\n\t ", 1) );
 
-		CHECK( skipped_hspace("\t\t\t. \t", 3) );
-		CHECK( skipped_hspace("\t\t\t( \t", 3) );
-		CHECK( skipped_hspace("\t\t\tabc\t ", 3) );
-		CHECK( skipped_hspace("\t\t\t123\t ", 3) );
-		CHECK( skipped_hspace("\t\t\t\r\t ", 3) );
-		CHECK( skipped_hspace("\t\t\t\n\t ", 3) );
+// 		CHECK( skipped_hspace("\t\t\t. \t", 3) );
+// 		CHECK( skipped_hspace("\t\t\t( \t", 3) );
+// 		CHECK( skipped_hspace("\t\t\tabc\t ", 3) );
+// 		CHECK( skipped_hspace("\t\t\t123\t ", 3) );
+// 		CHECK( skipped_hspace("\t\t\t\r\t ", 3) );
+// 		CHECK( skipped_hspace("\t\t\t\n\t ", 3) );
 
-		CHECK_FALSE( skipped_hspace(". \t ", 1) );
-		CHECK_FALSE( skipped_hspace("() \t ", 1) );
-		CHECK_FALSE( skipped_hspace("abc\t ", 1) );
-		CHECK_FALSE( skipped_hspace("123\t ", 1) );
-	}
-}
+// 		CHECK_FALSE( skipped_hspace(". \t ", 1) );
+// 		CHECK_FALSE( skipped_hspace("() \t ", 1) );
+// 		CHECK_FALSE( skipped_hspace("abc\t ", 1) );
+// 		CHECK_FALSE( skipped_hspace("123\t ", 1) );
+// 	}
+// }
 
-TEST_CASE( "rush::skip_vspace", "[unit][lexer]" ) {
+// TEST_CASE( "rush::skip_vspace", "[unit][lexer]" ) {
 
-	SECTION( "leading carriage-return characters should be skipped." ) {
-		// carriage-return
-		CHECK( skipped_vspace("\r.\n\r\v", 1) );
-		CHECK( skipped_vspace("\r(\n\r\v", 1) );
-		CHECK( skipped_vspace("\rabc\r\n\v", 1) );
-		CHECK( skipped_vspace("\r123\r\n\v", 1) );
-		CHECK( skipped_vspace("\r \n\r", 1) );
-		CHECK( skipped_vspace("\r\t\n\r", 1) );
+// 	SECTION( "leading carriage-return characters should be skipped." ) {
+// 		// carriage-return
+// 		CHECK( skipped_vspace("\r.\n\r\v", 1) );
+// 		CHECK( skipped_vspace("\r(\n\r\v", 1) );
+// 		CHECK( skipped_vspace("\rabc\r\n\v", 1) );
+// 		CHECK( skipped_vspace("\r123\r\n\v", 1) );
+// 		CHECK( skipped_vspace("\r \n\r", 1) );
+// 		CHECK( skipped_vspace("\r\t\n\r", 1) );
 
-		CHECK( skipped_vspace("\r\r\r.\n\r\v", 3) );
-		CHECK( skipped_vspace("\r\r\r(\n\r\v", 3) );
-		CHECK( skipped_vspace("\r\r\rabc\r\n\v", 3) );
-		CHECK( skipped_vspace("\r\r\r123\r\n\v", 3) );
-		CHECK( skipped_vspace("\r\r\r \n\r\v", 3) );
-		CHECK( skipped_vspace("\r\r\r\t\n\r\v", 3) );
+// 		CHECK( skipped_vspace("\r\r\r.\n\r\v", 3) );
+// 		CHECK( skipped_vspace("\r\r\r(\n\r\v", 3) );
+// 		CHECK( skipped_vspace("\r\r\rabc\r\n\v", 3) );
+// 		CHECK( skipped_vspace("\r\r\r123\r\n\v", 3) );
+// 		CHECK( skipped_vspace("\r\r\r \n\r\v", 3) );
+// 		CHECK( skipped_vspace("\r\r\r\t\n\r\v", 3) );
 
-		CHECK_FALSE( skipped_vspace(".\n\r\v", 1) );
-		CHECK_FALSE( skipped_vspace("()\n\r\v", 1) );
-		CHECK_FALSE( skipped_vspace("abc\r\n\v", 1) );
-		CHECK_FALSE( skipped_vspace("123\r\n\v", 1) );
-	}
+// 		CHECK_FALSE( skipped_vspace(".\n\r\v", 1) );
+// 		CHECK_FALSE( skipped_vspace("()\n\r\v", 1) );
+// 		CHECK_FALSE( skipped_vspace("abc\r\n\v", 1) );
+// 		CHECK_FALSE( skipped_vspace("123\r\n\v", 1) );
+// 	}
 
-	SECTION( "leading line-feed characters should be skipped" ) {
-		CHECK( skipped_vspace("\n.\n\r\v", 1) );
-		CHECK( skipped_vspace("\n(\n\r\v", 1) );
-		CHECK( skipped_vspace("\nabc\r\n\v", 1) );
-		CHECK( skipped_vspace("\n123\r\n\v", 1) );
-		CHECK( skipped_vspace("\n \n\r", 1) );
-		CHECK( skipped_vspace("\n\t\n\r", 1) );
+// 	SECTION( "leading line-feed characters should be skipped" ) {
+// 		CHECK( skipped_vspace("\n.\n\r\v", 1) );
+// 		CHECK( skipped_vspace("\n(\n\r\v", 1) );
+// 		CHECK( skipped_vspace("\nabc\r\n\v", 1) );
+// 		CHECK( skipped_vspace("\n123\r\n\v", 1) );
+// 		CHECK( skipped_vspace("\n \n\r", 1) );
+// 		CHECK( skipped_vspace("\n\t\n\r", 1) );
 
-		CHECK( skipped_vspace("\n\n\n.\n\r\v", 3) );
-		CHECK( skipped_vspace("\n\n\n(\n\r\v", 3) );
-		CHECK( skipped_vspace("\n\n\nabc\r\n\v", 3) );
-		CHECK( skipped_vspace("\n\n\n123\r\n\v", 3) );
-		CHECK( skipped_vspace("\n\n\n \n\r\v", 3) );
-		CHECK( skipped_vspace("\n\n\n\t\n\r\v", 3) );
+// 		CHECK( skipped_vspace("\n\n\n.\n\r\v", 3) );
+// 		CHECK( skipped_vspace("\n\n\n(\n\r\v", 3) );
+// 		CHECK( skipped_vspace("\n\n\nabc\r\n\v", 3) );
+// 		CHECK( skipped_vspace("\n\n\n123\r\n\v", 3) );
+// 		CHECK( skipped_vspace("\n\n\n \n\r\v", 3) );
+// 		CHECK( skipped_vspace("\n\n\n\t\n\r\v", 3) );
 
-		CHECK_FALSE( skipped_vspace(".\n\r\v", 1) );
-		CHECK_FALSE( skipped_vspace("()\n\r\v", 1) );
-		CHECK_FALSE( skipped_vspace("abc\r\n\v", 1) );
-		CHECK_FALSE( skipped_vspace("123\r\n\v", 1) );
-	}
-}
+// 		CHECK_FALSE( skipped_vspace(".\n\r\v", 1) );
+// 		CHECK_FALSE( skipped_vspace("()\n\r\v", 1) );
+// 		CHECK_FALSE( skipped_vspace("abc\r\n\v", 1) );
+// 		CHECK_FALSE( skipped_vspace("123\r\n\v", 1) );
+// 	}
+// }
 
 
