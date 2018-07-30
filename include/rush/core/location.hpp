@@ -4,6 +4,8 @@
 #define RUSH_CORE_LOCATION_HPP
 
 #include <cstddef>
+#include <sstream>
+#include <string>
 
 namespace rush {
 	using source_index_t = std::size_t;
@@ -50,6 +52,19 @@ namespace rush {
 		source_index_t _column;
 	};
 
+
+	inline std::string to_string(location const& loc) {
+		std::ostringstream oss;
+		if (loc == location::undefined) {
+			oss << "[ln: undefined, col: undefined]";
+		}
+		else {
+			oss << "[ln: " << loc.line()
+				<< ", col: " << loc.column() << "]";
+		}
+
+		return oss.str();
+	}
 
 	inline bool operator == (location const& lhs, location const& rhs) noexcept {
 		return lhs.line() == rhs.line() && lhs.column() == rhs.column();
