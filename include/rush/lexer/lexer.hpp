@@ -16,23 +16,4 @@ namespace rush {
 	lexical_analysis lex(std::istream&, lexer_options const& = {});
 }
 
-
-// ## THE BELOW RESIDES IN THIS HEADER TEMPMORARILY WHILE DOING TDD,
-// ## WILL BE MOVED INTO THE CPP FILE WHEN READY.
-#include "rush/core/charinfo.hpp"
-#include "rush/core/iterator.hpp"
-
-namespace rush {
-
-	template <typename InIter>
-	void skip_line_comment(InIter& first, InIter const& last) {
-		assert(first != last && "unexpected end of range.");
-		assert(*first++ == '/' && "expected a leading forward slash");
-
-		if (*first == '/')
-			advance_if(first, last, [](auto const& cp) { return !charinfo::is_vspace(cp); });
-		skip_vspace(first, last);
-	}
-} // rush
-
 #endif // RUSH_LEXER_LEXER_HPP
