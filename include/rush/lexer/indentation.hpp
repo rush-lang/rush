@@ -49,7 +49,9 @@ namespace rush {
 		indentation measure(InIter first, InIter last) {
 			auto pin = first;
 
-			if (advance_if(first, last, [this](auto cp) { return this->is_indent_char(cp); })) {
+			if (advance_if(first, last, [this](auto cp) {
+				return this->is_indent_char(cp);
+			})) {
 				auto d = distance_to_depth(pin, first);
 				if (d < _depth) return { _depth - 1, _style };
 				if (d > _depth) return { _depth + 1, _style };
