@@ -29,7 +29,11 @@ public:
 	explicit lexer_iterator(FwdIter it, FwdIter const& last, location loc = {})
 		: _iter { it }
 		, _last { std::addressof(last) }
-		, _loc { loc } {}
+		, _loc { loc } {
+			// artificially increment the line as we start on a newline character.
+			// usually line changes are done through the _increment private member function.
+			// if (it != last && is_newline(*it)) { _loc = loc.next_line(); }
+		}
 
 	location location() const noexcept {
 		return _loc;
@@ -73,10 +77,10 @@ private:
 
 	void _increment() {
 		assert(_iter != *_last && "lexer_iterator passed end of range");
-		++_iter;
 		_loc = is_newline(*_iter)
 			? _loc.next_line()
 			: _loc.next_column();
+		++_iter;
 	}
 };
 

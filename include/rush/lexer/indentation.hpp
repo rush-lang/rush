@@ -18,13 +18,15 @@ namespace rush {
 	// \brief Simple class that tracks indentation depth and style.
 	// handles measuring, increases, and decreases of indentation.
 	class indentation final {
-		constexpr indentation(std::size_t depth, indentation_style style) noexcept
+		constexpr indentation(std::size_t depth, std::size_t inlen, indentation_style style) noexcept
 			: _depth { depth }
+			, _inlen { inlen }
 			, _style { style } {}
 
 	public:
 		constexpr indentation() noexcept
 			: _depth { 0 }
+			, _inlen { 0 }
 			, _style { indentation_style::unknown } {}
 
 		std::size_t depth() const noexcept {
@@ -53,23 +55,24 @@ namespace rush {
 				return this->is_indent_char(cp);
 			})) {
 				auto d = distance_to_depth(pin, first);
-				if (d < _depth) return { _depth - 1, _style };
-				if (d > _depth) return { _depth + 1, _style };
+				if (d < _depth) return { _depth - 1, _inlen, _style };
+				if (d > _depth) return { _depth + 1, _inlen, _style };
 			}
 
 			return *this;
 		}
 
 		static inline indentation spaces(std::size_t depth) noexcept {
-			return { depth, indentation_style::spaces };
+			return { 1, depth, indentation_style::spaces };
 		}
 
 		static inline indentation tabs(std::size_t depth) noexcept {
-			return { depth, indentation_style::tabs };
+			return { depth, 1, indentation_style::tabs };
 		}
 
 	private:
 		std::size_t _depth;
+		std::size_t _inlen; // number of indent chars needed to be considered an indentation.
 		indentation_style _style;
 
 		bool is_indent_char(codepoint_t cp) {
@@ -77,17 +80,9 @@ namespace rush {
 				case indentation_style::tabs: return cp == '\t';
 				case indentation_style::spaces: return cp == ' ';
 				default:
-					if (cp == '\t') {
-						_style = indentation_style::tabs;
-						return true;
-					}
-
-					else if (cp == ' ') {
-						_style = indentation_style::spaces;
-						return true;
-					}
-
-				return false;
+					if (cp == '\t') { _style = indentation_style::tabs; return true; }
+					if (cp == ' ') { _style = indentation_style::spaces; return true; }
+					return false;
 			}
 		}
 
@@ -95,9 +90,11 @@ namespace rush {
 		std::size_t distance_to_depth(InIter first, InIter last) {
 			assert(_style != indentation_style::unknown && "expected a known indentation style.");
 			auto dist = std::distance(first, last);
+			if (_inlen == 0) { _inlen = dist; }
+
 			switch (_style) {
-				case indentation_style::spaces: return dist / 3;
-				case indentation_style::tabs: return dist;
+				case indentation_style::spaces: return dist / _inlen;
+				case indentation_style::tabs: return dist / _inlen;
 				default: throw;
 			}
 		}

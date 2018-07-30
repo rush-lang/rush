@@ -44,14 +44,17 @@ public:
 
 
 	void tokenize(FwdIter first, FwdIter last) {
+		if (first == last) return;
+
 		_iters = {
-			lexer_iterator { first, last, { } },
+			lexer_iterator { first, last, {} },
 			lexer_iterator { last, last, location::undefined }
 		};
 
-		while (!this->eof()) {
-			skip_whitespace();
-			_tokens.push_back(next_token());
+		pin_location();
+		auto token = next_token();
+		for (; !token.is(symbols::eof); token = next_token()) {
+			_tokens.push_back(std::move(token));
 		}
 	}
 
@@ -84,6 +87,10 @@ private:
 		_pinloc = { _iters.first.location() };
 	}
 
+	bool is_line_start() noexcept {
+		return is_newline(*_iters.first) || _iters.first.location().column() == 1;
+	}
+
 	codepoint_t peek(std::size_t offset = 0) {
 		assert(!eof() && "unexpected end of source.");
 		auto temp = _iters.first;
@@ -105,8 +112,9 @@ private:
 		advance(_iters.first, _iters.second, offset);
 	}
 
-	void skip_whitespace() {
-		advance_if(_iters.first, _iters.second, is_hspace);
+	template <typename Pred>
+	void skip_while(Pred predicate) {
+		advance_if(_iters.first, _iters.second, predicate);
 	}
 
 	template <typename Pred>
@@ -118,43 +126,56 @@ private:
 
 
 	lexical_token next_token() {
-		auto cp = peek();
+
+		if (is_line_start()) {
+			if (auto indent = scan_indentation())
+				return *indent;
+		}
+
+		skip_while(is_hspace);
 		pin_location();
 
-		// if (is_newline(cp)) {
-		// 	auto indent = scan_indentation();
-		// 	if (indent) return *indent;
-		// }
+		if (!eof()) {
+			auto cp = peek();
 
-		if (is_quote(cp)) return scan_string_literal();
-		if (is_digit(cp)) return scan_numeric_literal();
-		if (is_ident_head(cp)) return scan_identifier();
+			if (is_quote(cp)) return scan_string_literal();
+			if (is_digit(cp)) return scan_numeric_literal();
+			if (is_ident_head(cp)) return scan_identifier();
 
-		auto symbol = symbols::to_value({ static_cast<char>(cp) });
-		if (symbol != symbols::unknown) { return scan_symbol(symbol); }
+			auto symbol = symbols::to_value({ static_cast<char>(cp) });
+			if (symbol != symbols::unknown) { return scan_symbol(symbol); }
 
-		// return tok::make_error_token("unexpected token", location());
-		skip();
-		return tok::eof(location());
+			skip(); // skip unknown token.
+			return tok::make_error_token("unexpected token", location());
+		}
+
+		if (_indentation.depth() > 0) {
+			// close remaining indentation.
+			// todo: fake the location changes.
+			_indentation.decrement();
+			return tok::dedent();
+		}
+
+		return tok::eof();
 	}
 
 
 	std::optional<lexical_token> scan_indentation() {
-		assert(!eof() && "unexpected end of source.");
-		assert(is_newline(peek()) && "expected a leading line-feed character while attempting to scan indentation.");
+		// assert(!eof() && "unexpected end of source.");
+		assert(is_line_start() && "expected start of line while attempting to scan indentation.");
 
-		skip(); // consume the line-feed.
+		skip_while(is_vspace); // skip empty lines.
+		pin_location();
 
-		auto measured_indent = _indentation
-			.measure(_iters.first, _iters.second);
+		auto indent = _indentation.measure(_iters.first, _iters.second);
 
-		if (measured_indent < _indentation) {
-			_indentation = measured_indent;
+		if (indent < _indentation) {
+			_indentation = indent;
 			return tok::dedent(location());
 		}
 
-		if (measured_indent > _indentation) {
-			_indentation = measured_indent;
+		if (indent > _indentation) {
+			_indentation = indent;
 			return tok::indent(location());
 		}
 
@@ -167,7 +188,6 @@ private:
 		assert(is_ident_head(peek()) && "expected a leading identifier character while attempting to scan an identifier.");
 
 		auto ident = scan_while(is_ident_body);
-		std::cout << ident << std::endl;
 		auto kw_val = keywords::to_value(ident);
 		return kw_val != keywords::unknown
 			? tok::make_keyword_token(kw_val, location())
@@ -203,7 +223,7 @@ private:
 
 	lexical_token scan_numeric_literal() {
 		assert(!eof() && "unexpected end of source.");
-		assert(check('.') || is_digit(peek()) && "expected a leading digit while attempting to scan an integer literal.");
+		assert(check('.') || check(is_digit) && "expected a leading digit while attempting to scan an integer literal.");
 
 		if (is_zero_digit(peek())) {
 			skip(); // consume zero digit.
@@ -305,7 +325,7 @@ private:
 			default:;
 		}
 
-		skip(); // conume symbol.
+		skip(); // consume symbol.
 		return tok::make_symbol_token(symbol, location());
 	}
 };

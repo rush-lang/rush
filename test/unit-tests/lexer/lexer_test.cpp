@@ -3,14 +3,15 @@
 
 #include <string_view>
 #include <initializer_list>
+#include <vector>
 
 namespace tok = rush::tokens;
 
-bool valid_lex(std::string input, std::initializer_list<rush::lexical_token> expected) {
+bool valid_lex(std::string input, std::vector<rush::lexical_token> expect) {
 	auto lxa = rush::lex(input);
-	return lxa.size() == expected.size() && std::equal(
+	return lxa.size() == expect.size() && std::equal(
 		lxa.begin(), lxa.end(),
-		expected.begin(), expected.end(),
+		expect.begin(), expect.end(),
 		[](auto& x, auto& y) {
 			return x.location() == y.location()
 				 && x.is_same(y);
@@ -18,6 +19,27 @@ bool valid_lex(std::string input, std::initializer_list<rush::lexical_token> exp
 }
 
 TEST_CASE( "rush::lex" ) {
+
+	CHECK( valid_lex("", {}) );
+
+	CHECK( valid_lex("func add(a, b: numeric):\n\treturn a + b", {
+		tok::func_keyword({ 1, 1 }),
+		tok::identifier("add", { 1, 6 }),
+		tok::left_parenthesis({ 1, 9 }),
+		tok::identifier("a", { 1, 10 }),
+		tok::comma({ 1, 11 }),
+		tok::identifier("b", { 1, 13 }),
+		tok::colon({ 1, 14 }),
+		tok::identifier("numeric", { 1, 16 }),
+		tok::right_parenthesis({ 1, 23 }),
+		tok::colon({ 1, 24 }),
+		tok::indent({ 2, 1 }),
+		tok::return_keyword({ 2, 2 }),
+		tok::identifier("a", { 2, 9 }),
+		tok::plus({ 2, 11 }),
+		tok::identifier("b", { 2, 13 }),
+		tok::dedent(),
+	}));
 
 	CHECK( valid_lex("let xs = map(1...10, pow($, 2))", {
 		tok::let_keyword({ 1, 1 }),
@@ -174,6 +196,10 @@ TEST_CASE( "rush::lex (string literal)", "[unit][lexer]" ) {
 	CHECK( valid_lex("\"!\\£$%^&*(){}[]-=_+:;@~/?.,<>|\\\\\"", { tok::string_literal("!\\£$%^&*(){}[]-=_+:;@~/?.,<>|\\\\", { 1, 1 }) }) );
 }
 
+TEST_CASE( "rush::lex (indentation)" ) {
+	CHECK( valid_lex("\t", { tok::indent({ 1, 1 }), tok::dedent() }) );
+	CHECK( valid_lex("\n\t", { tok::indent({ 2, 1 }), tok::dedent() }) );
+}
 
 // TEST_CASE( "rush::skip_hspace", "[unit][lexer]" ) {
 
