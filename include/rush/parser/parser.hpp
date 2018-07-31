@@ -6,7 +6,7 @@
 #include <string>
 #include <iostream>
 
-#include "rush/ast/abstract_syntax_tree.hpp"
+#include "rush/ast/ast.hpp"
 
 namespace rush {
 

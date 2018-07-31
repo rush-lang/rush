@@ -1,7 +1,12 @@
-add_library(ast INTERFACE)
+project(ast VERSION ${RUSH_VERSION} LANGUAGES CXX)
 
-target_compile_features(ast INTERFACE cxx_std_17)
+add_library(ast
+	literal.cpp)
 
-target_include_directories(ast INTERFACE
-	$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include
-	$<INSTALL_INTERFACE:../../include)
+target_compile_features(ast PUBLIC cxx_std_17)
+
+target_include_directories(ast PUBLIC
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../../include>
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../include>
+	$<INSTALL_INTERFACE:../../include>
+)
