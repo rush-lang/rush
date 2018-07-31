@@ -196,9 +196,72 @@ TEST_CASE( "rush::lex (string literal)", "[unit][lexer]" ) {
 	CHECK( valid_lex("\"!\\£$%^&*(){}[]-=_+:;@~/?.,<>|\\\\\"", { tok::string_literal("!\\£$%^&*(){}[]-=_+:;@~/?.,<>|\\\\", { 1, 1 }) }) );
 }
 
-TEST_CASE( "rush::lex (indentation)" ) {
-	CHECK( valid_lex("\t", { tok::indent({ 1, 1 }), tok::dedent() }) );
-	CHECK( valid_lex("\n\t", { tok::indent({ 2, 1 }), tok::dedent() }) );
+TEST_CASE( "rush::lex (tab-indentation)" ) {
+	CHECK( valid_lex("\tabc", {
+		tok::indent({ 1, 1 }),
+		tok::identifier("abc", { 1, 2 }),
+		tok::dedent(),
+	}));
+
+	CHECK( valid_lex("\tabc\n\t\tdef", {
+		tok::indent({ 1, 1 }),
+		tok::identifier("abc", { 1, 2 }),
+		tok::indent({ 2, 1 }),
+		tok::identifier("def", { 2, 3 }),
+		tok::dedent(),
+		tok::dedent(),
+	}));
+
+	CHECK( valid_lex("\tabc\n\t\tdef\n\tghi", {
+		tok::indent({ 1, 1 }),
+		tok::identifier("abc", { 1, 2 }),
+		tok::indent({ 2, 1 }),
+		tok::identifier("def", { 2, 3 }),
+		tok::dedent({ 3, 1 }),
+		tok::identifier("ghi", { 3, 2 }),
+		tok::dedent(),
+	}));
+
+	// initial indentation space (tab/spaces) is used to discover
+	// the indentation width. After the initial, subsequent indents
+	// require the same number of spaces or tabs.
+	CHECK( valid_lex("\t\tabc", {
+		tok::indent({ 1, 1 }),
+		tok::identifier("abc", { 1, 3 }),
+		tok::dedent(),
+	}));
+
+	CHECK( valid_lex("\t\tabc\n\tdef", {
+		tok::indent({ 1, 1 }),
+		tok::identifier("abc", { 1, 3 }),
+		tok::dedent({ 2, 1 }),
+		tok::identifier("def", { 2, 2 })
+	}));
+
+	CHECK( valid_lex("\tabc\n\tdef", {
+		tok::indent({ 1, 1 }),
+		tok::identifier("abc", { 1, 2 }),
+		tok::identifier("def", { 2, 2 }),
+		tok::dedent()
+	}));
+
+	// empty lines should not produce indents/dedents
+	CHECK( valid_lex("\t", { }) );
+	CHECK( valid_lex("\n\t", { }) );
+
+	CHECK( valid_lex("\tabc\n\t  \n\tdef", {
+		tok::indent({ 1, 1 }),
+		tok::identifier("abc", { 1, 2 }),
+		tok::identifier("def", { 3, 2 }),
+		tok::dedent()
+	}));
+
+	CHECK( valid_lex("\tabc\n\t\t\n\tdef", {
+		tok::indent({ 1, 1 }),
+		tok::identifier("abc", { 1, 2 }),
+		tok::identifier("def", { 3, 2 }),
+		tok::dedent()
+	}));
 }
 
 // TEST_CASE( "rush::skip_hspace", "[unit][lexer]" ) {

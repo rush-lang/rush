@@ -156,6 +156,7 @@ namespace rush {
 				|| std::holds_alternative<double>(_val);
 		}
 
+		// \brief Returns true if this token shares the same value (as defined by the operator ==) with specified token.
 		bool is_same(lexical_token const& other) const noexcept {
 			return _val == other._val;
 		}
