@@ -1,3 +1,6 @@
+#include "rush/lexer/token.hpp"
+#include "rush/lexer/lexer.hpp"
+
 #include "rush/parser/parser.hpp"
 #include <sstream>
 

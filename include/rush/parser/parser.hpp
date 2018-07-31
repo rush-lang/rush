@@ -6,8 +6,6 @@
 #include <string>
 #include <iostream>
 
-#include "rush/lexer/token.hpp"
-#include "rush/lexer/lexer.hpp"
 #include "rush/ast/abstract_syntax_tree.hpp"
 
 namespace rush {
@@ -17,7 +15,8 @@ namespace rush {
 	abstract_syntax_tree parse(std::string, parser_options const& = {});
 	abstract_syntax_tree parse(std::istream&, parser_options const& = {});
 
-
+	void dump(std::istream&, abstract_syntax_tree const&);
+	void print(std::istream&, abstract_syntax_tree const&);
 } // rush
 
 #endif // RUSH_PARSER_PARSER_HPP

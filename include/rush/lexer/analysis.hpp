@@ -3,14 +3,14 @@
 #ifndef RUSH_LEXER_ANALYSIS_HPP
 #define RUSH_LEXER_ANALYSIS_HPP
 
-#include "rush/lexer/options.hpp"
-
 #include <string>
 #include <iosfwd>
 #include <vector>
 
 
 namespace rush {
+
+	class lexer_options;
 
 	class lexical_analysis final {
 		friend lexical_analysis lex(char const*, lexer_options const&);

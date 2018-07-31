@@ -51,7 +51,6 @@ public:
 			lexer_iterator { last, last, location::undefined }
 		};
 
-		pin_location();
 		auto token = next_token();
 		for (; !token.is(symbols::eof); token = next_token()) {
 			_tokens.push_back(std::move(token));
@@ -103,6 +102,12 @@ private:
 		return !eof() && peek(offset) == cp;
 	}
 
+	bool check(std::string str, std::size_t offset = 0) {
+		for (std::size_t i = 0, j = offset; i < str.length(); ++i, ++j)
+			if (!check(str[i], j)) return false;
+		return true;
+	}
+
 	template <typename Pred>
 	auto check(Pred predicate, std::size_t offset = 0) -> decltype(predicate(codepoint_t{}), bool{}) {
 		return !eof() && predicate(peek(offset));
@@ -141,11 +146,8 @@ private:
 
 	lexical_token next_token() {
 		while (skip_empty_line());
-
-		pin_location();
-
 		if (is_line_start()) {
-			if (auto indent = scan_indentation())
+			if (auto indent = try_scan_indentation())
 				return *indent;
 		}
 
@@ -178,10 +180,11 @@ private:
 	}
 
 
-	std::optional<lexical_token> scan_indentation() {
+	std::optional<lexical_token> try_scan_indentation() {
 		assert(!eof() && "unexpected end of source.");
-		assert(is_line_start() && "expected start of line while attempting to scan indentation.");
+		assert(is_line_start() && "expected start of line while attempting to scan indentation depth.");
 
+		pin_location();
 		auto indent = _indentation.measure(_iters.first, _iters.second);
 		skip_while(is_hspace); // skip measured + remaining horizontal space.
 
@@ -235,7 +238,6 @@ private:
 		skip(); // consume end quotation mark.
 		return tok::string_literal(str, location());
 	}
-
 
 	lexical_token scan_numeric_literal() {
 		assert(!eof() && "unexpected end of source.");
@@ -331,10 +333,7 @@ private:
 			} break;
 
 			case symbols::period: {
-				if (check('.', 1) && check('.', 2)) {
-					skip(3); return tok::ellipses(location());
-				}
-
+				if (check("..", 1)) { skip(3); return tok::ellipses(location()); }
 				if (check(is_digit, 1)) return scan_numeric_literal();
 			} break;
 

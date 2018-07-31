@@ -166,6 +166,15 @@ namespace rush {
 		struct location _loc;
 	};
 
+
+	inline bool operator == (lexical_token const& lhs, lexical_token const& rhs) {
+		return lhs.location() == rhs.location() && lhs.is_same(rhs);
+	}
+
+	inline bool operator != (lexical_token const& lhs, lexical_token const& rhs) {
+		return !(lhs == rhs);
+	}
+
 } // rush
 
 #include "rush/lexer/_tokens.hpp"
