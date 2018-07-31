@@ -1,0 +1,14 @@
+{
+	"unary": [
+		{ "name": "negate", "opname": "neg" },
+		{ "name": "increment", "opname": "inc" },
+		{ "name": "decrement", "opname": "dec" }
+	],
+	"binary": [
+		{ "name": "addition", "opname": "add" },
+		{ "name": "subtraction", "opname": "sub" },
+		{ "name": "multiplication", "opname": "mul" },
+		{ "name": "division", "opname": "div" },
+		{ "name": "modulo", "opname": "mod" }
+	]
+}
