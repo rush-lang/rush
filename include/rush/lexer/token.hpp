@@ -51,13 +51,29 @@ namespace rush {
 			}
 		};
 
+		struct integral_t {
+			std::uint64_t _val;
+			std::uint8_t _suffix;
+			friend bool operator == (integral_t const& lhs, integral_t const& rhs) {
+				return lhs._val == rhs._val;
+			}
+		};
+
+		struct floating_t {
+			double _val;
+			std::uint8_t _suffix;
+			friend bool operator == (floating_t const& lhs, floating_t const& rhs) {
+				return lhs._val == rhs._val;
+			}
+		};
+
 		using variant_type =
 		std::variant<
 			error_t,				// errors.
 			symbol_t,         // symbols.
 			keyword_t,        // keywords.
 			identifier_t,     // identifiers.
-			std::string, // string literals.
+			std::string, 		// string literals.
 			std::uint64_t,    // integer literals.
 			double>;          // floating literals. (todo: guarantee double is 64-bit)
 
