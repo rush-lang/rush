@@ -18,13 +18,16 @@ using namespace rush::charinfo;
 
 namespace tok = rush::tokens;
 
-template <typename FwdIter> class lexer;
-template <typename FwdIter> static lexer<FwdIter> lex(FwdIter first, FwdIter last, lexer_options const& opts);
-
+namespace rush{
+	template <typename FwdIter>
+	lexical_analysis lex(FwdIter, FwdIter, lexer_options const& opts);
+}
 
 template <typename FwdIter>
 class lexer final {
-	friend lexer<FwdIter> lex<FwdIter>(FwdIter, FwdIter, lexer_options const&);
+	friend lexical_analysis rush::lex<FwdIter>(
+		FwdIter, FwdIter,
+		lexer_options const&);
 
 public:
 	lexer(lexer const&) = delete;
@@ -109,7 +112,8 @@ private:
 	}
 
 	template <typename Pred>
-	auto check(Pred predicate, std::size_t offset = 0) -> decltype(predicate(codepoint_t{}), bool{}) {
+	auto check(Pred predicate, std::size_t offset = 0)
+		-> decltype(predicate(codepoint_t{}), bool{}) {
 		return !eof() && predicate(peek(offset));
 	}
 
@@ -123,7 +127,8 @@ private:
 	}
 
 	template <typename Pred>
-	auto scan_while(Pred predicate) -> decltype(predicate(*_iters.first), std::string()) {
+	auto scan_while(Pred predicate)
+		-> decltype(predicate(*_iters.first), std::string()) {
 		auto temp = _iters.first;
 		advance_if(_iters.first, _iters.second, predicate);
 		return std::string(temp, _iters.first);
@@ -345,37 +350,32 @@ private:
 	}
 };
 
-
-
-template <typename FwdIter>
-static lexer<FwdIter> lex(FwdIter first, FwdIter last, lexer_options const& opts) {
-	auto l = lexer<FwdIter> { opts };
-	l.tokenize(first, last);
-	return std::move(l);
-}
-
-
 namespace rush {
+
+	template <typename FwdIter>
+	lexical_analysis lex(FwdIter first, FwdIter last, lexer_options const& opts) {
+		auto l = lexer<FwdIter> { opts };
+		l.tokenize(first, last);
+		return { l.flush() };
+	}
+
 	lexical_analysis lex(char const* input, lexer_options const& opts) {
 		auto first = input;
 		auto last = input + std::strlen(input);
-		auto l = ::lex(first, last, opts);
-		return { l.flush() };
+		return ::lex(first, last, opts);
 	}
 
 	lexical_analysis lex(std::string const& input, lexer_options const& opts) {
 		auto first = begin(input);
 		auto last = end(input);
-		auto l = ::lex(first, last, opts);
-		return { l.flush() };
+		return ::lex(first, last, opts);
 	}
 
 	// FIXME: Wrap istreambuf_iterator in some kind of 'buffered_iterator'
 	// promoting it to the required forward iterator type.
 	lexical_analysis lex(std::istream& input, lexer_options const& opts) {
-		auto it = std::istreambuf_iterator<char> { input };
-		auto eof = std::istreambuf_iterator<char> {};
-		auto l = ::lex(it, eof, opts);
-		return { l.flush() };
+		auto first = std::istreambuf_iterator<char> { input };
+		auto last = std::istreambuf_iterator<char> {};
+		return ::lex(first, last, opts);
 	}
 } // namespace rush

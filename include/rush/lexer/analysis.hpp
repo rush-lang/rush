@@ -13,9 +13,10 @@ namespace rush {
 	class lexer_options;
 
 	class lexical_analysis final {
-		friend lexical_analysis lex(char const*, lexer_options const&);
-		friend lexical_analysis lex(std::string const&, lexer_options const&);
-		friend lexical_analysis lex(std::istream&, lexer_options const&);
+		template <typename FwdIter>
+		friend lexical_analysis lex(
+			FwdIter, FwdIter,
+			lexer_options const&);
 
 	public:
 		lexical_analysis(lexical_analysis const&) = delete;
