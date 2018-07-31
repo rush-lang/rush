@@ -6,7 +6,7 @@
 #include "rush/ast/node.hpp"
 #include "rush/ast/expression.hpp"
 #include "rush/ast/literal.hpp"
-// #include "rush/ast/binary.hpp"
+#include "rush/ast/binary.hpp"
 
 #include "rush/ast/visitor.hpp"
 
@@ -20,8 +20,14 @@ namespace rush {
 			parser_options const&);
 
 	public:
-		void accept(ast::visitor&);
-		void accept(ast::visitor&&);
+		void accept(ast::visitor&& v) const {
+			accept(v);
+		}
+
+		void accept(ast::visitor& v) const {
+			if (_root != nullptr)
+				_root->accept(v);
+		}
 
 	private:
 		std::unique_ptr<ast::node> _root;
