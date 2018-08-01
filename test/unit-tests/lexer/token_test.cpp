@@ -20,8 +20,9 @@ TEST_CASE( "rush::lexical_token", "[unit][lexer]" ) {
 	}
 
 	SECTION( "rush::lexical_token::text" ) {
-		CHECK( identifier("abc").text() == "abc" );
 		CHECK( void_keyword().text() == "void" );
+		CHECK( identifier("abc").text() == "abc" );
+		CHECK( string_literal("def").text() == "def" );
 		CHECK( integer_literal(123).text() == "123" );
 
 		// todo: should probably do something about the formatting of

@@ -79,6 +79,14 @@ namespace rush {
 			}
 		};
 
+		struct string_t {
+			std::string val;
+			lexical_token_prefix prefix;
+			friend bool operator == (string_t const& lhs, string_t const& rhs) {
+				return lhs.val == rhs.val;
+			}
+		};
+
 		using variant_type =
 		std::variant<
 			error_t,				// errors.
@@ -86,8 +94,8 @@ namespace rush {
 			keyword_t,        // keywords.
 			identifier_t,     // identifiers.
 			std::string, 		// string literals.
-			std::uint64_t,    // integer literals.
-			double>;          // floating literals. (todo: guarantee double is 64-bit)
+			integral_t,    // integer literals.
+			floating_t>;          // floating literals. (todo: guarantee double is 64-bit)
 
 		friend lexical_token tokens::make_error_token(std::string, location const&);
 		friend lexical_token tokens::make_symbol_token(symbol_t, location const&);
@@ -126,13 +134,13 @@ namespace rush {
 
 		std::uint64_t int_value() const {
 			assert(is_integer_literal() && "token is not an integer literal.");
-			if (auto pval = std::get_if<std::uint64_t>(&_val)) return *pval;
+			if (auto pval = std::get_if<integral_t>(&_val)) return pval->val;
 			return 0;
 		}
 
 		double float_value() const {
 			assert(is_floating_literal() && "token is not a floating literal.");
-			if (auto pval = std::get_if<double>(&_val)) return *pval;
+			if (auto pval = std::get_if<floating_t>(&_val)) return pval->val;
 			return 0;
 		}
 
@@ -144,6 +152,8 @@ namespace rush {
 			return std::visit(overloaded {
 				[](auto& arg) { return to_string(arg); },
 				[](error_t const& arg) { return arg.msg; },
+				[](integral_t const& arg) { return to_string(arg.val); },
+				[](floating_t const& arg) { return to_string(arg.val); },
 				[](identifier_t const& arg) { return arg.text; },
 				[](std::string arg) { return std::move(arg); },
 			}, _val);
@@ -153,12 +163,26 @@ namespace rush {
 		lexical_token_type type() const noexcept {
 			return std::visit(overloaded {
 				[](auto&) { return lexical_token_type::error; },
-				[](symbol_t&) { return lexical_token_type::symbol; },
-				[](keyword_t&) { return lexical_token_type::keyword; },
-				[](identifier_t&) { return lexical_token_type::identifier; },
-				[](std::string&) { return lexical_token_type::string_literal; },
-				[](std::uint64_t&) { return lexical_token_type::integer_literal; },
-				[](double&) { return lexical_token_type::floating_literal; },
+				[](symbol_t const&) { return lexical_token_type::symbol; },
+				[](keyword_t const&) { return lexical_token_type::keyword; },
+				[](integral_t const&) { return lexical_token_type::integer_literal; },
+				[](floating_t const&) { return lexical_token_type::floating_literal; },
+				[](std::string const&) { return lexical_token_type::string_literal; },
+				[](identifier_t const&) { return lexical_token_type::identifier; },
+			}, _val);
+		}
+
+		lexical_token_prefix prefix() const noexcept {
+			return std::visit(overloaded {
+				[](auto const&) { return lexical_token_prefix::none; },
+			}, _val);
+		}
+
+		lexical_token_suffix suffix() const noexcept {
+			return std::visit(overloaded {
+				[](auto const&) { return lexical_token_suffix::none; },
+				[](integral_t const& arg) { return arg.suffix; },
+				[](floating_t const& arg) { return arg.suffix; },
 			}, _val);
 		}
 
@@ -232,11 +256,11 @@ namespace rush {
 		}
 
 		bool is_integer_literal() const noexcept {
-			return std::holds_alternative<std::uint64_t>(_val);
+			return std::holds_alternative<integral_t>(_val);
 		}
 
 		bool is_floating_literal() const noexcept {
-			return std::holds_alternative<double>(_val);
+			return std::holds_alternative<floating_t>(_val);
 		}
 
 		bool is_boolean_literal() const noexcept {
