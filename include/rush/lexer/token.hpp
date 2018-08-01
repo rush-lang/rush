@@ -116,6 +116,19 @@ namespace rush {
 			return this->_loc;
 		}
 
+
+		std::uint64_t int_value() const {
+			assert(is_integer_literal() && "token is not an integer literal.");
+			if (auto pval = std::get_if<std::uint64_t>(&_val)) return *pval;
+			return 0;
+		}
+
+		double float_value() const {
+			assert(is_floating_literal() && "token is not a floating literal.");
+			if (auto pval = std::get_if<double>(&_val)) return *pval;
+			return 0;
+		}
+
 		// \brief Returns the plain text of the token.
 		std::string text() const {
 			using std::to_string;
