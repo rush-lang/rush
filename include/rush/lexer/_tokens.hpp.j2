@@ -47,7 +47,7 @@ namespace rush {
 
 		// \brief Returns an instance of rush::lexical_token representing a floating point literal with the specified suffix.
 		inline lexical_token suffixed_floating_literal(double val, lexical_token_suffix suffix, location const& loc) {
-			return lexical_token { lexical_token::floating_t { val, lexical_token_suffix::none }, loc };
+			return lexical_token { lexical_token::floating_t { val, suffix }, loc };
 		}
 
 		// \brief Returns an instance of rush::lexical_token representing a floating point literal.

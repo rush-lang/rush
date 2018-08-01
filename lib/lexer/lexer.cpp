@@ -105,9 +105,19 @@ private:
 		return !eof() && peek(offset) == cp;
 	}
 
+	bool icheck(codepoint_t cp, std::size_t offset = 0) {
+		return !eof() && iequal(peek(offset), cp);
+	}
+
 	bool check(std::string str, std::size_t offset = 0) {
 		for (std::size_t i = 0, j = offset; i < str.length(); ++i, ++j)
 			if (!check(str[i], j)) return false;
+		return true;
+	}
+
+	bool icheck(std::string str, std::size_t offset = 0) {
+		for (std::size_t i = 0, j = offset; i < str.length(); ++i, ++j)
+			if (!icheck(str[i], j)) return false;
 		return true;
 	}
 
@@ -244,6 +254,25 @@ private:
 		return tok::string_literal(str, location());
 	}
 
+	lexical_token_suffix scan_floating_literal_suffix() {
+		if (icheck('f')) { skip(); return lexical_token_suffix::float_literal; }
+		return lexical_token_suffix::none;
+	}
+
+	lexical_token_suffix scan_integer_literal_suffix() {
+		if (icheck('u')) { skip(); return lexical_token_suffix::unsigned_literal; }
+		if (icheck('l')) { skip(); return lexical_token_suffix::long_literal; }
+
+		// if (icheck("ul")) {
+		// 	skip(2);
+		// 	return
+		// 		lexical_token_suffix::long_literal |
+		// 		lexical_token_suffix::unsigned_literal;
+		// }
+
+		return lexical_token_suffix::none;
+	}
+
 	lexical_token scan_numeric_literal() {
 		assert(!eof() && "unexpected end of source.");
 		assert(check('.') || check(is_digit) && "expected a leading digit while attempting to scan an integer literal.");
@@ -251,36 +280,46 @@ private:
 		if (is_zero_digit(peek())) {
 			skip(); // consume zero digit.
 
-			if (check('x') || check('X')) {
+			if (icheck('x')) {
 				skip(); // consume hexadecimal prefix.
 				auto value = scan_while(is_hex_digit);
-				return tok::integer_literal(std::stoll(value, 0, 16));
+				auto suffix = scan_integer_literal_suffix();
+				return tok::suffixed_integer_literal(std::stoll(value, 0, 16), suffix, location());
 			}
 
-			if (check('b') || check('B')) {
+			if (icheck('b')) {
 				skip(); // consume binary prefix
 				auto value = scan_while(is_bin_digit);
-				return tok::integer_literal(std::stoll(value, 0, 2));
+				auto suffix = scan_integer_literal_suffix();
+				return tok::suffixed_integer_literal(std::stoll(value, 0, 2), suffix, location());
 			}
 
 			if (check('.') && check(is_digit, 1)) {
 				skip(); // consume decimal point.
 				auto value = scan_while(is_digit);
-				return tok::floating_literal(std::stod("." + value), location());
+				auto suffix = scan_floating_literal_suffix();
+				return tok::suffixed_floating_literal(std::stod("." + value), suffix, location());
 			}
 
-			return tok::integer_literal(0, location());
+			auto suffix = scan_integer_literal_suffix();
+			return tok::suffixed_integer_literal(0, suffix, location());
 		}
 
 		auto integer_part = scan_while(is_digit);
 		if (check('.') && check(is_digit, 1)) {
 			skip(); // consume decimal point.
 			auto fractional_part = scan_while(is_digit);
-			return tok::floating_literal(std::stod(integer_part + "." + fractional_part), location());
+			auto suffix = scan_floating_literal_suffix();
+			return tok::suffixed_floating_literal(
+				std::stod(integer_part + "." + fractional_part),
+				suffix, location());
 		}
 
 		assert(!integer_part.empty() && "expected an integer digit");
-		return tok::integer_literal(std::stoll(integer_part), location());
+		auto suffix = scan_integer_literal_suffix();
+		return tok::suffixed_integer_literal(
+			std::stoll(integer_part),
+			suffix, location());
 	}
 
 

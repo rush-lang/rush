@@ -26,15 +26,15 @@ namespace rush {
 	};
 
 	enum class lexical_token_prefix : std::uint8_t {
-		none,
-		verbatim_string,
+		none = 0x00,
+		verbatim_string = 0x01,
 	};
 
 	enum class lexical_token_suffix : std::uint8_t {
-		none,
-		long_literal,
-		float_literal,
-		unsigned_literal,
+		none = 0x00,
+		long_literal = 0x01,
+		float_literal = 0x02,
+		unsigned_literal = 0x04,
 	};
 
 
@@ -72,7 +72,7 @@ namespace rush {
 			std::uint64_t val;
 			lexical_token_suffix suffix;
 			friend bool operator == (integral_t const& lhs, integral_t const& rhs) {
-				return lhs.val == rhs.val;
+				return lhs.val == rhs.val && lhs.suffix == rhs.suffix;
 			}
 		};
 
@@ -80,7 +80,7 @@ namespace rush {
 			double val;
 			lexical_token_suffix suffix;
 			friend bool operator == (floating_t const& lhs, floating_t const& rhs) {
-				return lhs.val == rhs.val;
+				return lhs.val == rhs.val && lhs.suffix == rhs.suffix;
 			}
 		};
 

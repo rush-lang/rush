@@ -14,6 +14,10 @@ namespace rush {
 
 	namespace charinfo {
 
+		inline bool iequal(codepoint_t lhs, codepoint_t rhs) {
+			return std::tolower(lhs) == std::tolower(rhs);
+		}
+
 		inline bool is_ascii(codepoint_t cp) {
 			return cp <= 127;
 		}

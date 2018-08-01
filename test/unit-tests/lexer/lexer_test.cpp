@@ -8,6 +8,9 @@
 namespace tok = rush::tokens;
 namespace symbols = rush::symbols;
 
+using rush::lexical_token_prefix;
+using rush::lexical_token_suffix;
+
 const char* to_string(rush::lexical_token_type type) {
 	switch (type) {
 	case rush::lexical_token_type::error: return "error";
@@ -163,6 +166,14 @@ TEST_CASE( "rush::lex (floating literals)", "[unit][lexer]" ) {
 	CHECK_FALSE( valid_lex("1", { tok::floating_literal(1, { 1, 1 }) }) );
 	CHECK_FALSE( valid_lex("9", { tok::floating_literal(9, { 1, 1 }) }) );
 	CHECK_FALSE( valid_lex("123", { tok::floating_literal(123, { 1, 1 }) }) );
+
+	CHECK( valid_lex("1.0f", { tok::suffixed_floating_literal(1.0, lexical_token_suffix::float_literal, { 1, 1 }) }) );
+	CHECK( valid_lex("9.0f", { tok::suffixed_floating_literal(9.0, lexical_token_suffix::float_literal, { 1, 1 }) }) );
+	CHECK( valid_lex(".0f", { tok::suffixed_floating_literal(0.0, lexical_token_suffix::float_literal, { 1, 1 }) }) );
+	CHECK( valid_lex(".013f", { tok::suffixed_floating_literal(0.013, lexical_token_suffix::float_literal, { 1, 1 }) }) );
+
+	CHECK_FALSE( valid_lex("1.0f", { tok::suffixed_floating_literal(1.0, lexical_token_suffix::none, { 1, 1 }) }) );
+	CHECK_FALSE( valid_lex("1.0", { tok::suffixed_floating_literal(1.0, lexical_token_suffix::float_literal, { 1, 1 }) }) );
 }
 
 TEST_CASE( "rush::lex (integer literals)", "[unit][lexer]" ) {
@@ -175,6 +186,31 @@ TEST_CASE( "rush::lex (integer literals)", "[unit][lexer]" ) {
 		tok::integer_literal(1234567890LL, { 1, 10 }),
 		tok::integer_literal(9876543210LL, { 1, 21 }),
 	}));
+
+	CHECK( valid_lex("0u 1u 9u 10u 1234567890u 9876543210u", {
+		tok::suffixed_integer_literal(0, lexical_token_suffix::unsigned_literal, { 1, 1 }),
+		tok::suffixed_integer_literal(1, lexical_token_suffix::unsigned_literal, { 1, 4 }),
+		tok::suffixed_integer_literal(9, lexical_token_suffix::unsigned_literal, { 1, 7 }),
+		tok::suffixed_integer_literal(10, lexical_token_suffix::unsigned_literal, { 1, 10 }),
+		tok::suffixed_integer_literal(1234567890LL, lexical_token_suffix::unsigned_literal, { 1, 14 }),
+		tok::suffixed_integer_literal(9876543210LL, lexical_token_suffix::unsigned_literal, { 1, 26 }),
+	}));
+
+	CHECK( valid_lex("0l 1l 9l 10l 1234567890l 9876543210l", {
+		tok::suffixed_integer_literal(0, lexical_token_suffix::long_literal, { 1, 1 }),
+		tok::suffixed_integer_literal(1, lexical_token_suffix::long_literal, { 1, 4 }),
+		tok::suffixed_integer_literal(9, lexical_token_suffix::long_literal, { 1, 7 }),
+		tok::suffixed_integer_literal(10, lexical_token_suffix::long_literal, { 1, 10 }),
+		tok::suffixed_integer_literal(1234567890LL, lexical_token_suffix::long_literal, { 1, 14 }),
+		tok::suffixed_integer_literal(9876543210LL, lexical_token_suffix::long_literal, { 1, 26 }),
+	}));
+
+
+	CHECK_FALSE( valid_lex("123u", { tok::suffixed_integer_literal(123, lexical_token_suffix::none, { 1, 1 }) }) );
+	CHECK_FALSE( valid_lex("123l", { tok::suffixed_integer_literal(123, lexical_token_suffix::none, { 1, 1 }) }) );
+
+	CHECK_FALSE( valid_lex("123u", { tok::suffixed_integer_literal(123, lexical_token_suffix::long_literal, { 1, 1 }) }) );
+	CHECK_FALSE( valid_lex("123l", { tok::suffixed_integer_literal(123, lexical_token_suffix::unsigned_literal, { 1, 1 }) }) );
 
 	// any leading-zero or non-digit should stop the scan,
 	// and proceed to scan the next character as a seperate token.
