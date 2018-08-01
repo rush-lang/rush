@@ -132,12 +132,14 @@ namespace rush {
 
 		// \brief Returns true if the token is an instance of the specified symbol; false otherwise.
 		bool is(symbol_t sym) const noexcept {
-			return is_symbol() && std::get<symbol_t>(_val) == sym;
+			if (auto pval = std::get_if<symbol_t>(&_val)) return *pval == sym;
+			return false;
 		}
 
 		// \brief Returns true if the token is an instance of the specified keyword; false otherwise.
 		bool is(keyword_t kw) const noexcept {
-			return is_keyword() && std::get<keyword_t>(_val) == kw;
+			if (auto pval = std::get_if<keyword_t>(&_val)) return *pval == kw;
+			return false;
 		}
 
 		// \brief Returns true if the token matches any of the keywords or symbols passed; false otherwise.
@@ -206,11 +208,9 @@ namespace rush {
 		}
 
 		bool is_boolean_literal() const noexcept {
-			if (!std::holds_alternative<keyword_t>(_val))
+			if (auto pval = std::get_if<keyword_t>(&_val))
+				return *pval == keywords::true_ || *pval == keywords::false_;
 				return false;
-
-			auto kw = std::get<keyword_t>(_val);
-			return kw == keywords::true_ || kw == keywords::false_;
 		}
 
 		// \brief Returns true if the token is categorically a literal; false otherwise.
