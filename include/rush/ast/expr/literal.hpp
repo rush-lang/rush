@@ -3,7 +3,7 @@
 #ifndef RUSH_AST_LITERAL_HPP
 #define RUSH_AST_LITERAL_HPP
 
-#include "rush/ast/expression.hpp"
+#include "rush/ast/expr/expression.hpp"
 #include "rush/ast/type.hpp"
 
 #include <variant>

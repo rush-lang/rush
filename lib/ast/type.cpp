@@ -1,4 +1,5 @@
 #include "rush/ast/type.hpp"
+#include <unordered_map>
 
 namespace rush::ast {
 	// known/built-in types
@@ -18,13 +19,25 @@ namespace rush::ast {
 	type const string_type = {};
 	type const char_type = {};
 
+	int type_precedence(type const& t) {
+
+	}
+
 	// \brief Returns the nearest base type of type.
 	type base_of(type const& type) {
+		// if (type.is_builtin())
+		// 	return none_type;
+
 		return none_type;
 	}
 
 	// \brief Returns the common type between two types,
 	type intersection_of(type const& lhs, type const& rhs) {
+		// if (lhs.is_builtin() && rhs.is_builtin()) {
+		// 	return type_precedence(lhs) < type_precedence(rhs)
+		// 		? rhs : lhs;
+		// }
+
 		return none_type;
 	}
 } // rush

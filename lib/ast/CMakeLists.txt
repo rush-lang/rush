@@ -2,8 +2,8 @@ project(ast VERSION ${RUSH_VERSION} LANGUAGES CXX)
 
 add_library(ast
 	type.cpp
-	literal.cpp
-	binary.cpp)
+	expr/literal.cpp
+	expr/binary.cpp)
 
 target_compile_features(ast PUBLIC cxx_std_17)
 

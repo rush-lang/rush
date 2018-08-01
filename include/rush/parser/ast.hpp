@@ -4,9 +4,10 @@
 #define RUSH_AST_ABSTRACT_SYNTAX_TREE_HPP
 
 #include "rush/ast/node.hpp"
-#include "rush/ast/expression.hpp"
-#include "rush/ast/literal.hpp"
-#include "rush/ast/binary.hpp"
+#include "rush/ast/expr/expression.hpp"
+#include "rush/ast/expr/identifier.hpp"
+#include "rush/ast/expr/literal.hpp"
+#include "rush/ast/expr/binary.hpp"
 
 #include "rush/ast/visitor.hpp"
 

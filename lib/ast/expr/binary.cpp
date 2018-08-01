@@ -1,4 +1,4 @@
-#include "rush/ast/binary.hpp"
+#include "rush/ast/expr/binary.hpp"
 
 namespace rush::ast {
 	inline std::unique_ptr<binary_expression> make_binary_expr(

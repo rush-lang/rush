@@ -1,4 +1,4 @@
-#include "rush/ast/literal.hpp"
+#include "rush/ast/expr/literal.hpp"
 
 namespace rush::ast {
 	inline std::unique_ptr<literal_expression> make_literal_expr(
