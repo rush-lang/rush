@@ -36,39 +36,46 @@ namespace rush {
 		inline lexical_token floating_literal(double, location const& = location::undefined);
 	}
 
-	class lexical_token final {
+	enum class lexical_token_prefix : std::uint8_t {
+		none,
+	};
 
+	enum class lexical_token_suffix : std::uint8_t {
+		none,
+	};
+
+	class lexical_token final {
 
 		template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
 		template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
 
 		struct error_t {
-			std::string _msg;
+			std::string msg;
 			friend bool operator == (error_t const& lhs, error_t const& rhs) {
-				return lhs._msg == rhs._msg;
+				return lhs.msg == rhs.msg;
 			}
 		};
 
 		struct identifier_t {
-			std::string _text;
+			std::string text;
 			friend bool operator == (identifier_t const& lhs, identifier_t const& rhs) {
-				return lhs._text == rhs._text;
+				return lhs.text == rhs.text;
 			}
 		};
 
 		struct integral_t {
-			std::uint64_t _val;
-			std::uint8_t _suffix;
+			std::uint64_t val;
+			lexical_token_suffix suffix;
 			friend bool operator == (integral_t const& lhs, integral_t const& rhs) {
-				return lhs._val == rhs._val;
+				return lhs.val == rhs.val;
 			}
 		};
 
 		struct floating_t {
-			double _val;
-			std::uint8_t _suffix;
+			double val;
+			lexical_token_suffix suffix;
 			friend bool operator == (floating_t const& lhs, floating_t const& rhs) {
-				return lhs._val == rhs._val;
+				return lhs.val == rhs.val;
 			}
 		};
 
@@ -136,8 +143,8 @@ namespace rush {
 
 			return std::visit(overloaded {
 				[](auto& arg) { return to_string(arg); },
-				[](error_t const& arg) { return arg._msg; },
-				[](identifier_t const& arg) { return arg._text; },
+				[](error_t const& arg) { return arg.msg; },
+				[](identifier_t const& arg) { return arg.text; },
 				[](std::string arg) { return std::move(arg); },
 			}, _val);
 		}
