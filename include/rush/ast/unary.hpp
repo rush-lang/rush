@@ -12,7 +12,9 @@ namespace rush::ast {
 	public:
 		expression const& operand() const noexcept { return *_operand; }
 
-		virtual void accept(ast::visitor&) const override;
+		virtual void accept(ast::visitor& vis) const override {
+			vis.visit_unary_expr(*this);
+		}
 	private:
 		expression* _operand;
 	};
