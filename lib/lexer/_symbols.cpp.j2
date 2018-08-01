@@ -3,13 +3,15 @@
 
 #include <string>
 
-namespace rush {
-	namespace symbols {
-		symbol_t to_value(std::string const& sy) {
-			{% for symbol in symbols %}
-			if (sy == "{{ symbol/symbol }}") return symbols::{{ symbol/name }};
-			{% endfor %}
-			return symbols::unknown;
-		}
+namespace rush::symbols {
+	symbol_t to_value(std::string const& sy) {
+		{% for symbol in symbols %}
+		if (sy == "{{ symbol/symbol }}") return symbols::{{ symbol/name }};
+		{% endfor %}
+		return symbols::unknown;
+	}
+
+	std::string to_string(symbol_t) {
+		return "";
 	}
 }

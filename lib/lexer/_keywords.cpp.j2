@@ -14,25 +14,23 @@ static const std::unordered_map<std::string_view, rush::keywords::keyword_t>
 		{% endfor %}
 	};
 
-namespace rush {
-	namespace keywords {
-		keyword_t to_value(std::string_view kw) {
-			auto it = _keyword_map.find(kw);
-			return it == _keyword_map.end()
-				? keywords::unknown
-				: it->second;
-		}
+namespace rush::keywords {
+	keyword_t to_value(std::string_view kw) {
+		auto it = _keyword_map.find(kw);
+		return it == _keyword_map.end()
+			? keywords::unknown
+			: it->second;
+	}
 
-		std::string_view to_string(keyword_t kw) {
-			switch (kw) {
-				{% for type in types %}
-				case keywords::{{ type/name }}_: return "{{ type/name }}";
-				{% endfor %}
-				{% for keyword in keywords %}
-				case keywords::{{ keyword/name }}_: return "{{ keyword/name }}";
-				{% endfor %}
-				default: throw std::runtime_error("unknown keyword");
-			}
+	std::string to_string(keyword_t kw) {
+		switch (kw) {
+			{% for type in types %}
+			case keywords::{{ type/name }}_: return "{{ type/name }}";
+			{% endfor %}
+			{% for keyword in keywords %}
+			case keywords::{{ keyword/name }}_: return "{{ keyword/name }}";
+			{% endfor %}
+			default: throw std::runtime_error("unknown keyword");
 		}
 	}
 }

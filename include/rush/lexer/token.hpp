@@ -37,6 +37,11 @@ namespace rush {
 	}
 
 	class lexical_token final {
+
+
+		template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
+		template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
+
 		struct error_t {
 			std::string _msg;
 			friend bool operator == (error_t const& lhs, error_t const& rhs) {
@@ -112,21 +117,28 @@ namespace rush {
 		}
 
 		// \brief Returns the plain text of the token.
-		std::string text() const noexcept;
+		std::string text() const {
+			using std::to_string;
+			using rush::to_string;
+
+			return std::visit(overloaded {
+				[](auto& arg) { return to_string(arg); },
+				[](error_t const& arg) { return arg._msg; },
+				[](identifier_t const& arg) { return arg._text; },
+				[](std::string arg) { return std::move(arg); },
+			}, _val);
+		}
 
 		// \brief Returns the categorical type of the token based on its value.
 		lexical_token_type type() const noexcept {
-			return std::visit([](auto&& arg) {
-				using T = std::decay_t<decltype(arg)>;
-
-				if constexpr (std::is_same_v<T, error_t>) return lexical_token_type::error;
-				if constexpr (std::is_same_v<T, symbol_t>) return lexical_token_type::symbol;
-				if constexpr (std::is_same_v<T, keyword_t>) return lexical_token_type::keyword;
-				if constexpr (std::is_same_v<T, identifier_t>) return lexical_token_type::identifier;
-				if constexpr (std::is_same_v<T, std::string>) return lexical_token_type::string_literal;
-				if constexpr (std::is_same_v<T, std::uint64_t>) return lexical_token_type::integer_literal;
-				if constexpr (std::is_same_v<T, double>) return lexical_token_type::floating_literal;
-				assert("non-exhaustive visitor!");
+			return std::visit(overloaded {
+				[](auto&) { return lexical_token_type::error; },
+				[](symbol_t&) { return lexical_token_type::symbol; },
+				[](keyword_t&) { return lexical_token_type::keyword; },
+				[](identifier_t&) { return lexical_token_type::identifier; },
+				[](std::string&) { return lexical_token_type::string_literal; },
+				[](std::uint64_t&) { return lexical_token_type::integer_literal; },
+				[](double&) { return lexical_token_type::floating_literal; },
 			}, _val);
 		}
 
