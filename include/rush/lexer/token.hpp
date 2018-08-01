@@ -90,6 +90,10 @@ namespace rush {
 		lexical_token(variant_type value, location const& loc)
 			: _val(std::move(value)), _loc(loc) {}
 
+		bool is_any() const noexcept { return false; }
+		bool is_not_any() const noexcept { return true; }
+
+
 	public:
 
 		// \brief Returns the length of the token
@@ -136,6 +140,18 @@ namespace rush {
 			return is_keyword() && std::get<keyword_t>(_val) == kw;
 		}
 
+		// \brief Returns true if the token matches any of the keywords or symbols passed; false otherwise.
+		template <typename... Ts>
+		bool is_any(keyword_t first, Ts... rest) const noexcept {
+			return is(first) || is_any(rest...);
+		}
+
+		// \brief Returns true if the token matches any of the keywords or symbols passed; false otherwise.
+		template <typename... Ts>
+		bool is_any(symbol_t first, Ts... rest) const noexcept {
+			return is(first) || is_any(rest...);
+		}
+
 		// \brief Returns true if the token is not an instance of the specified symbol; false otherwise.
 		bool is_not(symbol_t sym) const noexcept {
 			return !is(sym);
@@ -144,6 +160,18 @@ namespace rush {
 		// \brief Returns true if the token is not an instance of the specified keyword; false otherwise.
 		bool is_not(keyword_t kw) const noexcept {
 			return !is(kw);
+		}
+
+		// \brief Returns true if the token does not matche any of the keywords or symbols passed; false otherwise.
+		template <typename... Ts>
+		bool is_not_any(keyword_t first, Ts... rest) const noexcept {
+			return is_not(first) && is_not_any(rest...);
+		}
+
+		// \brief Returns true if the token does not matche any of the keywords or symbols passed; false otherwise.
+		template <typename... Ts>
+		bool is_not_any(symbol_t first, Ts... rest) const noexcept {
+			return is_not(first) && is_not_any(rest...);
 		}
 
 		bool is_error() const noexcept {
