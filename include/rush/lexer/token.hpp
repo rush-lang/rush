@@ -137,13 +137,13 @@ namespace rush {
 		}
 
 
-		std::uint64_t int_value() const {
+		std::uint64_t integer_value() const {
 			assert(is_integer_literal() && "token is not an integer literal.");
 			if (auto pval = std::get_if<integral_t>(&_val)) return pval->val;
 			return 0;
 		}
 
-		double float_value() const {
+		double floating_value() const {
 			assert(is_floating_literal() && "token is not a floating literal.");
 			if (auto pval = std::get_if<floating_t>(&_val)) return pval->val;
 			return 0;
