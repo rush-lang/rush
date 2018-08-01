@@ -12,10 +12,6 @@ namespace rush::ast {
 
 
 	class node {
-	protected:
-		node(node const&) = delete;
-		void operator = (node const&) = delete;
-
 	public:
 		node() = default;
 		virtual ~node() = default;

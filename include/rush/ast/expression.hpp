@@ -14,7 +14,15 @@ namespace rush::ast {
 	// Expressions are a tree-like structure with a possibly centralized pool of
 	// memory, enabled via move semantics (?? possibly ??)
 	class expression : public node {
-		ast::type const& result_type() const noexcept;
+	protected:
+		expression(expression const&) = delete;
+		void operator = (expression const&) = delete;
+
+	public:
+		expression() = default;
+		virtual ast::type result_type() const {
+			return ast::void_type;
+		}
 	};
 }
 
