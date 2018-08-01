@@ -45,15 +45,18 @@ public:
 		_tokens = std::move(other._tokens);
 	}
 
-
-	void tokenize(FwdIter first, FwdIter last) {
-		if (first == last) return;
-
+	void initialize(FwdIter first, FwdIter last) {
 		_iters = {
 			lexer_iterator { first, last, {} },
 			lexer_iterator { last, last, location::undefined }
 		};
+	}
 
+
+	void tokenize(FwdIter first, FwdIter last) {
+		if (first == last) return;
+
+		initialize(first, last);
 		auto token = next_token();
 		for (; !token.is(symbols::eof); token = next_token()) {
 			_tokens.push_back(std::move(token));
