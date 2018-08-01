@@ -149,6 +149,18 @@ namespace rush {
 			return 0;
 		}
 
+		symbol_t symbol() const {
+			assert(is_symbol() && "token is not a keyword");
+			if (auto pval = std::get_if<symbol_t>(&_val)) return *pval;
+			return symbols::unknown;
+		}
+
+		keyword_t keyword() const {
+			assert(is_keyword() && "token is not a keyword");
+			if (auto pval = std::get_if<keyword_t>(&_val)) return *pval;
+			return keywords::unknown;
+		}
+
 		// \brief Returns the plain text of the token.
 		std::string text() const {
 			using std::to_string;
