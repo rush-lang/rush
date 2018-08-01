@@ -25,24 +25,29 @@ namespace rush {
 		floating_literal,
 	};
 
-	namespace tokens {
-		inline lexical_token make_error_token(std::string, location const& = location::undefined);
-		inline lexical_token make_symbol_token(symbol_t, location const& = location::undefined);
-		inline lexical_token make_keyword_token(keyword_t, location const& = location::undefined);
-
-		inline lexical_token identifier(std::string, location const& = location::undefined);
-		inline lexical_token string_literal(std::string, location const& = location::undefined);
-		inline lexical_token integer_literal(std::uint64_t, location const& = location::undefined);
-		inline lexical_token floating_literal(double, location const& = location::undefined);
-	}
-
 	enum class lexical_token_prefix : std::uint8_t {
 		none,
+		verbatim_string,
 	};
 
 	enum class lexical_token_suffix : std::uint8_t {
 		none,
+		long_literal,
+		float_literal,
+		unsigned_literal,
 	};
+
+
+	namespace tokens {
+		lexical_token make_error_token(std::string, location const& = location::undefined);
+		lexical_token make_symbol_token(symbol_t, location const& = location::undefined);
+		lexical_token make_keyword_token(keyword_t, location const& = location::undefined);
+
+		lexical_token identifier(std::string, location const& = location::undefined);
+		lexical_token prefixed_string_literal(std::string, lexical_token_prefix, location const& = location::undefined);
+		lexical_token suffixed_integer_literal(std::uint64_t, lexical_token_suffix, location const& = location::undefined);
+		lexical_token suffixed_floating_literal(double, lexical_token_suffix, location const& = location::undefined);
+	}
 
 	class lexical_token final {
 
@@ -102,9 +107,9 @@ namespace rush {
 		friend lexical_token tokens::make_keyword_token(keyword_t, location const&);
 
 		friend lexical_token tokens::identifier(std::string, location const&);
-		friend lexical_token tokens::string_literal(std::string, location const&);
-		friend lexical_token tokens::integer_literal(std::uint64_t, location const&);
-		friend lexical_token tokens::floating_literal(double, location const&);
+		friend lexical_token tokens::prefixed_string_literal(std::string, lexical_token_prefix, location const&);
+		friend lexical_token tokens::suffixed_integer_literal(std::uint64_t, lexical_token_suffix, location const&);
+		friend lexical_token tokens::suffixed_floating_literal(double, lexical_token_suffix, location const&);
 
 
 		lexical_token(variant_type value, location const& loc)

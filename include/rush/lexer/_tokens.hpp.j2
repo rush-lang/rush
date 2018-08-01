@@ -25,19 +25,34 @@ namespace rush {
 			return lexical_token { val, loc };
 		}
 
-		// \brief Returns an instance of rush::lexical_token representing a string literal.
-		inline lexical_token string_literal(std::string val, location const& loc) {
+		// \brief Returns an instance of rush::lexical_token representing a string literal with the specified prefix.
+		inline lexical_token prefixed_string_literal(std::string val, lexical_token_prefix prefix, location const& loc) {
 			return lexical_token { val, loc };
 		}
 
+		// \brief Returns an instance of rush::lexical_token representing a string literal.
+		inline lexical_token string_literal(std::string val, location const& loc = location::undefined) {
+			return prefixed_string_literal(std::move(val), lexical_token_prefix::none, loc);
+		}
+
+		// \brief Returns an instance of rush::lexical_token representing an integer literal with the specified suffix.
+		inline lexical_token suffixed_integer_literal(std::uint64_t val, lexical_token_suffix suffix, location const& loc) {
+			return lexical_token { lexical_token::integral_t { val, suffix }, loc };
+		}
+
 		// \brief Returns an instance of rush::lexical_token representing an integer literal.
-		inline lexical_token integer_literal(std::uint64_t val, location const& loc) {
-			return lexical_token { lexical_token::integral_t { val, lexical_token_suffix::none }, loc };
+		inline lexical_token integer_literal(std::uint64_t val, location const& loc = location::undefined) {
+			return  suffixed_integer_literal(val, lexical_token_suffix::none, loc);
+		}
+
+		// \brief Returns an instance of rush::lexical_token representing a floating point literal with the specified suffix.
+		inline lexical_token suffixed_floating_literal(double val, lexical_token_suffix suffix, location const& loc) {
+			return lexical_token { lexical_token::floating_t { val, lexical_token_suffix::none }, loc };
 		}
 
 		// \brief Returns an instance of rush::lexical_token representing a floating point literal.
-		inline lexical_token floating_literal(double val, location const& loc) {
-			return lexical_token { lexical_token::floating_t { val, lexical_token_suffix::none }, loc };
+		inline lexical_token floating_literal(double val, location const& loc = location::undefined) {
+			return suffixed_floating_literal(val, lexical_token_suffix::none, loc);
 		}
 
 		// \brief Returns an instance of rush::lexical_token representing an identifier.
