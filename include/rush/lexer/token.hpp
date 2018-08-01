@@ -165,11 +165,32 @@ namespace rush {
 			return std::holds_alternative<identifier_t>(_val);
 		}
 
+		bool is_string_literal() const noexcept {
+			return std::holds_alternative<std::string>(_val);
+		}
+
+		bool is_integer_literal() const noexcept {
+			return std::holds_alternative<std::uint64_t>(_val);
+		}
+
+		bool is_floating_literal() const noexcept {
+			return std::holds_alternative<double>(_val);
+		}
+
+		bool is_boolean_literal() const noexcept {
+			if (!std::holds_alternative<keyword_t>(_val))
+				return false;
+
+			auto kw = std::get<keyword_t>(_val);
+			return kw == keywords::true_ || kw == keywords::false_;
+		}
+
 		// \brief Returns true if the token is categorically a literal; false otherwise.
 		bool is_literal() const noexcept {
-			return std::holds_alternative<std::string>(_val)
-				|| std::holds_alternative<std::uint64_t>(_val)
-				|| std::holds_alternative<double>(_val);
+			return is_string_literal()
+				|| is_integer_literal()
+				|| is_floating_literal()
+				|| is_boolean_literal();
 		}
 
 		// \brief Returns true if this token shares the same value (as defined by the operator ==) with specified token.
