@@ -52,14 +52,60 @@ bool valid_lex_same(std::string input, std::vector<rush::lexical_token> expect) 
 	return result;
 }
 
-char const* hello_world_str = R"(
-import std.io
+char const* add_func_str =
+R"(func add(a, b: numeric):
+	return a + b
+)";
+
+char const* map_xs_str =
+R"(let xs = map(1...10, pow($, 2)))";
+
+char const* hello_world_str =
+R"(import std.io
 
 func main(args: string[]):
 	println("hello world!")
 )";
 
 TEST_CASE( "rush::lex" ) {
+
+	CHECK( valid_lex(add_func_str, {
+		tok::func_keyword({ 1, 1 }),
+		tok::identifier("add", { 1, 6 }),
+		tok::left_parenthesis({ 1, 9 }),
+		tok::identifier("a", { 1, 10 }),
+		tok::comma({ 1, 11 }),
+		tok::identifier("b", { 1, 13 }),
+		tok::colon({ 1, 14 }),
+		tok::identifier("numeric", { 1, 16 }),
+		tok::right_parenthesis({ 1, 23 }),
+		tok::colon({ 1, 24 }),
+		tok::indent({ 2, 1 }),
+		tok::return_keyword({ 2, 2 }),
+		tok::identifier("a", { 2, 9 }),
+		tok::plus({ 2, 11 }),
+		tok::identifier("b", { 2, 13 }),
+		tok::dedent({ 3, 1 }),
+	}));
+
+	CHECK( valid_lex(map_xs_str, {
+		tok::let_keyword({ 1, 1 }),
+		tok::identifier("xs", { 1, 5 }),
+		tok::equals({ 1, 8 }),
+		tok::identifier("map", { 1, 10 }),
+		tok::left_parenthesis({ 1, 13 }),
+		tok::integer_literal(1, { 1, 14 }),
+		tok::ellipses({ 1, 15 }),
+		tok::integer_literal(10, { 1, 18 }),
+		tok::comma({ 1, 20 }),
+		tok::identifier("pow", { 1, 22 }),
+		tok::left_parenthesis({ 1, 25 }),
+		tok::dollar({ 1, 26 }),
+		tok::comma({ 1, 27 }),
+		tok::integer_literal(2, { 1, 29 }),
+		tok::right_parenthesis({ 1, 30 }),
+		tok::right_parenthesis({ 1, 31 }),
+	}));
 
 	CHECK( valid_lex_same(hello_world_str, {
 		tok::import_keyword(),
@@ -82,44 +128,6 @@ TEST_CASE( "rush::lex" ) {
 		tok::string_literal("hello world!"),
 		tok::right_parenthesis(),
 		tok::dedent(),
-	}) );
-
-	CHECK( valid_lex("func add(a, b: numeric):\n\treturn a + b", {
-		tok::func_keyword({ 1, 1 }),
-		tok::identifier("add", { 1, 6 }),
-		tok::left_parenthesis({ 1, 9 }),
-		tok::identifier("a", { 1, 10 }),
-		tok::comma({ 1, 11 }),
-		tok::identifier("b", { 1, 13 }),
-		tok::colon({ 1, 14 }),
-		tok::identifier("numeric", { 1, 16 }),
-		tok::right_parenthesis({ 1, 23 }),
-		tok::colon({ 1, 24 }),
-		tok::indent({ 2, 1 }),
-		tok::return_keyword({ 2, 2 }),
-		tok::identifier("a", { 2, 9 }),
-		tok::plus({ 2, 11 }),
-		tok::identifier("b", { 2, 13 }),
-		tok::dedent({ 3, 1 }),
-	}));
-
-	CHECK( valid_lex("let xs = map(1...10, pow($, 2))", {
-		tok::let_keyword({ 1, 1 }),
-		tok::identifier("xs", { 1, 5 }),
-		tok::equals({ 1, 8 }),
-		tok::identifier("map", { 1, 10 }),
-		tok::left_parenthesis({ 1, 13 }),
-		tok::integer_literal(1, { 1, 14 }),
-		tok::ellipses({ 1, 15 }),
-		tok::integer_literal(10, { 1, 18 }),
-		tok::comma({ 1, 20 }),
-		tok::identifier("pow", { 1, 22 }),
-		tok::left_parenthesis({ 1, 25 }),
-		tok::dollar({ 1, 26 }),
-		tok::comma({ 1, 27 }),
-		tok::integer_literal(2, { 1, 29 }),
-		tok::right_parenthesis({ 1, 30 }),
-		tok::right_parenthesis({ 1, 31 }),
 	}));
 }
 
@@ -253,6 +261,19 @@ TEST_CASE( "rush::lex (integer literals)", "[unit][lexer]" ) {
 		tok::suffixed_integer_literal(9876543210LL, lexical_token_suffix::long_literal, { 1, 26 }),
 	}));
 
+	CHECK( valid_lex("0x01 0x09 0X0e 0x0F 0x0a 0X0B 0xdeadbeef", {
+		tok::integer_literal(0x01, { 1, 1 }),
+		tok::integer_literal(0x09, { 1, 6 }),
+		tok::integer_literal(0x0e, { 1, 11 }),
+		tok::integer_literal(0x0F, { 1, 16 }),
+		tok::integer_literal(0x0a, { 1, 21 }),
+		tok::integer_literal(0x0B, { 1, 26 }),
+		tok::integer_literal(0xdeadbeef, { 1, 31 }),
+	}));
+
+	CHECK( valid_lex("0o10", { tok::integer_literal(010, { 1, 1 }), }));
+	CHECK( valid_lex("0b00101010", { tok::integer_literal(42, { 1, 1 }) }));
+
 
 	CHECK_FALSE( valid_lex("123u", { tok::suffixed_integer_literal(123, lexical_token_suffix::none, { 1, 1 }) }) );
 	CHECK_FALSE( valid_lex("123l", { tok::suffixed_integer_literal(123, lexical_token_suffix::none, { 1, 1 }) }) );
@@ -358,96 +379,3 @@ TEST_CASE( "rush::lex (tab-indentation)" ) {
 		tok::dedent({ 4, 1 })
 	}));
 }
-
-// TEST_CASE( "rush::skip_hspace", "[unit][lexer]" ) {
-
-// 	SECTION( "leading space characters should be skipped." ) {
-// 		CHECK( skipped_hspace(" . \t", 1) );
-// 		CHECK( skipped_hspace(" ( \t", 1) );
-// 		CHECK( skipped_hspace(" abc\t ", 1) );
-// 		CHECK( skipped_hspace(" 123\t ", 1) );
-// 		CHECK( skipped_hspace(" \r \t", 1) );
-// 		CHECK( skipped_hspace(" \n \t", 1) );
-
-// 		CHECK( skipped_hspace("   . \t", 3) );
-// 		CHECK( skipped_hspace("   ( \t", 3) );
-// 		CHECK( skipped_hspace("   abc\t ", 3) );
-// 		CHECK( skipped_hspace("   123\t ", 3) );
-// 		CHECK( skipped_hspace("   \r \t", 3) );
-// 		CHECK( skipped_hspace("   \n \t", 3) );
-
-// 		CHECK_FALSE( skipped_hspace(". \t", 1) );
-// 		CHECK_FALSE( skipped_hspace("() \t", 1) );
-// 		CHECK_FALSE( skipped_hspace("abc\t ", 1) );
-// 		CHECK_FALSE( skipped_hspace("123\t ", 1) );
-// 	}
-
-// 	SECTION( "leading tab characters should be skipped." ) {
-// 		CHECK( skipped_hspace("\t.\t ", 1) );
-// 		CHECK( skipped_hspace("\t(\t ", 1) );
-// 		CHECK( skipped_hspace("\tabc \t", 1) );
-// 		CHECK( skipped_hspace("\t123 \t", 1) );
-// 		CHECK( skipped_hspace("\t\r\t ", 1) );
-// 		CHECK( skipped_hspace("\t\n\t ", 1) );
-
-// 		CHECK( skipped_hspace("\t\t\t. \t", 3) );
-// 		CHECK( skipped_hspace("\t\t\t( \t", 3) );
-// 		CHECK( skipped_hspace("\t\t\tabc\t ", 3) );
-// 		CHECK( skipped_hspace("\t\t\t123\t ", 3) );
-// 		CHECK( skipped_hspace("\t\t\t\r\t ", 3) );
-// 		CHECK( skipped_hspace("\t\t\t\n\t ", 3) );
-
-// 		CHECK_FALSE( skipped_hspace(". \t ", 1) );
-// 		CHECK_FALSE( skipped_hspace("() \t ", 1) );
-// 		CHECK_FALSE( skipped_hspace("abc\t ", 1) );
-// 		CHECK_FALSE( skipped_hspace("123\t ", 1) );
-// 	}
-// }
-
-// TEST_CASE( "rush::skip_vspace", "[unit][lexer]" ) {
-
-// 	SECTION( "leading carriage-return characters should be skipped." ) {
-// 		// carriage-return
-// 		CHECK( skipped_vspace("\r.\n\r\v", 1) );
-// 		CHECK( skipped_vspace("\r(\n\r\v", 1) );
-// 		CHECK( skipped_vspace("\rabc\r\n\v", 1) );
-// 		CHECK( skipped_vspace("\r123\r\n\v", 1) );
-// 		CHECK( skipped_vspace("\r \n\r", 1) );
-// 		CHECK( skipped_vspace("\r\t\n\r", 1) );
-
-// 		CHECK( skipped_vspace("\r\r\r.\n\r\v", 3) );
-// 		CHECK( skipped_vspace("\r\r\r(\n\r\v", 3) );
-// 		CHECK( skipped_vspace("\r\r\rabc\r\n\v", 3) );
-// 		CHECK( skipped_vspace("\r\r\r123\r\n\v", 3) );
-// 		CHECK( skipped_vspace("\r\r\r \n\r\v", 3) );
-// 		CHECK( skipped_vspace("\r\r\r\t\n\r\v", 3) );
-
-// 		CHECK_FALSE( skipped_vspace(".\n\r\v", 1) );
-// 		CHECK_FALSE( skipped_vspace("()\n\r\v", 1) );
-// 		CHECK_FALSE( skipped_vspace("abc\r\n\v", 1) );
-// 		CHECK_FALSE( skipped_vspace("123\r\n\v", 1) );
-// 	}
-
-// 	SECTION( "leading line-feed characters should be skipped" ) {
-// 		CHECK( skipped_vspace("\n.\n\r\v", 1) );
-// 		CHECK( skipped_vspace("\n(\n\r\v", 1) );
-// 		CHECK( skipped_vspace("\nabc\r\n\v", 1) );
-// 		CHECK( skipped_vspace("\n123\r\n\v", 1) );
-// 		CHECK( skipped_vspace("\n \n\r", 1) );
-// 		CHECK( skipped_vspace("\n\t\n\r", 1) );
-
-// 		CHECK( skipped_vspace("\n\n\n.\n\r\v", 3) );
-// 		CHECK( skipped_vspace("\n\n\n(\n\r\v", 3) );
-// 		CHECK( skipped_vspace("\n\n\nabc\r\n\v", 3) );
-// 		CHECK( skipped_vspace("\n\n\n123\r\n\v", 3) );
-// 		CHECK( skipped_vspace("\n\n\n \n\r\v", 3) );
-// 		CHECK( skipped_vspace("\n\n\n\t\n\r\v", 3) );
-
-// 		CHECK_FALSE( skipped_vspace(".\n\r\v", 1) );
-// 		CHECK_FALSE( skipped_vspace("()\n\r\v", 1) );
-// 		CHECK_FALSE( skipped_vspace("abc\r\n\v", 1) );
-// 		CHECK_FALSE( skipped_vspace("123\r\n\v", 1) );
-// 	}
-// }
-
-

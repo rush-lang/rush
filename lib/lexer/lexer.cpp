@@ -267,6 +267,13 @@ private:
 		return lexical_token_suffix::none;
 	}
 
+	template <typename Pred>
+	lexical_token scan_integer_literal(Pred predicate, int base) {
+		auto value = scan_while(predicate);
+		auto suffix = scan_integer_literal_suffix();
+		return tok::suffixed_integer_literal(std::stoll(value, 0, base), suffix, location());
+	}
+
 	lexical_token scan_numeric_literal() {
 		assert(!eof() && "unexpected end of source.");
 		assert(check('.') || check(is_digit) && "expected a leading digit while attempting to scan an integer literal.");
@@ -274,19 +281,9 @@ private:
 		if (is_zero_digit(peek())) {
 			skip(); // consume zero digit.
 
-			if (icheck('x')) {
-				skip(); // consume hexadecimal prefix.
-				auto value = scan_while(is_hex_digit);
-				auto suffix = scan_integer_literal_suffix();
-				return tok::suffixed_integer_literal(std::stoll(value, 0, 16), suffix, location());
-			}
-
-			if (icheck('b')) {
-				skip(); // consume binary prefix
-				auto value = scan_while(is_bin_digit);
-				auto suffix = scan_integer_literal_suffix();
-				return tok::suffixed_integer_literal(std::stoll(value, 0, 2), suffix, location());
-			}
+			if (icheck('x')) { skip(); return scan_integer_literal(is_hex_digit, 16); }
+			if (icheck('b')) { skip(); return scan_integer_literal(is_bin_digit, 2); }
+			if (icheck('o')) { skip(); return scan_integer_literal(is_oct_digit, 8); }
 
 			if (check('.') && check(is_digit, 1)) {
 				skip(); // consume decimal point.
