@@ -29,10 +29,10 @@ bool valid_lex(std::string input, std::vector<rush::lexical_token> expect) {
 		lxa.begin(), lxa.end(), expect.begin(), expect.end());
 
 	if (!result) {
-	for (auto const& t : lxa) {
+		for (auto const& t : lxa) {
 			std::cout << to_debug_string(t) << std::endl;
+		}
 	}
-}
 
 	return result;
 }
@@ -100,7 +100,7 @@ TEST_CASE( "rush::lex" ) {
 		tok::identifier("a", { 2, 9 }),
 		tok::plus({ 2, 11 }),
 		tok::identifier("b", { 2, 13 }),
-		tok::dedent(),
+		tok::dedent({ 3, 1 }),
 	}));
 
 	CHECK( valid_lex("let xs = map(1...10, pow($, 2))", {
@@ -295,7 +295,7 @@ TEST_CASE( "rush::lex (tab-indentation)" ) {
 	CHECK( valid_lex("\tabc", {
 		tok::indent({ 1, 1 }),
 		tok::identifier("abc", { 1, 2 }),
-		tok::dedent(),
+		tok::dedent({ 2, 1 }),
 	}));
 
 	CHECK( valid_lex("\tabc\n\t\tdef", {
@@ -303,8 +303,8 @@ TEST_CASE( "rush::lex (tab-indentation)" ) {
 		tok::identifier("abc", { 1, 2 }),
 		tok::indent({ 2, 1 }),
 		tok::identifier("def", { 2, 3 }),
-		tok::dedent(),
-		tok::dedent(),
+		tok::dedent({ 3, 2 }),
+		tok::dedent({ 4, 1 }),
 	}));
 
 	CHECK( valid_lex("\tabc\n\t\tdef\n\tghi", {
@@ -314,7 +314,7 @@ TEST_CASE( "rush::lex (tab-indentation)" ) {
 		tok::identifier("def", { 2, 3 }),
 		tok::dedent({ 3, 1 }),
 		tok::identifier("ghi", { 3, 2 }),
-		tok::dedent(),
+		tok::dedent({ 4, 1 }),
 	}));
 
 	// initial indentation space (tab/spaces) is used to discover
@@ -323,7 +323,7 @@ TEST_CASE( "rush::lex (tab-indentation)" ) {
 	CHECK( valid_lex("\t\tabc", {
 		tok::indent({ 1, 1 }),
 		tok::identifier("abc", { 1, 3 }),
-		tok::dedent(),
+		tok::dedent({ 2, 1 }),
 	}));
 
 	CHECK( valid_lex("\t\tabc\n\tdef", {
@@ -337,7 +337,7 @@ TEST_CASE( "rush::lex (tab-indentation)" ) {
 		tok::indent({ 1, 1 }),
 		tok::identifier("abc", { 1, 2 }),
 		tok::identifier("def", { 2, 2 }),
-		tok::dedent()
+		tok::dedent({ 3, 1 })
 	}));
 
 	// empty lines should not produce indents/dedents
@@ -348,14 +348,14 @@ TEST_CASE( "rush::lex (tab-indentation)" ) {
 		tok::indent({ 1, 1 }),
 		tok::identifier("abc", { 1, 2 }),
 		tok::identifier("def", { 3, 2 }),
-		tok::dedent()
+		tok::dedent({ 4, 1 })
 	}));
 
 	CHECK( valid_lex("\tabc\n\t\t\n\tdef", {
 		tok::indent({ 1, 1 }),
 		tok::identifier("abc", { 1, 2 }),
 		tok::identifier("def", { 3, 2 }),
-		tok::dedent()
+		tok::dedent({ 4, 1 })
 	}));
 }
 

@@ -149,16 +149,16 @@ private:
 
 	void skip_empty_lines() {
 		for (;;) {
-		skip_while(is_vspace);
+			skip_while(is_vspace);
 			auto pin = _iters.first;
 			skip_while(is_hspace);
 
 			if (eof()) break;
 			if (!is_newline(peek())) {
-			_iters.first = pin;
+				_iters.first = pin;
 				break;
+			}
 		}
-	}
 	}
 
 	lexical_token next_token() {
@@ -185,13 +185,7 @@ private:
 			return tok::make_error_token("unexpected token", location());
 		}
 
-		// close remaining indentation.
-		// todo: fake the location changes.
-		if (_indentation.depth() > 0) {
-			_indentation.decrement();
-			return tok::dedent();
-		}
-
+		unwind_indentation();
 		return tok::eof();
 	}
 
@@ -390,6 +384,18 @@ private:
 
 		skip(); // consume symbol.
 		return tok::make_symbol_token(symbol, location());
+	}
+
+	void unwind_indentation() {
+		while (_indentation.depth() > 0) {
+			_pinloc = rush::location {
+				_tokens.back().location().line() + 1,
+				_indentation.depth()
+			};
+
+			_indentation.decrement();
+			_tokens.push_back(tok::dedent(location()));
+		}
 	}
 };
 
