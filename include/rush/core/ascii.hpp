@@ -78,8 +78,9 @@ namespace rush {
 		}
 
 		inline bool iequal(codepoint_t lhs, codepoint_t rhs) {
+			auto diff = lhs < rhs ? rhs - lhs : lhs - rhs;
 			return lhs == rhs
-				|| ((rhs - lhs == 32)
+				|| ((diff == 32)
 				&& is_letter(lhs)
 				&& is_letter(rhs));
 		}

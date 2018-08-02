@@ -123,3 +123,23 @@ TEST_CASE( "rush::ascii::is_ident_body", "[unit][core]" ) {
 	CHECK_FALSE( is_ident_body('\xc2') );
 	CHECK_FALSE( is_ident_body('\xff') );
 }
+
+TEST_CASE ("rush::ascii::iequal", "[unit][core]" ) {
+	CHECK( iequal('a', 'a') );
+	CHECK( iequal('A', 'A') );
+	CHECK( iequal('z', 'z') );
+	CHECK( iequal('Z', 'Z') );
+	CHECK( iequal('0', '0') );
+	CHECK( iequal('.', '.') );
+
+	CHECK( iequal('a', 'A') );
+	CHECK( iequal('A', 'a') );
+	CHECK( iequal('z', 'Z') );
+	CHECK( iequal('Z', 'z') );
+
+	CHECK_FALSE( iequal('a', 'z') );
+	CHECK_FALSE( iequal('z', 'a') );
+
+	CHECK_FALSE( iequal('a', 'Z') );
+	CHECK_FALSE( iequal('z', 'A') );
+}
