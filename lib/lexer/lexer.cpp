@@ -93,7 +93,7 @@ private:
 	}
 
 	bool is_line_start() noexcept {
-		return _iters.first.location().column() == 1;
+		return !eof() && _iters.first.location().column() == 1;
 	}
 
 	codepoint_t peek(std::size_t offset = 0) {
@@ -147,27 +147,25 @@ private:
 		return std::string(temp, _iters.first);
 	}
 
-	bool skip_empty_line() {
+	void skip_empty_lines() {
+		for (;;) {
 		skip_while(is_vspace);
-		if (is_line_start())
-		{
 			auto pin = _iters.first;
 			skip_while(is_hspace);
-			if (eof() || is_newline(peek()))
-				return true;
 
+			if (eof()) break;
+			if (!is_newline(peek())) {
 			_iters.first = pin;
+				break;
 		}
-
-		return false;
+	}
 	}
 
 	lexical_token next_token() {
-		while (skip_empty_line());
-		if (is_line_start()) {
-			if (auto indent = try_scan_indentation())
-				return *indent;
-		}
+		skip_empty_lines();
+
+		auto indent = try_scan_indentation();
+		if (indent) return *indent;
 
 		skip_while(is_hspace);
 		pin_location();
@@ -199,6 +197,9 @@ private:
 
 
 	std::optional<lexical_token> try_scan_indentation() {
+		if (!is_line_start())
+			return std::nullopt;
+
 		assert(!eof() && "unexpected end of source.");
 		assert(is_line_start() && "expected start of line while attempting to scan indentation depth.");
 

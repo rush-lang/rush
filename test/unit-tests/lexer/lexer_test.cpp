@@ -25,16 +25,64 @@ const char* to_string(rush::lexical_token_type type) {
 
 bool valid_lex(std::string input, std::vector<rush::lexical_token> expect) {
 	auto lxa = rush::lex(input);
-	for (auto const& t : lxa) {
-		std::cout << to_string(t.location()) << " : " << to_string(t.type()) << std::endl;
-	}
-	return lxa.size() == expect.size() && std::equal(
+	auto result = lxa.size() == expect.size() && std::equal(
 		lxa.begin(), lxa.end(), expect.begin(), expect.end());
+
+	if (!result) {
+	for (auto const& t : lxa) {
+			std::cout << to_debug_string(t) << std::endl;
+	}
 }
+
+	return result;
+}
+
+bool valid_lex_same(std::string input, std::vector<rush::lexical_token> expect) {
+	auto lxa = rush::lex(input);
+	auto result = lxa.size() == expect.size() && std::equal(
+		lxa.begin(), lxa.end(), expect.begin(), expect.end(),
+		[](auto& lhs, auto& rhs) { return lhs.is_same(rhs); });
+
+	if (!result) {
+		for (auto const& t : lxa) {
+			std::cout << to_debug_string(t) << std::endl;
+		}
+	}
+
+	return result;
+}
+
+char const* hello_world_str = R"(
+import std.io
+
+func main(args: string[]):
+	println("hello world!")
+)";
 
 TEST_CASE( "rush::lex" ) {
 
-	CHECK( valid_lex("", {}) );
+	CHECK( valid_lex_same(hello_world_str, {
+		tok::import_keyword(),
+		tok::identifier("std"),
+		tok::period(),
+		tok::identifier("io"),
+		tok::func_keyword(),
+		tok::identifier("main"),
+		tok::left_parenthesis(),
+		tok::identifier("args"),
+		tok::colon(),
+		tok::string_keyword(),
+		tok::left_square_bracket(),
+		tok::right_square_bracket(),
+		tok::right_parenthesis(),
+		tok::colon(),
+		tok::indent(),
+		tok::identifier("println"),
+		tok::left_parenthesis(),
+		tok::string_literal("hello world!"),
+		tok::right_parenthesis(),
+		tok::dedent(),
+	}) );
 
 	CHECK( valid_lex("func add(a, b: numeric):\n\treturn a + b", {
 		tok::func_keyword({ 1, 1 }),
