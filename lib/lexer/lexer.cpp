@@ -45,25 +45,15 @@ public:
 		_tokens = std::move(other._tokens);
 	}
 
-	void initialize(FwdIter first, FwdIter last) {
-		_iters = {
-			lexer_iterator { first, last, {} },
-			lexer_iterator { last, last, location::undefined }
-		};
-	}
-
-
-	void tokenize(FwdIter first, FwdIter last) {
-		if (first == last) return;
-
-		initialize(first, last);
-		auto token = next_token();
-		for (; !token.is(symbols::eof); token = next_token()) {
-			_tokens.push_back(std::move(token));
+	std::vector<lexical_token> tokenize(FwdIter first, FwdIter last) {
+		if (first != last) {
+			initialize(first, last);
+			auto token = next_token();
+			for (; !token.is(symbols::eof); token = next_token()) {
+				_tokens.push_back(std::move(token));
+			}
 		}
-	}
 
-	std::vector<lexical_token> flush() {
 		return std::move(_tokens);
 	}
 
@@ -76,9 +66,15 @@ private:
 		lexer_iterator<FwdIter>,
 		lexer_iterator<FwdIter>> _iters;
 
-
-	lexer(rush::lexer_options opts)
+	explicit lexer(rush::lexer_options opts)
 		: _options(opts) {}
+
+	void initialize(FwdIter first, FwdIter last) {
+		_iters = {
+			lexer_iterator { first, last, {} },
+			lexer_iterator { last, last, location::undefined }
+		};
+	}
 
 	inline bool eof() {
 		return _iters.first == _iters.second;
@@ -404,8 +400,7 @@ namespace rush {
 	template <typename FwdIter>
 	lexical_analysis lex(FwdIter first, FwdIter last, lexer_options const& opts) {
 		auto l = lexer<FwdIter> { opts };
-		l.tokenize(first, last);
-		return { l.flush() };
+		return lexical_analysis { l.tokenize(first, last) };
 	}
 
 	lexical_analysis lex(char const* input, lexer_options const& opts) {

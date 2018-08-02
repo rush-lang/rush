@@ -53,7 +53,7 @@ namespace rush {
 		}
 
 	private:
-		lexical_analysis(std::vector<lexical_token> toks)
+		explicit lexical_analysis(std::vector<lexical_token> toks)
 			: _tokens(std::move(toks)) {}
 
 		std::vector<lexical_token> _tokens;
