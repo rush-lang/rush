@@ -1,4 +1,4 @@
-#include "rush/core/charinfo.hpp"
+#include "rush/core/ascii.hpp"
 #include "rush/core/iterator.hpp"
 #include "rush/lexer/token.hpp"
 #include "rush/lexer/lexer.hpp"
@@ -14,7 +14,7 @@
 
 
 using namespace rush;
-using namespace rush::charinfo;
+using namespace rush::ascii;
 
 namespace tok = rush::tokens;
 

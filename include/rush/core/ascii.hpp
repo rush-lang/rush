@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef RUSH_CORE_CHARINFO_HPP
-#define RUSH_CORE_CHARINFO_HPP
+#ifndef RUSH_CORE_ASCII_HPP
+#define RUSH_CORE_ASCII_HPP
 
 #include <cstdint>
 #include <cstdlib>
@@ -12,12 +12,7 @@ namespace rush {
 	using codepoint_t = std::uint32_t;
 	static const codepoint_t npos_codepoint = -1;
 
-	namespace charinfo {
-
-		inline bool iequal(codepoint_t lhs, codepoint_t rhs) {
-			return std::tolower(lhs) == std::tolower(rhs);
-		}
-
+	namespace ascii {
 		inline bool is_ascii(codepoint_t cp) {
 			return cp <= 127;
 		}
@@ -28,37 +23,38 @@ namespace rush {
 
 		inline bool is_letter(codepoint_t cp) {
 			// change to unicode codepoints.
-			return std::isalpha(cp);
+			return ('a' <= cp && cp <= 'z')
+				|| ('A' <= cp && cp <= 'Z');
 		}
 
-		inline bool is_digit(codepoint_t cp) {
-			return std::isdigit(cp);
+		constexpr bool is_digit(codepoint_t cp) {
+			return '0' <= cp && cp <= '9';
 		}
 
-		inline bool is_quote(codepoint_t cp) {
+		constexpr bool is_quote(codepoint_t cp) {
 			return cp == '"';
 		}
 
-		inline bool is_zero_digit(codepoint_t cp) {
+		constexpr bool is_zero_digit(codepoint_t cp) {
 			return cp == '0';
 		}
 
-		inline bool is_non_zero_digit(codepoint_t cp) {
+		constexpr bool is_non_zero_digit(codepoint_t cp) {
 			return !is_zero_digit(cp) && is_digit(cp);
 		}
 
-		inline bool is_bin_digit(codepoint_t cp) {
+		constexpr bool is_bin_digit(codepoint_t cp) {
 			return cp == '1' || cp == '0';
 		}
 
-		inline bool is_hex_digit(codepoint_t cp) {
+		constexpr bool is_oct_digit(codepoint_t cp) {
+			return ('0' <= cp && cp <= '7');
+		}
+
+		constexpr bool is_hex_digit(codepoint_t cp) {
 			return is_digit(cp)
-				|| cp == 'a' || cp == 'A'
-				|| cp == 'b' || cp == 'B'
-				|| cp == 'c' || cp == 'C'
-				|| cp == 'd' || cp == 'D'
-				|| cp == 'e' || cp == 'E'
-				|| cp == 'f' || cp == 'F';
+				|| ('a' <= cp && cp <= 'f')
+				|| ('A' <= cp && cp <= 'F');
 		}
 
 		inline bool is_hspace(codepoint_t cp) {
@@ -80,7 +76,14 @@ namespace rush {
 		inline bool is_ident_body(codepoint_t cp) {
 			return is_ident_head(cp) || is_digit(cp);
 		}
-	} // charinfo
+
+		inline bool iequal(codepoint_t lhs, codepoint_t rhs) {
+			return lhs == rhs
+				|| ((rhs - lhs == 32)
+				&& is_letter(lhs)
+				&& is_letter(rhs));
+		}
+	} // ascii
 } // rush
 
-#endif // RUSH_CORE_CHARINFO_HPP
+#endif // RUSH_CORE_ASCII_HPP

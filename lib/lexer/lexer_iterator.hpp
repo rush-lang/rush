@@ -3,13 +3,13 @@
 #ifndef RUSH_LEXER_LEXER_ITERATOR_HPP
 #define RUSH_LEXER_LEXER_ITERATOR_HPP
 
-#include "rush/core/charinfo.hpp"
+#include "rush/core/ascii.hpp"
 #include "rush/core/location.hpp"
 
 #include <iterator>
 
 using namespace rush;
-using namespace charinfo;
+using namespace ascii;
 
 template <typename FwdIter>
 class lexer_iterator {

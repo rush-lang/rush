@@ -1,10 +1,10 @@
 #include "catch2/catch.hpp"
-#include "rush/core/charinfo.hpp"
+#include "rush/core/ascii.hpp"
 
 
-using namespace rush::charinfo;
+using namespace rush::ascii;
 
-TEST_CASE( "rush::charinfo::is_letter", "[unit][core]" ) {
+TEST_CASE( "rush::ascii::is_letter", "[unit][core]" ) {
 	CHECK_FALSE( is_letter('0') );
 	CHECK_FALSE( is_letter('9') );
 
@@ -26,7 +26,7 @@ TEST_CASE( "rush::charinfo::is_letter", "[unit][core]" ) {
 }
 
 
-TEST_CASE( "rush::charinfo::is_digit", "[unit][core]" ) {
+TEST_CASE( "rush::ascii::is_digit", "[unit][core]" ) {
 	CHECK_FALSE( is_digit('a') );
 	CHECK_FALSE( is_digit('A') );
 	CHECK_FALSE( is_digit('z') );
@@ -45,7 +45,7 @@ TEST_CASE( "rush::charinfo::is_digit", "[unit][core]" ) {
 	CHECK_FALSE( is_digit('\xff') );
 }
 
-TEST_CASE( "rush::charinfo::is_zero_digit", "[unit][core]" ) {
+TEST_CASE( "rush::ascii::is_zero_digit", "[unit][core]" ) {
 	CHECK_FALSE( is_non_zero_digit('0') );
 
 	CHECK( is_non_zero_digit('1') );
@@ -60,7 +60,7 @@ TEST_CASE( "rush::charinfo::is_zero_digit", "[unit][core]" ) {
 	CHECK_FALSE( is_non_zero_digit('_') );
 }
 
-TEST_CASE( "rush::charinfo::is_space", "[unit][core]" ) {
+TEST_CASE( "rush::ascii::is_space", "[unit][core]" ) {
 	CHECK_FALSE( is_space('a') );
 	CHECK_FALSE( is_space('_') );
 	CHECK_FALSE( is_space('0') );
@@ -82,7 +82,7 @@ TEST_CASE( "rush::charinfo::is_space", "[unit][core]" ) {
 }
 
 
-TEST_CASE( "rush::charinfo::is_ident_head", "[unit][core]" ) {
+TEST_CASE( "rush::ascii::is_ident_head", "[unit][core]" ) {
 	CHECK_FALSE( is_ident_head('.') );
 	CHECK_FALSE( is_ident_head('0') );
 	CHECK_FALSE( is_ident_head('9') );
@@ -103,7 +103,7 @@ TEST_CASE( "rush::charinfo::is_ident_head", "[unit][core]" ) {
 }
 
 
-TEST_CASE( "rush::charinfo::is_ident_body", "[unit][core]" ) {
+TEST_CASE( "rush::ascii::is_ident_body", "[unit][core]" ) {
 	CHECK_FALSE( is_ident_body('.') );
 
 	CHECK( is_ident_body('0') );
