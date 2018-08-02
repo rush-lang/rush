@@ -304,6 +304,27 @@ namespace rush {
 		struct location _loc;
 	};
 
+	inline std::string to_string(lexical_token const& tok) {
+		auto text = tok.text();
+
+		switch (tok.suffix()) {
+		case lexical_token_suffix::long_literal: text += "l";
+		case lexical_token_suffix::float_literal: text += "f";
+		case lexical_token_suffix::unsigned_literal: text += "u";
+		default: break;
+		}
+
+		return std::move(text);
+	}
+
+	inline std::string to_debug_string(lexical_token const& tok) {
+		std::ostringstream oss;
+		oss
+			<< "[ln: " << tok.location().line()
+			<< ", col: " << tok.location().column()
+			<< " : " << to_string(tok) << "]";
+		return oss.str();
+	}
 
 	inline bool operator == (lexical_token const& lhs, lexical_token const& rhs) {
 		return lhs.location() == rhs.location() && lhs.is_same(rhs);
