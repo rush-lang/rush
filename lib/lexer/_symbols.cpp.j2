@@ -4,14 +4,21 @@
 #include <string>
 
 namespace rush::symbols {
-	symbol_t to_value(std::string const& sy) {
+	symbol_t to_value(std::string const& s) {
 		{% for symbol in symbols %}
-		if (sy == "{{ symbol/symbol }}") return symbols::{{ symbol/name }};
+		if (s == "{{ symbol/symbol }}") return symbols::{{ symbol/name }};
 		{% endfor %}
 		return symbols::unknown;
 	}
 
-	std::string to_string(symbol_t) {
-		return "";
+	std::string to_string(symbol_t s) {
+		switch (s) {
+		{% for symbol in symbols %}
+		{% if existsIn(symbol, "symbol") %}
+		case {{ symbol/name }}: return "{{ symbol/symbol }}";
+		{% endif %}
+		{% endfor %}
+		default: return "";
+		}
 	}
 }
