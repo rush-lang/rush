@@ -13,15 +13,15 @@ namespace rush {
 	static const codepoint_t npos_codepoint = -1;
 
 	namespace ascii {
-		inline bool is_ascii(codepoint_t cp) {
+		constexpr bool is_ascii(codepoint_t cp) {
 			return cp <= 127;
 		}
 
-		inline bool is_newline(codepoint_t cp) {
+		constexpr bool is_newline(codepoint_t cp) {
 			return cp == '\n';
 		}
 
-		inline bool is_letter(codepoint_t cp) {
+		constexpr bool is_letter(codepoint_t cp) {
 			// change to unicode codepoints.
 			return ('a' <= cp && cp <= 'z')
 				|| ('A' <= cp && cp <= 'Z');
@@ -29,6 +29,20 @@ namespace rush {
 
 		constexpr bool is_digit(codepoint_t cp) {
 			return '0' <= cp && cp <= '9';
+		}
+
+		constexpr bool is_hex_digit(codepoint_t cp) {
+			return is_digit(cp)
+				|| ('a' <= cp && cp <= 'f')
+				|| ('A' <= cp && cp <= 'F');
+		}
+
+		constexpr bool is_oct_digit(codepoint_t cp) {
+			return ('0' <= cp && cp <= '7');
+		}
+
+		constexpr bool is_bin_digit(codepoint_t cp) {
+			return cp == '1' || cp == '0';
 		}
 
 		constexpr bool is_quote(codepoint_t cp) {
@@ -43,41 +57,27 @@ namespace rush {
 			return !is_zero_digit(cp) && is_digit(cp);
 		}
 
-		constexpr bool is_bin_digit(codepoint_t cp) {
-			return cp == '1' || cp == '0';
-		}
-
-		constexpr bool is_oct_digit(codepoint_t cp) {
-			return ('0' <= cp && cp <= '7');
-		}
-
-		constexpr bool is_hex_digit(codepoint_t cp) {
-			return is_digit(cp)
-				|| ('a' <= cp && cp <= 'f')
-				|| ('A' <= cp && cp <= 'F');
-		}
-
-		inline bool is_hspace(codepoint_t cp) {
+		constexpr bool is_hspace(codepoint_t cp) {
 			return cp == ' ' || cp == '\t';
 		}
 
-		inline bool is_vspace(codepoint_t cp) {
+		constexpr bool is_vspace(codepoint_t cp) {
 			return cp == '\r' || cp == '\n' || cp == '\v';
 		}
 
-		inline bool is_space(codepoint_t cp) {
+		constexpr bool is_space(codepoint_t cp) {
 			return is_hspace(cp) || is_vspace(cp);
 		}
 
-		inline bool is_ident_head(codepoint_t cp) {
+		constexpr bool is_ident_head(codepoint_t cp) {
 			return (is_ascii(cp) && is_letter(cp)) || cp == '_';
 		}
 
-		inline bool is_ident_body(codepoint_t cp) {
+		constexpr bool is_ident_body(codepoint_t cp) {
 			return is_ident_head(cp) || is_digit(cp);
 		}
 
-		inline bool iequal(codepoint_t lhs, codepoint_t rhs) {
+		constexpr bool iequal(codepoint_t lhs, codepoint_t rhs) {
 			auto diff = lhs < rhs ? rhs - lhs : lhs - rhs;
 			return lhs == rhs
 				|| ((diff == 32)
