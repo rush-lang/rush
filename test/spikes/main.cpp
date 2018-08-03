@@ -2,20 +2,17 @@
 #include "rush/parser/parser.hpp"
 #include <iostream>
 
-namespace rush {
-	template <typename Fn>
-	void source_context(std::string src, Fn fn) {
+char const* src = R"(
+import std.io;
 
-	}
-}
+func main(args: string[]):
+	println("hello world!");
+	return 0;
+)";
 
 int main() {
-	rush::source_context({
-		"stdio.rs"
-		"stdmath.rs",
-		"main.rs",
-	}, [](auto& src) {
-		auto lxa = rush::lex(src.text());
-		auto ast = rush::parse(lxa);
-	});
+	auto lxa = rush::lex(src);
+	for (auto& tok : lxa) {
+		std::cout << debug_string(tok) << std::endl;
+	}
 }

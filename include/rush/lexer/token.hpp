@@ -162,19 +162,7 @@ namespace rush {
 		}
 
 		// \brief Returns the plain text of the token.
-		std::string text() const {
-			using std::to_string;
-			using rush::to_string;
-
-			return std::visit(overloaded {
-				[](auto& arg) { return to_string(arg); },
-				[](error_t const& arg) { return arg.msg; },
-				[](integral_t const& arg) { return to_string(arg.val); },
-				[](floating_t const& arg) { return to_string(arg.val); },
-				[](identifier_t const& arg) { return arg.text; },
-				[](std::string arg) { return std::move(arg); },
-			}, _val);
-		}
+		std::string text() const;
 
 		// \brief Returns the categorical type of the token based on its value.
 		lexical_token_type type() const noexcept {
@@ -305,26 +293,10 @@ namespace rush {
 	};
 
 	inline std::string to_string(lexical_token const& tok) {
-		auto text = tok.text();
-
-		switch (tok.suffix()) {
-		case lexical_token_suffix::long_literal: text += "l";
-		case lexical_token_suffix::float_literal: text += "f";
-		case lexical_token_suffix::unsigned_literal: text += "u";
-		default: break;
-		}
-
-		return std::move(text);
+		return tok.text();
 	}
 
-	inline std::string to_debug_string(lexical_token const& tok) {
-		std::ostringstream oss;
-		oss
-			<< "[ln: " << tok.location().line()
-			<< ", col: " << tok.location().column()
-			<< " : " << to_string(tok) << "]";
-		return oss.str();
-	}
+	std::string debug_string(lexical_token const& tok);
 
 	inline bool operator == (lexical_token const& lhs, lexical_token const& rhs) {
 		return lhs.location() == rhs.location() && lhs.is_same(rhs);

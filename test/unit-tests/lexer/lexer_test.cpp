@@ -11,17 +11,6 @@ namespace symbols = rush::symbols;
 using rush::lexical_token_prefix;
 using rush::lexical_token_suffix;
 
-const char* to_string(rush::lexical_token_type type) {
-	switch (type) {
-	case rush::lexical_token_type::error: return "error";
-	case rush::lexical_token_type::symbol: return "symbol";
-	case rush::lexical_token_type::keyword: return "keyword";
-	case rush::lexical_token_type::identifier: return "identifier";
-	case rush::lexical_token_type::string_literal: return "string";
-	case rush::lexical_token_type::integer_literal: return "integer";
-	case rush::lexical_token_type::floating_literal: return "floating";
-	}
-}
 
 bool valid_lex(std::string input, std::vector<rush::lexical_token> expect) {
 	auto lxa = rush::lex(input);
@@ -30,7 +19,7 @@ bool valid_lex(std::string input, std::vector<rush::lexical_token> expect) {
 
 	if (!result) {
 		for (auto const& t : lxa) {
-			std::cout << to_debug_string(t) << std::endl;
+			std::cout << debug_string(t) << std::endl;
 		}
 	}
 
@@ -45,7 +34,7 @@ bool valid_lex_same(std::string input, std::vector<rush::lexical_token> expect) 
 
 	if (!result) {
 		for (auto const& t : lxa) {
-			std::cout << to_debug_string(t) << std::endl;
+			std::cout << debug_string(t) << std::endl;
 		}
 	}
 
