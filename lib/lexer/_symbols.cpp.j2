@@ -16,6 +16,11 @@ namespace rush::symbols {
 		{% for symbol in symbols %}
 		{% if existsIn(symbol, "symbol") %}
 		case {{ symbol/name }}: return "{{ symbol/symbol }}";
+		{% if existsIn(symbol, "compounded") %}
+		{% for compounded in symbol/compounded %}
+		case {{ compounded/name }}: return "{{ symbol/symbol }}{{ compounded/symbol }}";
+		{% endfor %}
+		{% endif %}
 		{% endif %}
 		{% endfor %}
 		default: return "";
