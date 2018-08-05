@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <string_view>
 
-static const std::unordered_map<std::string_view, rush::keywords::keyword_t>
+static const std::unordered_map<std::string_view, rush::keyword_t>
 	_keyword_map {
 		{% for type in types %}
 		{ "{{ type/name }}", rush::keywords::{{ type/name }}_ },

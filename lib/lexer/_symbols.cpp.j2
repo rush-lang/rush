@@ -2,13 +2,29 @@
 #include "rush/lexer/token.hpp"
 
 #include <string>
+#include <string_view>
+#include <unordered_map>
+
+static const std::unordered_map<std::string_view, rush::symbol_t>
+	_symbol_map {
+		{% for symbol in symbols %}
+		{% if existsIn(symbol, "symbol") %}
+		{ "{{ symbol/symbol }}", rush::symbols::{{ symbol/name }} },
+		{% if existsIn(symbol, "compounded") %}
+		{% for compounded in symbol/compounded %}
+		{ "{{ symbol/symbol }}{{ compounded/symbol }}", rush::symbols::{{ compounded/name }} },
+		{% endfor %}
+		{% endif %}
+		{% endif %}
+		{% endfor %}
+	};
 
 namespace rush::symbols {
 	symbol_t to_value(std::string const& s) {
-		{% for symbol in symbols %}
-		if (s == "{{ symbol/symbol }}") return symbols::{{ symbol/name }};
-		{% endfor %}
-		return symbols::unknown;
+		auto it = _symbol_map.find(s);
+		return it == _symbol_map.end()
+			? symbols::unknown
+			: it->second;
 	}
 
 	std::string to_string(symbol_t s) {
