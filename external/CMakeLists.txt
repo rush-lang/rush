@@ -7,3 +7,5 @@ endif()
 add_subdirectory(include/inja)
 add_subdirectory(include/cxxopts)
 add_subdirectory(include/nlohmann)
+
+add_subdirectory(fmt)
