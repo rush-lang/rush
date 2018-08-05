@@ -20,7 +20,7 @@ namespace rush::ast {
 	type const char_type = {};
 
 	int type_precedence(type const& t) {
-
+		return 0;
 	}
 
 	// \brief Returns the nearest base type of type.
