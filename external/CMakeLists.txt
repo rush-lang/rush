@@ -1,11 +1,10 @@
 
 
 if (RUSH_BUILD_TESTS)
-	add_subdirectory(include/catch2)
+	add_subdirectory(catch2)
 endif()
 
-add_subdirectory(include/inja)
-add_subdirectory(include/cxxopts)
-add_subdirectory(include/nlohmann)
-
 add_subdirectory(fmt)
+add_subdirectory(inja)
+add_subdirectory(cxxopts)
+add_subdirectory(nlohmann)

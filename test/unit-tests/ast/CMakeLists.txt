@@ -3,6 +3,6 @@ add_executable(ast-test
 	literal_test.cpp
 )
 
-target_include_directories(ast-test PRIVATE ../../../external/include)
+target_include_directories(ast-test PRIVATE ../../../external/catch2/include)
 target_link_libraries(ast-test ast)
 catch_discover_tests(ast-test)

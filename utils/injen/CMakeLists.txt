@@ -8,7 +8,7 @@ add_executable(injen
 target_compile_features(injen PUBLIC cxx_std_17)
 
 target_include_directories(injen PRIVATE include)
-target_link_libraries(injen PRIVATE inja)
+target_link_libraries(injen PRIVATE inja cxxopts)
 
 
 include(CMakeParseArguments)
