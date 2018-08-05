@@ -73,8 +73,9 @@ private:
 	}
 
 	lexical_token const& peek_skip_indent(lxa_iterator_difference_type offset = 0) {
+		auto i = offset;
 		auto* ptok = &peek(offset);
-		for (decltype(offset) i = offset; ptok->is_any(sy::indent, sy::dedent); ptok = &peek(i + offset), ++i);
+		for (; ptok->is_any(sy::indent, sy::dedent); ptok = &peek(i + offset), ++i);
 		return *ptok;
 	}
 
@@ -87,34 +88,6 @@ private:
 	lexical_token const& next() {
 		if (advance(_range.first, _range.second, 1)) return *_range.first;
 		return eof;
-	}
-
-	ast::type const& parse_type() {
-		auto& curtok = peek_skip_indent();
-		if (curtok.is_keyword()) {
-			switch (curtok.keyword()) {
-			case kw::void_: return ast::void_type;
-			case kw::bool_: return ast::bool_type;
-			case kw::sbyte_: return ast::sbyte_type;
-			case kw::byte_: return ast::byte_type;
-			case kw::int_: return ast::int_type;
-			case kw::uint_: return ast::uint_type;
-			case kw::long_: return ast::long_type;
-			case kw::ulong_: return ast::ulong_type;
-			case kw::float_: return ast::float_type;
-			case kw::double_: return ast::double_type;
-			case kw::string_: return ast::string_type;
-			default: break;
-			};
-		}
-		else if (curtok.is_identifier()) {
-			// todo: find entry in the symbol table, if it doesn't
-			// exist, no matter, the entry may be filled later
-			// in the program.
-		}
-
-		error("expected a type, but found '{}'", curtok);
-		return ast::none_type;
 	}
 
 	std::unique_ptr<ast::literal_expression> parse_literal_expression() {
@@ -190,7 +163,7 @@ namespace rush {
 	abstract_syntax_tree parse(std::string input, parser_options const& opts) {
 		auto lxa = rush::lex(input);
 		return parse(lxa, opts);
-	}
+}
 
 	abstract_syntax_tree parse(std::istream& input, parser_options const& opts) {
 		auto lxa = rush::lex(input);
