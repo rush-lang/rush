@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef RUSH_PARSER_PARSER_HPP
-#define RUSH_PARSER_PARSER_HPP
+#ifndef RUSH_PARSER_PARSE_HPP
+#define RUSH_PARSER_PARSE_HPP
 
 #include <string>
 #include <iostream>
@@ -9,7 +9,7 @@
 #include "rush/ast/expression.hpp"
 #include "rush/ast/declaration.hpp"
 
-#include "rush/lexer/lexer.hpp"
+#include "rush/lexer/lex.hpp"
 #include "rush/parser/ast.hpp"
 
 
@@ -33,4 +33,4 @@ namespace rush {
 
 } // rush
 
-#endif // RUSH_PARSER_PARSER_HPP
+#endif // RUSH_PARSER_PARSE_HPP

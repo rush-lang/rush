@@ -1,4 +1,4 @@
-#include "rush/lexer/lexer.hpp"
+#include "rush/lexer/lex.hpp"
 #include "rush/parser/parse.hpp"
 #include <iostream>
 

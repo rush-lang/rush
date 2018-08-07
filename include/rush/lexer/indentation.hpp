@@ -3,7 +3,9 @@
 #ifndef RUSH_LEXER_INDENTATION_HPP
 #define RUSH_LEXER_INDENTATION_HPP
 
+#include "rush/core/ascii.hpp"
 
+#include <cassert>
 #include <cstddef>
 #include <cstdint>
 

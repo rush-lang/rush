@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef RUSH_LEXER_LEXER_HPP
-#define RUSH_LEXER_LEXER_HPP
+#ifndef RUSH_LEXER_LEX_HPP
+#define RUSH_LEXER_LEX_HPP
 
 #include "rush/lexer/token.hpp"
 #include "rush/lexer/analysis.hpp"
@@ -19,4 +19,4 @@ namespace rush {
 	lexical_analysis lex(std::istream&, lexer_options const& = {});
 }
 
-#endif // RUSH_LEXER_LEXER_HPP
+#endif // RUSH_LEXER_LEX_HPP

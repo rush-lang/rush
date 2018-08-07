@@ -1,8 +1,8 @@
 #include "rush/core/ascii.hpp"
 #include "rush/core/iterator.hpp"
-#include "rush/lexer/token.hpp"
-#include "rush/lexer/lexer.hpp"
 #include "rush/lexer/indentation.hpp"
+#include "rush/lexer/token.hpp"
+#include "rush/lexer/lex.hpp"
 
 #include "lexer_iterator.hpp"
 

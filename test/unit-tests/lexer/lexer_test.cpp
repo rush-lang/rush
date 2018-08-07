@@ -1,5 +1,5 @@
 #include "catch2/catch.hpp"
-#include "rush/lexer/lexer.hpp"
+#include "rush/lexer/lex.hpp"
 
 #include <string_view>
 #include <initializer_list>
