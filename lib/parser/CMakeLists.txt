@@ -1,7 +1,11 @@
 project(parser VERSION ${RUSH_VERSION} LANGUAGES CXX)
 
 add_library(parser
-	parser.cpp
+	ast.cpp
+	parse.cpp
+	parse_statement.cpp
+	parse_expression.cpp
+	parse_declaration.cpp
 )
 
 target_include_directories(parser PUBLIC
@@ -11,5 +15,5 @@ target_include_directories(parser PUBLIC
 
 target_compile_features(parser PUBLIC cxx_std_17)
 
-target_link_libraries(parser PUBLIC lexer ast)
+target_link_libraries(parser PUBLIC fmt lexer ast)
 

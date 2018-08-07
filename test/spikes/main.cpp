@@ -1,5 +1,5 @@
 #include "rush/lexer/lexer.hpp"
-#include "rush/parser/parser.hpp"
+#include "rush/parser/parse.hpp"
 #include <iostream>
 
 char const* src = R"(

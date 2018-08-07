@@ -45,4 +45,26 @@ floating-literal ::= [ dec-integer-literal ] "." { digit } [ floating-literal-su
 
 string-literal ::= """ { string-char | escaped-string-char } """
 
+
+
+
+
 ## SYNTACTICAL GRAMMAR
+
+initializer ::= expression
+initializer-list ::= "=" initializer { "," initializer }
+
+type-annotation ::= ":" type
+
+identifier-pattern ::= identifier [ type-annotation ]
+destructuring-pattern ::= "{" pattern "}" [ type-annotation ]
+
+pattern ::=
+	| identifier-pattern
+	| destructuring-pattern
+
+pattern-list ::= pattern { "," pattern }
+
+pattern-initializer-list ::= pattern-list initializer-list
+constant-declaration-list ::= "let" pattern-initializer-list
+variable-declaration-list ::= "var" pattern-initializer-list

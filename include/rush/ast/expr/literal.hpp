@@ -3,7 +3,7 @@
 #ifndef RUSH_AST_LITERAL_HPP
 #define RUSH_AST_LITERAL_HPP
 
-#include "rush/ast/expr/expression.hpp"
+#include "rush/ast/expression.hpp"
 #include "rush/ast/type.hpp"
 
 #include <variant>
@@ -37,10 +37,6 @@ namespace rush::ast {
 	private:
 		variant_type _val;
 		type _type;
-
-		friend std::unique_ptr<literal_expression> make_literal_expr(
-			variant_type val,
-			ast::type const& val_type);
 	};
 
 	std::unique_ptr<literal_expression> literal_expr(bool);

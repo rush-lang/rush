@@ -3,6 +3,8 @@
 #ifndef RUSH_LEXER_ANALYSIS_HPP
 #define RUSH_LEXER_ANALYSIS_HPP
 
+#include "rush/lexer/token.hpp"
+
 #include <string>
 #include <iosfwd>
 #include <vector>

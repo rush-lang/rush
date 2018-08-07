@@ -6,11 +6,16 @@
 #include <string>
 #include <iostream>
 
+#include "rush/ast/expression.hpp"
+#include "rush/ast/declaration.hpp"
+
 #include "rush/lexer/lexer.hpp"
 #include "rush/parser/ast.hpp"
 
+
 #include <iostream>
 #include <string>
+#include <memory>
 
 namespace rush {
 

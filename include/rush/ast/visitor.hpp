@@ -9,7 +9,10 @@ namespace rush::ast {
 	class unary_expression;
 	class binary_expression;
 	class literal_expression;
-	class variable_expression;
+	class identifier_expression;
+
+	class constant_declaration;
+	class variable_declaration;
 
 	class visitor {
 	public:
@@ -19,7 +22,10 @@ namespace rush::ast {
 		virtual void visit_unary_expr(unary_expression const&) = 0;
 		virtual void visit_binary_expr(binary_expression const&) = 0;
 		virtual void visit_literal_expr(literal_expression const&) = 0;
-		virtual void visit_variable_expr(variable_expression const&) = 0;
+		virtual void visit_identifier_expr(identifier_expression const&) = 0;
+
+		virtual void visit_constant_decl(constant_declaration const&) = 0;
+		virtual void visit_variable_decl(variable_declaration const&) = 0;
 	};
 
 	// todo: generate this via injen instead.
@@ -28,7 +34,10 @@ namespace rush::ast {
 		virtual void visit_unary_expr(unary_expression const&) override;
 		virtual void visit_binary_expr(binary_expression const&) override;
 		virtual void visit_literal_expr(literal_expression const&) override;
-		virtual void visit_variable_expr(variable_expression const&) override;
+		virtual void visit_identifier_expr(identifier_expression const&) override;
+
+		virtual void visit_constant_decl(constant_declaration const&) override;
+		virtual void visit_variable_decl(variable_declaration const&) override;
 
 	public:
 		virtual void visit_addition(binary_expression const&);

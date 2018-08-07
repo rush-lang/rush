@@ -3,7 +3,7 @@
 #ifndef RUSH_AST_UNARY_HPP
 #define RUSH_AST_UNARY_HPP
 
-#include "rush/ast/expr/expression.hpp"
+#include "rush/ast/expression.hpp"
 
 #include <memory>
 
