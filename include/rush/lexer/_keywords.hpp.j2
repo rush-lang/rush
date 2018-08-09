@@ -9,12 +9,15 @@ namespace rush {
 	namespace keywords {
 		enum keyword_t {
 			unknown,
-			{% for type in types %}
+## for type in types
+			{# newline #}
 			{{ type/name }}_,
-			{% endfor %}
-			{% for keyword in keywords %}
+## endfor
+## for keyword in keywords
+			{# newline #}
 			{{ keyword/name }}_,
-			{% endfor %}
+## endfor
+
 		};
 
 		std::string to_string(keyword_t);

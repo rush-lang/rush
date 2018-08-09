@@ -7,16 +7,18 @@
 
 static const std::unordered_map<std::string_view, rush::symbol_t>
 	_symbol_map {
-		{% for symbol in symbols %}
-		{% if existsIn(symbol, "symbol") %}
+## for symbol in symbols
+## if existsIn(symbol, "symbol")
+{# spacing #}
 		{ "{{ symbol/symbol }}", rush::symbols::{{ symbol/name }} },
-		{% if existsIn(symbol, "compounded") %}
-		{% for compounded in symbol/compounded %}
+## if existsIn(symbol, "compounded")
+## for compounded in symbol/compounded
+{# spacing #}
 		{ "{{ symbol/symbol }}{{ compounded/symbol }}", rush::symbols::{{ compounded/name }} },
-		{% endfor %}
-		{% endif %}
-		{% endif %}
-		{% endfor %}
+## endfor
+## endif
+## endif
+## endfor
 	};
 
 namespace rush::symbols {
@@ -29,17 +31,41 @@ namespace rush::symbols {
 
 	std::string to_string(symbol_t s) {
 		switch (s) {
-		{% for symbol in symbols %}
-		{% if existsIn(symbol, "symbol") %}
+## for symbol in symbols
+## if existsIn(symbol, "symbol")
+{# spacing #}
 		case {{ symbol/name }}: return "{{ symbol/symbol }}";
-		{% if existsIn(symbol, "compounded") %}
-		{% for compounded in symbol/compounded %}
+## if existsIn(symbol, "compounded")
+## for compounded in symbol/compounded
+{# spacing #}
 		case {{ compounded/name }}: return "{{ symbol/symbol }}{{ compounded/symbol }}";
-		{% endfor %}
-		{% endif %}
-		{% endif %}
-		{% endfor %}
+## endfor
+## endif
+## endif
+## endfor
+{# spacing #}
 		default: return "";
+		}
+	}
+
+	std::size_t precedence(symbol_t s) {
+		switch(s) {
+## for symbol in symbols
+## if existsIn(symbol, "precedence")
+{# spacing #}
+		case {{ symbol/name }}: return {{ symbol/precedence }};
+## if existsIn(symbol, "compounded")
+## for compounded in symbol/compounded
+## if existsIn(compounded, "precedence")
+{# spacing #}
+		case {{ compounded/name }}: return {{ compounded/precedence }};
+## endif
+## endfor
+## endif
+## endif
+## endfor
+{# spacing #}
+		default: return -1;
 		}
 	}
 }

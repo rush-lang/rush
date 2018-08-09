@@ -9,14 +9,16 @@ namespace rush {
 	namespace symbols {
 		enum symbol_t {
 			unknown,
-			{% for symbol in symbols %}
+## for symbol in symbols
+			{# newline #}
 			{{ symbol/name }},
-			{% if existsIn(symbol, "compounded") %}
-			{% for compounded in symbol/compounded %}
+## if existsIn(symbol, "compounded")
+## for compounded in symbol/compounded
+			{# newline #}
 			{{ compounded/name }},
-			{% endfor %}
-			{% endif %}
-			{% endfor %}
+## endfor
+## endif
+## endfor
 		};
 
 		std::string to_string(symbol_t);
