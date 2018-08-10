@@ -1,18 +1,18 @@
 {
 	"unary": [
-		{ "name": "plus", "symbol": "+", "symbol_token": "plus" },
-		{ "name": "negate", "symbol": "-", "symbol_token": "minus" },
-		{ "name": "increment", "symbol": "++", "symbol_token": "plus_plus" },
-		{ "name": "decrement", "symbol": "--", "symbol_token": "minus_minus" }
+		{ "name": "plus", "symbol": "+", "symbol_token": "plus", "precedence": 30 },
+		{ "name": "negate", "symbol": "-", "symbol_token": "minus", "precedence": 30 },
+		{ "name": "increment", "symbol": "++", "symbol_token": "plus_plus", "precedence": 20 },
+		{ "name": "decrement", "symbol": "--", "symbol_token": "minus_minus", "precedence": 20 }
 	],
 
 	"binary": [
-		{ "name": "addition", "symbol": "+", "symbol_token": "plus" },
-		{ "name": "subtraction", "symbol": "-", "symbol_token": "minus" },
-		{ "name": "multiplication", "symbol": "*", "symbol_token": "asterisk" },
-		{ "name": "division", "symbol": "/", "symbol_token": "forward_slash" },
-		{ "name": "modulo", "symbol": "%", "symbol_token": "percent" },
-		{ "name": "logical_or", "symbol": "||", "symbol_token": "double_pipe" },
-		{ "name": "logical_and", "symbol": "&&", "symbol_token": "double_ampersand" }
+		{ "name": "addition", "symbol": "+", "symbol_token": "plus", "precedence": 60 },
+		{ "name": "subtraction", "symbol": "-", "symbol_token": "minus", "precedence": 60 },
+		{ "name": "multiplication", "symbol": "*", "symbol_token": "asterisk", "precedence": 50 },
+		{ "name": "division", "symbol": "/", "symbol_token": "forward_slash", "precedence": 50 },
+		{ "name": "modulo", "symbol": "%", "symbol_token": "percent", "precedence": 50 },
+		{ "name": "logical_or", "symbol": "||", "symbol_token": "double_pipe", "precedence": 150 },
+		{ "name": "logical_and", "symbol": "&&", "symbol_token": "double_ampersand", "precedence": 140 }
 	]
 }

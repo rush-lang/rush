@@ -7,13 +7,15 @@
 
 namespace rush {
 
-	static int compare_precedence(lexical_token const& lhs, lexical_token const& rhs) {
-		return 0;
-	}
-
 #define RUSH_IS_UNARY_OP_FUNC
 #define RUSH_IS_BINARY_OP_FUNC
+#define RUSH_PRECEDENCE_FUNC
 #include "rush/ast/_operators.hpp"
+
+	int compare_binary_op_precedence(lexical_token const& lhs, lexical_token const& rhs) {
+		return is_binary_op(lhs) && is_binary_op(rhs)
+			? binary_precedence(lhs) - binary_precedence(rhs) : 0;
+	}
 
 	std::unique_ptr<ast::expression> parser::parse_expression() {
 		auto expr = parse_primary_expression();
@@ -124,7 +126,7 @@ namespace rush {
 		auto rhs = parse_primary_expression();
 		auto curr = peek_skip_indent(); // look-ahead for possible binary operator.
 
-		if (compare_precedence(curr, prev) < 0)
+		if (compare_binary_op_precedence(curr, prev) < 0)
 			rhs = parse_binary_expression(std::move(rhs));
 
 		return std::move(rhs);

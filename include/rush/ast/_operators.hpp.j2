@@ -58,3 +58,28 @@ bool is_binary_op(lexical_token const& tok) {
 }
 #undef RUSH_IS_BINARY_OP_FUNC
 #endif
+
+#ifdef RUSH_PRECEDENCE_FUNC
+int unary_precedence(lexical_token const& tok) {
+	switch (tok.symbol()) {
+	default: return 0;
+## for operator in unary
+	{# spacing #}
+	case rush::symbols::{{ operator/symbol_token }}: return {{ operator/precedence }};
+## endfor
+	{# spacing #}
+	}
+}
+
+int binary_precedence(lexical_token const& tok) {
+	switch (tok.symbol()) {
+	default: return 0;
+## for operator in binary
+	{# spacing #}
+	case rush::symbols::{{ operator/symbol_token }}: return {{ operator/precedence }};
+## endfor
+	{# spacing #}
+	}
+}
+#undef RUSH_PRECEDENCE_FUNC
+#endif
