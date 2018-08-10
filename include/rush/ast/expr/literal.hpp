@@ -30,8 +30,9 @@ namespace rush::ast {
 			return _type;
 		}
 
-		virtual void accept(ast::visitor& vis) const override {
-			vis.visit_literal_expr(*this);
+		using node::accept;
+		virtual void accept(ast::visitor& v) const override {
+			v.visit_literal_expr(*this);
 		}
 
 	private:

@@ -38,8 +38,10 @@ namespace rush::ast {
 				_right->result_type());
 		}
 
-		virtual void accept(ast::visitor& vis) const override {
-			vis.visit_binary_expr(*this);
+		using node::accept;
+		virtual void accept(ast::visitor& v) const override {
+			// todo: switch between binary operators
+			v.visit_binary_expr(*this);
 		}
 
 	private:

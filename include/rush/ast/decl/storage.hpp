@@ -55,8 +55,9 @@ namespace rush::ast {
 		constant_declaration(std::string name, ast::type type, std::unique_ptr<expression> init, factory_tag_t)
 			: storage_declaration { std::move(name), type, std::move(init) } {}
 
-		virtual void accept(ast::visitor& vis) const override {
-			vis.visit_constant_decl(*this);
+		using node::accept;
+		virtual void accept(ast::visitor& v) const override {
+			v.visit_constant_decl(*this);
 		}
 	};
 
@@ -70,8 +71,9 @@ namespace rush::ast {
 		variable_declaration(std::string name, ast::type type, std::unique_ptr<expression> init, factory_tag_t)
 			: storage_declaration { std::move(name), type, std::move(init) } {}
 
-		virtual void accept(ast::visitor& vis) const override {
-			vis.visit_variable_decl(*this);
+		using node::accept;
+		virtual void accept(ast::visitor& v) const override {
+			v.visit_variable_decl(*this);
 		}
 	};
 

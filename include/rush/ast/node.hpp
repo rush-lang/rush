@@ -17,6 +17,7 @@ namespace rush::ast {
 		virtual ~node() = default;
 
 		virtual void accept(ast::visitor&) const = 0;
+		virtual void accept(ast::visitor&& v) const { accept(v); }
 	};
 } // rush
 

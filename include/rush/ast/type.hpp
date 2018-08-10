@@ -32,8 +32,9 @@ namespace rush::ast {
 			return _name;
 		}
 
-		virtual void accept(ast::visitor& vis) const {
-			vis.visit_type(*this);
+		using node::accept;
+		virtual void accept(ast::visitor& v) const {
+			v.visit_type(*this);
 		}
 
 	private:

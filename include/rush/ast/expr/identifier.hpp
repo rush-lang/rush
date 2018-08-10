@@ -24,8 +24,9 @@ namespace rush::ast {
 			return _name;
 		}
 
-		virtual void accept(ast::visitor& vis) const override {
-			vis.visit_identifier_expr(*this);
+		using node::accept;
+		virtual void accept(ast::visitor& v) const override {
+			v.visit_identifier_expr(*this);
 		}
 
 	private:
