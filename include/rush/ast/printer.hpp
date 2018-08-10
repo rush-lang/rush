@@ -18,7 +18,7 @@ namespace rush::ast {
 			auto depth = _indent - _current_indent;
 			for (std::size_t i = 0; i < depth; ++i) {
 				if (i + 1 != depth) _ostr << "   ";
-				else _ostr << "-  ";
+				else _ostr << "- ";
 			}
 		}
 
@@ -90,33 +90,30 @@ namespace rush::ast {
 		}
 
 		virtual void visit_constant_decl(constant_declaration const& decl) {
-			write("<constant-declaration : ");
-			decl.type().accept(*this);
-			write(" : \"");
-			write(decl.name());
-			writeln("\">");
-
-			indent();
-			write("initializer: "); decl.initializer().accept(*this);
-			dedent();
+			print_storage_decl("variable", decl);
 		}
 
 		virtual void visit_variable_decl(variable_declaration const& decl) {
-			write("<variable-declaration : ");
-			decl.type().accept(*this);
-			write(" : \"");
-			write(decl.name());
-			writeln("\">");
-
-			indent();
-			write("initializer: "); decl.initializer().accept(*this);
-			dedent();
+			print_storage_decl("variable", decl);
 		}
 
 	private:
 		std::size_t _indent;
 		std::size_t _current_indent;
 		std::basic_ostream<CharT, Traits>& _ostr;
+
+		void print_storage_decl(std::string name, storage_declaration const& decl) {
+			write("<");
+			write(name);
+			write("-declaration : ");
+			decl.type().accept(*this);
+			writeln(">");
+
+			indent();
+			write("name: \""); write(decl.name()); writeln("\"");
+			write("init: "); decl.initializer().accept(*this);
+			dedent();
+		}
 	};
 
 	using printer = basic_printer<char>;
