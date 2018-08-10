@@ -10,29 +10,28 @@ namespace rush {
 	class parser_options;
 	class lexical_analysis;
 
-	class abstract_syntax_tree {
-		friend abstract_syntax_tree parse(
+	class parse_result {
+		friend parse_result parse(
 			lexical_analysis const&,
 			parser_options const&);
 
 	public:
-		void accept(ast::visitor&& v) const {
-			accept(v);
+		ast::node* ast() noexcept {
+			return _root.get();
 		}
 
-		void accept(ast::visitor& v) const {
-			if (_root != nullptr)
-				_root->accept(v);
+		ast::node const* ast() const noexcept {
+			return _root.get();
 		}
 
 	private:
 		std::unique_ptr<ast::node> _root;
 
-		abstract_syntax_tree()
+		parse_result()
 			: _root(nullptr) {}
 
-		abstract_syntax_tree(std::unique_ptr<ast::node> root)
-			: _root(std::move(root)) {}
+		parse_result(std::unique_ptr<ast::node> ast)
+			: _root(std::move(ast)) {}
 	};
 
 } // rush

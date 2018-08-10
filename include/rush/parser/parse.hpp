@@ -3,15 +3,11 @@
 #ifndef RUSH_PARSER_PARSE_HPP
 #define RUSH_PARSER_PARSE_HPP
 
-#include <string>
-#include <iostream>
-
 #include "rush/ast/expression.hpp"
 #include "rush/ast/declaration.hpp"
 
 #include "rush/lexer/lex.hpp"
-#include "rush/parser/ast.hpp"
-
+#include "rush/parser/result.hpp"
 
 #include <iostream>
 #include <string>
@@ -25,11 +21,11 @@ namespace rush {
 
 	};
 
-	abstract_syntax_tree parse(std::string, parser_options const& = {});
-	abstract_syntax_tree parse(std::istream&, parser_options const& = {});
+	parse_result parse(std::string, parser_options const& = {});
+	parse_result parse(std::istream&, parser_options const& = {});
 
-	void dump(std::ostream&, abstract_syntax_tree const&);
-	void print(std::ostream&, abstract_syntax_tree const&);
+	void dump(std::ostream&, parse_result const&);
+	void print(std::ostream&, parse_result const&);
 
 } // rush
 
