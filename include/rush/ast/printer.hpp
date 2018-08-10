@@ -10,17 +10,19 @@
 namespace rush::ast {
 	template <typename CharT, typename Traits = std::char_traits<CharT>>
 	class basic_printer : public visitor {
-	public:
-		basic_printer(std::basic_ostream<CharT, Traits>& out)
-			: _indent(0)
-			, _current_indent(0)
-			, _ostr(out) {}
-
 		void indent() { ++_indent; }
 		void dedent() { --_indent; }
 
+		void write_indent() {
+			auto depth = _indent - _current_indent;
+			for (std::size_t i = 0; i < depth; ++i) {
+				if (i + 1 != depth) _ostr << "   ";
+				else _ostr << "-  ";
+			}
+		}
+
 		void write(std::string str) {
-			for (std::size_t i = 0; i < _indent - _current_indent; ++i) { _ostr << "   "; }
+			write_indent();
 			_ostr << str;
 			_current_indent = _indent;
 		}
@@ -31,16 +33,22 @@ namespace rush::ast {
 			_current_indent = 0;
 		}
 
+	public:
+		basic_printer(std::basic_ostream<CharT, Traits>& out)
+			: _indent(0)
+			, _current_indent(0)
+			, _ostr(out) {}
+
 		virtual void visit_type(ast::type const&) {
 			write("type");
 		}
 
 		virtual void visit_unary_expr(unary_expression const& expr) {
 			switch (expr.opkind()) {
-			case unary_operator::plus: write("<unary-plus "); break;
-			case unary_operator::negate: write("<unary-negate "); break;
-			case unary_operator::increment: write("<unary-increment "); break;
-			case unary_operator::decrement: write("<unary-decrement "); break;
+			case unary_operator::plus: write("<unary-plus : "); break;
+			case unary_operator::negate: write("<unary-negate : "); break;
+			case unary_operator::increment: write("<unary-increment : "); break;
+			case unary_operator::decrement: write("<unary-decrement : "); break;
 			}
 
 			expr.result_type().accept(*this); write(">");
@@ -51,11 +59,13 @@ namespace rush::ast {
 
 		virtual void visit_binary_expr(binary_expression const& expr) {
 			switch (expr.opkind()) {
-			case binary_operator::addition: writeln("<binary-addition>"); break;
-			case binary_operator::subtraction: writeln("<binary-subtraction>"); break;
-			case binary_operator::multiplication: writeln("<binary-multiplication>"); break;
-			case binary_operator::division: writeln("<binary-division>"); break;
+			case binary_operator::addition: write("<binary-addition : "); break;
+			case binary_operator::subtraction: write("<binary-subtraction : "); break;
+			case binary_operator::multiplication: write("<binary-multiplication : "); break;
+			case binary_operator::division: write("<binary-division : "); break;
 			}
+
+			expr.result_type().accept(*this); writeln(">");
 
 			indent();
 			write("left: "); expr.left_operand().accept(*this);
@@ -63,8 +73,9 @@ namespace rush::ast {
 			dedent();
 		}
 
-		virtual void visit_literal_expr(literal_expression const&) {
-			writeln("<literal>");
+		virtual void visit_literal_expr(literal_expression const& expr) {
+			write("<literal : ");
+			expr.result_type().accept(*this); writeln(">");
 		}
 		virtual void visit_identifier_expr(identifier_expression const&) {}
 
