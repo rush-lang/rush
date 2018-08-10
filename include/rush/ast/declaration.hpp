@@ -16,4 +16,6 @@ namespace rush::ast {
 	};
 }
 
+#include "rush/ast/decl/storage.hpp"
+
 #endif // RUSH_AST_DECL_DECLARATION_HPP
