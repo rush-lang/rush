@@ -31,10 +31,12 @@ namespace rush {
 			initialize(lxa);
 			auto tok = peek_skip_indent();
 
-			switch (tok.keyword()) {
-			case keywords::let_: return parse_constant_declaration();
-			case keywords::var_: return parse_variable_declaration();
-			default: break;
+			if (tok.is_keyword()) {
+				switch (tok.keyword()) {
+				case keywords::let_: return parse_constant_declaration();
+				case keywords::var_: return parse_variable_declaration();
+				default: break;
+				}
 			}
 
 			// parse top-level expression.
@@ -112,12 +114,16 @@ namespace rush {
 		std::unique_ptr<ast::expression> parse_initializer();
 
 
+		// declarations.
 		std::unique_ptr<ast::declaration> parse_storage_declaration(std::string,
 			std::unique_ptr<ast::declaration> (*)(std::string, ast::type, std::unique_ptr<ast::expression>));
 
 		std::unique_ptr<ast::declaration> parse_constant_declaration();
 		std::unique_ptr<ast::declaration> parse_variable_declaration();
 
+		std::unique_ptr<ast::function_declaration> parse_function_declaration();
+
+		// expressions.
 		std::unique_ptr<ast::expression> parse_expression();
 		std::unique_ptr<ast::expression> parse_parenthesised_expression();
 
