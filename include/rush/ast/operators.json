@@ -1,0 +1,18 @@
+{
+	"unary": [
+		{ "name": "plus", "symbol": "+", "symbol_token": "plus" },
+		{ "name": "negate", "symbol": "-", "symbol_token": "minus" },
+		{ "name": "increment", "symbol": "++", "symbol_token": "plus_plus" },
+		{ "name": "decrement", "symbol": "--", "symbol_token": "minus_minus" }
+	],
+
+	"binary": [
+		{ "name": "addition", "symbol": "+", "symbol_token": "plus" },
+		{ "name": "subtraction", "symbol": "-", "symbol_token": "minus" },
+		{ "name": "multiplication", "symbol": "*", "symbol_token": "asterisk" },
+		{ "name": "division", "symbol": "/", "symbol_token": "forward_slash" },
+		{ "name": "modulo", "symbol": "%", "symbol_token": "percent" },
+		{ "name": "logical_or", "symbol": "||", "symbol_token": "double_pipe" },
+		{ "name": "logical_and", "symbol": "&&", "symbol_token": "double_ampersand" }
+	]
+}

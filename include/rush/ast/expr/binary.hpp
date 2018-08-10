@@ -7,15 +7,10 @@
 
 #include <memory>
 
-namespace rush::ast {
-	enum class binary_operator : std::uint8_t {
-		addition,
-		subtraction,
-		multiplication,
-		division,
-		modulo
-	};
+#define RUSH_BINARY_OPERATORS_ENUM
+#include "rush/ast/_operators.hpp"
 
+namespace rush::ast {
 	class binary_expression : public expression {
 		struct factory_tag_t {};
 
@@ -40,8 +35,14 @@ namespace rush::ast {
 
 		using node::accept;
 		virtual void accept(ast::visitor& v) const override {
-			// todo: switch between binary operators
 			v.visit_binary_expr(*this);
+			switch (opkind()) {
+				case binary_operator::addition: v.visit_addition_expr(*this); break;
+				case binary_operator::subtraction: v.visit_subtraction_expr(*this); break;
+				case binary_operator::multiplication: v.visit_multiplication_expr(*this); break;
+				case binary_operator::division: v.visit_division_expr(*this); break;
+				case binary_operator::modulo: v.visit_modulo_expr(*this); break;
+			}
 		}
 
 	private:

@@ -11,23 +11,9 @@ namespace rush {
 		return 0;
 	}
 
-	static bool is_unary_op(lexical_token const& tok) {
-		switch (tok.symbol()) {
-			default: return false;
-			case symbols::plus:
-			case symbols::minus: return true;
-		}
-	}
-
-	static bool is_binary_op(lexical_token const& tok) {
-		switch (tok.symbol()) {
-			default: return false;
-			case symbols::plus:
-			case symbols::minus:
-			case symbols::multiplication:
-			case symbols::division: return true;
-		}
-	}
+#define RUSH_IS_UNARY_OP_FUNC
+#define RUSH_IS_BINARY_OP_FUNC
+#include "rush/ast/_operators.hpp"
 
 	std::unique_ptr<ast::expression> parser::parse_expression() {
 		auto expr = parse_primary_expression();

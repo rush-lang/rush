@@ -1,0 +1,60 @@
+#ifdef RUSH_UNARY_OPERATOR_ENUM
+namespace rush::ast {
+	enum class unary_operator : std::uint8_t {
+## for operator in unary
+		{# spacing #}
+		{{ operator/name }},
+## endfor
+	{# spacing #}
+	};
+}
+#undef RUSH_UNARY_OPERATOR_ENUM
+#endif
+
+#ifdef RUSH_BINARY_OPERATORS_ENUM
+namespace rush::ast {
+	enum class binary_operator : std::uint8_t {
+## for operator in binary
+		{# spacing #}
+		{{ operator/name }},
+## endfor
+	{# spacing #}
+	};
+}
+#undef RUSH_BINARY_OPERATORS_ENUM
+#endif
+
+
+#ifdef RUSH_IS_UNARY_OP_FUNC
+bool is_unary_op(lexical_token const& tok) {
+	switch (tok.symbol()) {
+	default: return false;
+## for operator in unary
+## if existsIn(operator, "symbol_token")
+	{# spacing #}
+	case rush::symbols::{{ operator/symbol_token }}:
+## endif
+## endfor
+	{# spacing #}
+		return true;
+	}
+}
+#undef RUSH_IS_UNARY_OP_FUNC
+#endif
+
+#ifdef RUSH_IS_BINARY_OP_FUNC
+bool is_binary_op(lexical_token const& tok) {
+	switch (tok.symbol()) {
+	default: return false;
+## for operator in binary
+## if existsIn(operator, "symbol_token")
+	{# spacing #}
+	case rush::symbols::{{ operator/symbol_token }}:
+## endif
+## endfor
+	{# spacing #}
+		return true;
+	}
+}
+#undef RUSH_IS_BINARY_OP_FUNC
+#endif

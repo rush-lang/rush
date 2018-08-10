@@ -7,13 +7,10 @@
 
 #include <memory>
 
-namespace rush::ast {
-	enum class unary_operator : std::uint8_t {
-		negate,
-		increment,
-		decrement,
-	};
+#define RUSH_UNARY_OPERATOR_ENUM
+#include "rush/ast/_operators.hpp"
 
+namespace rush::ast {
 	class unary_expression : public expression {
 		struct factory_tag_t {};
 
