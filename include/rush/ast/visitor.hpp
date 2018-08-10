@@ -44,6 +44,7 @@ namespace rush::ast {
 		virtual void visit_subtraction(binary_expression const&);
 		virtual void visit_multiplication(binary_expression const&);
 		virtual void visit_division(binary_expression const&);
+		virtual void visit_modulo(binary_expression const&);
 	};
 } // rush
 
