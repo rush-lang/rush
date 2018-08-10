@@ -51,10 +51,47 @@ string-literal ::= """ { string-char | escaped-string-char } """
 
 ## SYNTACTICAL GRAMMAR
 
-initializer ::= expression
-initializer-list ::= "=" initializer { "," initializer }
+user-type ::= identifier
+tuple-type ::= "(" type "," type-list ")"
+
+builtin-type ::=
+	| void
+	| bool
+	| byte
+	| sbyte
+	| char
+	| short
+	| ushort
+	| int
+	| uint
+	| long
+	| ulong
+	| float
+	| double
+	| string
+
+simple-type ::=
+	| builtin-type
+	| user-type
+
+type ::=
+	| simple-type
+	| tuple-type
+	| function-type
+
+type-list ::= type { "," type }
+
+function-type ::= ( "(" type-list ")" | type ) "=>" type
+
+variadic-type ::= "..." simple-type
+extension-type ::= "@" simple-type
 
 type-annotation ::= ":" type
+function-type-annotation ::= ":" [ type ]
+parameter-type-annotation ::= ":" ( variadic-type | extension-type | type )
+
+initializer ::= expression
+initializer-list ::= "=" initializer { "," initializer }
 
 identifier-pattern ::= identifier [ type-annotation ]
 destructuring-pattern ::= "{" pattern "}" [ type-annotation ]
@@ -68,3 +105,11 @@ pattern-list ::= pattern { "," pattern }
 pattern-initializer-list ::= pattern-list initializer-list
 constant-declaration-list ::= "let" pattern-initializer-list
 variable-declaration-list ::= "var" pattern-initializer-list
+
+parameter-set ::= parameter { "," parameter } parameter-type-annotation
+parameter-set-list ::= parameter-set { "," parameter-set }
+parameter-list ::= "(" [ parameter-set-list ] ")"
+
+
+function-body ::= "=>" expression | ":" [ type ] statement-block
+function-declaration ::= "func" identifier parameter-list function-body
