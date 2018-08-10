@@ -83,3 +83,39 @@ int binary_precedence(lexical_token const& tok) {
 }
 #undef RUSH_PRECEDENCE_FUNC
 #endif
+
+#ifdef RUSH_VISITOR_FUNC_PROTOTYPES
+## for operator in unary
+{# spacing #}
+virtual void visit_{{ operator/name }}_expr(unary_expression const&) {}
+## endfor
+## for operator in binary
+{# spacing #}
+virtual void visit_{{ operator/name }}_expr(binary_expression const&) {}
+## endfor
+{# spacing #}
+#undef RUSH_VISITOR_FUNC_PROTOTYPES
+#endif
+
+#ifdef RUSH_UNARY_EXPRESSION_VISIT_SWITCH
+switch (opkind()) {
+## for operator in unary
+{# spacing #}
+case unary_operator::{{ operator/name }}: v.visit_{{ operator/name }}_expr(*this); break;
+## endfor
+{# spacing #}
+}
+#undef RUSH_UNARY_EXPRESSION_VISIT_SWITCH
+#endif
+
+#ifdef RUSH_BINARY_EXPRESSION_VISIT_SWITCH
+switch (opkind()) {
+## for operator in binary
+{# spacing #}
+case binary_operator::{{ operator/name }}: v.visit_{{ operator/name }}_expr(*this); break;
+## endfor
+{# spacing #}
+}
+#undef RUSH_BINARY_EXPRESSION_VISIT_SWITCH
+#endif
+

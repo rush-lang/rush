@@ -26,26 +26,21 @@ namespace rush::ast {
 
 		virtual void visit_constant_decl(constant_declaration const&) = 0;
 		virtual void visit_variable_decl(variable_declaration const&) = 0;
+
+#		define RUSH_VISITOR_FUNC_PROTOTYPES
+#		include "rush/ast/_operators.hpp"
 	};
 
-	// todo: generate this via injen instead.
-	class descending_visitor : private visitor {
-		virtual void visit_type(ast::type const&) override;
-		virtual void visit_unary_expr(unary_expression const&) override;
-		virtual void visit_binary_expr(binary_expression const&) override;
-		virtual void visit_literal_expr(literal_expression const&) override;
-		virtual void visit_identifier_expr(identifier_expression const&) override;
+	namespace detail {
+		// class ascending_visitor;
+		class descending_visitor;
+	}
 
-		virtual void visit_constant_decl(constant_declaration const&) override;
-		virtual void visit_variable_decl(variable_declaration const&) override;
+	// detail::ascending_visitor ascending(visitor&);
+	// detail::ascending_visitor ascending(visitor const&);
 
-	public:
-		virtual void visit_addition(binary_expression const&);
-		virtual void visit_subtraction(binary_expression const&);
-		virtual void visit_multiplication(binary_expression const&);
-		virtual void visit_division(binary_expression const&);
-		virtual void visit_modulo(binary_expression const&);
-	};
+	detail::descending_visitor descending_visitor(visitor&);
+	detail::descending_visitor descending_visitor(visitor const&);
 } // rush
 
 #endif // RUSH_AST_VISITOR_HPP
