@@ -33,4 +33,4 @@ namespace rush::ast {
 	std::unique_ptr<binary_expression> modulo_expr(std::unique_ptr<expression> lhs, std::unique_ptr<expression> rhs) {
 		return make_binary_expr(std::move(lhs), std::move(rhs), binary_operator::modulo);
 	}
-} // rush
+} // rush::ast

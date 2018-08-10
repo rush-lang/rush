@@ -28,9 +28,9 @@ namespace rush::ast {
 			, _right(std::move(right))
 			, _opkind(op) {}
 
+		binary_operator opkind() const noexcept { return _opkind; }
 		expression const& left_operand() const noexcept { return *_left; }
 		expression const& right_operand() const noexcept { return *_right; }
-		binary_operator opkind() const noexcept { return _opkind; }
 
 		virtual ast::type result_type() const override {
 			return ast::intersection_of(

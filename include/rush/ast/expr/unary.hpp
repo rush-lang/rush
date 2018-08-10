@@ -8,19 +8,45 @@
 #include <memory>
 
 namespace rush::ast {
+	enum class unary_operator : std::uint8_t {
+		negate,
+		increment,
+		decrement,
+	};
+
 	class unary_expression : public expression {
+		struct factory_tag_t {};
+
 	public:
+		unary_expression(
+			std::unique_ptr<expression> operand,
+			unary_operator opkind, factory_tag_t)
+			: _operand(std::move(operand))
+			, _opkind(opkind) {}
+
+		unary_operator opkind() const noexcept { return _opkind; }
 		expression const& operand() const noexcept { return *_operand; }
+
+		virtual ast::type result_type() const override {
+			return _operand->result_type();
+		}
 
 		virtual void accept(ast::visitor& vis) const override {
 			vis.visit_unary_expr(*this);
 		}
+
 	private:
-		expression* _operand;
+		std::unique_ptr<expression> _operand;
+		unary_operator _opkind;
+
+		friend std::unique_ptr<unary_expression> make_unary_expression(
+			std::unique_ptr<expression>,
+			unary_operator);
 	};
 
-	std::unique_ptr<unary_expression> increment_expr(std::unique_ptr<expression>);
-	std::unique_ptr<unary_expression> decrement_expr(std::unique_ptr<expression>);
+	std::unique_ptr<unary_expression> negate_expr(std::unique_ptr<expression>);
+	std::unique_ptr<unary_expression> increment_expr(std::unique_ptr<identifier_expression>);
+	std::unique_ptr<unary_expression> decrement_expr(std::unique_ptr<identifier_expression>);
 } // rush
 
 #endif // RUSH_AST_UNARY_HPP
