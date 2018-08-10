@@ -319,44 +319,44 @@ private:
 
 		switch (symbol) {
 			case symbols::ampersand: {
-				if (check('&', 1)) { skip(2); return tok::logical_and(location()); }
+				if (check('&', 1)) { skip(2); return tok::double_ampersand(location()); }
 				if (check('=', 1)) { skip(2); return tok::ampersand_equals(location()); }
 			} break;
 
 			case symbols::pipe: {
-				if (check('|', 1)) { skip(2); return tok::logical_or(location()); }
+				if (check('|', 1)) { skip(2); return tok::double_pipe(location()); }
 				if (check('=', 1)) { skip(2); return tok::pipe_equals(location()); }
 			} break;
 
 			case symbols::plus: {
-				if (check('+', 1)) { skip(2); return tok::increment(location()); }
+				if (check('+', 1)) { skip(2); return tok::plus_plus(location()); }
 				if (check('=', 1)) { skip(2); return tok::plus_equals(location()); }
 			} break;
 
 			case symbols::minus: {
-				if (check('-', 1)) { skip(2); return tok::decrement(location()); }
+				if (check('-', 1)) { skip(2); return tok::minus_minus(location()); }
 				if (check('=', 1)) { skip(2); return tok::minus_equals(location()); }
 			} break;
 
-			case symbols::multiplication: {
-				if (check('=', 1)) { skip(2); return tok::multiplication_equals(location()); }
+			case symbols::asterisk: {
+				if (check('=', 1)) { skip(2); return tok::asterisk_equals(location()); }
 			} break;
 
-			case symbols::division: {
-				if (check('=', 1)) { skip(2); return tok::division_equals(location()); }
+			case symbols::forward_slash: {
+				if (check('=', 1)) { skip(2); return tok::forward_slash_equals(location()); }
 			} break;
 
-			case symbols::modulo: {
-				if (check('=', 1)) { skip(2); return tok::modulo_equals(location()); }
+			case symbols::percent: {
+				if (check('=', 1)) { skip(2); return tok::percent_equals(location()); }
 			} break;
 
 			case symbols::equals: {
 				if (check('>', 1)) { skip(2); return tok::arrow(location()); }
-				if (check('=', 1)) { skip(2); return tok::equality(location()); }
+				if (check('=', 1)) { skip(2); return tok::equals_equals(location()); }
 			} break;
 
 			case symbols::exclamation_mark: {
-				if (check('=', 1)) { skip(2); return tok::inequality(location()); }
+				if (check('=', 1)) { skip(2); return tok::exclamation_mark_equals(location()); }
 			} break;
 
 			case symbols::left_chevron: {

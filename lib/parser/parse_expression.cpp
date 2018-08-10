@@ -108,8 +108,8 @@ namespace rush {
 		default: return error("unexpected symbol '{}'", tok);
 		case symbols::plus: expr = parse_addition_expression(std::move(lhs)); break;
 		case symbols::minus: expr = parse_subtraction_expression(std::move(lhs)); break;
-		case symbols::division: expr = parse_division_expression(std::move(lhs)); break;
-		case symbols::multiplication: expr = parse_multiplication_expression(std::move(lhs)); break;
+		case symbols::asterisk: expr = parse_multiplication_expression(std::move(lhs)); break;
+		case symbols::forward_slash: expr = parse_division_expression(std::move(lhs)); break;
 		}
 
 		return is_binary_op(peek_skip_indent())
@@ -141,12 +141,12 @@ namespace rush {
 	}
 
 	std::unique_ptr<ast::binary_expression> parser::parse_multiplication_expression(std::unique_ptr<ast::expression> lhs) {
-		assert(peek_skip_indent().is(symbols::multiplication) && "expected token to be a multiplication symbol.");
+		assert(peek_skip_indent().is(symbols::asterisk) && "expected token to be a multiplication symbol.");
 		return ast::multiplication_expr(std::move(lhs), parse_binary_expression_rhs());
 	}
 
 	std::unique_ptr<ast::binary_expression> parser::parse_division_expression(std::unique_ptr<ast::expression> lhs) {
-		assert(peek_skip_indent().is(symbols::division) && "expected token to be a division symbol.");
+		assert(peek_skip_indent().is(symbols::forward_slash) && "expected token to be a division symbol.");
 		return ast::division_expr(std::move(lhs), parse_binary_expression_rhs());
 	}
 }
