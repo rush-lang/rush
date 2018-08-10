@@ -7,14 +7,42 @@
 
 namespace rush {
 
+	static int compare_precedence(lexical_token const& lhs, lexical_token const& rhs) {
+		return 0;
+	}
+
+	static bool is_unary_op(lexical_token const& tok) {
+		switch (tok.symbol()) {
+			default: return false;
+			case symbols::plus:
+			case symbols::minus: return true;
+		}
+	}
+
+	static bool is_binary_op(lexical_token const& tok) {
+		switch (tok.symbol()) {
+			default: return false;
+			case symbols::plus:
+			case symbols::minus:
+			case symbols::multiplication:
+			case symbols::division: return true;
+		}
+	}
+
 	std::unique_ptr<ast::expression> parser::parse_expression() {
-		return this->parse_primary_expression();
+		auto expr = parse_primary_expression();
+		if (!expr) return nullptr;
+
+		if (is_binary_op(peek_skip_indent()))
+			return parse_binary_expression(std::move(expr));
+
+		return std::move(expr);
 	}
 
 	std::unique_ptr<ast::expression> parser::parse_parenthesised_expression() {
 		assert(peek_skip_indent().is(symbols::left_parenthesis) && "expected token to be \'(\'");
 		next_skip_indent(); // consume '('
-		auto expr = this->parse_expression();
+		auto expr = parse_expression();
 		if (!expr) return nullptr;
 
 		auto tok = peek_skip_indent();
@@ -31,10 +59,10 @@ namespace rush {
 		switch (tok.type()) {
 		default: return error("expected primary expression, but found '{}'", tok);
 		case lexical_token_type::error: return error(tok.text());
-		case lexical_token_type::identifier: return this->parse_identifier_expression();
-		case lexical_token_type::string_literal: return this->parse_string_expression();
-		case lexical_token_type::integer_literal: return this->parse_integer_expression();
-		case lexical_token_type::floating_literal: return this->parse_floating_expression();
+		case lexical_token_type::identifier: return parse_identifier_expression();
+		case lexical_token_type::string_literal: return parse_string_expression();
+		case lexical_token_type::integer_literal: return parse_integer_expression();
+		case lexical_token_type::floating_literal: return parse_floating_expression();
 		case lexical_token_type::keyword:
 			if (tok.is(keywords::true_)) return ast::literal_expr(true);
 			if (tok.is(keywords::false_)) return ast::literal_expr(false);
@@ -42,7 +70,7 @@ namespace rush {
 		case lexical_token_type::symbol:
 			switch (tok.symbol()) {
 			default: return error("unexpected symbol '{}' in expression", tok);
-			case symbols::left_parenthesis: return this->parse_parenthesised_expression();
+			case symbols::left_parenthesis: return parse_parenthesised_expression();
 			}
 		}
 	}
@@ -83,5 +111,56 @@ namespace rush {
 		auto tok = next_skip_indent();
 		auto ident = tok.text();
 		return ast::identifier_expr(ident);
+	}
+
+	std::unique_ptr<ast::binary_expression> parser::parse_binary_expression(std::unique_ptr<ast::expression> lhs) {
+		assert(is_binary_op(peek_skip_indent()) && "expected binary operator.");
+
+		auto tok = peek_skip_indent();
+		std::unique_ptr<ast::binary_expression> expr;
+		switch (tok.symbol()) {
+		default: return error("unexpected symbol '{}'", tok);
+		case symbols::plus: expr = parse_addition_expression(std::move(lhs)); break;
+		case symbols::minus: expr = parse_subtraction_expression(std::move(lhs)); break;
+		case symbols::division: expr = parse_division_expression(std::move(lhs)); break;
+		case symbols::multiplication: expr = parse_multiplication_expression(std::move(lhs)); break;
+		}
+
+		return is_binary_op(peek_skip_indent())
+			? parse_binary_expression(std::move(expr))
+			: std::move(expr);
+	}
+
+	std::unique_ptr<ast::expression> parser::parse_binary_expression_rhs() {
+		assert(is_binary_op(peek_skip_indent()) && "expected binary operator.");
+
+		auto prev = next_skip_indent(); // consume binary operator symbol.
+		auto rhs = parse_primary_expression();
+		auto curr = peek_skip_indent(); // look-ahead for possible binary operator.
+
+		if (compare_precedence(curr, prev) < 0)
+			rhs = parse_binary_expression(std::move(rhs));
+
+		return std::move(rhs);
+	}
+
+	std::unique_ptr<ast::binary_expression> parser::parse_addition_expression(std::unique_ptr<ast::expression> lhs) {
+		assert(peek_skip_indent().is(symbols::plus) && "expected token to be an addition symbol.");
+		return ast::addition_expr(std::move(lhs), parse_binary_expression_rhs());
+	}
+
+	std::unique_ptr<ast::binary_expression> parser::parse_subtraction_expression(std::unique_ptr<ast::expression> lhs) {
+		assert(peek_skip_indent().is(symbols::minus) && "expected token to be a subtraction symbol.");
+		return ast::subtraction_expr(std::move(lhs), parse_binary_expression_rhs());
+	}
+
+	std::unique_ptr<ast::binary_expression> parser::parse_multiplication_expression(std::unique_ptr<ast::expression> lhs) {
+		assert(peek_skip_indent().is(symbols::multiplication) && "expected token to be a multiplication symbol.");
+		return ast::multiplication_expr(std::move(lhs), parse_binary_expression_rhs());
+	}
+
+	std::unique_ptr<ast::binary_expression> parser::parse_division_expression(std::unique_ptr<ast::expression> lhs) {
+		assert(peek_skip_indent().is(symbols::division) && "expected token to be a division symbol.");
+		return ast::division_expr(std::move(lhs), parse_binary_expression_rhs());
 	}
 }

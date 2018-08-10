@@ -90,10 +90,20 @@ namespace rush {
 		std::unique_ptr<ast::expression> parse_parenthesised_expression();
 
 		std::unique_ptr<ast::expression> parse_primary_expression();
+
 		std::unique_ptr<ast::expression> parse_string_expression();
 		std::unique_ptr<ast::expression> parse_integer_expression();
 		std::unique_ptr<ast::expression> parse_floating_expression();
 		std::unique_ptr<ast::expression> parse_identifier_expression();
+
+		std::unique_ptr<ast::unary_expression> parse_unary_expression();
+		std::unique_ptr<ast::binary_expression> parse_binary_expression(std::unique_ptr<ast::expression> lhs);
+
+		std::unique_ptr<ast::expression> parse_binary_expression_rhs();
+		std::unique_ptr<ast::binary_expression> parse_multiplication_expression(std::unique_ptr<ast::expression> lhs);
+		std::unique_ptr<ast::binary_expression> parse_division_expression(std::unique_ptr<ast::expression> lhs);
+		std::unique_ptr<ast::binary_expression> parse_subtraction_expression(std::unique_ptr<ast::expression> lhs);
+		std::unique_ptr<ast::binary_expression> parse_addition_expression(std::unique_ptr<ast::expression> lhs);
 	};
 }
 
