@@ -24,9 +24,11 @@ namespace rush {
 	parse_result parse(std::string, parser_options const& = {});
 	parse_result parse(std::istream&, parser_options const& = {});
 
-	void dump(std::ostream&, parse_result const&);
-	void print(std::ostream&, parse_result const&);
+	void dump(std::string input, std::ostream& out = std::cout);
+	void dump(std::istream& input, std::ostream& out = std::cout);
+	void dump(parse_result const& input, std::ostream& out = std::cout);
 
+	void print(std::ostream&, parse_result const&);
 } // rush
 
 #endif // RUSH_PARSER_PARSE_HPP

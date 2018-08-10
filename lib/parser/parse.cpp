@@ -1,4 +1,5 @@
 #include "rush/core/iterator.hpp"
+#include "rush/ast/printer.hpp"
 #include "parser.hpp"
 
 #include <iostream>
@@ -27,5 +28,18 @@ namespace rush {
 	parse_result parse(std::istream& input, parser_options const& opts) {
 		auto lxa = rush::lex(input);
 		return parse(lxa, opts);
+	}
+
+
+	void dump(std::string input, std::ostream& out) {
+		dump(parse(input), out);
+	}
+
+	void dump(std::istream& input, std::ostream& out) {
+		dump(parse(input), out);
+	}
+
+	void dump(parse_result const& input, std::ostream& out) {
+		input.ast()->accept(ast::printer { out });
 	}
 } // rush
