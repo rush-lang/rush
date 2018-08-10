@@ -16,6 +16,8 @@
 #include "rush/lexer/analysis.hpp"
 #include "rush/parser/parse.hpp"
 
+#include <optional>
+
 namespace rush {
 	class parser {
 		using lxa_iterator = lexical_analysis::const_iterator;
@@ -27,6 +29,15 @@ namespace rush {
 
 		std::unique_ptr<ast::node> parse(lexical_analysis const& lxa) {
 			initialize(lxa);
+			auto tok = peek_skip_indent();
+
+			switch (tok.keyword()) {
+			case keywords::let_: return parse_constant_declaration();
+			case keywords::var_: return parse_variable_declaration();
+			default: break;
+			}
+
+			// parse top-level expression.
 			return parse_expression();
 		}
 
@@ -45,6 +56,14 @@ namespace rush {
 			};
 		}
 
+		std::string format(std::string str) {
+			return std::move(str);
+		}
+
+		std::string format(lexical_token const& tok) {
+			return to_string(tok);
+		}
+
 		template <typename... Args>
 		std::nullptr_t fatal(std::string msg, Args&&... args) {
 			return nullptr;
@@ -52,7 +71,7 @@ namespace rush {
 
 		template <typename... Args>
 		std::nullptr_t error(std::string msg, Args&&... args) {
-			fmt::print("error: {}", fmt::format(msg, to_string(std::forward<Args>(args))...));
+			fmt::print("error: {}", fmt::format(msg, format(std::forward<Args>(args))...));
 			return nullptr;
 		}
 
@@ -61,7 +80,7 @@ namespace rush {
 			return nullptr;
 		}
 
-		lexical_token const& peek(lxa_iterator_difference_type offset = 0) {
+		lexical_token const& peek_with_indent(lxa_iterator_difference_type offset = 0) {
 			auto temp = _range.first;
 			advance(temp, _range.second, offset);
 			return temp != _range.second ? *temp : eof;
@@ -69,22 +88,35 @@ namespace rush {
 
 		lexical_token const& peek_skip_indent(lxa_iterator_difference_type offset = 0) {
 			auto i = offset;
-			auto* ptok = &peek(offset);
-			for (; ptok->is_any(symbols::indent, symbols::dedent); ptok = &peek(i + offset), ++i);
+			auto* ptok = &peek_with_indent(offset);
+			for (; ptok->is_any(symbols::indent, symbols::dedent); ptok = &peek_with_indent(i + offset), ++i);
 			return *ptok;
 		}
 
-		lexical_token const& next() {
+		lexical_token const& next_with_indent() {
 			auto temp = _range.first;
 			advance(_range.first, _range.second, 1);
 			return temp != _range.second ? *temp : eof;
 		}
 
 		lexical_token const& next_skip_indent() {
-			auto* ptok = &next();
-			for (; ptok->is_any(symbols::indent, symbols::dedent); ptok = &next());
+			auto* ptok = &next_with_indent();
+			for (; ptok->is_any(symbols::indent, symbols::dedent); ptok = &next_with_indent());
 			return *ptok;
 		}
+
+		std::optional<ast::type> parse_type() {
+			return { ast::int_type };
+		}
+
+		std::unique_ptr<ast::expression> parse_initializer();
+
+
+		std::unique_ptr<ast::declaration> parse_storage_declaration(std::string,
+			std::unique_ptr<ast::declaration> (*)(std::string, ast::type, std::unique_ptr<ast::expression>));
+
+		std::unique_ptr<ast::declaration> parse_constant_declaration();
+		std::unique_ptr<ast::declaration> parse_variable_declaration();
 
 		std::unique_ptr<ast::expression> parse_expression();
 		std::unique_ptr<ast::expression> parse_parenthesised_expression();

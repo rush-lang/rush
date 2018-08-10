@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "rush/ast/expression.hpp"
+#include "rush/ast/declaration.hpp"
 
 namespace rush::ast {
 	template <typename CharT, typename Traits = std::char_traits<CharT>>
@@ -63,6 +64,9 @@ namespace rush::ast {
 			case binary_operator::subtraction: write("<binary-subtraction : "); break;
 			case binary_operator::multiplication: write("<binary-multiplication : "); break;
 			case binary_operator::division: write("<binary-division : "); break;
+			case binary_operator::modulo: write("<binary-modulo : "); break;
+			case binary_operator::logical_or: write("<logical-or : "); break;
+			case binary_operator::logical_and: write("<logical-and : "); break;
 			}
 
 			expr.result_type().accept(*this); writeln(">");
@@ -77,10 +81,37 @@ namespace rush::ast {
 			write("<literal : ");
 			expr.result_type().accept(*this); writeln(">");
 		}
-		virtual void visit_identifier_expr(identifier_expression const&) {}
+		virtual void visit_identifier_expr(identifier_expression const& expr) {
+			write("<identifier : ");
+			expr.result_type().accept(*this);
+			write(" : \"");
+			write(expr.name());
+			writeln("\">");
+		}
 
-		virtual void visit_constant_decl(constant_declaration const&) {}
-		virtual void visit_variable_decl(variable_declaration const&) {}
+		virtual void visit_constant_decl(constant_declaration const& decl) {
+			write("<constant-declaration : ");
+			decl.type().accept(*this);
+			write(" : \"");
+			write(decl.name());
+			writeln("\">");
+
+			indent();
+			write("initializer: "); decl.initializer().accept(*this);
+			dedent();
+		}
+
+		virtual void visit_variable_decl(variable_declaration const& decl) {
+			write("<variable-declaration : ");
+			decl.type().accept(*this);
+			write(" : \"");
+			write(decl.name());
+			writeln("\">");
+
+			indent();
+			write("initializer: "); decl.initializer().accept(*this);
+			dedent();
+		}
 
 	private:
 		std::size_t _indent;
