@@ -1,6 +1,7 @@
 #include <catch2/catch.hpp>
 #include "rush/ast/expr/literal.hpp"
-#include "rush/ast/decl/storage.hpp"
+#include "rush/ast/decl/variable.hpp"
+#include "rush/ast/decl/constant.hpp"
 
 namespace ast = rush::ast;
 
