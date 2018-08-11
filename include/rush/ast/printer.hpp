@@ -87,7 +87,7 @@ namespace rush::ast {
 		}
 
 		virtual void visit_literal_expr(string_literal_expression const& expr) override {
-			print_literal_expr(expr.value(), expr);
+			print_literal_expr(fmt::format("\"{}\"", expr.value()), expr);
 		}
 
 		virtual void visit_literal_expr(boolean_literal_expression const& expr) override {
