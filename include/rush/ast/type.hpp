@@ -5,32 +5,17 @@
 
 #include "rush/ast/node.hpp"
 #include "rush/ast/visitor.hpp"
+#include "rush/sema/scope.hpp"
+#include "rush/sema/symbol.hpp"
 
 #include <string>
 
 namespace rush::ast {
-	struct type_hash {};
-
 	class type : public node {
-		friend type& known_type(std::string name, bool builtin);
-		friend type& unknown_type(std::string name);
+		friend type make_type(scope&, std::string name);
 	public:
-		// \brief Returns true if the type is a known type; false otherwise.
-		bool is_known() const noexcept;
-
-		// \brief Returns true if the type is a built-in (e.g. int); false otherwise.
-		bool is_builtin() const noexcept;
-
-		// \brief Returns true if the type is an optional type (e.g. int?); false otherwise.
-		bool is_optional() const noexcept;
-
-		std::size_t id() const noexcept {
-			return _hash;
-		}
-
-		std::string name() const noexcept {
-			return _name;
-		}
+		std::size_t id() const noexcept { return _symbol->id(); }
+		std::string name() const noexcept { return _symbol->name(); }
 
 		using node::accept;
 		virtual void accept(ast::visitor& v) const {
@@ -38,12 +23,14 @@ namespace rush::ast {
 		}
 
 	private:
-		std::string _name;
-		std::size_t _hash;
+		sema::symbol const* _symbol;
+		type(sema::symbol const& s) : _symbol(&s) {}
 	};
 
 	inline bool operator == (type const& lhs, type const& rhs) {
-		return lhs.id() == rhs.id();
+		// fixme: implement id for sema::symbols.
+		// return lhs.id() == rhs.id();
+		return false;
 	}
 
 	inline bool operator != (type const& lhs, type const& rhs) {

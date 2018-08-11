@@ -44,8 +44,8 @@ namespace rush::ast {
 			, _current_indent(0)
 			, _ostr(out) {}
 
-		virtual void visit_type(ast::type const&) override {
-			write("type");
+		virtual void visit_type(ast::type const& t) override {
+			write(t.name());
 		}
 
 		virtual void visit_unary_expr(unary_expression const& expr) override {

@@ -27,7 +27,7 @@ namespace rush::ast {
 			: _val(std::move(val))
 			, _type(val_type) {}
 
-		virtual type result_type() const noexcept override {
+		virtual ast::type result_type() const noexcept override {
 			return _type;
 		}
 
