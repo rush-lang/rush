@@ -1,11 +1,10 @@
 project(parser VERSION ${RUSH_VERSION} LANGUAGES CXX)
 
 rush_add_library(parser
-	ast.cpp
-	parse.cpp
 	parse_statement.cpp
 	parse_expression.cpp
 	parse_declaration.cpp
+	parse.cpp
 )
 
 target_include_directories(parser PUBLIC
