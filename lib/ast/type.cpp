@@ -8,7 +8,7 @@ namespace rush::ast {
 	}
 
 	// known/built-in types
-	type const none_type = make_type(rush::global_scope, "<undefined>"); // sentinal
+	type const undefined_type = make_type(rush::global_scope, "<undefined>"); // sentinal
 	type const void_type = make_type(rush::global_scope, "void");
 	type const bool_type = make_type(rush::global_scope, "bool");
 	type const byte_type = make_type(rush::global_scope, "byte");
@@ -31,9 +31,9 @@ namespace rush::ast {
 	// \brief Returns the nearest base type of type.
 	type base_of(type const& type) {
 		// if (type.is_builtin())
-		// 	return none_type;
+		// 	return undefined_type;
 
-		return none_type;
+		return undefined_type;
 	}
 
 	// \brief Returns the common type between two types,
@@ -43,6 +43,6 @@ namespace rush::ast {
 		// 		? rhs : lhs;
 		// }
 
-		return none_type;
+		return undefined_type;
 	}
 } // rush

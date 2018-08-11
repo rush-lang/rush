@@ -38,7 +38,7 @@ namespace rush::ast {
 	}
 
 	// known/built-in types
-	extern type const none_type; // sentinal
+	extern type const undefined_type; // sentinal
 	extern type const void_type;
 	extern type const bool_type;
 	extern type const byte_type;

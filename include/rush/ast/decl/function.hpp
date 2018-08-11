@@ -20,7 +20,7 @@ namespace rush::ast {
 			, _params(std::move(params)) {}
 
 		ast::type return_type() const noexcept {
-			return ast::none_type;
+			return ast::undefined_type;
 			// return _return_type != nullptr
 			// 	? *_return_type
 			// 	: evaluate_return_type();

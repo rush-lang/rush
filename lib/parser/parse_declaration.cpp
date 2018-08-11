@@ -19,7 +19,7 @@ namespace rush {
 
 		if (peek_skip_indent().is_identifier()) {
 			auto ident = next_skip_indent();
-			std::optional<ast::type> type = ast::none_type;
+			std::optional<ast::type> type = ast::undefined_type;
 
 			if (peek_skip_indent().is(symbols::colon)) {
 				next_skip_indent(); // consume ':' token.
