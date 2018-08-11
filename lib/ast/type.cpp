@@ -7,8 +7,11 @@ namespace rush::ast {
 		return type { sc.lookup_local(name) };
 	}
 
+	// sentinals
+	type const undefined_type = make_type(rush::global_scope, "<undefined>");
+	type const error_type = make_type(rush::global_scope, "<error-type>");
+
 	// known/built-in types
-	type const undefined_type = make_type(rush::global_scope, "<undefined>"); // sentinal
 	type const void_type = make_type(rush::global_scope, "void");
 	type const bool_type = make_type(rush::global_scope, "bool");
 	type const byte_type = make_type(rush::global_scope, "byte");
