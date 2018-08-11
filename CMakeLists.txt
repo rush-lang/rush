@@ -8,6 +8,7 @@ option(RUSH_BUILD_SHARED_LIBS "Generate build targets for shared libraries." OFF
 project(rush VERSION ${RUSH_VERSION} LANGUAGES CXX)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/modules")
 
+include(RushAdd)
 include(BuildType)
 include(GNUInstallDirs)
 

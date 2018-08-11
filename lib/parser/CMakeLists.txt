@@ -1,6 +1,6 @@
 project(parser VERSION ${RUSH_VERSION} LANGUAGES CXX)
 
-add_library(parser
+rush_add_library(parser
 	ast.cpp
 	parse.cpp
 	parse_statement.cpp

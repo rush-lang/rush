@@ -1,7 +1,7 @@
 project(lexer VERSION ${RUSH_VERSION} LANGUAGES CXX)
 
 
-add_library(lexer
+rush_add_library(lexer
 	analysis.cpp
 	token.cpp
 	lexer.cpp

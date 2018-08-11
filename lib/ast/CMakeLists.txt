@@ -1,6 +1,6 @@
 project(ast VERSION ${RUSH_VERSION} LANGUAGES CXX)
 
-add_library(ast
+rush_add_library(ast
 	type.cpp
 	expr/literal.cpp
 	expr/binary.cpp)
