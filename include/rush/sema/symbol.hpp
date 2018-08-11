@@ -7,22 +7,39 @@
 
 #include <string>
 
-namespace rush::sema {
+namespace rush {
 	class scope;
-	class symbol {
-	public:
-		symbol(std::string name)
-			: _name(name) {}
+}
 
+namespace rush::sema {
+	class symbol_entry {
+	public:
+		symbol_entry(std::string name)
+			: symbol_entry(std::move(name), 0) {}
+
+		symbol_entry(std::string name, symbol_flag_t flags)
+			: _name(name)
+			, _flags(flags) {}
+
+		std::string name() const noexcept { return _name; }
+		symbol_flag_t flags() const noexcept { return _flags; }
+
+	private:
+		std::string _name;
+		symbol_flag_t _flags;
+	};
+
+	class symbol {
+		friend class rush::scope;
+
+	public:
 		symbol(symbol&&) = default;
 		symbol(symbol const&) = default;
 
 		symbol& operator = (symbol&&) = default;
 		symbol& operator = (symbol const&) = default;
 
-		std::size_t id() const noexcept {
-			return 0;
-		}
+		std::size_t id() const noexcept;
 
 		std::string name() const noexcept {
 			return _name;
@@ -61,13 +78,13 @@ namespace rush::sema {
 			&& has_flags(_flags, symbol_type::variable);
 		}
 
-		symbol(std::string name, symbol_flag_t flags)
-			: _scope(nullptr)
+	private:
+		symbol(scope const& scope, std::string name, symbol_flag_t flags)
+			: _scope(&scope)
 			, _name(name)
 			, _flags(flags) {}
 
-	private:
-		scope* _scope;
+		scope const* const _scope;
 		std::string _name;
 		symbol_flag_t _flags;
 	};
@@ -80,7 +97,7 @@ namespace rush::sema {
 		return !(lhs == rhs);
 	}
 
-	inline symbol make_type_symbol(std::string name) {
+	inline symbol_entry make_type_symbol(std::string name) {
 		return { name, make_flags(symbol_type::type) };
 	}
 	// inline symbol make_constant_symbol(std::string name)

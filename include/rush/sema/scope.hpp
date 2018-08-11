@@ -61,8 +61,8 @@ namespace rush {
 		scope& push_class_scope();
 		scope& push_module_scope();
 
-		void insert(sema::symbol);
-		void insert_or_assign(sema::symbol);
+		void insert(sema::symbol_entry);
+		void insert_or_assign(sema::symbol_entry);
 
 		sema::symbol const& lookup(std::string name) const;
 		sema::symbol const& lookup_local(std::string name) const;
@@ -70,15 +70,21 @@ namespace rush {
 		iterator_range<const_symbol_iterator> symbols() const;
 		iterator_range<const_symbol_iterator> local_symbols() const;
 
+		std::size_t hash_id_of(sema::symbol const&) const;
+
 	private:
+		scope* _parent;
+		std::vector<scope> _children;
+		std::unordered_set<sema::symbol> _symtable;
+
 		scope(scope* parent)
 			: _parent(parent)
 			, _children { }
 			, _symtable { } {}
 
-		scope* _parent;
-		std::vector<scope> _children;
-		std::unordered_set<sema::symbol> _symtable;
+		sema::symbol const& get_undefined_symbol() const {
+			return *_symtable.find({ *this, "<undefined>", 0 });
+		}
 	};
 } // rush
 
