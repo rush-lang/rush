@@ -105,13 +105,11 @@ namespace rush::ast {
 		virtual void visit_identifier_expr(identifier_expression const& expr) override {
 			write("<identifier : ");
 			expr.result_type().accept(*this);
-			write(" : \"");
-			write(expr.name());
-			writeln("\">");
+			writeln(" : \"{}\">", expr.name());
 		}
 
 		virtual void visit_constant_decl(constant_declaration const& decl) override {
-			print_storage_decl("variable", decl);
+			print_storage_decl("constant", decl);
 		}
 
 		virtual void visit_variable_decl(variable_declaration const& decl) override {
@@ -132,14 +130,12 @@ namespace rush::ast {
 		}
 
 		void print_storage_decl(std::string name, storage_declaration const& decl) {
-			write("<");
-			write(name);
-			write("-declaration : ");
+			write("<{}-declaration : ", name);
 			decl.type().accept(*this);
 			writeln(">");
 
 			indent();
-			write("name: \""); write(decl.name()); writeln("\"");
+			writeln("name: \"{}\"", decl.name());
 			write("init: "); decl.initializer().accept(*this);
 			dedent();
 		}
