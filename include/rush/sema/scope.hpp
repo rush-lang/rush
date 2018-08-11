@@ -44,11 +44,7 @@ namespace rush {
 			return _parent;
 		}
 
-		std::size_t depth() const noexcept {
-			return parent() != nullptr
-				? parent()->depth() + 1
-				: 0;
-		}
+		bool is_descendent_of(scope const& parent) const noexcept;
 
 		void insert(symbol);
 		symbol const& lookup(std::string name) const;

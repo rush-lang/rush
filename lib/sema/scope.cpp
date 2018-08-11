@@ -13,6 +13,13 @@ namespace rush {
 		return std::move(gs);
 	}
 
+
+	bool scope::is_descendent_of(scope const& sc) const noexcept {
+		if (this->is_global()) return false;
+		if (this->is_local_to(sc)) return true;
+		return this->parent()->is_descendent_of(sc);
+	}
+
 	void scope::insert(symbol s) {
 		_symtable.emplace(s.name(), s);
 	}
