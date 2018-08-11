@@ -51,6 +51,17 @@ string-literal ::= """ { string-char | escaped-string-char } """
 
 ## SYNTACTICAL GRAMMAR
 
+
+primary-expression ::=
+	| "(" primary-expression ")"
+	| "+" primary-expression
+	| "-" primary-expression
+	| "++" identifier
+	| "--" identifier
+	| identifier
+	| integer-literal
+	| floating-literal
+
 user-type ::= identifier
 tuple-type ::= "(" type "," type-list ")"
 
