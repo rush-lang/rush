@@ -26,7 +26,6 @@ namespace rush {
 			while (it != last && predicate(*it)) ++it;
 			return it != first;
 		}
-
 } // rush
 
 #endif // RUSH_CORE_ITERATOR_HPP
