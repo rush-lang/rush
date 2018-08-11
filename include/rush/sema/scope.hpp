@@ -46,6 +46,8 @@ namespace rush {
 
 		bool is_descendent_of(scope const& parent) const noexcept;
 
+		std::size_t depth() const noexcept;
+
 		void insert(symbol);
 		symbol const& lookup(std::string name) const;
 

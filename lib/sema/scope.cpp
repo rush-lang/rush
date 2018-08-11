@@ -13,6 +13,9 @@ namespace rush {
 		return std::move(gs);
 	}
 
+	std::size_t scope::depth() const noexcept {
+		return !is_global() ? parent()->depth() + 1 : 0;
+	}
 
 	bool scope::is_descendent_of(scope const& sc) const noexcept {
 		if (this->is_global()) return false;
