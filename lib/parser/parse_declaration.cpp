@@ -14,7 +14,7 @@ namespace rush {
 	) {
 		if (peek_skip_indent().is(symbols::left_bracket)) {
 			// parse_destructure_pattern.
-			return error("destructured {} declarations are currently not supported", storage_type);
+			return error("destructured {} declarations are currently not supported.", storage_type);
 		}
 
 		if (peek_skip_indent().is_identifier()) {
@@ -27,7 +27,7 @@ namespace rush {
 			}
 
 			if (!peek_skip_indent().is(symbols::equals)) {
-				return error("expected an initializer for {} before '{}'", storage_type, ident);
+				return error("expected an initializer for {} before '{}'.", storage_type, ident);
 			}
 
 			next_skip_indent(); // consume '=' token.
@@ -36,11 +36,11 @@ namespace rush {
 			return (*fptr)(ident.text(), *type, std::move(init));
 		}
 
-		return error("expected an identifier before '{}'", next_skip_indent());
+		return error("expected an identifier before '{}'.", next_skip_indent());
 	}
 
 	std::unique_ptr<ast::declaration> parser::parse_constant_declaration() {
-		assert(peek_skip_indent().is(keywords::let_) && "expected a let keyword.");
+		assert(peek_skip_indent().is(keywords::let_) && "expected the 'let' keyword.");
 		next_skip_indent(); // consume let token
 		return parse_storage_declaration("constant",
 			[](std::string name, ast::type type, std::unique_ptr<ast::expression> init) -> std::unique_ptr<ast::declaration> {
@@ -49,7 +49,7 @@ namespace rush {
 	}
 
 	std::unique_ptr<ast::declaration> parser::parse_variable_declaration() {
-		assert(peek_skip_indent().is(keywords::var_) && "expected a var keyword.");
+		assert(peek_skip_indent().is(keywords::var_) && "expected the 'var' keyword.");
 		next_skip_indent(); // consume var token
 		return parse_storage_declaration("variable",
 			[](std::string name, ast::type type, std::unique_ptr<ast::expression> init) -> std::unique_ptr<ast::declaration> {
