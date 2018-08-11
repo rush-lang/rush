@@ -8,6 +8,7 @@
 #include <string>
 
 namespace rush::sema {
+	class scope;
 	class symbol {
 	public:
 		symbol(std::string name)

@@ -5,6 +5,7 @@
 
 #include "rush/ast/node.hpp"
 #include "rush/ast/visitor.hpp"
+#include "rush/sema/scope.hpp"
 
 namespace rush {
 	class parser_options;
@@ -25,13 +26,20 @@ namespace rush {
 		}
 
 	private:
+		rush::scope& _scope;
 		std::unique_ptr<ast::node> _root;
 
 		parse_result()
-			: _root(nullptr) {}
+			: _scope(rush::global_scope)
+			, _root(nullptr) {}
 
 		parse_result(std::unique_ptr<ast::node> ast)
-			: _root(std::move(ast)) {}
+			: _scope(rush::global_scope)
+			, _root(std::move(ast)) {}
+
+		parse_result(rush::scope& scope, std::unique_ptr<ast::node> ast)
+			: _scope(scope)
+			, _root(std::move(ast)) {}
 	};
 
 } // rush

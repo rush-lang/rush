@@ -14,5 +14,5 @@ target_include_directories(parser PUBLIC
 
 target_compile_features(parser PUBLIC cxx_std_17)
 
-target_link_libraries(parser PUBLIC fmt lexer ast)
+target_link_libraries(parser PUBLIC fmt lexer ast sema)
 
