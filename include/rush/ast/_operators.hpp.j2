@@ -27,6 +27,7 @@ namespace rush::ast {
 
 #ifdef RUSH_IS_UNARY_OP_FUNC
 bool is_unary_op(lexical_token const& tok) {
+	if (!tok.is_symbol()) return false;
 	switch (tok.symbol()) {
 	default: return false;
 ## for operator in unary
@@ -44,6 +45,7 @@ bool is_unary_op(lexical_token const& tok) {
 
 #ifdef RUSH_IS_BINARY_OP_FUNC
 bool is_binary_op(lexical_token const& tok) {
+	if (!tok.is_symbol()) return false;
 	switch (tok.symbol()) {
 	default: return false;
 ## for operator in binary

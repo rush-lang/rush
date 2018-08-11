@@ -150,7 +150,7 @@ namespace rush {
 		}
 
 		symbol_t symbol() const {
-			assert(is_symbol() && "token is not a keyword");
+			assert(is_symbol() && "token is not a symbol");
 			if (auto pval = std::get_if<symbol_t>(&_val)) return *pval;
 			return symbols::unknown;
 		}

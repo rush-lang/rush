@@ -9,6 +9,10 @@ namespace rush::ast {
 	class unary_expression;
 	class binary_expression;
 	class literal_expression;
+	class string_literal_expression;
+	class boolean_literal_expression;
+	class integer_literal_expression;
+	class floating_literal_expression;
 	class identifier_expression;
 
 	class constant_declaration;
@@ -26,6 +30,11 @@ namespace rush::ast {
 
 		virtual void visit_constant_decl(constant_declaration const&) = 0;
 		virtual void visit_variable_decl(variable_declaration const&) = 0;
+
+		virtual void visit_literal_expr(string_literal_expression const&) {}
+		virtual void visit_literal_expr(boolean_literal_expression const&) {}
+		virtual void visit_literal_expr(integer_literal_expression const&) {}
+		virtual void visit_literal_expr(floating_literal_expression const&) {}
 
 #		define RUSH_VISITOR_FUNC_PROTOTYPES
 #		include "rush/ast/_operators.hpp"
