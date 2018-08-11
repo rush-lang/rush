@@ -13,12 +13,18 @@ namespace rush {
 	class scope;
 	extern scope global_scope;
 
-	class scope {
+	class scope final {
 		friend scope init_global_scope();
-		friend scope& define_scope(scope& parent);
 
 		scope(scope const&) = delete;
 		void operator = (scope const&) = delete;
+
+		scope& operator = (scope&& other) {
+			_parent = other._parent;
+			_children = std::move(other._children);
+			_symtable = std::move(other._symtable);
+			return *this;
+		}
 
 	public:
 		scope(scope&& other)
@@ -26,11 +32,12 @@ namespace rush {
 			, _children(std::move(other._children))
 			, _symtable(std::move(other._symtable)) {}
 
-		scope& operator = (scope&& other) {
-			_parent = other._parent;
-			_children = std::move(other._children);
-			_symtable = std::move(other._symtable);
-			return *this;
+		bool is_global() const noexcept {
+			return _parent == nullptr;
+		}
+
+		bool is_local_to(scope const& parent) const noexcept {
+			return _parent == &parent;
 		}
 
 		scope* const parent() const noexcept {
