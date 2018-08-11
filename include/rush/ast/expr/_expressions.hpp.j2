@@ -1,0 +1,30 @@
+
+#ifdef RUSH_UNARY_EXPRESSION_FACTORY_FUNCS
+## for operator in unary
+{# spacing #}
+std::unique_ptr<::rush::ast::unary_expression>
+	{{ operator/name }}_expr(
+	std::unique_ptr<::rush::ast::expression> operand) {
+	return make_unary_expression(std::move(operand),
+		::rush::ast::unary_operator::{{ operator/name }});
+}
+## endfor
+{# spacing #}
+#undef RUSH_UNARY_EXPRESSION_FACTORY_FUNCS
+#endif
+
+#ifdef RUSH_BINARY_EXPRESSION_FACTORY_FUNCS
+## for operator in binary
+{# spacing #}
+std::unique_ptr<::rush::ast::binary_expression>
+	{{ operator/name }}_expr(
+	std::unique_ptr<::rush::ast::expression> lhs,
+	std::unique_ptr<::rush::ast::expression> rhs) {
+	return make_binary_expr(
+			std::move(lhs), std::move(rhs),
+			::rush::ast::binary_operator::{{ operator/name }});
+}
+## endfor
+{# spacing #}
+#undef RUSH_BINARY_EXPRESSION_FACTORY_FUNCS
+#endif
