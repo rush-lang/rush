@@ -21,7 +21,7 @@ namespace rush::ast {
 	public:
 		expression() = default;
 		virtual ast::type result_type() const {
-			return ast::void_type;
+			return ast::none_type;
 		}
 	};
 }
