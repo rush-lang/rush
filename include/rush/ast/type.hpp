@@ -28,9 +28,7 @@ namespace rush::ast {
 	};
 
 	inline bool operator == (type const& lhs, type const& rhs) {
-		// fixme: implement id for sema::symbols.
-		// return lhs.id() == rhs.id();
-		return false;
+		return lhs.id() == rhs.id();
 	}
 
 	inline bool operator != (type const& lhs, type const& rhs) {
