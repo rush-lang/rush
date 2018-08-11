@@ -33,7 +33,7 @@ namespace rush {
 			return *this;
 		}
 
-		scope* parent() const noexcept {
+		scope* const parent() const noexcept {
 			return _parent;
 		}
 
@@ -43,8 +43,8 @@ namespace rush {
 				: 0;
 		}
 
-		void insert(std::string name, symbol);
-		symbol const* lookup(std::string name) const;
+		void insert(symbol);
+		symbol const& lookup(std::string name) const;
 
 	private:
 		scope(scope* parent)
