@@ -105,7 +105,11 @@ namespace rush::ast {
 		virtual void visit_identifier_expr(identifier_expression const& expr) override {
 			write("<identifier : ");
 			expr.result_type().accept(*this);
-			writeln(" : \"{}\">", expr.name());
+			writeln(">");
+
+			indent();
+			writeln("name: \"{}\"", expr.name());
+			dedent();
 		}
 
 		virtual void visit_constant_decl(constant_declaration const& decl) override {
