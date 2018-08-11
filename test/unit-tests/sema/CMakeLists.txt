@@ -1,5 +1,6 @@
 add_executable(sema-test
 	$<TARGET_OBJECTS:catch2>
+	symbol_test.cpp
 	scope_test.cpp
 )
 
