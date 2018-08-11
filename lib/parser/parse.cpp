@@ -1,5 +1,6 @@
 #include "rush/core/iterator.hpp"
-#include "rush/ast/printer.hpp"
+
+#include "printer.hpp"
 #include "parser.hpp"
 
 #include <iostream>
