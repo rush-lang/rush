@@ -19,7 +19,7 @@ namespace rush {
 
 		if (peek_skip_indent().is_identifier()) {
 			auto ident = next_skip_indent();
-			std::optional<ast::type> type = ast::undefined_type;
+			std::optional<ast::type> type;
 
 			if (peek_skip_indent().is(symbols::colon)) {
 				next_skip_indent(); // consume ':' token.
@@ -33,7 +33,10 @@ namespace rush {
 			next_skip_indent(); // consume '=' token.
 			auto init = parse_initializer();
 			if (!init) return nullptr;
-			return (*fptr)(ident.text(), *type, std::move(init));
+
+			return type != std::nullopt
+				? (*fptr)(ident.text(), *type, std::move(init))
+				: (*fptr)(ident.text(), init->result_type(), std::move(init));
 		}
 
 		return error("expected an identifier before '{}'.", next_skip_indent());
