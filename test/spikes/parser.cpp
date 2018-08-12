@@ -9,7 +9,7 @@ namespace sema = rush::sema;
 
 int main() {
 	rush::global_scope.insert(
-		sema::make_constant_entry("y", rush::global_scope.lookup("float")));
+		sema::make_constant_entry("y", rush::lookup("float")));
 
 	std::cout << src1 << std::endl;
 	std::cout << "--------------------" << std::endl;

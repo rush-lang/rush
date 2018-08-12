@@ -96,6 +96,14 @@ namespace rush {
 			return { *this, entry };
 		}
 	};
+
+	inline sema::symbol lookup(scope& s, std::string name) {
+		return s.lookup(std::move(name));
+	}
+
+	inline sema::symbol lookup(std::string name) {
+		return lookup(ensure_global_scope(), std::move(name));
+	}
 } // rush
 
 #endif // RUSH_SEMA_SCOPE_HPP
