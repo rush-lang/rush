@@ -6,15 +6,15 @@ namespace rush::sema {
 		return _scope->hash_of({ this->name() });
 	}
 
-	symbol symbol::type() const noexcept {
-		auto symbol = _entry->type();
-		return symbol._entry == nullptr
-			? _scope->lookup("")
-			: symbol;
-	}
-
 	std::string symbol::name() const noexcept {
 		return _entry->name();
+	}
+
+	symbol symbol::type() const noexcept {
+		auto type = _entry->type();
+		return type._entry == nullptr
+			? _scope->undefined_symbol() // undefined
+			: type;
 	}
 
 	rush::scope const& symbol::scope() const noexcept {

@@ -43,7 +43,7 @@ namespace rush::ast {
 	};
 
 	inline std::unique_ptr<identifier_expression> identifier_expr(scope& scope, std::string name) {
-		auto symbol = scope.insert(sema::make_identifier_entry(std::move(name)));
+		auto symbol = scope.lookup(name);
 		return std::make_unique<identifier_expression>(symbol, identifier_expression::factory_tag_t{});
 	}
 

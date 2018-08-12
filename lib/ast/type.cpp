@@ -15,7 +15,7 @@ namespace rush::ast {
 	}
 
 	// sentinals
-	type const undefined_type = make_type(lookup(""));
+	type const undefined_type = make_type(ensure_global_scope().undefined_symbol());
 	type const error_type = make_type(ensure_global_scope(), "<error-type>");
 
 	// known/built-in types

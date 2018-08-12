@@ -39,6 +39,14 @@ namespace rush {
 			, _children(std::move(other._children))
 			, _symbols(std::move(other._symbols)) {}
 
+		std::size_t depth() const noexcept {
+			return !is_global() ? parent()->depth() + 1 : 0;
+		}
+
+		scope* const parent() const noexcept {
+			return _parent;
+		}
+
 		bool is_global() const noexcept {
 			return _parent == nullptr;
 		}
@@ -47,13 +55,9 @@ namespace rush {
 			return _parent == &parent;
 		}
 
-		scope* const parent() const noexcept {
-			return _parent;
-		}
-
 		bool is_descendent_of(scope const& parent) const noexcept;
 
-		std::size_t depth() const noexcept;
+		scope& push_scope();
 
 		scope& push_block_scope();
 		scope& push_function_scope();
@@ -63,8 +67,10 @@ namespace rush {
 		sema::symbol insert(sema::symbol_entry);
 		sema::symbol insert_or_assign(sema::symbol_entry);
 
-		sema::symbol lookup(std::string name) const;
-		sema::symbol lookup_local(std::string name) const;
+		// sema::symbol update(sema::symbol_entry);
+
+		sema::symbol lookup(std::string name);
+		sema::symbol lookup_local(std::string name);
 
 		iterator_range<const_symbol_iterator> symbols() const;
 		iterator_range<const_symbol_iterator> local_symbols() const;

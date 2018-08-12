@@ -98,7 +98,7 @@ namespace rush {
 		assert(peek_skip_indent().is_identifier() && "expected token to be an identifier.");
 		auto tok = next_skip_indent();
 		auto ident = tok.text();
-		return ast::identifier_expr(ident);
+		return ast::identifier_expr(_scope, ident);
 	}
 
 	std::unique_ptr<ast::binary_expression> parser::parse_binary_expression(std::unique_ptr<ast::expression> lhs) {
