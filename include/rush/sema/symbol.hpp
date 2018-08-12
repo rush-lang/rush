@@ -25,19 +25,33 @@ namespace rush::sema {
 
 		rush::scope const& scope() const noexcept;
 
-		bool is_builtin() const noexcept {
-			return true;
-		}
+		// symbol types
+		symbol_type symbol_type() const noexcept;
 
-		bool is_defined() const noexcept {
-			return false;
-		}
-
-		bool has_access_modifier(access_modifier am) const noexcept;
+		// convenience members
 		bool is_type() const noexcept;
 		bool is_function() const noexcept;
 		bool is_constant() const noexcept;
 		bool is_variable() const noexcept;
+		bool is_undefined() const noexcept;
+
+		// access modifiers
+		access_modifier access_modifier() const noexcept;
+
+		// convenience members
+		bool is_internal() const noexcept;
+		bool is_exported() const noexcept;
+		bool is_public() const noexcept;
+		bool is_private() const noexcept;
+		bool is_protected() const noexcept;
+
+		// storage class specifiers
+		storage_class_specifier storage_duration() const noexcept;
+
+		// convenience members
+		bool is_auto_storage_duration() const noexcept;
+		bool is_static_storage_duration() const noexcept;
+		bool is_thread_local_storage_duration() const noexcept;
 
 	private:
 		rush::scope const* _scope;
