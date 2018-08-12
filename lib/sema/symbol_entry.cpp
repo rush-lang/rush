@@ -9,6 +9,10 @@ namespace rush::sema {
 		return { std::move(name), type, attrs };
 	}
 
+	symbol_entry make_identifier_entry(std::string name) {
+		return make_entry(std::move(name), make_attributes(symbol_type::undefined));
+	}
+
 	symbol_entry make_type_entry(std::string name, access_modifier am) {
 		return make_entry(std::move(name), make_attributes(symbol_type::type, am));
 	}
