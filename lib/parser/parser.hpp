@@ -7,6 +7,8 @@
 
 #include "rush/core/iterator.hpp"
 
+#include "rush/sema/scope.hpp"
+
 #include "rush/ast/type.hpp"
 #include "rush/ast/expression.hpp"
 #include "rush/ast/declaration.hpp"
@@ -25,7 +27,8 @@ namespace rush {
 
 	public:
 		explicit parser(parser_options const& opts)
-			: _opts(opts) {}
+			: _opts(opts)
+			, _scope(*opts.scope) {}
 
 		std::unique_ptr<ast::node> parse(lexical_analysis const& lxa) {
 			initialize(lxa);
@@ -46,6 +49,7 @@ namespace rush {
 	private:
 		static const lexical_token eof;
 
+		scope& _scope;
 		parser_options _opts;
 		std::pair<
 			lxa_iterator,

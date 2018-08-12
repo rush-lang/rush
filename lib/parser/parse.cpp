@@ -40,7 +40,16 @@ namespace rush {
 		dump(parse(input), out);
 	}
 
+	void dump(std::string input, parser_options opts, std::ostream& out) {
+		dump(parse(input, opts), out);
+	}
+
+	void dump(std::istream& input, parser_options opts, std::ostream& out) {
+		dump(parse(input, opts), out);
+	}
+
 	void dump(parse_result const& input, std::ostream& out) {
 		input.ast()->accept(ast::printer { out });
 	}
+
 } // rush
