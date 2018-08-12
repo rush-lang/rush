@@ -20,8 +20,13 @@ namespace rush::ast {
 			auto depth = _indent - _current_indent;
 			for (std::size_t i = 0; i < depth; ++i) {
 				if (i + 1 != depth) _ostr << "   ";
-				else _ostr << "- ";
+				else _ostr << " - ";
 			}
+		}
+
+		void writeln() {
+			_ostr << std::endl;
+			_current_indent = 0;
 		}
 
 		template <typename... Args>
@@ -34,8 +39,7 @@ namespace rush::ast {
 		template <typename... Args>
 		void writeln(std::string str, Args&&... args) {
 			write(str, std::forward<Args>(args)...);
-			_ostr << std::endl;
-			_current_indent = 0;
+			writeln();
 		}
 
 	public:
@@ -50,13 +54,12 @@ namespace rush::ast {
 
 		virtual void visit_unary_expr(unary_expression const& expr) override {
 			switch (expr.opkind()) {
-			case unary_operator::plus: write("<unary-plus : "); break;
-			case unary_operator::negate: write("<unary-negate : "); break;
-			case unary_operator::increment: write("<unary-increment : "); break;
-			case unary_operator::decrement: write("<unary-decrement : "); break;
+			case unary_operator::plus: print_expression("unary-plus", expr); break;
+			case unary_operator::negate: print_expression("unary-negate", expr); break;
+			case unary_operator::increment: print_expression("unary-increment", expr); break;
+			case unary_operator::decrement: print_expression("unary-decrement", expr); break;
 			}
-
-			expr.result_type().accept(*this); write(">");
+			writeln();
 			indent();
 			expr.operand().accept(*this);
 			dedent();
@@ -64,17 +67,15 @@ namespace rush::ast {
 
 		virtual void visit_binary_expr(binary_expression const& expr) override {
 			switch (expr.opkind()) {
-			case binary_operator::addition: write("<binary-addition : "); break;
-			case binary_operator::subtraction: write("<binary-subtraction : "); break;
-			case binary_operator::multiplication: write("<binary-multiplication : "); break;
-			case binary_operator::division: write("<binary-division : "); break;
-			case binary_operator::modulo: write("<binary-modulo : "); break;
-			case binary_operator::logical_or: write("<logical-or : "); break;
-			case binary_operator::logical_and: write("<logical-and : "); break;
+			case binary_operator::addition: print_expression("binary-addition", expr); break;
+			case binary_operator::subtraction: print_expression("binary-subtraction", expr); break;
+			case binary_operator::multiplication: print_expression("binary-multiplication", expr); break;
+			case binary_operator::division: print_expression("binary-division", expr); break;
+			case binary_operator::modulo: print_expression("binary-modulo", expr); break;
+			case binary_operator::logical_or: print_expression("logical-or", expr); break;
+			case binary_operator::logical_and: print_expression("logical-and", expr); break;
 			}
-
-			expr.result_type().accept(*this); writeln(">");
-
+			writeln();
 			indent();
 			write("left: "); expr.left_operand().accept(*this);
 			write("right: "); expr.right_operand().accept(*this);
@@ -82,8 +83,8 @@ namespace rush::ast {
 		}
 
 		virtual void visit_literal_expr(literal_expression const& expr) override {
-			write("<literal : ");
-			expr.result_type().accept(*this); writeln(">");
+			print_expression("literal", expr);
+			writeln();
 		}
 
 		virtual void visit_literal_expr(string_literal_expression const& expr) override {
@@ -103,13 +104,8 @@ namespace rush::ast {
 		}
 
 		virtual void visit_identifier_expr(identifier_expression const& expr) override {
-			write("<identifier : ");
-			expr.result_type().accept(*this);
-			writeln(">");
-
-			indent();
-			writeln("name: \"{}\"", expr.name());
-			dedent();
+			print_expression("identifier", expr);
+			writeln(" [name: \"{}\"]", expr.name());
 		}
 
 		virtual void visit_constant_decl(constant_declaration const& decl) override {
@@ -125,21 +121,23 @@ namespace rush::ast {
 		std::size_t _current_indent;
 		std::basic_ostream<CharT, Traits>& _ostr;
 
+		void print_expression(std::string name, expression const& expr) {
+			write("<{}: ", name);
+			expr.result_type().accept(*this);
+			write(">");
+		}
+
 		void print_literal_expr(std::string value, literal_expression const& expr) {
-			write("<literal : ");
-			expr.result_type().accept(*this); writeln(">");
-			indent();
-			writeln("value: {}", value);
-			dedent();
+			print_expression("literal", expr);
+			writeln(" [value: {}]", value);
 		}
 
 		void print_storage_decl(std::string name, storage_declaration const& decl) {
-			write("<{}-declaration : ", name);
+			write("<{}: ", name);
 			decl.type().accept(*this);
-			writeln(">");
-
+			write(">");
+			writeln(" [name: \"{}\"]", decl.name());
 			indent();
-			writeln("name: \"{}\"", decl.name());
 			write("init: "); decl.initializer().accept(*this);
 			dedent();
 		}
