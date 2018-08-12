@@ -8,6 +8,8 @@
 #include "rush/ast/visitor.hpp"
 #include "rush/ast/type.hpp"
 
+#include "rush/sema/symbol.hpp"
+
 #include <string>
 
 namespace rush::ast {
@@ -15,13 +17,14 @@ namespace rush::ast {
 	class storage_declaration : public declaration {
 	public:
 		std::string name() const noexcept {
-			return _name;
+			return _symbol.name();
 		}
 
 		ast::type type() const noexcept {
-			return _type == nullptr
+			auto static_type = ast::type { _symbol.type() };
+			return static_type == ast::undefined_type
 				? _init->result_type()
-				: *_type;
+				: static_type;
 		}
 
 		expression const& initializer() const noexcept {
@@ -29,20 +32,13 @@ namespace rush::ast {
 		}
 
 	protected:
-		storage_declaration(std::string name, std::unique_ptr<expression> init)
-			: _name { std::move(name) }
-			, _init { std::move(init) }
-			, _type { nullptr } {}
-
-		storage_declaration(std::string name, ast::type const& type, std::unique_ptr<expression> init)
-			: _name { std::move(name) }
-			, _init { std::move(init) }
-			, _type { std::addressof(type) } {}
+		storage_declaration(sema::symbol symbol, std::unique_ptr<expression> init)
+			: _symbol { symbol }
+			, _init { std::move(init) } {}
 
 	private:
-		std::string _name;
+		sema::symbol _symbol;
 		std::unique_ptr<expression> _init;
-		ast::type const* const _type;
 	};
 } // rush::ast
 

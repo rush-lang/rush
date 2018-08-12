@@ -26,6 +26,10 @@ namespace rush::ast {
 			return _symbol.name();
 		}
 
+		sema::symbol symbol() const noexcept {
+			return _symbol;
+		}
+
 		using node::accept;
 		virtual void accept(ast::visitor& v) const {
 			v.visit_type(*this);
