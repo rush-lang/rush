@@ -15,7 +15,13 @@ namespace rush::ast {
 		friend type make_type(sema::symbol const& s);
 		friend type make_type(scope&, std::string name);
 	public:
-		std::size_t id() const noexcept { return _symbol.id(); }
+		type(sema::symbol const& s)
+			: _symbol(s) {}
+
+		std::size_t id() const noexcept {
+			return _symbol.id();
+		}
+
 		std::string name() const noexcept {
 			return _symbol.name();
 		}
@@ -27,7 +33,6 @@ namespace rush::ast {
 
 	private:
 		sema::symbol _symbol;
-		type(sema::symbol const& s) : _symbol(s) {}
 	};
 
 	inline bool operator == (type const& lhs, type const& rhs) {
