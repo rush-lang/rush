@@ -4,21 +4,26 @@
 #define RUSH_SEMA_SYMBOL_HPP
 
 #include "rush/sema/attributes.hpp"
-#include "rush/sema/symbol_entry.hpp"
 
 #include <string>
+#include <optional>
 
 namespace rush {
 	class scope;
 }
 
 namespace rush::sema {
+	class symbol_entry;
 	class symbol {
+		friend class symbol_entry;
 		friend class ::rush::scope;
 
 	public:
 		std::size_t id() const noexcept;
 		std::string name() const noexcept;
+		sema::symbol type() const noexcept;
+
+		rush::scope const& scope() const noexcept;
 
 		bool is_builtin() const noexcept {
 			return true;
@@ -28,37 +33,23 @@ namespace rush::sema {
 			return false;
 		}
 
-		bool has_access_modifier(access_modifier am) const noexcept {
-			return has_flags(_entry->flags(), am);
-		}
-
-		bool is_type() const noexcept {
-			return is_defined()
-			&& has_flags(_entry->flags(), symbol_type::type);
-		}
-
-		bool is_function() const noexcept {
-			return is_defined()
-			&& has_flags(_entry->flags(), symbol_type::function);
-		}
-
-		bool is_constant() const noexcept {
-			return is_defined()
-			&& has_flags(_entry->flags(), symbol_type::constant);
-		}
-
-		bool is_variable() const noexcept {
-			return is_defined()
-			&& has_flags(_entry->flags(), symbol_type::variable);
-		}
+		bool has_access_modifier(access_modifier am) const noexcept;
+		bool is_type() const noexcept;
+		bool is_function() const noexcept;
+		bool is_constant() const noexcept;
+		bool is_variable() const noexcept;
 
 	private:
-		symbol(scope const& scope, symbol_entry const& entry)
+		rush::scope const* _scope;
+		symbol_entry const* _entry;
+
+		symbol() noexcept
+			: _scope(nullptr)
+			, _entry(nullptr) {}
+
+		symbol(rush::scope const& scope, symbol_entry const& entry) noexcept
 			: _scope(&scope)
 			, _entry(&entry) {}
-
-		scope const* _scope;
-		symbol_entry const* _entry;
 	};
 
 	inline bool operator == (symbol const& lhs, symbol const& rhs) {

@@ -12,8 +12,6 @@ namespace rush {
 
 	scope& global_scope = ensure_global_scope();
 
-	const symbol_entry undefined_symbol_entry { "<undefined>", symbol_flag_t {} };
-	const symbol_entry error_type_symbol_entry { "<error-type>", symbol_flag_t {} };
 
 	std::size_t scope::depth() const noexcept {
 		return !is_global() ? parent()->depth() + 1 : 0;
@@ -25,8 +23,10 @@ namespace rush {
 		return this->parent()->is_descendent_of(sc);
 	}
 
-	void scope::insert(symbol_entry s) {
-		_symbols.insert(s);
+	sema::symbol scope::insert(symbol_entry s) {
+		// inserts or gets the entry s.
+		auto result = _symbols.insert(s);
+		return to_symbol(*result.first);
 	}
 
 	symbol scope::lookup(std::string name) const {
@@ -35,14 +35,14 @@ namespace rush {
 
 		return parent() != nullptr
 			? parent()->lookup(std::move(name))
-			: to_symbol(undefined_symbol_entry);
+			: _undefined_symbol;
 	}
 
 	symbol scope::lookup_local(std::string name) const {
 		auto it = _symbols.find({ std::move(name) });
 		if (it != _symbols.end()) return to_symbol(*it);
 
-		return to_symbol(undefined_symbol_entry);
+		return _undefined_symbol;
 	}
 
 	scope& scope::push_block_scope() {

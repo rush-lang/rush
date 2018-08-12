@@ -3,6 +3,7 @@
 #ifndef RUSH_SEMA_SCOPE_HPP
 #define RUSH_SEMA_SCOPE_HPP
 
+#include "rush/sema/global_scope.hpp"
 #include "rush/core/iterator_range.hpp"
 #include "rush/sema/symbol.hpp"
 #include "rush/sema/symbol_entry.hpp"
@@ -14,11 +15,6 @@
 #include <unordered_set>
 
 namespace rush {
-	class scope;
-
-	scope& ensure_global_scope();
-	extern scope& global_scope;
-
 	class scope final {
 		friend scope& ensure_global_scope();
 
@@ -64,8 +60,8 @@ namespace rush {
 		scope& push_class_scope();
 		scope& push_module_scope();
 
-		void insert(sema::symbol_entry);
-		void insert_or_assign(sema::symbol_entry);
+		sema::symbol insert(sema::symbol_entry);
+		sema::symbol insert_or_assign(sema::symbol_entry);
 
 		sema::symbol lookup(std::string name) const;
 		sema::symbol lookup_local(std::string name) const;
@@ -75,7 +71,13 @@ namespace rush {
 
 		std::size_t hash_id_of(sema::symbol_entry const&) const;
 
+		sema::symbol undefined_symbol() const noexcept {
+			return _undefined_symbol;
+		}
+
 	private:
+		sema::symbol _undefined_symbol;
+
 		scope* _parent;
 		std::vector<scope> _children;
 		std::unordered_set<sema::symbol_entry> _symbols;
@@ -83,7 +85,12 @@ namespace rush {
 		scope(scope* parent)
 			: _parent(parent)
 			, _children { }
-			, _symbols { } {}
+			, _symbols { } { initialize(); }
+
+		void initialize() {
+			static const auto undefined_entry_name = "<undefined>";
+			_undefined_symbol = this->insert({ undefined_entry_name });
+		}
 
 		sema::symbol to_symbol(sema::symbol_entry const& entry) const noexcept {
 			return { *this, entry };
