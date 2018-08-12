@@ -9,7 +9,7 @@ namespace rush::sema {
 		return { std::move(name), type, attrs };
 	}
 
-	symbol_entry make_identifier_entry(std::string name) {
+	symbol_entry make_undefined_entry(std::string name) {
 		return make_entry(std::move(name), make_attributes(symbol_type::undefined));
 	}
 

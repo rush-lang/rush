@@ -40,7 +40,7 @@ namespace rush::sema {
 	inline bool operator != (symbol_entry const& lhs, symbol_entry const& rhs) { return !(lhs == rhs); }
 
 	symbol_entry make_type_entry(std::string name, access_modifier);
-	symbol_entry make_identifier_entry(std::string name);
+	symbol_entry make_undefined_entry(std::string name);
 	symbol_entry make_function_entry(std::string name, symbol const& return_type, access_modifier = access_modifier::internal);
 	symbol_entry make_variable_entry(std::string name, symbol const& type, storage_class_specifier = storage_class_specifier::auto_);
 	symbol_entry make_constant_entry(std::string name, symbol const& type, storage_class_specifier = storage_class_specifier::auto_);
