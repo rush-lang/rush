@@ -1,6 +1,8 @@
 #include "rush/ast/type.hpp"
 #include <unordered_map>
 
+using namespace rush::sema;
+
 namespace rush::ast {
 
 	type make_type(sema::symbol const& s) {
@@ -8,7 +10,7 @@ namespace rush::ast {
 	}
 
 	type make_type(scope& sc, std::string name) {
-		sc.insert({ name, sema::make_flags(sema::symbol_type::type) });
+		sc.insert(make_type_entry(name, access_modifier::exported));
 		return type { sc.lookup(name) };
 	}
 
