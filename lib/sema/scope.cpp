@@ -1,21 +1,19 @@
-#include "rush/sema/scope.hpp"
 #include "rush/sema/symbol.hpp"
+#include "rush/sema/scope.hpp"
 
+#include <iostream>
 using namespace rush::sema;
 
 namespace rush {
-	scope init_global_scope();
-	scope global_scope = init_global_scope();
-
-	scope init_global_scope() {
-		auto gs = scope { nullptr };
-		gs.insert({ "<undefined>", 0 });
-		// gs.insert(symbol { "int", builtin_symbol | type_symbol });
-		// gs.insert(symbol { "uint", builtin_symbol | type_symbol });
-		// gs.insert(symbol { "long", builtin_symbol | type_symbol });
-		// gs.insert(symbol { "ulong", builtin_symbol | type_symbol });
-		return std::move(gs);
+	scope& ensure_global_scope() {
+		static scope* const gs = new scope(nullptr);
+		return *gs;
 	}
+
+	scope& global_scope = ensure_global_scope();
+
+	const symbol_entry undefined_symbol_entry { "<undefined>", symbol_flag_t {} };
+	const symbol_entry error_type_symbol_entry { "<error-type>", symbol_flag_t {} };
 
 	std::size_t scope::depth() const noexcept {
 		return !is_global() ? parent()->depth() + 1 : 0;
@@ -28,25 +26,23 @@ namespace rush {
 	}
 
 	void scope::insert(symbol_entry s) {
-		_symtable.emplace(symbol { *this, s.name(), s.flags() });
+		_symbols.insert(s);
 	}
 
-	symbol const& scope::lookup(std::string name) const {
-		auto it = _symtable.find(symbol { *this, name, 0 });
-		if (it != _symtable.end())
-			return *it;
+	symbol scope::lookup(std::string name) const {
+		auto it = _symbols.find({ name });
+		if (it != _symbols.end()) return to_symbol(*it);
 
 		return parent() != nullptr
-			? parent()->lookup(name)
-			: get_undefined_symbol();
+			? parent()->lookup(std::move(name))
+			: to_symbol(undefined_symbol_entry);
 	}
 
-	symbol const& scope::lookup_local(std::string name) const {
-		auto it = _symtable.find(symbol { *this, std::move(name), 0 });
-		if (it != _symtable.end())
-			return *it;
+	symbol scope::lookup_local(std::string name) const {
+		auto it = _symbols.find({ std::move(name) });
+		if (it != _symbols.end()) return to_symbol(*it);
 
-		return get_undefined_symbol();
+		return to_symbol(undefined_symbol_entry);
 	}
 
 	scope& scope::push_block_scope() {
@@ -69,7 +65,7 @@ namespace rush {
 		return _children.back();
 	}
 
-	std::size_t scope::hash_id_of(sema::symbol const& s) const {
-		return _symtable.hash_function()(s);
+	std::size_t scope::hash_id_of(sema::symbol_entry const& s) const {
+		return _symbols.hash_function()(s);
 	}
 } // rush

@@ -3,6 +3,11 @@
 
 namespace rush::sema {
 	std::size_t symbol::id() const noexcept {
-		return _scope->hash_id_of(*this);
+		return _scope->hash_id_of({ this->name(), 0 });
 	}
+
+	std::string symbol::name() const noexcept {
+		return _entry->name();
+	}
+
 } // rush::sema

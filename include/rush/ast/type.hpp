@@ -12,10 +12,13 @@
 
 namespace rush::ast {
 	class type : public node {
+		friend type make_type(sema::symbol const& s);
 		friend type make_type(scope&, std::string name);
 	public:
-		std::size_t id() const noexcept { return _symbol->id(); }
-		std::string name() const noexcept { return _symbol->name(); }
+		std::size_t id() const noexcept { return _symbol.id(); }
+		std::string name() const noexcept {
+			return _symbol.name();
+		}
 
 		using node::accept;
 		virtual void accept(ast::visitor& v) const {
@@ -23,8 +26,8 @@ namespace rush::ast {
 		}
 
 	private:
-		sema::symbol const* _symbol;
-		type(sema::symbol const& s) : _symbol(&s) {}
+		sema::symbol _symbol;
+		type(sema::symbol const& s) : _symbol(s) {}
 	};
 
 	inline bool operator == (type const& lhs, type const& rhs) {

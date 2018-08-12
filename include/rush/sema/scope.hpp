@@ -5,6 +5,7 @@
 
 #include "rush/core/iterator_range.hpp"
 #include "rush/sema/symbol.hpp"
+#include "rush/sema/symbol_entry.hpp"
 #include "rush/sema/symbol_iterator.hpp"
 #include "rush/sema/attributes.hpp"
 
@@ -14,10 +15,12 @@
 
 namespace rush {
 	class scope;
-	extern scope global_scope;
+
+	scope& ensure_global_scope();
+	extern scope& global_scope;
 
 	class scope final {
-		friend scope init_global_scope();
+		friend scope& ensure_global_scope();
 
 		scope(scope const&) = delete;
 		void operator = (scope const&) = delete;
@@ -25,20 +28,20 @@ namespace rush {
 		scope& operator = (scope&& other) {
 			_parent = other._parent;
 			_children = std::move(other._children);
-			_symtable = std::move(other._symtable);
+			_symbols = std::move(other._symbols);
 			return *this;
 		}
 
 	public:
-		using symbol_iterator = detail::basic_symbol_iterator<std::unordered_set<sema::symbol>::iterator>;
-		using const_symbol_iterator = detail::basic_symbol_iterator<std::unordered_set<sema::symbol>::const_iterator>;
+		using symbol_iterator = detail::basic_symbol_iterator<std::unordered_set<sema::symbol_entry>::iterator>;
+		using const_symbol_iterator = detail::basic_symbol_iterator<std::unordered_set<sema::symbol_entry>::const_iterator>;
 
 		// fixme: should not allow move-construction outside of this class.
 		// it's public now because the children vector requires it.
 		scope(scope&& other)
 			: _parent(other._parent)
 			, _children(std::move(other._children))
-			, _symtable(std::move(other._symtable)) {}
+			, _symbols(std::move(other._symbols)) {}
 
 		bool is_global() const noexcept {
 			return _parent == nullptr;
@@ -64,26 +67,26 @@ namespace rush {
 		void insert(sema::symbol_entry);
 		void insert_or_assign(sema::symbol_entry);
 
-		sema::symbol const& lookup(std::string name) const;
-		sema::symbol const& lookup_local(std::string name) const;
+		sema::symbol lookup(std::string name) const;
+		sema::symbol lookup_local(std::string name) const;
 
 		iterator_range<const_symbol_iterator> symbols() const;
 		iterator_range<const_symbol_iterator> local_symbols() const;
 
-		std::size_t hash_id_of(sema::symbol const&) const;
+		std::size_t hash_id_of(sema::symbol_entry const&) const;
 
 	private:
 		scope* _parent;
 		std::vector<scope> _children;
-		std::unordered_set<sema::symbol> _symtable;
+		std::unordered_set<sema::symbol_entry> _symbols;
 
 		scope(scope* parent)
 			: _parent(parent)
 			, _children { }
-			, _symtable { } {}
+			, _symbols { } {}
 
-		sema::symbol const& get_undefined_symbol() const {
-			return *_symtable.find({ *this, "<undefined>", 0 });
+		sema::symbol to_symbol(sema::symbol_entry const& entry) const noexcept {
+			return { *this, entry };
 		}
 	};
 } // rush
