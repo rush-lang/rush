@@ -5,7 +5,12 @@ char const* src1 = R"(let x = 2 + y * 3)";
 char const* src2 = R"(let msg = "hello world")";
 
 namespace ast = rush::ast;
+namespace sema = rush::sema;
+
 int main() {
+	rush::global_scope.insert(
+		sema::make_constant_entry("y", rush::global_scope.lookup("float")));
+
 	std::cout << src1 << std::endl;
 	std::cout << "--------------------" << std::endl;
 	rush::dump(src1);
