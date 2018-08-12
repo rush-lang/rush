@@ -285,7 +285,7 @@ private:
 			if (icheck('b')) { skip(); return scan_integer_literal(is_bin_digit, 2); }
 			if (icheck('o')) { skip(); return scan_integer_literal(is_oct_digit, 8); }
 
-			if (check('.') && check(is_digit, 1)) {
+			if (check('.')) {
 				skip(); // consume decimal point.
 				auto value = scan_while(is_digit);
 				auto suffix = scan_floating_literal_suffix();
@@ -297,7 +297,7 @@ private:
 		}
 
 		auto integer_part = scan_while(is_digit);
-		if (check('.') && check(is_digit, 1)) {
+		if (check('.')) {
 			skip(); // consume decimal point.
 			auto fractional_part = scan_while(is_digit);
 			auto suffix = scan_floating_literal_suffix();
