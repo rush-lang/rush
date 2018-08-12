@@ -8,9 +8,9 @@ namespace rush {
 		return parse_expression();
 	}
 
-
-	std::unique_ptr<ast::declaration> parser::parse_storage_declaration(std::string storage_type,
-		std::unique_ptr<ast::declaration> (*fptr)(std::string, ast::type, std::unique_ptr<ast::expression>)
+	template <typename DeclT>
+	std::unique_ptr<DeclT> parser::_parse_storage_declaration(std::string storage_type,
+		std::unique_ptr<DeclT> (*fptr)(rush::scope&, std::string, ast::type, std::unique_ptr<ast::expression>)
 	) {
 		if (peek_skip_indent().is(symbols::left_bracket)) {
 			// parse_destructure_pattern.
@@ -35,8 +35,8 @@ namespace rush {
 			if (!init) return nullptr;
 
 			return type != std::nullopt
-				? (*fptr)(ident.text(), *type, std::move(init))
-				: (*fptr)(ident.text(), init->result_type(), std::move(init));
+				? (*fptr)(_scope, ident.text(), *type, std::move(init))
+				: (*fptr)(_scope, ident.text(), init->result_type(), std::move(init));
 		}
 
 		return error("expected an identifier before '{}'.", next_skip_indent());
@@ -45,18 +45,22 @@ namespace rush {
 	std::unique_ptr<ast::declaration> parser::parse_constant_declaration() {
 		assert(peek_skip_indent().is(keywords::let_) && "expected the 'let' keyword.");
 		next_skip_indent(); // consume let token
-		return parse_storage_declaration("constant",
-			[](std::string name, ast::type type, std::unique_ptr<ast::expression> init) -> std::unique_ptr<ast::declaration> {
-				return ast::constant_decl(name, type, std::move(init));
-			});
+		using function_type = std::unique_ptr<ast::constant_declaration>(*)(
+			rush::scope& scope,
+			std::string name,
+			ast::type type,
+			std::unique_ptr<ast::expression> init);
+		return _parse_storage_declaration("constant", static_cast<function_type>(&ast::constant_decl));
 	}
 
 	std::unique_ptr<ast::declaration> parser::parse_variable_declaration() {
 		assert(peek_skip_indent().is(keywords::var_) && "expected the 'var' keyword.");
 		next_skip_indent(); // consume var token
-		return parse_storage_declaration("variable",
-			[](std::string name, ast::type type, std::unique_ptr<ast::expression> init) -> std::unique_ptr<ast::declaration> {
-				return ast::variable_decl(name, type, std::move(init));
-			});
+		using function_type = std::unique_ptr<ast::variable_declaration>(*)(
+			rush::scope& scope,
+			std::string name,
+			ast::type type,
+			std::unique_ptr<ast::expression> init);
+		return _parse_storage_declaration("variable", static_cast<function_type>(&ast::variable_decl));
 	}
 }

@@ -119,8 +119,9 @@ namespace rush {
 
 
 		// declarations.
-		std::unique_ptr<ast::declaration> parse_storage_declaration(std::string,
-			std::unique_ptr<ast::declaration> (*)(std::string, ast::type, std::unique_ptr<ast::expression>));
+		template <typename DeclT>
+		std::unique_ptr<DeclT> _parse_storage_declaration(std::string,
+			std::unique_ptr<DeclT> (*)(rush::scope&, std::string, ast::type, std::unique_ptr<ast::expression>));
 
 		std::unique_ptr<ast::declaration> parse_constant_declaration();
 		std::unique_ptr<ast::declaration> parse_variable_declaration();
