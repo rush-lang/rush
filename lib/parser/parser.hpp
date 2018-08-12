@@ -111,8 +111,10 @@ namespace rush {
 			return *ptok;
 		}
 
-		std::optional<ast::type> parse_type() {
-			return { ast::int_type };
+		std::optional<ast::type> parse_type_annotation() {
+			assert((peek_skip_indent().is_identifier() || peek_skip_indent().is_keyword()) && "expected a simple type identifier.");
+			auto tok = next_skip_indent(); // consume identifier.
+			return { _scope.lookup(tok.text()) };
 		}
 
 		std::unique_ptr<ast::expression> parse_initializer();

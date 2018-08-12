@@ -23,7 +23,7 @@ namespace rush {
 
 			if (peek_skip_indent().is(symbols::colon)) {
 				next_skip_indent(); // consume ':' token.
-				type = parse_type();
+				type = parse_type_annotation();
 			}
 
 			if (!peek_skip_indent().is(symbols::equals)) {
