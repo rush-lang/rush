@@ -81,7 +81,7 @@ namespace rush::ast {
 		virtual void accept(ast::visitor& v) const override { v.visit_literal_expr(*this); }
 	};
 
-	std::unique_ptr<nil_literal_expression> nil_expr();
+	std::unique_ptr<nil_literal_expression> nil_expr(ast::type const&);
 
 	std::unique_ptr<boolean_literal_expression> literal_expr(bool);
 	std::unique_ptr<string_literal_expression>  literal_expr(std::string);

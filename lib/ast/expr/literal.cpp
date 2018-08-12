@@ -12,8 +12,8 @@ namespace rush::ast {
 		);
 	}
 
-	std::unique_ptr<nil_literal_expression> nil_expr() {
-		return make_literal_expr<nil_literal_expression>(std::uint64_t(0), ast::undefined_type);
+	std::unique_ptr<nil_literal_expression> nil_expr(ast::type const& type) {
+		return make_literal_expr<nil_literal_expression>(std::uint64_t(0), type);
 	}
 
 	std::unique_ptr<boolean_literal_expression> literal_expr(bool val) {
