@@ -65,7 +65,7 @@ namespace rush {
 		return _children.back();
 	}
 
-	std::size_t scope::hash_id_of(sema::symbol_entry const& s) const {
+	std::size_t scope::hash_of(sema::symbol_entry const& s) const {
 		return _symbols.hash_function()(s);
 	}
 } // rush

@@ -69,7 +69,7 @@ namespace rush {
 		iterator_range<const_symbol_iterator> symbols() const;
 		iterator_range<const_symbol_iterator> local_symbols() const;
 
-		std::size_t hash_id_of(sema::symbol_entry const&) const;
+		std::size_t hash_of(sema::symbol_entry const&) const;
 
 		sema::symbol undefined_symbol() const noexcept {
 			return _undefined_symbol;

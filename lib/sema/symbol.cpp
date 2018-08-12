@@ -3,7 +3,7 @@
 
 namespace rush::sema {
 	std::size_t symbol::id() const noexcept {
-		return _scope->hash_id_of({ this->name() });
+		return _scope->hash_of({ this->name() });
 	}
 
 	symbol symbol::type() const noexcept {
