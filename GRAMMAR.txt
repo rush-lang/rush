@@ -8,8 +8,8 @@ oct-digit = [0-7]
 bin-digit = 0 | 1
 non-zero-digit = [1-9]
 
-string-char = [^\\"]
-escaped-string-char = \\[\\"nt]
+string-char = [^\\"$]
+escaped-string-char = \\[\\"nt$]
 
 
 keyword ::=
@@ -43,10 +43,12 @@ integer-literal ::=
 floating-literal-suffix ::= "f" | "F"
 floating-literal ::= [ dec-integer-literal ] "." { digit } [ floating-literal-suffix ]
 
-string-literal ::= """ { string-char | escaped-string-char } """
-
-
-
+string-segment ::= { string-char | escaped-string-char }
+string-literal ::= """ string-segment """
+string-substitution ::= "$" ( identifier-string-substitution | expression-string-substitution )
+identifier-string-substitution ::= identifier
+expression-string-substitution ::= "{" expression "}"
+interpolated-string ::= """ string-segment string-substitution { interpolated-string } """
 
 
 ## SYNTACTICAL GRAMMAR
