@@ -6,6 +6,7 @@
 #include <string>
 
 namespace ast = rush::ast;
+namespace exprs = ast::exprs;
 
 bool valid_parse(std::string input, std::unique_ptr<ast::node> root) {
 	auto ast = rush::parse(input);
@@ -13,47 +14,47 @@ bool valid_parse(std::string input, std::unique_ptr<ast::node> root) {
 }
 
 TEST_CASE("rush::parse", "[unit][parser]") {
-	// CHECK( valid_parse("let i = 0", ast::constant_decl("i", ast::int_type, ast::literal_expr(0))));
-	// CHECK( valid_parse("let d = 0.1", ast::constant_decl("d", ast::double_type, ast::literal_expr(0))));
-	// CHECK( valid_parse("let s = \"abc\"", ast::constant_decl("s", ast::string_type, ast::literal_expr(0))));
+	// CHECK( valid_parse("let i = 0", ast::constant_decl("i", ast::int_type, exprs::literal(0))));
+	// CHECK( valid_parse("let d = 0.1", ast::constant_decl("d", ast::double_type, exprs::literal(0))));
+	// CHECK( valid_parse("let s = \"abc\"", ast::constant_decl("s", ast::string_type, exprs::literal(0))));
 }
 
 TEST_CASE( "rush::parse (expressions)", "[unit][parser]" ) {
 	// auto ast = rush::parse("123");
 	SECTION( "integer literals" ) {
-		CHECK( valid_parse("0", ast::literal_expr(0, ast::int_type)) );
-		CHECK( valid_parse("1", ast::literal_expr(1, ast::int_type)) );
-		CHECK( valid_parse("9", ast::literal_expr(9, ast::int_type)) );
-		CHECK( valid_parse("123", ast::literal_expr(9, ast::int_type)) );
+		CHECK( valid_parse("0", exprs::literal(0, ast::int_type)) );
+		CHECK( valid_parse("1", exprs::literal(1, ast::int_type)) );
+		CHECK( valid_parse("9", exprs::literal(9, ast::int_type)) );
+		CHECK( valid_parse("123", exprs::literal(9, ast::int_type)) );
 
-		CHECK( valid_parse("345u", ast::literal_expr(9, ast::uint_type)) );
-		CHECK( valid_parse("645l", ast::literal_expr(9, ast::long_type)) );
-		// CHECK( valid_parse("645ul", ast::literal_expr(9, ast::ulong_type)) );
+		CHECK( valid_parse("345u", exprs::literal(9, ast::uint_type)) );
+		CHECK( valid_parse("645l", exprs::literal(9, ast::long_type)) );
+		// CHECK( valid_parse("645ul", exprs::literal(9, ast::ulong_type)) );
 	}
 
 	SECTION( "binary expressions" ) {
 		CHECK( valid_parse("1 + 1",
-			ast::addition_expr(
-				ast::literal_expr(1, ast::int_type),
-				ast::literal_expr(1, ast::int_type)
+			exprs::addition(
+				exprs::literal(1, ast::int_type),
+				exprs::literal(1, ast::int_type)
 			)));
 
 		CHECK( valid_parse("2 - 1",
-			ast::subtraction_expr(
-				ast::literal_expr(1, ast::int_type),
-				ast::literal_expr(1, ast::int_type)
+			exprs::subtraction(
+				exprs::literal(1, ast::int_type),
+				exprs::literal(1, ast::int_type)
 			)));
 
 		CHECK( valid_parse("x * 2",
-			ast::multiplication_expr(
-				ast::literal_expr(1, ast::int_type),
-				ast::literal_expr(1, ast::int_type)
+			exprs::multiplication(
+				exprs::literal(1, ast::int_type),
+				exprs::literal(1, ast::int_type)
 			)));
 
 		CHECK( valid_parse("x / y",
-			ast::division_expr(
-				ast::literal_expr(1, ast::int_type),
-				ast::literal_expr(1, ast::int_type)
+			exprs::division(
+				exprs::literal(1, ast::int_type),
+				exprs::literal(1, ast::int_type)
 			)));
 	}
 }

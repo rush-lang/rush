@@ -43,10 +43,9 @@ namespace rush::ast {
 			std::unique_ptr<expression>,
 			unary_operator);
 	};
-
-	std::unique_ptr<unary_expression> negate_expr(std::unique_ptr<expression>);
-	std::unique_ptr<unary_expression> increment_expr(std::unique_ptr<identifier_expression>);
-	std::unique_ptr<unary_expression> decrement_expr(std::unique_ptr<identifier_expression>);
 } // rush
+
+#define RUSH_UNARY_EXPRESSION_FACTORY_FUNC_DECLS
+#include "rush/ast/expr/_expressions.hpp"
 
 #endif // RUSH_AST_UNARY_HPP

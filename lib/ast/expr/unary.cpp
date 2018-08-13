@@ -10,7 +10,7 @@ namespace rush::ast {
 			opkind, unary_expression::factory_tag_t{}
 		);
 	}
-
-#	define RUSH_UNARY_EXPRESSION_FACTORY_FUNCS
-#	include "rush/ast/expr/_expressions.hpp"
 } // rush::ast
+
+#define RUSH_UNARY_EXPRESSION_FACTORY_FUNC_DEFNS
+#include "rush/ast/expr/_expressions.hpp"

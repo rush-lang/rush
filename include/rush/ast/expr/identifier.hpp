@@ -10,12 +10,17 @@
 #include <string>
 
 namespace rush::ast {
+	class identifier_expression;
+	namespace exprs { std::unique_ptr<identifier_expression> identifier(scope& scope, std::string name); }
+}
+
+namespace rush::ast {
 	// \brief Represents an identifier within an expression
 	//        such as a variable, or constant.
 	class identifier_expression : public expression {
 		struct factory_tag_t {};
 		friend std::unique_ptr<identifier_expression>
-			identifier_expr(scope&, std::string);
+			exprs::identifier(scope&, std::string);
 
 	public:
 		identifier_expression(sema::symbol symbol, factory_tag_t) noexcept
@@ -41,15 +46,17 @@ namespace rush::ast {
 	private:
 		sema::symbol _symbol;
 	};
+} // rush::ast
 
-	inline std::unique_ptr<identifier_expression> identifier_expr(scope& scope, std::string name) {
+namespace rush::ast::exprs {
+	inline std::unique_ptr<identifier_expression> identifier(scope& scope, std::string name) {
 		auto symbol = scope.lookup(name);
 		return std::make_unique<identifier_expression>(symbol, identifier_expression::factory_tag_t{});
 	}
 
-	inline std::unique_ptr<identifier_expression> identifier_expr(std::string name) {
-		return identifier_expr(rush::ensure_global_scope(), std::move(name));
+	inline std::unique_ptr<identifier_expression> identifier(std::string name) {
+		return identifier(rush::ensure_global_scope(), std::move(name));
 	}
-} // rush
+} // rush::ast::exprs
 
 #endif // RUSH_AST_IDENTIFIER_HPP

@@ -12,7 +12,7 @@ namespace rush::ast {
 			op, binary_expression::factory_tag_t{}
 		);
 	}
-
-#	define RUSH_BINARY_EXPRESSION_FACTORY_FUNCS
-#	include "rush/ast/expr/_expressions.hpp"
 } // rush::ast
+
+#define RUSH_BINARY_EXPRESSION_FACTORY_FUNC_DEFNS
+#include "rush/ast/expr/_expressions.hpp"

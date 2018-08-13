@@ -5,6 +5,9 @@
 
 #include "parser.hpp"
 
+namespace ast = rush::ast;
+namespace exprs = ast::exprs;
+
 namespace rush {
 
 #define RUSH_IS_UNARY_OP_FUNC
@@ -52,8 +55,8 @@ namespace rush {
 		case lexical_token_type::integer_literal: return parse_integer_expr();
 		case lexical_token_type::floating_literal: return parse_floating_expr();
 		case lexical_token_type::keyword:
-			if (tok.is(keywords::true_)) return ast::literal_expr(true);
-			if (tok.is(keywords::false_)) return ast::literal_expr(false);
+			if (tok.is(keywords::true_)) return exprs::literal(true);
+			if (tok.is(keywords::false_)) return exprs::literal(false);
 			return error("unexpected keyword '{}' when parsing primary expression", tok);
 		case lexical_token_type::symbol:
 			switch (tok.symbol()) {
@@ -67,7 +70,7 @@ namespace rush {
 		assert(peek_skip_indent().is_string_literal() && "expected token to be a string literal.");
 		auto tok = next_skip_indent();
 		auto str = tok.text();
-		return ast::literal_expr(str);
+		return exprs::literal(str);
 	}
 
 	std::unique_ptr<ast::expression> parser::parse_integer_expr() {
@@ -75,10 +78,10 @@ namespace rush {
 		auto tok = next_skip_indent();
 		auto val = tok.integer_value();
 		switch (tok.suffix()) {
-		case lexical_token_suffix::none: return ast::literal_expr(val, ast::int_type);
-		case lexical_token_suffix::long_literal: return ast::literal_expr(val, ast::long_type);
-		case lexical_token_suffix::unsigned_literal: return ast::literal_expr(val, ast::uint_type);
-		// case lexical_token_suffix::unsigned_long_literal: return ast::literal_expr(tok.integer(), ast::ulong_type);
+		case lexical_token_suffix::none: return exprs::literal(val, ast::int_type);
+		case lexical_token_suffix::long_literal: return exprs::literal(val, ast::long_type);
+		case lexical_token_suffix::unsigned_literal: return exprs::literal(val, ast::uint_type);
+		// case lexical_token_suffix::unsigned_long_literal: return exprs::literal(tok.integer(), ast::ulong_type);
 		default: throw;
 		}
 	}
@@ -88,8 +91,8 @@ namespace rush {
 		auto tok = next_skip_indent();
 		auto val = tok.floating_value();
 		switch (tok.suffix()) {
-		case lexical_token_suffix::none: return ast::literal_expr(val, ast::double_type);
-		case lexical_token_suffix::float_literal: return ast::literal_expr(val, ast::float_type);
+		case lexical_token_suffix::none: return exprs::literal(val, ast::double_type);
+		case lexical_token_suffix::float_literal: return exprs::literal(val, ast::float_type);
 		default: throw;
 		}
 	}
@@ -98,7 +101,7 @@ namespace rush {
 		assert(peek_skip_indent().is_identifier() && "expected token to be an identifier.");
 		auto tok = next_skip_indent();
 		auto ident = tok.text();
-		return ast::identifier_expr(_scope, ident);
+		return exprs::identifier(_scope, ident);
 	}
 
 	std::unique_ptr<ast::binary_expression> parser::parse_binary_expr(std::unique_ptr<ast::expression> lhs) {
@@ -109,16 +112,16 @@ namespace rush {
 		switch (tok.symbol()) {
 		default: return error("unexpected symbol '{}'", tok);
 		case symbols::plus:
-			expr = ast::addition_expr(std::move(lhs), parse_binary_expr_rhs());
+			expr = exprs::addition(std::move(lhs), parse_binary_expr_rhs());
 			break;
 		case symbols::minus:
-			expr = ast::subtraction_expr(std::move(lhs), parse_binary_expr_rhs());
+			expr = exprs::subtraction(std::move(lhs), parse_binary_expr_rhs());
 			break;
 		case symbols::asterisk:
-			expr = ast::multiplication_expr(std::move(lhs), parse_binary_expr_rhs());
+			expr = exprs::multiplication(std::move(lhs), parse_binary_expr_rhs());
 			break;
 		case symbols::forward_slash:
-			expr = ast::division_expr(std::move(lhs), parse_binary_expr_rhs());
+			expr = exprs::division(std::move(lhs), parse_binary_expr_rhs());
 			break;
 		}
 

@@ -58,12 +58,9 @@ namespace rush::ast {
 			binary_operator op
 		);
 	};
-
-	std::unique_ptr<binary_expression> addition_expr(std::unique_ptr<expression> lhs, std::unique_ptr<expression> rhs);
-	std::unique_ptr<binary_expression> subtraction_expr(std::unique_ptr<expression> lhs, std::unique_ptr<expression> rhs);
-	std::unique_ptr<binary_expression> multiplication_expr(std::unique_ptr<expression> lhs, std::unique_ptr<expression> rhs);
-	std::unique_ptr<binary_expression> division_expr(std::unique_ptr<expression> lhs, std::unique_ptr<expression> rhs);
-	std::unique_ptr<binary_expression> modulo_expr(std::unique_ptr<expression> lhs, std::unique_ptr<expression> rhs);
 } // rush
+
+#define RUSH_BINARY_EXPRESSION_FACTORY_FUNC_DECLS
+#include "rush/ast/expr/_expressions.hpp"
 
 #endif // RUSH_AST_BINARY_HPP
