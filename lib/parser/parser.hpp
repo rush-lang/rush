@@ -36,14 +36,14 @@ namespace rush {
 
 			if (tok.is_keyword()) {
 				switch (tok.keyword()) {
-				case keywords::let_: return parse_constant_declaration();
-				case keywords::var_: return parse_variable_declaration();
+				case keywords::let_: return parse_constant_decl();
+				case keywords::var_: return parse_variable_decl();
 				default: break;
 				}
 			}
 
 			// parse top-level expression.
-			return parse_expression();
+			return parse_expr();
 		}
 
 	private:
@@ -128,33 +128,33 @@ namespace rush {
 
 		// declarations.
 		template <typename DeclT>
-		std::unique_ptr<DeclT> _parse_storage_declaration(std::string,
+		std::unique_ptr<DeclT> _parse_storage_decl(std::string,
 			std::unique_ptr<DeclT> (*)(rush::scope&, std::string, ast::type, std::unique_ptr<ast::expression>));
 
-		std::unique_ptr<ast::declaration> parse_constant_declaration();
-		std::unique_ptr<ast::declaration> parse_variable_declaration();
+		std::unique_ptr<ast::declaration> parse_constant_decl();
+		std::unique_ptr<ast::declaration> parse_variable_decl();
 
-		std::unique_ptr<ast::function_declaration> parse_function_declaration();
+		std::unique_ptr<ast::function_declaration> parse_function_decl();
 
 		// expressions.
-		std::unique_ptr<ast::expression> parse_expression();
-		std::unique_ptr<ast::expression> parse_parenthesised_expression();
+		std::unique_ptr<ast::expression> parse_expr();
+		std::unique_ptr<ast::expression> parse_paren_expr();
 
-		std::unique_ptr<ast::expression> parse_primary_expression();
+		std::unique_ptr<ast::expression> parse_primary_expr();
 
-		std::unique_ptr<ast::expression> parse_string_expression();
-		std::unique_ptr<ast::expression> parse_integer_expression();
-		std::unique_ptr<ast::expression> parse_floating_expression();
-		std::unique_ptr<ast::expression> parse_identifier_expression();
+		std::unique_ptr<ast::expression> parse_string_expr();
+		std::unique_ptr<ast::expression> parse_integer_expr();
+		std::unique_ptr<ast::expression> parse_floating_expr();
+		std::unique_ptr<ast::expression> parse_identifier_expr();
 
-		std::unique_ptr<ast::unary_expression> parse_unary_expression();
-		std::unique_ptr<ast::binary_expression> parse_binary_expression(std::unique_ptr<ast::expression> lhs);
+		std::unique_ptr<ast::unary_expression> parse_unary_expr();
+		std::unique_ptr<ast::binary_expression> parse_binary_expr(std::unique_ptr<ast::expression> lhs);
 
-		std::unique_ptr<ast::expression> parse_binary_expression_rhs();
-		std::unique_ptr<ast::binary_expression> parse_multiplication_expression(std::unique_ptr<ast::expression> lhs);
-		std::unique_ptr<ast::binary_expression> parse_division_expression(std::unique_ptr<ast::expression> lhs);
-		std::unique_ptr<ast::binary_expression> parse_subtraction_expression(std::unique_ptr<ast::expression> lhs);
-		std::unique_ptr<ast::binary_expression> parse_addition_expression(std::unique_ptr<ast::expression> lhs);
+		std::unique_ptr<ast::expression> parse_binary_expr_rhs();
+		std::unique_ptr<ast::binary_expression> parse_binary_multiply_expr(std::unique_ptr<ast::expression> lhs);
+		std::unique_ptr<ast::binary_expression> parse_binary_division_expr(std::unique_ptr<ast::expression> lhs);
+		std::unique_ptr<ast::binary_expression> parse_binary_subtraction_expr(std::unique_ptr<ast::expression> lhs);
+		std::unique_ptr<ast::binary_expression> parse_binary_addition_expr(std::unique_ptr<ast::expression> lhs);
 	};
 }
 
