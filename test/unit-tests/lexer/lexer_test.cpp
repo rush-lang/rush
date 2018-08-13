@@ -206,8 +206,8 @@ TEST_CASE( "rush::lex (floating literals)", "[unit][lexer]" ) {
 	CHECK( valid_lex("9.0", { tok::floating_literal(9.0, { 1, 1 }) }) );
 	CHECK( valid_lex(".0", { tok::floating_literal(0.0, { 1, 1 }) }) );
 	CHECK( valid_lex(".013", { tok::floating_literal(0.013, { 1, 1 }) }) );
-	CHECK( valid_lex("0.", { tok::floating_literal(1.0, { 1, 1 }) }) );
-	CHECK( valid_lex("123.", { tok::floating_literal(1.0, { 1, 1 }) }) );
+	CHECK( valid_lex("0.0", { tok::floating_literal(0.0, { 1, 1 }) }) );
+	CHECK( valid_lex("123.", { tok::floating_literal(123.0, { 1, 1 }) }) );
 	CHECK_FALSE( valid_lex("0", { tok::floating_literal(0, { 1, 1 }) }) );
 	CHECK_FALSE( valid_lex("1", { tok::floating_literal(1, { 1, 1 }) }) );
 	CHECK_FALSE( valid_lex("9", { tok::floating_literal(9, { 1, 1 }) }) );
@@ -217,8 +217,8 @@ TEST_CASE( "rush::lex (floating literals)", "[unit][lexer]" ) {
 	CHECK( valid_lex("9.0f", { tok::suffixed_floating_literal(9.0, lexical_token_suffix::float_literal, { 1, 1 }) }) );
 	CHECK( valid_lex(".0f", { tok::suffixed_floating_literal(0.0, lexical_token_suffix::float_literal, { 1, 1 }) }) );
 	CHECK( valid_lex(".013f", { tok::suffixed_floating_literal(0.013, lexical_token_suffix::float_literal, { 1, 1 }) }) );
-	CHECK( valid_lex("0.f", { tok::floating_literal(1.0, { 1, 1 }) }) );
-	CHECK( valid_lex("123.f", { tok::floating_literal(1.0, { 1, 1 }) }) );
+	CHECK( valid_lex("0.f", { tok::suffixed_floating_literal(0.0, lexical_token_suffix::float_literal, { 1, 1 }) }) );
+	CHECK( valid_lex("123.f", { tok::suffixed_floating_literal(123.0, lexical_token_suffix::float_literal, { 1, 1 }) }) );
 
 	CHECK_FALSE( valid_lex("1.0f", { tok::suffixed_floating_literal(1.0, lexical_token_suffix::none, { 1, 1 }) }) );
 	CHECK_FALSE( valid_lex("1.0", { tok::suffixed_floating_literal(1.0, lexical_token_suffix::float_literal, { 1, 1 }) }) );
