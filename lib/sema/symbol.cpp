@@ -5,6 +5,30 @@ namespace rush::sema {
 
 	const symbol_entry symbol::undefined_entry = make_undefined_entry("<undefined>");
 
+	inline bool has_attributes(symbol_attributes_t) {
+		return true;
+	}
+
+	inline bool has_attributes(symbol_attributes_t flags, symbol_kind st) {
+		auto val = static_cast<symbol_attributes_t>(st);
+		return (flags & 0x07) == val;
+	}
+
+	inline bool has_attributes(symbol_attributes_t flags, access_modifier am) {
+		auto val = static_cast<symbol_attributes_t>(am);
+		return ((flags >> 3) & 0x07) == val;
+	}
+
+	inline bool has_attributes(symbol_attributes_t flags, storage_class_specifier scs) {
+		auto val = static_cast<symbol_attributes_t>(scs);
+		return ((flags >> 6) & 0x03) == val;
+	}
+
+	template <typename Flag, typename... Args>
+	bool has_attributes(symbol_attributes_t flags, Flag first, Args... rest) {
+		return has_attributes(flags, first) && has_attributes(flags, rest...);
+	}
+
 	std::size_t symbol::id() const noexcept {
 		return _scope->hash_of({ this->name() });
 	}

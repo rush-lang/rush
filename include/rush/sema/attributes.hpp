@@ -36,51 +36,6 @@ namespace rush::sema {
 		static_,
 		thread_local_
 	};
-
-	inline symbol_attributes_t make_attributes() {
-		return 0;
-	}
-
-	inline symbol_attributes_t make_attributes(symbol_kind st) {
-		return (static_cast<symbol_attributes_t>(st) & 0x07);
-	};
-
-	inline symbol_attributes_t make_attributes(access_modifier am) {
-		return (static_cast<symbol_attributes_t>(am) & 0x07) << 3;
-	};
-
-	inline symbol_attributes_t make_attributes(storage_class_specifier scs) {
-		return (static_cast<symbol_attributes_t>(scs) & 0x03) << 6;
-	}
-
-	template <typename Flag, typename... Args>
-	symbol_attributes_t make_attributes(Flag first, Args... rest) {
-		return make_attributes(first) | make_attributes(rest...);
-	}
-
-	inline bool has_attributes(symbol_attributes_t) {
-		return true;
-	}
-
-	inline bool has_attributes(symbol_attributes_t flags, symbol_kind st) {
-		auto val = static_cast<symbol_attributes_t>(st);
-		return (flags & 0x07) == val;
-	}
-
-	inline bool has_attributes(symbol_attributes_t flags, access_modifier am) {
-		auto val = static_cast<symbol_attributes_t>(am);
-		return ((flags >> 3) & 0x07) == val;
-	}
-
-	inline bool has_attributes(symbol_attributes_t flags, storage_class_specifier scs) {
-		auto val = static_cast<symbol_attributes_t>(scs);
-		return ((flags >> 6) & 0x03) == val;
-	}
-
-	template <typename Flag, typename... Args>
-	bool has_attributes(symbol_attributes_t flags, Flag first, Args... rest) {
-		return has_attributes(flags, first) && has_attributes(flags, rest...);
-	}
 } // rush::sema
 
 #endif // RUSH_SEMA_ATTRIBUTES_HPP

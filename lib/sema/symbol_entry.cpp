@@ -1,6 +1,27 @@
 #include "rush/sema/symbol_entry.hpp"
 
 namespace rush::sema {
+	inline symbol_attributes_t make_attributes() {
+		return 0;
+	}
+
+	inline symbol_attributes_t make_attributes(symbol_kind st) {
+		return (static_cast<symbol_attributes_t>(st) & 0x07);
+	}
+
+	inline symbol_attributes_t make_attributes(access_modifier am) {
+		return (static_cast<symbol_attributes_t>(am) & 0x07) << 3;
+	}
+
+	inline symbol_attributes_t make_attributes(storage_class_specifier scs) {
+		return (static_cast<symbol_attributes_t>(scs) & 0x03) << 6;
+	}
+
+	template <typename Flag, typename... Args>
+	inline symbol_attributes_t make_attributes(Flag first, Args... rest) {
+		return make_attributes(first) | make_attributes(rest...);
+	}
+
 	symbol_entry make_entry(std::string name, symbol_attributes_t attrs) {
 		return { std::move(name), attrs };
 	}
