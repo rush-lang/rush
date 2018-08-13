@@ -1,10 +1,10 @@
 {
 	"unary": [
-		{ "name": "not_", "symbol": "!", "symbol_token": "exclamation_mark", "precedence": -1 },
 		{ "name": "plus", "symbol": "+", "symbol_token": "plus", "precedence": 30 },
 		{ "name": "negate", "symbol": "-", "symbol_token": "minus", "precedence": 30 },
 		{ "name": "increment", "symbol": "++", "symbol_token": "plus_plus", "precedence": 20 },
-		{ "name": "decrement", "symbol": "--", "symbol_token": "minus_minus", "precedence": 20 }
+		{ "name": "decrement", "symbol": "--", "symbol_token": "minus_minus", "precedence": 20 },
+		{ "name": "logical_not", "symbol": "!", "symbol_token": "exclamation_mark", "precedence": -1 }
 	],
 
 	"binary": [
