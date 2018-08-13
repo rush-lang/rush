@@ -23,26 +23,6 @@ namespace rush {
 		return _children.back();
 	}
 
-	scope& scope::push_block_scope() {
-		_children.push_back(scope { this });
-		return _children.back();
-	}
-
-	scope& scope::push_function_scope() {
-		_children.push_back(scope { this });
-		return _children.back();
-	}
-
-	scope& scope::push_class_scope() {
-		_children.push_back(scope { this });
-		return _children.back();
-	}
-
-	scope& scope::push_module_scope() {
-		_children.push_back(scope { this });
-		return _children.back();
-	}
-
 	std::size_t scope::hash_of(sema::symbol_entry const& s) const {
 		return _symbols.hash_function()(s);
 	}

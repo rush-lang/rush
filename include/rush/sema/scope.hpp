@@ -59,15 +59,8 @@ namespace rush {
 
 		scope& push_scope();
 
-		scope& push_block_scope();
-		scope& push_function_scope();
-		scope& push_class_scope();
-		scope& push_module_scope();
-
 		sema::symbol insert(sema::symbol_entry);
 		sema::symbol insert_or_assign(sema::symbol_entry);
-
-		// sema::symbol update(sema::symbol_entry);
 
 		sema::symbol lookup(std::string name);
 		sema::symbol lookup_local(std::string name);

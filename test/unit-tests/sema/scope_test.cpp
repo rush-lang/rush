@@ -11,21 +11,21 @@ TEST_CASE( "rush::scope", "[unit][sema]" ) {
 		REQUIRE( gs.is_global() );
 		REQUIRE_FALSE( gs.is_local_to(gs) );
 
-		auto& ls1 = gs.push_block_scope();
-		REQUIRE( ls1.depth() == 1 );
-		REQUIRE( ls1.parent() == &gs );
-		REQUIRE( ls1.is_local_to(gs) );
-		REQUIRE_FALSE( ls1.is_global() );
-		REQUIRE_FALSE( ls1.is_local_to(ls1) );
+		auto& s1 = gs.push_scope();
+		REQUIRE( s1.depth() == 1 );
+		REQUIRE( s1.parent() == &gs );
+		REQUIRE( s1.is_local_to(gs) );
+		REQUIRE_FALSE( s1.is_global() );
+		REQUIRE_FALSE( s1.is_local_to(s1) );
 
-		auto& ls2 = ls1.push_block_scope();
-		REQUIRE( ls2.depth() == 2 );
-		REQUIRE( ls2.parent() == &ls1 );
-		REQUIRE( ls2.is_local_to(ls1) );
-		REQUIRE( ls2.is_descendent_of(gs) );
-		REQUIRE( ls2.is_descendent_of(ls1) );
-		REQUIRE_FALSE( ls2.is_global() );
-		REQUIRE_FALSE( ls2.is_local_to(gs) );
-		REQUIRE_FALSE( ls2.is_local_to(ls2) );
+		auto& s2 = s1.push_scope();
+		REQUIRE( s2.depth() == 2 );
+		REQUIRE( s2.parent() == &s1 );
+		REQUIRE( s2.is_local_to(s1) );
+		REQUIRE( s2.is_descendent_of(gs) );
+		REQUIRE( s2.is_descendent_of(s1) );
+		REQUIRE_FALSE( s2.is_global() );
+		REQUIRE_FALSE( s2.is_local_to(gs) );
+		REQUIRE_FALSE( s2.is_local_to(s2) );
 	}
 }
