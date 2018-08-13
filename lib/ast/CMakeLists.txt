@@ -13,7 +13,7 @@ target_compile_features(ast PUBLIC cxx_std_17)
 rush_render_templates(
 	${CMAKE_SOURCE_DIR}/include/rush/ast/_operators.hpp.j2
 	${CMAKE_SOURCE_DIR}/include/rush/ast/expr/_expressions.hpp.j2
-	JSON ${CMAKE_SOURCE_DIR}/include/rush/ast/operators.json
+	JSON ${CMAKE_SOURCE_DIR}/include/rush/ast/ast.json
 	DEPENDENTS ast
 )
 
