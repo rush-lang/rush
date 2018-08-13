@@ -48,7 +48,7 @@ string-literal ::= """ string-segment """
 string-substitution ::= "$" ( identifier-string-substitution | expression-string-substitution )
 identifier-string-substitution ::= identifier
 expression-string-substitution ::= "{" expression "}"
-interpolated-string ::= """ string-segment string-substitution { interpolated-string } """
+interpolated-string ::= """ string-segment string-substitution { string-segment | string-substitution } """
 
 
 ## SYNTACTICAL GRAMMAR
