@@ -108,10 +108,18 @@ namespace rush {
 		std::unique_ptr<ast::binary_expression> expr;
 		switch (tok.symbol()) {
 		default: return error("unexpected symbol '{}'", tok);
-		case symbols::plus: expr = parse_binary_addition_expr(std::move(lhs)); break;
-		case symbols::minus: expr = parse_binary_subtraction_expr(std::move(lhs)); break;
-		case symbols::asterisk: expr = parse_binary_multiply_expr(std::move(lhs)); break;
-		case symbols::forward_slash: expr = parse_binary_division_expr(std::move(lhs)); break;
+		case symbols::plus:
+			expr = ast::addition_expr(std::move(lhs), parse_binary_expr_rhs());
+			break;
+		case symbols::minus:
+			expr = ast::subtraction_expr(std::move(lhs), parse_binary_expr_rhs());
+			break;
+		case symbols::asterisk:
+			expr = ast::multiplication_expr(std::move(lhs), parse_binary_expr_rhs());
+			break;
+		case symbols::forward_slash:
+			expr = ast::division_expr(std::move(lhs), parse_binary_expr_rhs());
+			break;
 		}
 
 		return is_binary_op(peek_skip_indent())
@@ -130,25 +138,5 @@ namespace rush {
 			rhs = parse_binary_expr(std::move(rhs));
 
 		return std::move(rhs);
-	}
-
-	std::unique_ptr<ast::binary_expression> parser::parse_binary_addition_expr(std::unique_ptr<ast::expression> lhs) {
-		assert(peek_skip_indent().is(symbols::plus) && "expected token to be an addition symbol.");
-		return ast::addition_expr(std::move(lhs), parse_binary_expr_rhs());
-	}
-
-	std::unique_ptr<ast::binary_expression> parser::parse_binary_subtraction_expr(std::unique_ptr<ast::expression> lhs) {
-		assert(peek_skip_indent().is(symbols::minus) && "expected token to be a subtraction symbol.");
-		return ast::subtraction_expr(std::move(lhs), parse_binary_expr_rhs());
-	}
-
-	std::unique_ptr<ast::binary_expression> parser::parse_binary_multiply_expr(std::unique_ptr<ast::expression> lhs) {
-		assert(peek_skip_indent().is(symbols::asterisk) && "expected token to be a multiplication symbol.");
-		return ast::multiplication_expr(std::move(lhs), parse_binary_expr_rhs());
-	}
-
-	std::unique_ptr<ast::binary_expression> parser::parse_binary_division_expr(std::unique_ptr<ast::expression> lhs) {
-		assert(peek_skip_indent().is(symbols::forward_slash) && "expected token to be a division symbol.");
-		return ast::division_expr(std::move(lhs), parse_binary_expr_rhs());
 	}
 }

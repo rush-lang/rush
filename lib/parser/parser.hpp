@@ -149,12 +149,7 @@ namespace rush {
 
 		std::unique_ptr<ast::unary_expression> parse_unary_expr();
 		std::unique_ptr<ast::binary_expression> parse_binary_expr(std::unique_ptr<ast::expression> lhs);
-
 		std::unique_ptr<ast::expression> parse_binary_expr_rhs();
-		std::unique_ptr<ast::binary_expression> parse_binary_multiply_expr(std::unique_ptr<ast::expression> lhs);
-		std::unique_ptr<ast::binary_expression> parse_binary_division_expr(std::unique_ptr<ast::expression> lhs);
-		std::unique_ptr<ast::binary_expression> parse_binary_subtraction_expr(std::unique_ptr<ast::expression> lhs);
-		std::unique_ptr<ast::binary_expression> parse_binary_addition_expr(std::unique_ptr<ast::expression> lhs);
 	};
 }
 
