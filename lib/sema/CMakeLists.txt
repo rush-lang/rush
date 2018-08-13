@@ -2,6 +2,7 @@ project(sema VERSION ${RUSH_VERSION} LANGUAGES CXX)
 
 rush_add_library(sema
 	scope.cpp
+	types.cpp
 	symbol.cpp
 	symbol_entry.cpp
 )
