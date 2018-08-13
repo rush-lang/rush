@@ -54,12 +54,13 @@ namespace rush::sema {
 		bool is_thread_local_storage_duration() const noexcept;
 
 	private:
+		static symbol_entry const undefined_entry;
+
 		rush::scope const* _scope;
 		symbol_entry const* _entry;
 
-		symbol() noexcept
-			: _scope(nullptr)
-			, _entry(nullptr) {}
+		symbol(rush::scope const& scope) noexcept
+			: symbol(scope, undefined_entry) {}
 
 		symbol(rush::scope const& scope, symbol_entry const& entry) noexcept
 			: _scope(&scope)
@@ -73,6 +74,8 @@ namespace rush::sema {
 	inline bool operator != (symbol const& lhs, symbol const& rhs) {
 		return !(lhs == rhs);
 	}
+
+	extern symbol const& symbol_undefined;
 }
 
 #endif // RUSH_SEMA_SYMBOL_HPP

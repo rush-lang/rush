@@ -70,13 +70,7 @@ namespace rush {
 
 		std::size_t hash_of(sema::symbol_entry const&) const;
 
-		sema::symbol undefined_symbol() const noexcept {
-			return _undefined_symbol;
-		}
-
 	private:
-		sema::symbol _undefined_symbol;
-
 		scope* _parent;
 		std::vector<scope> _children;
 		std::unordered_set<sema::symbol_entry> _symbols;
@@ -84,12 +78,7 @@ namespace rush {
 		scope(scope* parent)
 			: _parent(parent)
 			, _children { }
-			, _symbols { } { initialize(); }
-
-		void initialize() {
-			static const auto undefined_entry_name = "<undefined>";
-			_undefined_symbol = this->insert({ undefined_entry_name });
-		}
+			, _symbols { } {}
 
 		sema::symbol to_symbol(sema::symbol_entry const& entry) const noexcept {
 			return { *this, entry };

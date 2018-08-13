@@ -18,7 +18,7 @@ namespace rush::sema {
 		friend symbol_entry make_entry(std::string, symbol const&, symbol_attributes_t);
 
 		symbol_entry(std::string name, symbol_attributes_t attrs = 0)
-			: symbol_entry(std::move(name), {}, attrs) {}
+			: symbol_entry(std::move(name), { ensure_global_scope() }, attrs) {}
 
 		symbol_entry(std::string name, symbol const& type, symbol_attributes_t attrs)
 			: _type(type)

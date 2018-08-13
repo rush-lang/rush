@@ -2,6 +2,9 @@
 #include "rush/sema/scope.hpp"
 
 namespace rush::sema {
+
+	const symbol_entry symbol::undefined_entry = make_undefined_entry("<undefined>");
+
 	std::size_t symbol::id() const noexcept {
 		return _scope->hash_of({ this->name() });
 	}
@@ -11,10 +14,7 @@ namespace rush::sema {
 	}
 
 	symbol symbol::type() const noexcept {
-		auto type = _entry->type();
-		return type._entry == nullptr
-			? _scope->undefined_symbol() // undefined
-			: type;
+		return _entry->type();
 	}
 
 	rush::scope const& symbol::scope() const noexcept {
