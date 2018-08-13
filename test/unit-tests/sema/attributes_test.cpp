@@ -3,21 +3,21 @@
 
 namespace sema = rush::sema;
 
-TEST_CASE( "rush::sema::symbol_type", "[unit][sema]" ) {
+TEST_CASE( "rush::sema::symbol_kind", "[unit][sema]" ) {
 
-	auto flags = sema::make_attributes(sema::symbol_type::undefined);
-	REQUIRE( sema::has_attributes(flags, sema::symbol_type::undefined) );
-	CHECK_FALSE( sema::has_attributes(flags, sema::symbol_type::type) );
-	CHECK_FALSE( sema::has_attributes(flags, sema::symbol_type::function) );
-	CHECK_FALSE( sema::has_attributes(flags, sema::symbol_type::constant) );
-	CHECK_FALSE( sema::has_attributes(flags, sema::symbol_type::variable) );
+	auto flags = sema::make_attributes(sema::symbol_kind::undefined);
+	REQUIRE( sema::has_attributes(flags, sema::symbol_kind::undefined) );
+	CHECK_FALSE( sema::has_attributes(flags, sema::symbol_kind::type) );
+	CHECK_FALSE( sema::has_attributes(flags, sema::symbol_kind::function) );
+	CHECK_FALSE( sema::has_attributes(flags, sema::symbol_kind::constant) );
+	CHECK_FALSE( sema::has_attributes(flags, sema::symbol_kind::variable) );
 
-	flags = sema::make_attributes(sema::symbol_type::type);
-	REQUIRE( sema::has_attributes(flags, sema::symbol_type::type) );
-	CHECK_FALSE( sema::has_attributes(flags, sema::symbol_type::undefined) );
-	CHECK_FALSE( sema::has_attributes(flags, sema::symbol_type::function) );
-	CHECK_FALSE( sema::has_attributes(flags, sema::symbol_type::constant) );
-	CHECK_FALSE( sema::has_attributes(flags, sema::symbol_type::variable) );
+	flags = sema::make_attributes(sema::symbol_kind::type);
+	REQUIRE( sema::has_attributes(flags, sema::symbol_kind::type) );
+	CHECK_FALSE( sema::has_attributes(flags, sema::symbol_kind::undefined) );
+	CHECK_FALSE( sema::has_attributes(flags, sema::symbol_kind::function) );
+	CHECK_FALSE( sema::has_attributes(flags, sema::symbol_kind::constant) );
+	CHECK_FALSE( sema::has_attributes(flags, sema::symbol_kind::variable) );
 }
 
 TEST_CASE( "rush::sema::access_modifier", "[unit][sema]" ) {

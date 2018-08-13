@@ -7,13 +7,13 @@
 
 namespace rush::sema {
 
-	// bits 1-3: symbol_type
+	// bits 1-3: symbol_kind
 	// bits 4-7: access_modifier
 	// bits 8-9: storage_class_specifier
 	using symbol_attributes_t = std::uint32_t;
 
 	// \brief An enumeration of mutually exclusive symbol types.
-	enum class symbol_type : std::uint8_t {
+	enum class symbol_kind : std::uint8_t {
 		undefined,
 		variable,
 		constant,
@@ -41,7 +41,7 @@ namespace rush::sema {
 		return 0;
 	}
 
-	inline symbol_attributes_t make_attributes(symbol_type st) {
+	inline symbol_attributes_t make_attributes(symbol_kind st) {
 		return (static_cast<symbol_attributes_t>(st) & 0x07);
 	};
 
@@ -62,7 +62,7 @@ namespace rush::sema {
 		return true;
 	}
 
-	inline bool has_attributes(symbol_attributes_t flags, symbol_type st) {
+	inline bool has_attributes(symbol_attributes_t flags, symbol_kind st) {
 		auto val = static_cast<symbol_attributes_t>(st);
 		return (flags & 0x07) == val;
 	}

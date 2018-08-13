@@ -22,33 +22,33 @@ namespace rush::sema {
 	}
 
 	// symbol types
-	symbol_type symbol::symbol_type() const noexcept {
-		return symbol_type::undefined;
+	symbol_kind symbol::symbol_kind() const noexcept {
+		return symbol_kind::undefined;
 	}
 
 	// convenience members
 	bool symbol::is_type() const noexcept {
 		return !is_undefined()
-		&& has_attributes(_entry->flags(), symbol_type::type);
+		&& has_attributes(_entry->flags(), symbol_kind::type);
 	}
 
 	bool symbol::is_function() const noexcept {
 		return !is_undefined()
-		&& has_attributes(_entry->flags(), symbol_type::function);
+		&& has_attributes(_entry->flags(), symbol_kind::function);
 	}
 
 	bool symbol::is_constant() const noexcept {
 		return !is_undefined()
-		&& has_attributes(_entry->flags(), symbol_type::constant);
+		&& has_attributes(_entry->flags(), symbol_kind::constant);
 	}
 
 	bool symbol::is_variable() const noexcept {
 		return !is_undefined()
-		&& has_attributes(_entry->flags(), symbol_type::variable);
+		&& has_attributes(_entry->flags(), symbol_kind::variable);
 	}
 
 	bool symbol::is_undefined() const noexcept {
-		return has_attributes(_entry->flags(), symbol_type::undefined);
+		return has_attributes(_entry->flags(), symbol_kind::undefined);
 	}
 
 	// access modifiers

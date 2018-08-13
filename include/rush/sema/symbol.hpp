@@ -26,7 +26,7 @@ namespace rush::sema {
 		rush::scope const& scope() const noexcept;
 
 		// symbol types
-		symbol_type symbol_type() const noexcept;
+		symbol_kind symbol_kind() const noexcept;
 
 		// convenience members
 		bool is_type() const noexcept;
