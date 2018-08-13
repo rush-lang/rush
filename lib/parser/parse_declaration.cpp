@@ -3,6 +3,7 @@
 #include "parser.hpp"
 
 namespace rush {
+	namespace decls = ast::decls;
 
 	std::unique_ptr<ast::expression> parser::parse_initializer() {
 		return parse_expr();
@@ -50,7 +51,7 @@ namespace rush {
 			std::string name,
 			ast::type type,
 			std::unique_ptr<ast::expression> init);
-		return _parse_storage_decl("constant", static_cast<function_type>(&ast::constant_decl));
+		return _parse_storage_decl("constant", static_cast<function_type>(&decls::constant));
 	}
 
 	std::unique_ptr<ast::declaration> parser::parse_variable_decl() {
@@ -61,6 +62,6 @@ namespace rush {
 			std::string name,
 			ast::type type,
 			std::unique_ptr<ast::expression> init);
-		return _parse_storage_decl("variable", static_cast<function_type>(&ast::variable_decl));
+		return _parse_storage_decl("variable", static_cast<function_type>(&decls::variable));
 	}
 }

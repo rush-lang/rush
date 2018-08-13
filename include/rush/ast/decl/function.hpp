@@ -39,7 +39,9 @@ namespace rush::ast {
 		std::vector<parameter> _params;
 	};
 
-	std::unique_ptr<function_declaration> function_decl(std::string name);
+	namespace decls {
+		std::unique_ptr<function_declaration> function(std::string name);
+	} // rush::ast::decls
 } // rush::ast
 
 #endif // RUSH_AST_DECL_FUNCTION_HPP
