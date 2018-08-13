@@ -4,6 +4,7 @@
 #define RUSH_AST_BINARY_HPP
 
 #include "rush/ast/expression.hpp"
+#include "rush/sema/types.hpp"
 
 #include <memory>
 
@@ -28,9 +29,15 @@ namespace rush::ast {
 		expression const& right_operand() const noexcept { return *_right; }
 
 		virtual ast::type result_type() const override {
-			return ast::intersection_of(
-				_left->result_type(),
-				_right->result_type());
+			auto lhs = left_operand().result_type().symbol();
+			auto rhs = right_operand().result_type().symbol();
+
+			if (lhs.is_type() && rhs.is_type()) {
+				auto tred = sema::reduce_type_symbols(lhs, rhs);
+				return { std::get<sema::symbol>(tred) };
+			}
+
+			return ast::error_type;
 		}
 
 		using node::accept;
