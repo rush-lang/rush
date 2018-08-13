@@ -26,7 +26,7 @@ namespace rush::ast {
 		}
 
 		bool is_undefined() const noexcept {
-			return undefined_type == result_type();
+			return _symbol.is_undefined();
 		}
 
 		virtual ast::type result_type() const override {

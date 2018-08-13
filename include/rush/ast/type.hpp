@@ -30,6 +30,10 @@ namespace rush::ast {
 			return _symbol;
 		}
 
+		bool is_undefined() const noexcept {
+			return _symbol.is_undefined();
+		}
+
 		using node::accept;
 		virtual void accept(ast::visitor& v) const {
 			v.visit_type(*this);
@@ -48,7 +52,6 @@ namespace rush::ast {
 	}
 
 	// sentinal types
-	extern type const undefined_type;
 	extern type const error_type;
 
 	// known/built-in types

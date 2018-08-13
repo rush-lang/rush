@@ -15,7 +15,6 @@ namespace rush::ast {
 	}
 
 	// sentinals
-	type const undefined_type = make_type(ensure_global_scope().undefined_symbol());
 	type const error_type = make_type(ensure_global_scope(), "<error-type>");
 
 	// known/built-in types
@@ -40,19 +39,11 @@ namespace rush::ast {
 
 	// \brief Returns the nearest base type of type.
 	type base_of(type const& type) {
-		// if (type.is_builtin())
-		// 	return undefined_type;
-
-		return undefined_type;
+		return ast::error_type;
 	}
 
 	// \brief Returns the common type between two types,
 	type intersection_of(type const& lhs, type const& rhs) {
-		// if (lhs.is_builtin() && rhs.is_builtin()) {
-		// 	return type_precedence(lhs) < type_precedence(rhs)
-		// 		? rhs : lhs;
-		// }
-
-		return undefined_type;
+		return ast::error_type;
 	}
 } // rush

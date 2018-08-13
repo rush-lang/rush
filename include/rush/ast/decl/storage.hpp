@@ -22,7 +22,7 @@ namespace rush::ast {
 
 		ast::type type() const noexcept {
 			auto static_type = ast::type { _symbol.type() };
-			return static_type == ast::undefined_type
+			return static_type.is_undefined()
 				? _init->result_type()
 				: static_type;
 		}
