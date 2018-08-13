@@ -54,6 +54,7 @@ namespace rush::ast {
 
 		virtual void visit_unary_expr(unary_expression const& expr) override {
 			switch (expr.opkind()) {
+			default: throw;
 			case unary_operator::plus: print_expression("unary-plus", expr); break;
 			case unary_operator::negate: print_expression("unary-negate", expr); break;
 			case unary_operator::increment: print_expression("unary-increment", expr); break;
@@ -67,11 +68,12 @@ namespace rush::ast {
 
 		virtual void visit_binary_expr(binary_expression const& expr) override {
 			switch (expr.opkind()) {
-			case binary_operator::addition: print_expression("binary-addition", expr); break;
-			case binary_operator::subtraction: print_expression("binary-subtraction", expr); break;
-			case binary_operator::multiplication: print_expression("binary-multiplication", expr); break;
-			case binary_operator::division: print_expression("binary-division", expr); break;
-			case binary_operator::modulo: print_expression("binary-modulo", expr); break;
+			default: throw;
+			case binary_operator::addition: print_expression("addition", expr); break;
+			case binary_operator::subtraction: print_expression("subtraction", expr); break;
+			case binary_operator::multiplication: print_expression("multiplication", expr); break;
+			case binary_operator::division: print_expression("division", expr); break;
+			case binary_operator::modulo: print_expression("modulo", expr); break;
 			case binary_operator::logical_or: print_expression("logical-or", expr); break;
 			case binary_operator::logical_and: print_expression("logical-and", expr); break;
 			}
@@ -122,7 +124,7 @@ namespace rush::ast {
 		std::basic_ostream<CharT, Traits>& _ostr;
 
 		void print_expression(std::string name, expression const& expr) {
-			write("<{}: ", name);
+			write("<{} [expr]: ", name);
 			expr.result_type().accept(*this);
 			write(">");
 		}
@@ -133,7 +135,7 @@ namespace rush::ast {
 		}
 
 		void print_storage_decl(std::string name, storage_declaration const& decl) {
-			write("<{}: ", name);
+			write("<{} [decl]: ", name);
 			decl.type().accept(*this);
 			write(">");
 			writeln(" [name: \"{}\"]", decl.name());
