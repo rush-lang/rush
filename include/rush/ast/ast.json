@@ -1,5 +1,6 @@
 {
 	"unary": [
+		{ "name": "not_", "symbol": "!", "symbol_token": "exclamation_mark", "precedence": -1 },
 		{ "name": "plus", "symbol": "+", "symbol_token": "plus", "precedence": 30 },
 		{ "name": "negate", "symbol": "-", "symbol_token": "minus", "precedence": 30 },
 		{ "name": "increment", "symbol": "++", "symbol_token": "plus_plus", "precedence": 20 },
@@ -13,6 +14,10 @@
 		{ "name": "division", "symbol": "/", "symbol_token": "forward_slash", "precedence": 50 },
 		{ "name": "modulo", "symbol": "%", "symbol_token": "percent", "precedence": 50 },
 		{ "name": "logical_or", "symbol": "||", "symbol_token": "double_pipe", "precedence": 150 },
-		{ "name": "logical_and", "symbol": "&&", "symbol_token": "double_ampersand", "precedence": 140 }
+		{ "name": "logical_and", "symbol": "&&", "symbol_token": "double_ampersand", "precedence": 140 },
+		{ "name": "binary_or", "symbol": "|", "symbol_token": "pipe", "precedence": -1 },
+		{ "name": "binary_and", "symbol": "&", "symbol_token": "ampersand", "precedence": -1 },
+		{ "name": "less_than", "symbol": "<", "symbol_token": "left_chevron", "precedence": -1 },
+		{ "name": "greater_than", "symbol": ">", "symbol_token": "right_chevron", "precedence": -1 }
 	]
 }
