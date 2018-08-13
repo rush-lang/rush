@@ -40,6 +40,7 @@ namespace rush::ast {
 			ast::type type,
 			std::unique_ptr<expression> init
 		) {
+			if (!init) throw std::invalid_argument("constant declaration requires an intializer.");
 			// todo: handle the case where the constant has already been defined.
 			// should probably do this outside of the factory functions.. be S.O.L.I.D
 			auto symbol = scope.insert(sema::make_constant_entry(std::move(name), type.symbol()));
