@@ -29,14 +29,24 @@ namespace rush::ast {
 		expression const& right_operand() const noexcept { return *_right; }
 
 		virtual ast::type result_type() const override {
-			auto lhs = left_operand().result_type().symbol();
-			auto rhs = right_operand().result_type().symbol();
+			switch (opkind()) {
+			case binary_operator::logical_or:
+			case binary_operator::logical_and:
+			case binary_operator::less_than:
+			case binary_operator::less_equals:
+			case binary_operator::greater_than:
+			case binary_operator::greater_equals:
+				return ast::bool_type;
 
-			if (lhs.is_type() && rhs.is_type()) {
-				auto tred = sema::reduce_type_symbols(lhs, rhs);
-				return { std::get<sema::symbol>(tred) };
+			default:
+				auto lhs = left_operand().result_type().symbol();
+				auto rhs = right_operand().result_type().symbol();
+
+				if (lhs.is_type() && rhs.is_type()) {
+					auto tred = sema::reduce_type_symbols(lhs, rhs);
+					return { std::get<sema::symbol>(tred) };
+				}
 			}
-
 			return ast::error_type;
 		}
 
