@@ -110,28 +110,22 @@ namespace rush {
 		auto tok = peek_skip_indent();
 		std::unique_ptr<ast::binary_expression> expr;
 
+		auto rhs = parse_binary_expr_rhs();
+		if (!rhs) return error("expected right-hand expression of '{1}' before '{0}'", peek_skip_indent(), tok);
+
 		switch (tok.symbol()) {
-		default: return error("unexpected symbol '{}'", tok);
-		case symbols::plus:
-			if (auto rhs = parse_binary_expr_rhs())
-				expr = exprs::addition(std::move(lhs), std::move(rhs));
-			else return error("expected right-hand expression of '+' before '{}'", peek_skip_indent());
-			break;
-		case symbols::minus:
-			if (auto rhs = parse_binary_expr_rhs())
-				expr = exprs::subtraction(std::move(lhs), std::move(rhs));
-			else return error("expected right-hand expression of '-' before '{}'", peek_skip_indent());
-			break;
-		case symbols::asterisk:
-			if (auto rhs = parse_binary_expr_rhs())
-				expr = exprs::multiplication(std::move(lhs), std::move(rhs));
-			else return error("expected right-hand expression of '*' before '{}'", peek_skip_indent());
-			break;
-		case symbols::forward_slash:
-			if (auto rhs = parse_binary_expr_rhs())
-				expr = exprs::division(std::move(lhs), std::move(rhs));
-			else return error("expected right-hand expression of '/' before '{}'", peek_skip_indent());
-			break;
+		default: return error("binary operator '{}' not yet supported", tok);
+		case symbols::plus: expr = exprs::addition(std::move(lhs), std::move(rhs)); break;
+		case symbols::minus: expr = exprs::subtraction(std::move(lhs), std::move(rhs)); break;
+		case symbols::percent: expr = exprs::modulo(std::move(lhs), std::move(rhs)); break;
+		case symbols::asterisk: expr = exprs::multiplication(std::move(lhs), std::move(rhs)); break;
+		case symbols::forward_slash: expr = exprs::division(std::move(lhs), std::move(rhs)); break;
+		case symbols::double_pipe: expr = exprs::logical_or(std::move(lhs), std::move(rhs)); break;
+		case symbols::double_ampersand: expr = exprs::logical_and(std::move(lhs), std::move(rhs)); break;
+		case symbols::left_chevron: expr = exprs::less_than(std::move(lhs), std::move(rhs)); break;
+		case symbols::right_chevron: expr = exprs::greater_than(std::move(lhs), std::move(rhs)); break;
+		case symbols::left_chevron_equals: expr = exprs::less_equals(std::move(lhs), std::move(rhs)); break;
+		case symbols::right_chevron_equals: expr = exprs::greater_equals(std::move(lhs), std::move(rhs)); break;
 		}
 
 		return is_binary_op(peek_skip_indent())

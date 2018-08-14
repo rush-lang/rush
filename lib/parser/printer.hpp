@@ -55,10 +55,12 @@ namespace rush::ast {
 		virtual void visit_unary_expr(unary_expression const& expr) override {
 			switch (expr.opkind()) {
 			default: throw;
-			case unary_operator::plus: print_expression("unary-plus", expr); break;
-			case unary_operator::negate: print_expression("unary-negate", expr); break;
-			case unary_operator::increment: print_expression("unary-increment", expr); break;
-			case unary_operator::decrement: print_expression("unary-decrement", expr); break;
+			case unary_operator::plus: print_expression("plus", expr); break;
+			case unary_operator::negate: print_expression("negate", expr); break;
+			case unary_operator::increment: print_expression("increment", expr); break;
+			case unary_operator::decrement: print_expression("decrement", expr); break;
+			case unary_operator::logical_not: print_expression("logical-not", expr); break;
+			case unary_operator::bitwise_not: print_expression("bitwise-not", expr); break;
 			}
 			writeln();
 			indent();
@@ -69,6 +71,8 @@ namespace rush::ast {
 		virtual void visit_binary_expr(binary_expression const& expr) override {
 			switch (expr.opkind()) {
 			default: throw;
+			case binary_operator::equal: print_expression("equals", expr); break;
+			case binary_operator::not_equal: print_expression("not-equal", expr); break;
 			case binary_operator::addition: print_expression("addition", expr); break;
 			case binary_operator::subtraction: print_expression("subtraction", expr); break;
 			case binary_operator::multiplication: print_expression("multiplication", expr); break;
@@ -76,7 +80,12 @@ namespace rush::ast {
 			case binary_operator::modulo: print_expression("modulo", expr); break;
 			case binary_operator::logical_or: print_expression("logical-or", expr); break;
 			case binary_operator::logical_and: print_expression("logical-and", expr); break;
+			case binary_operator::less_than: print_expression("less-than", expr); break;
+			case binary_operator::less_equals: print_expression("less-equals", expr); break;
+			case binary_operator::greater_than: print_expression("greater-than", expr); break;
+			case binary_operator::greater_equals: print_expression("greater-equals", expr); break;
 			}
+
 			writeln();
 			indent();
 			write("left: "); expr.left_operand().accept(*this);

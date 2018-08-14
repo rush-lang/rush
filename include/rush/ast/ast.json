@@ -2,12 +2,15 @@
 	"unary": [
 		{ "name": "plus", "symbol": "+", "symbol_token": "plus", "precedence": 30 },
 		{ "name": "negate", "symbol": "-", "symbol_token": "minus", "precedence": 30 },
-		{ "name": "increment", "symbol": "++", "symbol_token": "plus_plus", "precedence": 20 },
-		{ "name": "decrement", "symbol": "--", "symbol_token": "minus_minus", "precedence": 20 },
-		{ "name": "logical_not", "symbol": "!", "symbol_token": "exclamation_mark", "precedence": -1 }
+		{ "name": "increment", "symbol": "++", "symbol_token": "plus_plus", "precedence": 30 },
+		{ "name": "decrement", "symbol": "--", "symbol_token": "minus_minus", "precedence": 30 },
+		{ "name": "logical_not", "symbol": "!", "symbol_token": "exclamation_mark", "precedence": 30 },
+		{ "name": "bitwise_not", "symbol": "~", "symbol_token": "tilde", "precedence": 30 }
 	],
 
 	"binary": [
+		{ "name": "equal", "symbol": "==", "symbol_token": "equals_equals", "precedence": 60 },
+		{ "name": "not_equal", "symbol": "!=", "symbol_token": "exclamation_mark_equals", "precedence": 60 },
 		{ "name": "addition", "symbol": "+", "symbol_token": "plus", "precedence": 60 },
 		{ "name": "subtraction", "symbol": "-", "symbol_token": "minus", "precedence": 60 },
 		{ "name": "multiplication", "symbol": "*", "symbol_token": "asterisk", "precedence": 50 },
@@ -15,9 +18,11 @@
 		{ "name": "modulo", "symbol": "%", "symbol_token": "percent", "precedence": 50 },
 		{ "name": "logical_or", "symbol": "||", "symbol_token": "double_pipe", "precedence": 150 },
 		{ "name": "logical_and", "symbol": "&&", "symbol_token": "double_ampersand", "precedence": 140 },
-		{ "name": "binary_or", "symbol": "|", "symbol_token": "pipe", "precedence": -1 },
-		{ "name": "binary_and", "symbol": "&", "symbol_token": "ampersand", "precedence": -1 },
-		{ "name": "less_than", "symbol": "<", "symbol_token": "left_chevron", "precedence": -1 },
-		{ "name": "greater_than", "symbol": ">", "symbol_token": "right_chevron", "precedence": -1 }
+		{ "name": "bitwise_or", "symbol": "|", "symbol_token": "pipe", "precedence": 130 },
+		{ "name": "bitwise_and", "symbol": "&", "symbol_token": "ampersand", "precedence": 110 },
+		{ "name": "less_than", "symbol": "<", "symbol_token": "left_chevron", "precedence": 90 },
+		{ "name": "less_equals", "symbol": "<", "symbol_token": "left_chevron_equals", "precedence": 90 },
+		{ "name": "greater_than", "symbol": ">=", "symbol_token": "right_chevron", "precedence": 90 },
+		{ "name": "greater_equals", "symbol": ">=", "symbol_token": "right_chevron_equals", "precedence": 90 }
 	]
 }
