@@ -25,7 +25,7 @@ namespace rush::sema {
 	}
 
 	template <typename Flag, typename... Args>
-	bool has_attributes(symbol_attributes_t flags, Flag first, Args... rest) {
+	inline bool has_attributes(symbol_attributes_t flags, Flag first, Args... rest) {
 		return has_attributes(flags, first) && has_attributes(flags, rest...);
 	}
 
@@ -47,7 +47,7 @@ namespace rush::sema {
 
 	// symbol types
 	symbol_kind symbol::symbol_kind() const noexcept {
-		return symbol_kind::undefined;
+		return static_cast<enum symbol_kind>(_entry->flags() & 0x07);
 	}
 
 	// convenience members
@@ -77,7 +77,7 @@ namespace rush::sema {
 
 	// access modifiers
 	access_modifier symbol::access_modifier() const noexcept {
-		return access_modifier::internal;
+		return static_cast<enum access_modifier>((_entry->flags() >> 3) & 0x07);
 	}
 
 	// convenience members
@@ -99,7 +99,7 @@ namespace rush::sema {
 
 	// storage class specifiers
 	storage_class_specifier symbol::storage_duration() const noexcept {
-		return storage_class_specifier::auto_;
+		return static_cast<enum storage_class_specifier>((_entry->flags() >> 6) & 0x03);
 	}
 
 	// convenience members
