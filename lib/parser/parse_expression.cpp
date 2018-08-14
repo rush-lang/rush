@@ -55,12 +55,14 @@ namespace rush {
 		case lexical_token_type::integer_literal: return parse_integer_expr();
 		case lexical_token_type::floating_literal: return parse_floating_expr();
 		case lexical_token_type::keyword:
-			if (tok.is(keywords::true_)) return exprs::literal(true);
-			if (tok.is(keywords::false_)) return exprs::literal(false);
-			return error("unexpected keyword '{}' parsing primary expression", tok);
+			switch (tok.keyword()) {
+			default: return error("unexpected keyword '{}' parsing primary expression", tok);
+			case keywords::true_: next_skip_indent(); return exprs::literal(true);
+			case keywords::false_: next_skip_indent(); return exprs::literal(false);
+			}
 		case lexical_token_type::symbol:
 			switch (tok.symbol()) {
-			default: return error("unexpected symbol '{}' in expression", tok);
+			default: return error("unexpected symbol '{}' parsing primary expression", tok);
 			case symbols::left_parenthesis: return parse_paren_expr();
 			}
 		}
