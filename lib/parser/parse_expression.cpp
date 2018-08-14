@@ -49,7 +49,7 @@ namespace rush {
 		auto tok = peek_skip_indent();
 		switch (tok.type()) {
 		default: return error("expected primary expression, but found '{}'", tok);
-		case lexical_token_type::error: return error(tok.text());
+		case lexical_token_type::error: return error("", tok);
 		case lexical_token_type::identifier: return parse_identifier_expr();
 		case lexical_token_type::string_literal: return parse_string_expr();
 		case lexical_token_type::integer_literal: return parse_integer_expr();
@@ -57,7 +57,7 @@ namespace rush {
 		case lexical_token_type::keyword:
 			if (tok.is(keywords::true_)) return exprs::literal(true);
 			if (tok.is(keywords::false_)) return exprs::literal(false);
-			return error("unexpected keyword '{}' when parsing primary expression", tok);
+			return error("unexpected keyword '{}' parsing primary expression", tok);
 		case lexical_token_type::symbol:
 			switch (tok.symbol()) {
 			default: return error("unexpected symbol '{}' in expression", tok);
@@ -109,19 +109,28 @@ namespace rush {
 
 		auto tok = peek_skip_indent();
 		std::unique_ptr<ast::binary_expression> expr;
+
 		switch (tok.symbol()) {
 		default: return error("unexpected symbol '{}'", tok);
 		case symbols::plus:
-			expr = exprs::addition(std::move(lhs), parse_binary_expr_rhs());
+			if (auto rhs = parse_binary_expr_rhs())
+				expr = exprs::addition(std::move(lhs), std::move(rhs));
+			else return error("expected right-hand expression of '+' before '{}'", peek_skip_indent());
 			break;
 		case symbols::minus:
-			expr = exprs::subtraction(std::move(lhs), parse_binary_expr_rhs());
+			if (auto rhs = parse_binary_expr_rhs())
+				expr = exprs::subtraction(std::move(lhs), std::move(rhs));
+			else return error("expected right-hand expression of '-' before '{}'", peek_skip_indent());
 			break;
 		case symbols::asterisk:
-			expr = exprs::multiplication(std::move(lhs), parse_binary_expr_rhs());
+			if (auto rhs = parse_binary_expr_rhs())
+				expr = exprs::multiplication(std::move(lhs), std::move(rhs));
+			else return error("expected right-hand expression of '*' before '{}'", peek_skip_indent());
 			break;
 		case symbols::forward_slash:
-			expr = exprs::division(std::move(lhs), parse_binary_expr_rhs());
+			if (auto rhs = parse_binary_expr_rhs())
+				expr = exprs::division(std::move(lhs), std::move(rhs));
+			else return error("expected right-hand expression of '/' before '{}'", peek_skip_indent());
 			break;
 		}
 

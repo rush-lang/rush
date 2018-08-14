@@ -15,7 +15,7 @@ namespace rush {
 	) {
 		if (peek_skip_indent().is(symbols::left_bracket)) {
 			// parse_destructure_pattern.
-			return error("destructured {} declarations are currently not supported.", storage_type);
+			return error("destructured {1} declarations are currently not supported.", peek_skip_indent(), storage_type);
 		}
 
 		if (peek_skip_indent().is_identifier()) {
@@ -28,7 +28,7 @@ namespace rush {
 			}
 
 			if (!peek_skip_indent().is(symbols::equals)) {
-				return error("expected an initializer for {} before '{}'.", storage_type, ident);
+				return error("expected an initializer for {1} before '{2}'.", peek_skip_indent(), storage_type, ident);
 			}
 
 			next_skip_indent(); // consume '=' token.

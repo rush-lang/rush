@@ -76,8 +76,10 @@ namespace rush {
 		}
 
 		template <typename... Args>
-		std::nullptr_t error(std::string msg, Args&&... args) {
-			fmt::print("error: {}", fmt::format(msg, format(std::forward<Args>(args))...));
+		std::nullptr_t error(std::string msg, lexical_token const& tok, Args&&... args) {
+			fmt::print("error {}: {}\n",
+				to_string(tok.location()),
+				fmt::format(msg, to_string(tok), format(std::forward<Args>(args))...));
 			return nullptr;
 		}
 
@@ -116,7 +118,7 @@ namespace rush {
 			auto tok = next_skip_indent(); // consume identifier.
 			auto sym = _scope.lookup(tok.text());
 			if (!sym.is_type()) {
-				error("symbol '{}' does not name a type.", sym.name());
+				error("symbol '{}' does not name a type.", tok);
 				return std::nullopt;
 			}
 
