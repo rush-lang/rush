@@ -147,11 +147,9 @@ TEST_CASE( "rush::lex (keywords)", "[unit][lexer]" ) {
 		tok::while_keyword({ 1, 9 })
 	}));
 
-	CHECK_FALSE( valid_lex("_let var_ const1", {
-		tok::let_keyword({ 1, 1 }),
-		tok::var_keyword({ 1, 6 }),
-		tok::const_keyword({ 1, 11 })
-	}));
+	CHECK_FALSE( valid_lex("_let", { tok::let_keyword({ 1, 1 }) }) );
+	CHECK_FALSE( valid_lex("var_", { tok::var_keyword({ 1, 1 }) }) );
+	CHECK_FALSE( valid_lex("const1", { tok::const_keyword({ 1, 1 }) }) );
 }
 
 TEST_CASE( "rush::lex (identifiers)", "[unit][lexer]" ) {
