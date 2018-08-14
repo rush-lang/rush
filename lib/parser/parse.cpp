@@ -49,7 +49,8 @@ namespace rush {
 	}
 
 	void dump(parse_result const& input, std::ostream& out) {
-		input.ast()->accept(ast::printer { out });
+		if (input.ast() != nullptr)
+			input.ast()->accept(ast::printer { out });
 	}
 
 } // rush
