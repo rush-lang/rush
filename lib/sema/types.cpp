@@ -24,9 +24,14 @@ namespace rush::sema {
 			|| ushort_type_symbol.id() == s.id();
 	}
 
+	static bool is_integral_type(symbol const& s) {
+		return is_signed_integral_type(s)
+			|| is_unsigned_integral_type(s);
+	}
+
 	static bool is_floating_point_type(symbol const& s) {
-		return lookup("float").id() == s.id()
-			|| lookup("double").id() == s.id();
+		return float_type_symbol.id() == s.id()
+			|| double_type_symbol.id() == s.id();
 	}
 
 	bool is_type_match(symbol const& lhs, symbol const& rhs) {
@@ -43,8 +48,8 @@ namespace rush::sema {
 		if (is_type_match(lhs, rhs))
 			return std::make_tuple(lhs, true);
 
-		// if (is_signed_integral_type(lhs)) {
-		// }
+		if (is_floating_point_type(lhs)) return std::make_tuple(lhs, true);
+		if (is_floating_point_type(rhs)) return std::make_tuple(rhs, true);
 
 		return std::make_tuple(lookup("<error-type>"), false);
 	}
