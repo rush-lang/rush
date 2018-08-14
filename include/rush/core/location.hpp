@@ -38,12 +38,12 @@ namespace rush {
 		}
 
 		// \brief Returns a copy of this location with line incremented by n, and the column reset to 1
-		location next_line(source_difference_t n = 1) {
+		location next_line(source_difference_t n = 1) const noexcept {
 			return { _line + n, 1 };
 		}
 
 		// \brief Returns a copy of this location with column increment by n.
-		location next_column(source_difference_t n = 1) {
+		location next_column(source_difference_t n = 1) const noexcept {
 			return { _line, _column + n };
 		}
 
