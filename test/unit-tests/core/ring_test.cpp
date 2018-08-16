@@ -8,6 +8,12 @@ bool equal(rush::ring<T, N> const& rng, std::initializer_list<T> init) {
 	return std::equal(rng.begin(), rng.end(), init.begin(), init.end());
 }
 
+
+template <typename T, std::size_t N>
+bool requal(rush::ring<T, N> const& rng, std::initializer_list<T> init) {
+	return std::equal(rng.rbegin(), rng.rend(), init.begin(), init.end());
+}
+
 TEST_CASE( "rush::ring", "[unit][core]" ) {
 	GIVEN( "an empty ring of capacity == 0" ) {
 		rush::ring<int, 0> r;
@@ -20,6 +26,7 @@ TEST_CASE( "rush::ring", "[unit][core]" ) {
 		THEN( "empty() should return true" ) { REQUIRE( r.empty() ); }
 		THEN( "size() should be zero" ) { REQUIRE( r.size() == 0 ); }
 		THEN( "capacity() should be set" ) { REQUIRE( r.capacity() == 3 ); }
+
 
 		WHEN ( "pushing elements to the back" ) {
 			r.push_back(1);
@@ -57,6 +64,7 @@ TEST_CASE( "rush::ring", "[unit][core]" ) {
 
 						AND_WHEN( "iterator over the ring") {
 							THEN( "elements should be as expected" ) { REQUIRE( equal(r, { 2, 3, 4 }) ); }
+							THEN( "elements should be as expected (reverse)" ) { REQUIRE( requal(r, { 4, 3, 2 }) ); }
 						}
 					}
 				}
