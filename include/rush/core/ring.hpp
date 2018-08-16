@@ -10,13 +10,16 @@ namespace rush {
 
 	template <typename T, std::size_t N>
 	class ring {
-		template <typename RanIter, bool Const>
+		template <typename RanIter>
 		class ring_iterator;
 
-		template <typename RanIter, bool Const>
+		template <typename RanIter>
 		class ring_iterator {
 			using iterator_type = RanIter;
-			using ring_type = std::conditional_t<Const, ring const, ring>;
+			using ring_type = std::conditional_t<
+				std::is_const_v<std::remove_reference_t<
+					typename std::iterator_traits<RanIter>::reference>>,
+					ring const, ring>;
 
 		public:
 			using iterator_category = std::bidirectional_iterator_tag;
@@ -49,42 +52,16 @@ namespace rush {
 				return temp;
 			}
 
-			// ring_iterator& operator --() noexcept {
-			// 	retreat();
-			// 	return *this;
-			// }
+			ring_iterator& operator --() noexcept {
+				retreat();
+				return *this;
+			}
 
-			// ring_iterator operator --(int) noexcept {
-			// 	auto temp = *this;
-			// 	retreat();
-			// 	return temp;
-			// }
-
-			// inline ring_iterator& operator += (difference_type offset) {
-			// 	while (offset > 0) { advance(); --offset; }
-			// 	return *this;
-			// }
-
-			// inline ring_iterator& operator -= (difference_type offset) {
-			// 	while (offset > 0) { retreat(); --offset; }
-			// 	return *this;
-			// }
-
-			// inline ring_iterator operator + (difference_type offset) {
-			// 	auto tmp = ring_iterator { *this };
-			// 	tmp += offset;
-			// 	return std::move(tmp);
-			// }
-
-			// inline ring_iterator operator - (difference_type offset) {
-			// 	auto tmp = ring_iterator { *this };
-			// 	tmp += offset;
-			// 	return std::move(tmp);
-			// }
-
-			// friend std::size_t operator + (ring_iterator const& lhs, ring_iterator const& rhs) {
-			// 	return ring_iterator { lhs } += rhs;
-			// }
+			ring_iterator operator --(int) noexcept {
+				auto temp = *this;
+				retreat();
+				return temp;
+			}
 
 			friend bool operator == (ring_iterator const& lhs, ring_iterator const& rhs) {
 				return
@@ -128,48 +105,11 @@ namespace rush {
 		using const_reference = typename container_type::const_reference;
 		using const_pointer = typename container_type::const_pointer;
 
-		using iterator = ring_iterator<typename container_type::iterator, false>;
-		using const_iterator = ring_iterator<typename container_type::const_iterator, true>;
+		using iterator = ring_iterator<typename container_type::iterator>;
+		using const_iterator = ring_iterator<typename container_type::const_iterator>;
 
 		using reverse_iterator = std::reverse_iterator<iterator>;
 		using const_reverse_iterator = std::reverse_iterator<const_iterator>;
-
-		void _check_empty() {
-			if (_buf.empty())
-				throw std::out_of_range("empty ring buffer.");
-		}
-
-		void _advance_tail(bool b) {
-			if (b && _tail == _head)
-			{ _advance_head(false); }
-			++_tail;
-			if (_tail == _buf.end())
-			{ _tail = _buf.begin(); }
-		}
-
-		void _advance_head(bool b) {
-			if (b && _head == _tail)
-			{ _advance_tail(false); }
-			++_head;
-			if (_head == _buf.end())
-			{ _head = _buf.begin(); }
-		}
-
-		void _retract_head(bool b) {
-			if (b && _head == _tail)
-			{ _retract_tail(false); }
-			if (_head == _buf.begin())
-			{ _head = _buf.end(); }
-			--_head;
-		}
-
-		void _retract_tail(bool b) {
-			if (b && _tail == _head)
-			{ _retract_head(false); }
-			if (_tail == _buf.begin())
-			{ _tail = _buf.end(); }
-			--_tail;
-		}
 
 	public:
 		ring()
@@ -213,31 +153,47 @@ namespace rush {
 		}
 
 		void push_back(T&& val) {
-			_check_empty();
+			_check_buffer_empty();
 			*_tail = std::move(val);
 			_advance_tail(!empty());
-			++_size;
+			_increment_size();
 		}
 
 		void push_back(T const& val) {
-			_check_empty();
+			_check_buffer_empty();
 			*_tail = val;
 			_advance_tail(!empty());
-			++_size;
+			_increment_size();
 		}
 
 		void push_front(T&& val) {
-			_check_empty();
+			_check_buffer_empty();
 			_retract_head(!empty());
 			*_head = std::move(val);
-			++_size;
+			_increment_size();
 		}
 
 		void push_front(T const& val) {
-			_check_empty();
+			_check_buffer_empty();
 			_retract_head(!empty());
 			*_head = val;
-			++_size;
+			_increment_size();
+		}
+
+		void pop_back() {
+			_check_buffer_empty();
+			if (!empty()) {
+				_retract_tail(false);
+				_decrement_size();
+			}
+		}
+
+		void pop_front() {
+			_check_buffer_empty();
+			if (!empty()) {
+				_advance_head(false);
+				_decrement_size();
+			}
 		}
 
 		reference front() noexcept {
@@ -262,19 +218,19 @@ namespace rush {
 
 		// implement swap.
 
-		iterator begin() noexcept { return { *this, _head, !empty() }; }
-		iterator end() noexcept { return { *this, _tail, false }; }
-		const_iterator begin() const noexcept { return { *this, _head, !empty() }; }
-		const_iterator end() const noexcept { return { *this, _tail, false }; }
-		const_iterator cbegin() const noexcept { return { *this, _head, !empty() }; }
-		const_iterator cend() const noexcept { return { *this, _tail, false }; }
+		iterator begin() noexcept { return _make_begin(!empty()); }
+		iterator end() noexcept { return _make_end(false); }
+		const_iterator begin() const noexcept { return _make_begin(!empty()); }
+		const_iterator end() const noexcept { return _make_end(false); }
+		const_iterator cbegin() const noexcept { return _make_begin(!empty()); }
+		const_iterator cend() const noexcept { return _make_end(false); }
 
-		reverse_iterator rbegin() noexcept { return { end() }; }
-		reverse_iterator rend() noexcept { return { begin() }; }
-		const_reverse_iterator rbegin() const noexcept { return { end() }; }
-		const_reverse_iterator rend() const noexcept { return { begin() }; }
-		const_reverse_iterator crbegin() const noexcept { return { cend() }; }
-		const_reverse_iterator crend() const noexcept { return { cbegin() }; }
+		reverse_iterator rbegin() noexcept { return reverse_iterator { _make_end(!empty()) }; }
+		reverse_iterator rend() noexcept { return reverse_iterator { _make_begin(false) }; }
+		const_reverse_iterator rbegin() const noexcept { return const_reverse_iterator { _make_end(!empty()) }; }
+		const_reverse_iterator rend() const noexcept { return const_reverse_iterator { _make_begin(false) }; }
+		const_reverse_iterator crbegin() const noexcept { return const_reverse_iterator { _make_end(!empty()) }; }
+		const_reverse_iterator crend() const noexcept { return const_reverse_iterator { _make_begin(false) }; }
 
 
 	private:
@@ -283,6 +239,67 @@ namespace rush {
 			_head,
 			_tail;
 		size_type _size;
+
+		void _check_buffer_empty() {
+			if (_buf.empty())
+				throw std::out_of_range("empty ring buffer.");
+		}
+
+		void _increment_size() {
+			if (_size != capacity()) ++_size;
+		}
+
+		void _decrement_size() {
+			if (_size != 0) --_size;
+		}
+
+		void _advance_tail(bool b) {
+			if (b && _tail == _head)
+			{ _advance_head(false); }
+			++_tail;
+			if (_tail == _buf.end())
+			{ _tail = _buf.begin(); }
+		}
+
+		void _advance_head(bool b) {
+			if (b && _head == _tail)
+			{ _advance_tail(false); }
+			++_head;
+			if (_head == _buf.end())
+			{ _head = _buf.begin(); }
+		}
+
+		void _retract_head(bool b) {
+			if (b && _head == _tail)
+			{ _retract_tail(false); }
+			if (_head == _buf.begin())
+			{ _head = _buf.end(); }
+			--_head;
+		}
+
+		void _retract_tail(bool b) {
+			if (b && _tail == _head)
+			{ _retract_head(false); }
+			if (_tail == _buf.begin())
+			{ _tail = _buf.end(); }
+			--_tail;
+		}
+
+		iterator _make_begin(bool start) {
+			return { *this, _head, start };
+		}
+
+		iterator _make_end(bool start) {
+			return { *this, _tail, start };
+		}
+
+		const_iterator _make_begin(bool start) const {
+			return { *this, _head, start };
+		}
+
+		const_iterator _make_end(bool start) const {
+			return { *this, _tail, start };
+		}
 	};
 }
 
