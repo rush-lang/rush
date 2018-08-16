@@ -96,7 +96,7 @@ private:
 		assert(!eof() && "unexpected end of source.");
 		auto temp = _iters.first;
 		if (advance(temp, _iters.second, offset))
-			return temp != _iters.second ? *temp : npos_codepoint;
+			return temp != _iters.second ? *temp : npos;
 		return *temp;
 	}
 

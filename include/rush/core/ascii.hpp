@@ -10,7 +10,7 @@
 
 namespace rush {
 	using codepoint_t = std::uint32_t;
-	static const codepoint_t npos_codepoint = -1;
+	static const std::size_t npos = -1;
 
 	namespace ascii {
 		constexpr bool is_ascii(codepoint_t cp) {
