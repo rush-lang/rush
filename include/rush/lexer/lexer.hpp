@@ -49,8 +49,6 @@ namespace rush {
 		rush::indentation _indent;
 		rush::location _loc; // location pinned before every new token.
 
-		void initialize(std::istream&);
-
 		bool eof() const noexcept;
 		bool is_line_start() const noexcept;
 

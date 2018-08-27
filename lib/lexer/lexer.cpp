@@ -26,13 +26,9 @@ namespace rush {
 		auto l = lexer { opts };
 		return l.tokenize(input);
 	}
-} // namespace rush
+} // rush
 
 namespace rush {
-	void lexer::initialize(std::istream& istr) {
-
-	}
-
 	bool lexer::eof() const noexcept {
 		return _lab->empty();
 	}
