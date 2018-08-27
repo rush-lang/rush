@@ -12,13 +12,11 @@
 
 namespace rush {
 
+	class lexer;
 	class lexer_options;
 
 	class lexical_analysis final {
-		template <typename FwdIter>
-		friend lexical_analysis lex(
-			FwdIter, FwdIter,
-			lexer_options const&);
+		friend class lexer;
 
 	public:
 		lexical_analysis(lexical_analysis const&) = delete;

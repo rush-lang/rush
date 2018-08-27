@@ -1,172 +1,135 @@
 #include "rush/core/ascii.hpp"
+#include "rush/core/algorithm.hpp"
 #include "rush/core/iterator.hpp"
-#include "rush/lexer/indentation.hpp"
-#include "rush/lexer/token.hpp"
-#include "rush/lexer/lex.hpp"
+#include "rush/lexer/lexer.hpp"
+#include "rush/lexer/lexer_iterator.hpp"
 
-#include "lexer_iterator.hpp"
-
-#include <string>
 #include <iostream>
-#include <iterator>
-#include <vector>
-#include <optional>
+#include <sstream>
 
-
-using namespace rush;
 using namespace rush::ascii;
-
 namespace tok = rush::tokens;
 
-namespace rush{
-	template <typename FwdIter>
-	lexical_analysis lex(FwdIter, FwdIter, lexer_options const& opts);
-}
+namespace rush {
 
-template <typename FwdIter>
-class lexer final {
-	friend lexical_analysis rush::lex<FwdIter>(
-		FwdIter, FwdIter,
-		lexer_options const&);
-
-public:
-	lexer(lexer const&) = delete;
-	void operator = (lexer const&) = delete;
-
-	lexer(lexer&& other)
-		: _options {other._options }
-		, _indentation { }
-		, _tokens(std::move(other._tokens)) {}
-
-	void operator = (lexer&& other) {
-		// fixme: check other is not this.
-		_options = other._options;
-		_indentation = other._indentation;
-		_tokens = std::move(other._tokens);
+	lexical_analysis lex(char const* input, lexer_options const& opts) {
+		auto l = lexer { opts };
+		return l.tokenize(input);
 	}
 
-	std::vector<lexical_token> tokenize(FwdIter first, FwdIter last) {
-		if (first != last) {
-			initialize(first, last);
-			auto token = next_token();
-			for (; !token.is(symbols::eof); token = next_token()) {
-				_tokens.push_back(std::move(token));
-			}
-		}
-
-		return std::move(_tokens);
+	lexical_analysis lex(std::string const& input, lexer_options const& opts) {
+		auto l = lexer { opts };
+		return l.tokenize(input);
 	}
 
-private:
-	lexer_options _options;
-	location _pinloc;
-	indentation _indentation;
-	std::vector<lexical_token> _tokens;
-	std::pair<
-		lexer_iterator<FwdIter>,
-		lexer_iterator<FwdIter>> _iters;
+	lexical_analysis lex(std::istream& input, lexer_options const& opts) {
+		auto l = lexer { opts };
+		return l.tokenize(input);
+	}
+} // namespace rush
 
-	explicit lexer(rush::lexer_options opts)
-		: _options(opts) {}
+namespace rush {
+	void lexer::initialize(std::istream& istr) {
 
-	void initialize(FwdIter first, FwdIter last) {
-		_iters = {
-			lexer_iterator { first, last, {} },
-			lexer_iterator { last, last, location::undefined }
-		};
 	}
 
-	inline bool eof() {
-		return _iters.first == _iters.second;
+	bool lexer::eof() const noexcept {
+		return _lab->empty();
 	}
 
-	location location() noexcept {
-		return _pinloc;
+	bool lexer::is_line_start() const noexcept {
+		return !eof() && _lab->peek().location().column() == 1;
 	}
 
-	void pin_location() noexcept {
-		_pinloc = { _iters.first.location() };
+	rush::location lexer::location() const noexcept {
+		return _loc;
 	}
 
-	bool is_line_start() noexcept {
-		return !eof() && _iters.first.location().column() == 1;
-	}
-
-	codepoint_t peek(std::size_t offset = 0) {
-		assert(!eof() && "unexpected end of source.");
-		auto temp = _iters.first;
-		if (advance(temp, _iters.second, offset))
-			return temp != _iters.second ? *temp : npos;
-		return *temp;
-	}
-
-	bool check(codepoint_t cp, std::size_t offset = 0) {
+	bool lexer::check(codepoint_t cp, std::size_t offset) {
 		return !eof() && peek(offset) == cp;
 	}
 
-	bool icheck(codepoint_t cp, std::size_t offset = 0) {
+	bool lexer::icheck(codepoint_t cp, std::size_t offset) {
 		return !eof() && iequal(peek(offset), cp);
 	}
 
-	bool check(std::string str, std::size_t offset = 0) {
-		for (std::size_t i = 0, j = offset; i < str.length(); ++i, ++j)
-			if (!check(str[i], j)) return false;
+	bool lexer::check(std::string str, std::size_t offset) {
+		for (std::size_t i = 0; i < str.length(); ++i)
+			if (!check(str[i], offset + i)) return false;
 		return true;
 	}
 
-	bool icheck(std::string str, std::size_t offset = 0) {
-		for (std::size_t i = 0, j = offset; i < str.length(); ++i, ++j)
-			if (!icheck(str[i], j)) return false;
+	bool lexer::icheck(std::string str, std::size_t offset) {
+		for (std::size_t i = 0; i < str.length(); ++i)
+			if (!icheck(str[i], offset + i)) return false;
 		return true;
 	}
 
-	template <typename Pred>
-	auto check(Pred predicate, std::size_t offset = 0)
-		-> decltype(predicate(codepoint_t{}), bool{}) {
-		return !eof() && predicate(peek(offset));
+	codepoint_t lexer::peek(std::size_t offset) {
+		assert(!eof() && "unexpected end of source.");
+		return offset < _lab->size()
+			? _lab->peek(offset).elem()
+			: npos;
 	}
 
-	void skip(std::size_t offset = 1) {
-		advance(_iters.first, _iters.second, offset);
+	codepoint_t lexer::skip(std::size_t offset) {
+		assert(!eof() && "unexpected end of source.");
+		_lab->skip(offset);
+		return !eof() ? peek() : npos;
 	}
 
-	template <typename Pred>
-	void skip_while(Pred predicate) {
-		advance_if(_iters.first, _iters.second, predicate);
+	std::string lexer::scan(std::size_t count) {
+		assert(!eof() && "unexpected end of source.");
+		std::string result;
+		for (; !eof() && count > 0; --count)
+			result.push_back(_lab->next().elem());
+		return std::move(result);
 	}
 
-	template <typename Pred>
-	auto scan_while(Pred predicate)
-		-> decltype(predicate(*_iters.first), std::string()) {
-		auto temp = _iters.first;
-		advance_if(_iters.first, _iters.second, predicate);
-		return std::string(temp, _iters.first);
+	codepoint_t lexer::skip_while(function_ref<bool(codepoint_t)> pred) {
+		// assert(!eof() && "unexpected end of source.");
+		auto cp = npos;
+		while (!eof() && pred(cp = _lab->peek().elem())) _lab->skip();
+		return cp;
 	}
 
-	void skip_empty_lines() {
-		for (;;) {
-			skip_while(is_vspace);
-			auto pin = _iters.first;
-			skip_while(is_hspace);
-
-			if (eof()) break;
-			if (!is_newline(peek())) {
-				_iters.first = pin;
-				break;
-			}
-		}
+	std::string lexer::scan_while(function_ref<bool(codepoint_t)> pred) {
+		// assert(!eof() && "unexpected end of source.");
+		std::string result;
+		while (!eof() && pred(peek()))
+			result.push_back(_lab->next().elem());
+		return std::move(result);
 	}
 
-	lexical_token next_token() {
-		skip_empty_lines();
+	lexical_analysis lexer::tokenize(std::string str) {
+		std::istringstream iss { str };
+		return tokenize(iss);
+	}
 
-		auto indent = try_scan_indentation();
-		if (indent) return *indent;
-
-		skip_while(is_hspace);
-		pin_location();
+	lexical_analysis lexer::tokenize(std::istream& istr) {
+		auto toks = std::vector<lexical_token> {};
+		auto first = std::istreambuf_iterator<char> { istr };
+		auto last = std::istreambuf_iterator<char> { };
+		_lab = std::make_unique<lookahead_buffer_type>(
+			lexer_iterator { first, *first, {} },
+			lexer_iterator { last, 0, rush::location::undefined});
+		_indent = {};
 
 		if (!eof()) {
+			auto tok = next_token();
+			for (; !tok.is(symbols::eof); tok = next_token())
+				toks.push_back(std::move(tok));
+		}
+
+		return lexical_analysis { std::move(toks) };
+	}
+
+	lexical_token lexer::next_token() {
+		auto indent = scan_whitespace();
+		if (indent) return *indent;
+
+		if (!eof()) {
+			_loc = _lab->peek().location(); // pin the location
 			auto cp = peek();
 
 			if (is_newline(cp)) return next_token();
@@ -181,37 +144,35 @@ private:
 			return tok::make_error_token("unexpected token", location());
 		}
 
-		unwind_indentation();
-		return tok::eof();
+		return _unwind_indentation();
 	}
 
+	std::optional<lexical_token> lexer::scan_whitespace() {
+		while (!eof()) {
+			skip_while(is_vspace);
+			if (eof()) break;
 
-	std::optional<lexical_token> try_scan_indentation() {
-		if (!is_line_start())
-			return std::nullopt;
+			if (is_line_start()) {
+				_loc = _lab->peek().location(); // pin the location
+				auto wspace = scan_while(is_hspace);
+				if (eof()) break;
 
-		assert(!eof() && "unexpected end of source.");
-		assert(is_line_start() && "expected start of line while attempting to scan indentation depth.");
-
-		pin_location();
-		auto indent = _indentation.measure(_iters.first, _iters.second);
-		skip_while(is_hspace); // skip measured + remaining horizontal space.
-
-		if (indent < _indentation) {
-			_indentation = indent;
-			return tok::dedent(location());
+				if (!is_newline(peek())) {
+					auto indent = _indent.measure(wspace.begin(), wspace.end());
+					if (indent < _indent) { _indent = indent; return tok::dedent(location()); }
+					if (indent > _indent) { _indent = indent; return tok::indent(location()); }
+					break;
+				}
+			} else {
+				skip_while(is_hspace);
+				if (eof() || !is_vspace(peek()))
+					break;
+			}
 		}
-
-		if (indent > _indentation) {
-			_indentation = indent;
-			return tok::indent(location());
-		}
-
 		return std::nullopt;
 	}
 
-
-	lexical_token scan_identifier() {
+	lexical_token lexer::scan_identifier() {
 		assert(!eof() && "unexpected end of source.");
 		assert(is_ident_head(peek()) && "expected a leading identifier character while attempting to scan an identifier.");
 
@@ -223,37 +184,34 @@ private:
 	}
 
 
-	lexical_token scan_string_literal() {
+	lexical_token lexer::scan_string_literal() {
 		assert(!eof() && "unexpected end of source.");
 		assert(is_quote(peek()) && "expected a leading, double quotation mark, while attempting to scan a string literal.");
 
-		auto prev = *_iters.first;
+		auto prev = peek();
 		auto escape = false;
 
 		skip(); // consume quotation mark.
-
-		auto temp = _iters.first;
-		advance_if(_iters.first, _iters.second, [&](auto const& cp) {
+		auto result = scan_while([&](auto const& cp){
 			escape = (prev == '\\' && !escape);
 			if (is_quote(cp) && !escape)
 			{ prev = cp; return false; }
 			prev = cp; return true;
 		});
 
-		if (!check(is_quote))
+		if (!check_if(is_quote))
 			return tok::make_error_token("expected closing \'\"\'");
 
-		auto str = std::string(temp, _iters.first);
 		skip(); // consume end quotation mark.
-		return tok::string_literal(str, location());
+		return tok::string_literal(std::move(result), location());
 	}
 
-	lexical_token_suffix scan_floating_literal_suffix() {
+	lexical_token_suffix lexer::scan_floating_literal_suffix() {
 		if (icheck('f')) { skip(); return lexical_token_suffix::float_literal; }
 		return lexical_token_suffix::none;
 	}
 
-	lexical_token_suffix scan_integer_literal_suffix() {
+	lexical_token_suffix lexer::scan_integer_literal_suffix() {
 		if (icheck('u')) { skip(); return lexical_token_suffix::unsigned_literal; }
 		if (icheck('l')) { skip(); return lexical_token_suffix::long_literal; }
 
@@ -267,16 +225,15 @@ private:
 		return lexical_token_suffix::none;
 	}
 
-	template <typename Pred>
-	lexical_token scan_integer_literal(Pred predicate, int base) {
+	lexical_token lexer::scan_integer_literal(function_ref<bool(codepoint_t)> predicate, int base) {
 		auto value = scan_while(predicate);
 		auto suffix = scan_integer_literal_suffix();
 		return tok::suffixed_integer_literal(std::stoll(value, 0, base), suffix, location());
 	}
 
-	lexical_token scan_numeric_literal() {
+	lexical_token lexer::scan_numeric_literal() {
 		assert(!eof() && "unexpected end of source.");
-		assert(check('.') || check(is_digit) && "expected a leading digit while attempting to scan an integer literal.");
+		assert(check('.') || check_if(is_digit) && "expected a leading digit while attempting to scan an integer literal.");
 
 		if (is_zero_digit(peek())) {
 			skip(); // consume zero digit.
@@ -314,7 +271,7 @@ private:
 	}
 
 
-	lexical_token scan_symbol(symbol_t symbol) {
+	lexical_token lexer::scan_symbol(symbol_t symbol) {
 		assert(symbol != symbols::unknown && "unknown symbol");
 
 		switch (symbol) {
@@ -369,7 +326,7 @@ private:
 
 			case symbols::period: {
 				if (check("..", 1)) { skip(3); return tok::ellipses(location()); }
-				if (check(is_digit, 1)) return scan_numeric_literal();
+				if (check_if(is_digit, 1)) return scan_numeric_literal();
 			} break;
 
 			default:;
@@ -379,44 +336,16 @@ private:
 		return tok::make_symbol_token(symbol, location());
 	}
 
-	void unwind_indentation() {
-		while (_indentation.depth() > 0) {
-			_pinloc = rush::location {
-				_tokens.back().location().line() + 1,
-				_indentation.depth()
+	lexical_token lexer::_unwind_indentation() {
+		if (_indent.depth() > 0) {
+			_loc = rush::location {
+				_loc.line() + 1,
+				_indent.depth()
 			};
 
-			_indentation.decrement();
-			_tokens.push_back(tok::dedent(location()));
+			_indent.decrement();
+			return tok::dedent(location());
 		}
+		return tok::eof(location());
 	}
-};
-
-namespace rush {
-
-	template <typename FwdIter>
-	lexical_analysis lex(FwdIter first, FwdIter last, lexer_options const& opts) {
-		auto l = lexer<FwdIter> { opts };
-		return lexical_analysis { l.tokenize(first, last) };
-	}
-
-	lexical_analysis lex(char const* input, lexer_options const& opts) {
-		auto first = input;
-		auto last = input + std::strlen(input);
-		return ::lex(first, last, opts);
-	}
-
-	lexical_analysis lex(std::string const& input, lexer_options const& opts) {
-		auto first = begin(input);
-		auto last = end(input);
-		return ::lex(first, last, opts);
-	}
-
-	// FIXME: Wrap istreambuf_iterator in some kind of 'buffered_iterator'
-	// promoting it to the required forward iterator type.
-	lexical_analysis lex(std::istream& input, lexer_options const& opts) {
-		auto first = std::istreambuf_iterator<char> { input };
-		auto last = std::istreambuf_iterator<char> {};
-		return ::lex(first, last, opts);
-	}
-} // namespace rush
+}
