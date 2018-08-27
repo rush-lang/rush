@@ -28,10 +28,15 @@ namespace rush {
 			using reference = typename std::iterator_traits<iterator_type>::reference;
 			using pointer = typename std::iterator_traits<iterator_type>::pointer;
 
-			ring_iterator(ring_type& owner, RanIter iter, bool start)
-				: _owner(owner)
+			ring_iterator()
+				: _owner(nullptr)
+				, _iter()
+				, _switch(false) {}
+
+			ring_iterator(ring_type& owner, RanIter iter, bool end)
+				: _owner(&owner)
 				, _iter(iter)
-				, _begin(start) {}
+				, _switch(end) {}
 
 			reference operator *() const {
 				return *_iter;
@@ -65,9 +70,9 @@ namespace rush {
 
 			friend bool operator == (ring_iterator const& lhs, ring_iterator const& rhs) {
 				return
-					&lhs._owner == &rhs._owner &&
-					lhs._iter == rhs._iter &&
-					lhs._begin == rhs._begin;
+					lhs._owner == rhs._owner &&
+					lhs._switch == rhs._switch &&
+					lhs._iter == rhs._iter;
 			}
 
 			friend bool operator != (ring_iterator const& lhs, ring_iterator const& rhs) {
@@ -75,22 +80,24 @@ namespace rush {
 			}
 
 		private:
-			ring_type& _owner;
+			ring_type* _owner;
 			RanIter _iter;
-			bool _begin;
+			bool _switch;
 
 			void advance() {
 				++_iter;
-				if (_iter == _owner._buf.end())
-				{ _iter = _owner._buf.begin(); }
-				_begin = false;
+				if (_iter == _owner->_buf.end()) {
+					_iter = _owner->_buf.begin();
+					_switch = !_switch;
+				}
 			}
 
-			void retreat(std::size_t offset = 1) {
-				if (_iter == _owner._buf.begin())
-				{ _iter = _owner._buf.end(); }
+			void retreat() {
+				if (_iter == _owner->_buf.begin()) {
+					_iter = _owner->_buf.end();
+					_switch = !_switch;
+				}
 				--_iter;
-				_begin = false;
 			}
 		};
 
@@ -218,19 +225,19 @@ namespace rush {
 
 		// implement swap.
 
-		iterator begin() noexcept { return _make_begin(!empty()); }
-		iterator end() noexcept { return _make_end(false); }
-		const_iterator begin() const noexcept { return _make_begin(!empty()); }
-		const_iterator end() const noexcept { return _make_end(false); }
-		const_iterator cbegin() const noexcept { return _make_begin(!empty()); }
-		const_iterator cend() const noexcept { return _make_end(false); }
+		iterator begin() noexcept { return _make_begin(empty()); }
+		iterator end() noexcept { return _make_end(true); }
+		const_iterator begin() const noexcept { return _make_begin(empty()); }
+		const_iterator end() const noexcept { return _make_end(true); }
+		const_iterator cbegin() const noexcept { return _make_begin(empty()); }
+		const_iterator cend() const noexcept { return _make_end(true); }
 
-		reverse_iterator rbegin() noexcept { return reverse_iterator { _make_end(!empty()) }; }
-		reverse_iterator rend() noexcept { return reverse_iterator { _make_begin(false) }; }
-		const_reverse_iterator rbegin() const noexcept { return const_reverse_iterator { _make_end(!empty()) }; }
-		const_reverse_iterator rend() const noexcept { return const_reverse_iterator { _make_begin(false) }; }
-		const_reverse_iterator crbegin() const noexcept { return const_reverse_iterator { _make_end(!empty()) }; }
-		const_reverse_iterator crend() const noexcept { return const_reverse_iterator { _make_begin(false) }; }
+		reverse_iterator rbegin() noexcept { return reverse_iterator { _make_end(empty()) }; }
+		reverse_iterator rend() noexcept { return reverse_iterator { _make_begin(true) }; }
+		const_reverse_iterator rbegin() const noexcept { return const_reverse_iterator { _make_end(empty()) }; }
+		const_reverse_iterator rend() const noexcept { return const_reverse_iterator { _make_begin(true) }; }
+		const_reverse_iterator crbegin() const noexcept { return const_reverse_iterator { _make_end(empty()) }; }
+		const_reverse_iterator crend() const noexcept { return const_reverse_iterator { _make_begin(true) }; }
 
 
 	private:
@@ -285,20 +292,20 @@ namespace rush {
 			--_tail;
 		}
 
-		iterator _make_begin(bool start) {
-			return { *this, _head, start };
+		iterator _make_begin(bool end) {
+			return { *this, _head, end };
 		}
 
-		iterator _make_end(bool start) {
-			return { *this, _tail, start };
+		iterator _make_end(bool end) {
+			return { *this, _tail, end };
 		}
 
-		const_iterator _make_begin(bool start) const {
-			return { *this, _head, start };
+		const_iterator _make_begin(bool end) const {
+			return { *this, _head, end };
 		}
 
-		const_iterator _make_end(bool start) const {
-			return { *this, _tail, start };
+		const_iterator _make_end(bool end) const {
+			return { *this, _tail, end };
 		}
 	};
 }
