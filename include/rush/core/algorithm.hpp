@@ -48,17 +48,19 @@ namespace rush {
 			std::decay_t<InIter1>,
 			std::decay_t<InIter2>>,
 		OutIter> copy_while(InIter1 first, InIter2 last, Pred predicate, OutIter out) {
+			for (; first != last && predicate(*first); ++first, ++out)
+				*out = *first;
 			return out;
 		}
 
-	template <typename InIter1, typename InIter2, typename OutIter, typename SizeT, typename Pred>
-	inline std::enable_if_t<
-		std::is_same_v<
-			std::decay_t<InIter1>,
-			std::decay_t<InIter2>>,
-		OutIter> copy_n_while(InIter1 first, InIter2 last, SizeT count, Pred predicate, OutIter out) {
-			return out;
-		}
+	// template <typename InIter1, typename InIter2, typename OutIter, typename SizeT, typename Pred>
+	// inline std::enable_if_t<
+	// 	std::is_same_v<
+	// 		std::decay_t<InIter1>,
+	// 		std::decay_t<InIter2>>,
+	// 	OutIter> copy_n_while(InIter1 first, SizeT count, Pred predicate, OutIter out) {
+	// 		for (; first != last &)
+	// 	}
 } // rush
 
 #endif // RUSH_CORE_ALGORITHM_HPP
