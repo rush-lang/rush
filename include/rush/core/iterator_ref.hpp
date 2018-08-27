@@ -35,7 +35,11 @@ namespace rush {
 		iterator_reference_wrapper& operator --() noexcept { --_iter; return *this; }
 
 		friend bool operator == (iterator_reference_wrapper const& lhs, iterator_reference_wrapper const& rhs) { return lhs._iter == rhs._iter; }
+		friend bool operator == (iterator_reference_wrapper const& lhs, IterT const& rhs) { return lhs._iter == rhs; }
+		friend bool operator == (IterT const& lhs, iterator_reference_wrapper const& rhs) { return lhs == rhs._iter; }
 		friend bool operator != (iterator_reference_wrapper const& lhs, iterator_reference_wrapper const& rhs) { return !(lhs == rhs); }
+		friend bool operator != (iterator_reference_wrapper const& lhs, IterT const& rhs) { return !(lhs == rhs); }
+		friend bool operator != (IterT const& lhs, iterator_reference_wrapper const& rhs) { return !(lhs == rhs); }
 
 		friend bool operator < (iterator_reference_wrapper const& lhs, iterator_reference_wrapper const& rhs) { return lhs._iter < rhs._iter; }
 		friend bool operator > (iterator_reference_wrapper const& lhs, iterator_reference_wrapper const& rhs) { return rhs < lhs; }
