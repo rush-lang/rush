@@ -43,13 +43,12 @@ integer-literal ::=
 floating-literal-suffix ::= "f" | "F"
 floating-literal ::= [ dec-integer-literal ] "." { digit } [ floating-literal-suffix ]
 
-string-segment ::= { string-char | escaped-string-char }
-string-literal ::= """ string-segment """
-string-substitution ::= "$" ( identifier-string-substitution | expression-string-substitution )
-identifier-string-substitution ::= identifier
-expression-string-substitution ::= "{" expression "}"
-interpolated-string ::= """ string-segment string-substitution { string-segment | string-substitution } """
+string-literal ::= '"' { string-substitution | string-segment } '"'
+string-segment ::= string-escape-sequence | string-char { string-char }
+string-substitution ::= "$" ( "{" expression "}" | identifier )
 
+string-char ::= /[^\\$"]/
+string-escape-sequence ::= /\\['"\\bfnrtv]/
 
 ## SYNTACTICAL GRAMMAR
 

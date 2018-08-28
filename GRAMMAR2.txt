@@ -1,0 +1,138 @@
+program ::= { import-statements } [ module-statement ] { toplevel-declaration }
+
+## Declarations
+
+toplevel-declaration ::= [ "export" ] declaration
+
+intializer ::= "=" expression
+type-annotation ::= ":" type
+
+declaration ::=
+	| constant-declaration
+	| variable-declaration
+	| function-declaration
+	| class-declaration
+	| struct-declaration
+	| concept-declaration
+	| interface-declaration
+
+constant-declaration-list ::= "let" name-pattern-list [ type-annotation ] intializer
+variable-declaration-list ::= "var" name-pattern-list [ type-annotation ] intializer
+
+function-declaration ::= "func" identifier parameter-list ( ":" [ type ] statement-block | "=>" expression )
+parameter-list ::= "(" parameter-sequence { "," parameter-sequence } ")"
+parameter-sequence ::= name-pattern-list type-annotation [ initializer ]
+
+class-declaration ::= "class"
+	| simple-class
+	| abstract-class
+	| extension-class
+
+simple-class ::= identifier ":" { standard-class-body }
+simple-class-body ::= { [ access-modifier ] { class-member-declaration-block } }
+
+member-declaration ::=
+	| member-constant-declaration
+	| member-variable-declaration
+	| member-function-declaration
+
+member-constant-declaration ::= "let" ( identifier-list type-annotation |
+member-variable-declaration ::= "var" ( identifier-list type-annotation |
+
+extension-class ::= "@" identifier { extension-class-body }
+
+
+access-modifier-annotation ::=
+
+## Statements
+
+statement ::=
+	| expression
+	| if-statement
+	| for-statement
+	| while-statement
+	| return-statement
+	| yield-statement
+	| pass-statement
+
+
+import-statement = "import" qualified-name
+module-statement = "module" qualified-name
+qualified-name ::= identifier [ "." module-name ]
+
+
+block-statement ::= <indent> statement { statement } <dedent>
+
+
+compound-statement ::=
+	| if-statement
+	| for-statement
+	| while-statement
+
+
+if-statement ::= "if" expression ":" statement-body [ "else" ( conditional-statement | ":" statement-body ) ]
+
+for-statement ::= "for" ( range-expression | pattern "in" expression ) ":" statement-body
+
+while-statement ::= "while" boolean-expression ":" statement-body
+
+
+## Expressions
+
+expression ::=
+	| primary-expression
+	| binary-expression
+	| unary-expression
+
+
+primary-expression ::=
+	| literal
+	| identifier
+	| unary-expression
+	| member-access-expression
+	| "(" expression ")"
+
+binary-expression ::=
+	| expression binary-op expression
+
+
+
+
+## Misc.
+
+name-pattern-list ::= name-pattern { "," name-pattern }
+name-pattern ::=
+	| destructure-pattern
+	| identifier
+
+destructure-pattern ::= "{" name-pattern-sequence "}"
+
+string-literal ::= '"' string-segment { string-substitution | string-segment } '"'
+string-segment ::= string-escape-sequence | { string-char }
+string-substitution ::= "$" ( "{" expression "}" | identifier )
+
+
+['"'][string][ident][string]["{"][ident][*][integer]["}"]['"']
+
+
+string-literal ::= '"' string-segment { string-substitution string-segment } '"'
+string-segment ::= { string-escape-sequence | string-char }
+string-substitution ::= "$" ( "{" expression "}" | identifier )
+
+string-char ::= /[^\\$"]/
+string-escape-sequence ::= /\\['"\\bfnrtv$]/
+
+## Terminals
+
+unary-op ::= "+" | "-" ...
+binary-op ::= "+" | "-" | "*" | "/" | "%" ...
+
+
+letter = /[a-z]/i
+
+digit = /[0-9]/
+hex-digit = /[a-f0-9]/i
+oct-digit = /[0-7]/
+bin-digit = /0|1/
+non-zero-digit = /[1-9]/
+
