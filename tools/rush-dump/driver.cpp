@@ -1,4 +1,5 @@
 #include "rush/lexer/lex.hpp"
+#include "rush/lexer/dump.hpp"
 #include "rush/parser/parse.hpp"
 #include "rush/parser/dump.hpp"
 #include "cxxopts/cxxopts.hpp"
@@ -6,12 +7,6 @@
 #include <vector>
 #include <string>
 
-void dump_lex(std::string src) {
-	auto lxa = rush::lex(std::move(src));
-	for (auto& tok : lxa) {
-		std::cout << rush::debug_string(tok) << std::endl;
-	}
-}
 
 int main(int argc, char const** argv) {
 	auto options = cxxopts::Options { "rush-dump", "Rush Dump - Diagnostic tool" };
@@ -43,13 +38,13 @@ int main(int argc, char const** argv) {
 
 			if (results.count("lex") > 0) {
 				std::cout << "lexical analysis: ----------\n" << std::endl;
-				dump_lex(src);
+				rush::dump(rush::lex(src));
 				std::cout << std::endl;
 			}
 
 			if (results.count("parse") > 0) {
 				std::cout << "syntax analysis: ----------\n"  << std::endl;
-				rush::dump(src);
+				rush::dump(rush::parse(src));
 				std::cout << std::endl;
 			}
 

@@ -1,4 +1,5 @@
 #include "rush/lexer/lex.hpp"
+#include "rush/lexer/dump.hpp"
 #include <iostream>
 
 char const* src = R"(
@@ -12,8 +13,5 @@ func main(args: string[]):
 int main() {
 	std::cout << src << std::endl;
 	std::cout << "output: --------------------" << std::endl;
-	auto lxa = rush::lex(src);
-	for (auto& tok : lxa) {
-		std::cout << debug_string(tok) << std::endl;
-	}
+	rush::dump(rush::lex(src));
 }

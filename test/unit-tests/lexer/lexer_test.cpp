@@ -1,5 +1,6 @@
 #include "catch2/catch.hpp"
 #include "rush/lexer/lex.hpp"
+#include "rush/lexer/dump.hpp"
 
 #include <string_view>
 #include <initializer_list>
@@ -16,13 +17,7 @@ bool valid_lex(std::string input, std::vector<rush::lexical_token> expect) {
 	auto lxa = rush::lex(input);
 	auto result = lxa.size() == expect.size() && std::equal(
 		lxa.begin(), lxa.end(), expect.begin(), expect.end());
-
-	if (!result) {
-		for (auto const& t : lxa) {
-			std::cout << debug_string(t) << std::endl;
-		}
-	}
-
+	if (!result) rush::dump(lxa);
 	return result;
 }
 
@@ -31,13 +26,7 @@ bool valid_lex_same(std::string input, std::vector<rush::lexical_token> expect) 
 	auto result = lxa.size() == expect.size() && std::equal(
 		lxa.begin(), lxa.end(), expect.begin(), expect.end(),
 		[](auto& lhs, auto& rhs) { return lhs.is_same(rhs); });
-
-	if (!result) {
-		for (auto const& t : lxa) {
-			std::cout << debug_string(t) << std::endl;
-		}
-	}
-
+	if (!result) rush::dump(lxa);
 	return result;
 }
 
