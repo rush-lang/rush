@@ -59,9 +59,10 @@ namespace rush {
 				auto d = distance_to_depth(pin, first);
 				if (d < _depth) return { _depth - 1, _inlen, _style };
 				if (d > _depth) return { _depth + 1, _inlen, _style };
+				return *this;
 			}
 
-			return *this;
+			return { 0, _inlen, _style };
 		}
 
 		static inline indentation spaces(std::size_t depth) noexcept {

@@ -309,6 +309,13 @@ TEST_CASE( "rush::lex (tab-indentation)" ) {
 		tok::dedent({ 2, 1 }),
 	}));
 
+	CHECK( valid_lex("\tabc\ndef", {
+		tok::indent({ 1, 1 }),
+		tok::identifier("abc", { 1, 2 }),
+		tok::dedent({ 2, 1 }),
+		tok::identifier("def", { 2, 1 }),
+	}));
+
 	CHECK( valid_lex("\tabc\n\t\tdef", {
 		tok::indent({ 1, 1 }),
 		tok::identifier("abc", { 1, 2 }),
