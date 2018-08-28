@@ -5,8 +5,9 @@
 
 #include "rush/sema/scope.hpp"
 
-#include "rush/ast/expression.hpp"
 #include "rush/ast/declaration.hpp"
+#include "rush/ast/statement.hpp"
+#include "rush/ast/expression.hpp"
 
 #include "rush/lexer/lex.hpp"
 #include "rush/parser/result.hpp"
