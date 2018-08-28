@@ -1,6 +1,7 @@
 project(ast VERSION ${RUSH_VERSION} LANGUAGES CXX)
 
 rush_add_library(ast
+	decl/function.cpp
 	expr/literal.cpp
 	expr/binary.cpp
 	expr/unary.cpp

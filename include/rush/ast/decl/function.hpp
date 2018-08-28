@@ -3,44 +3,97 @@
 #ifndef RUSH_AST_DECL_FUNCTION_HPP
 #define RUSH_AST_DECL_FUNCTION_HPP
 
+#include "rush/core/iterator_range.hpp"
 #include "rush/ast/declaration.hpp"
+#include "rush/ast/type.hpp"
+#include "rush/ast/parameter.hpp"
+#include "rush/sema/symbol.hpp"
+#include "rush/sema/scope.hpp"
 
 #include <vector>
 
 namespace rush::ast {
-	class parameter : public node {
-
-	};
+	class statement;
 
 	class function_declaration : public declaration {
 		struct factory_tag_t {};
 	public:
-		function_declaration(std::string name, std::vector<parameter> params)
-			: _name(std::move(name))
-			, _params(std::move(params)) {}
+		using parameter_range = rush::iterator_range<
+			typename std::vector<std::unique_ptr<parameter>>::iterator>;
+
+		function_declaration(
+			sema::symbol symbol,
+			std::vector<std::unique_ptr<parameter>> params,
+			std::unique_ptr<statement> body,
+			factory_tag_t);
 
 		ast::type return_type() const noexcept {
-			return ast::error_type;
-			// return _return_type != nullptr
-			// 	? *_return_type
-			// 	: evaluate_return_type();
+			return _symbol.type();
 		}
 
-		std::string const& name() const noexcept {
-			return _name;
+		std::string name() const noexcept {
+			return _symbol.name();
 		}
 
-		std::vector<parameter> const& parameters() const noexcept {
-			return _params;
+		parameter_range parameters() const {
+			// return { _params };
+			throw std::runtime_error("not implemented");
+		}
+
+		statement const& body() const noexcept {
+			return *_body;
 		}
 
 	private:
-		std::string _name;
-		std::vector<parameter> _params;
+		sema::symbol _symbol;
+		std::unique_ptr<statement> _body;
+		std::vector<std::unique_ptr<parameter>> _params;
 	};
 
 	namespace decls {
-		std::unique_ptr<function_declaration> function(std::string name);
+		std::unique_ptr<function_declaration> function(
+			std::string name,
+			std::unique_ptr<statement> body);
+
+		std::unique_ptr<function_declaration> function(
+			std::string name,
+			ast::type return_type,
+			std::unique_ptr<statement> body);
+
+		std::unique_ptr<function_declaration> function(
+			std::string name,
+			std::unique_ptr<parameter_list> params,
+			std::unique_ptr<statement> body);
+
+		std::unique_ptr<function_declaration> function(
+			std::string name,
+			ast::type return_type,
+			std::unique_ptr<parameter_list> params,
+			std::unique_ptr<statement> body);
+
+		std::unique_ptr<function_declaration> function(
+			rush::scope&,
+			std::string name,
+			std::unique_ptr<statement> body);
+
+		std::unique_ptr<function_declaration> function(
+			rush::scope&,
+			std::string name,
+			ast::type return_type,
+			std::unique_ptr<statement> body);
+
+		std::unique_ptr<function_declaration> function(
+			rush::scope&,
+			std::string name,
+			std::unique_ptr<parameter_list> params,
+			std::unique_ptr<statement> body);
+
+		std::unique_ptr<function_declaration> function(
+			rush::scope&,
+			std::string name,
+			ast::type return_type,
+			std::unique_ptr<parameter_list> params,
+			std::unique_ptr<statement> body);
 	} // rush::ast::decls
 } // rush::ast
 

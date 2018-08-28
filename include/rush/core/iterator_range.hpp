@@ -8,13 +8,13 @@
 namespace rush {
 	namespace detail {
 		template <typename ContainerT>
-		auto adl_begin(ContainerT&& cont) -> decltype(end(cont), std::begin(cont)) {
+		auto adl_begin(ContainerT&& cont) {
 			using std::begin;
 			return begin(cont);
 		}
 
 		template <typename ContainerT>
-		auto adl_end(ContainerT&& cont) -> decltype(end(cont), std::end(cont)) {
+		auto adl_end(ContainerT&& cont) {
 			using std::end;
 			return end(cont);
 		}

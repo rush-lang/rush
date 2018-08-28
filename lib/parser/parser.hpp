@@ -38,6 +38,7 @@ namespace rush {
 				switch (tok.keyword()) {
 				case keywords::let_: return parse_constant_decl();
 				case keywords::var_: return parse_variable_decl();
+				case keywords::func_: return parse_function_decl();
 				default: break;
 				}
 			}
@@ -114,8 +115,15 @@ namespace rush {
 		}
 
 		std::optional<ast::type> parse_type_annotation() {
-			assert((peek_skip_indent().is_identifier() || peek_skip_indent().is_keyword()) && "expected a simple type identifier.");
-			auto tok = next_skip_indent(); // consume identifier.
+			assert(peek_skip_indent().is(symbols::colon) && "expected a type annotation symbol ':'");
+			next_skip_indent();
+
+			auto tok = next_skip_indent();
+			if (!tok.is_keyword() && !tok.is_identifier()) {
+				error("expected a type identifier before '{}'", tok);
+				return std::nullopt;
+			}
+
 			auto sym = _scope.lookup(tok.text());
 			if (!sym.is_type()) {
 				error("symbol '{}' does not name a type.", tok);
@@ -133,10 +141,18 @@ namespace rush {
 		std::unique_ptr<DeclT> _parse_storage_decl(std::string,
 			std::unique_ptr<DeclT> (*)(rush::scope&, std::string, ast::type, std::unique_ptr<ast::expression>));
 
-		std::unique_ptr<ast::declaration> parse_constant_decl();
-		std::unique_ptr<ast::declaration> parse_variable_decl();
-
+		std::unique_ptr<ast::constant_declaration> parse_constant_decl();
+		std::unique_ptr<ast::variable_declaration> parse_variable_decl();
 		std::unique_ptr<ast::function_declaration> parse_function_decl();
+
+		// statements.
+		std::unique_ptr<ast::statement> parse_if_stmt();
+		std::unique_ptr<ast::statement> parse_for_stmt();
+		std::unique_ptr<ast::statement> parse_while_stmt();
+		std::unique_ptr<ast::statement> parse_return_stmt();
+
+		std::unique_ptr<ast::statement> parse_compound_stmt();
+		std::unique_ptr<ast::statement_block> parse_block_stmt();
 
 		// expressions.
 		std::unique_ptr<ast::expression> parse_expr();
