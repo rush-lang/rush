@@ -1,16 +1,17 @@
-#pragma once
-
-#ifndef RUSH_AST_PRINTER_HPP
-#define RUSH_AST_PRINTER_HPP
-
-#include <iostream>
-
-#include "rush/ast/expression.hpp"
+#include "rush/ast/type.hpp"
 #include "rush/ast/declaration.hpp"
+#include "rush/ast/statement.hpp"
+#include "rush/ast/expression.hpp"
+
+#include "rush/parser/options.hpp"
+#include "rush/parser/parse.hpp"
+#include "rush/parser/dump.hpp"
 
 #include "fmt/format.h"
+#include <iostream>
 
-namespace rush::ast {
+using namespace rush::ast;
+namespace rush {
 	template <typename CharT, typename Traits = std::char_traits<CharT>>
 	class basic_printer : public visitor {
 		void indent() { ++_indent; }
@@ -154,8 +155,21 @@ namespace rush::ast {
 		}
 	};
 
+
 	using printer = basic_printer<char>;
 	using wprinter = basic_printer<wchar_t>;
-} // rush::ast
 
-#endif // RUSH_AST_PRINTER_HPP
+	void dump(std::string input, std::ostream& out) { dump(parse(input), out); }
+	void dump(std::istream& input, std::ostream& out) { dump(parse(input), out); }
+	void dump(std::string input, parser_options const& opts, std::ostream& out) { dump(parse(input, opts), out); }
+	void dump(std::istream& input, parser_options const& opts, std::ostream& out) { dump(parse(input, opts), out); }
+
+	void dump(parse_result const& input) {
+		dump(input, std::cout);
+	}
+
+	void dump(parse_result const& input, std::ostream& out) {
+		if (input.ast() != nullptr)
+			input.ast()->accept(printer { out });
+	}
+} // rush

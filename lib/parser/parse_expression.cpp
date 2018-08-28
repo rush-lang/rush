@@ -3,7 +3,7 @@
 #include "rush/ast/expr/binary.hpp"
 #include "rush/ast/expr/unary.hpp"
 
-#include "parser.hpp"
+#include "rush/parser/parser.hpp"
 
 namespace ast = rush::ast;
 namespace exprs = ast::exprs;

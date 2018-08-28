@@ -1,4 +1,5 @@
 #include "rush/parser/parse.hpp"
+#include "rush/parser/dump.hpp"
 #include "rush/ast/ast.hpp"
 #include <iostream>
 

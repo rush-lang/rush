@@ -1,6 +1,7 @@
 #include "rush/ast/decl/constant.hpp"
 #include "rush/ast/decl/variable.hpp"
-#include "parser.hpp"
+
+#include "rush/parser/parser.hpp"
 
 namespace rush {
 	namespace decls = ast::decls;

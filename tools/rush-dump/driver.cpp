@@ -1,5 +1,6 @@
 #include "rush/lexer/lex.hpp"
 #include "rush/parser/parse.hpp"
+#include "rush/parser/dump.hpp"
 #include "cxxopts/cxxopts.hpp"
 
 #include <vector>

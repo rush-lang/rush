@@ -16,6 +16,7 @@
 
 #include "rush/lexer/token.hpp"
 #include "rush/lexer/analysis.hpp"
+#include "rush/parser/options.hpp"
 #include "rush/parser/parse.hpp"
 
 #include <optional>
