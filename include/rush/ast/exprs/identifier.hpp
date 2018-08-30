@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef RUSH_AST_IDENTIFIER_HPP
-#define RUSH_AST_IDENTIFIER_HPP
+#ifndef RUSH_AST_EXPRS_IDENTIFIER_HPP
+#define RUSH_AST_EXPRS_IDENTIFIER_HPP
 
 #include "rush/ast/expression.hpp"
 #include "rush/ast/visitor.hpp"
@@ -59,4 +59,4 @@ namespace rush::ast::exprs {
 	}
 } // rush::ast::exprs
 
-#endif // RUSH_AST_IDENTIFIER_HPP
+#endif // RUSH_AST_EXPRS_IDENTIFIER_HPP

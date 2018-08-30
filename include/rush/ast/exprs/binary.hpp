@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef RUSH_AST_BINARY_HPP
-#define RUSH_AST_BINARY_HPP
+#ifndef RUSH_AST_EXPRS_BINARY_HPP
+#define RUSH_AST_EXPRS_BINARY_HPP
 
 #include "rush/ast/expression.hpp"
 #include "rush/sema/types.hpp"
@@ -73,4 +73,4 @@ namespace rush::ast {
 #define RUSH_BINARY_EXPRESSION_FACTORY_FUNC_DECLS
 #include "rush/ast/exprs/_expressions.hpp"
 
-#endif // RUSH_AST_BINARY_HPP
+#endif // RUSH_AST_EXPRS_BINARY_HPP

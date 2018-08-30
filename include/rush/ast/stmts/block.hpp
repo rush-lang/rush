@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef RUSH_AST_STMT_BLOCK_STATEMENT_HPP
-#define RUSH_AST_STMT_BLOCK_STATEMENT_HPP
+#ifndef RUSH_AST_STMTS_BLOCK_STATEMENT_HPP
+#define RUSH_AST_STMTS_BLOCK_STATEMENT_HPP
 
 #include "rush/ast/statement.hpp"
 
@@ -31,4 +31,4 @@ namespace rush::ast {
 	} // stmts
 } // rush::ast
 
-#endif // RUSH_AST_STMT_BLOCK_STATEMENT_HPP
+#endif // RUSH_AST_STMTS_BLOCK_STATEMENT_HPP

@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef RUSH_AST_LITERAL_HPP
-#define RUSH_AST_LITERAL_HPP
+#ifndef RUSH_AST_EXPRS_LITERAL_HPP
+#define RUSH_AST_EXPRS_LITERAL_HPP
 
 #include "rush/ast/expression.hpp"
 #include "rush/ast/type.hpp"
@@ -103,4 +103,4 @@ namespace rush::ast::exprs {
 	std::unique_ptr<floating_literal_expression> literal(long double, ast::type const& = double_type);
 } // rush
 
-#endif // RUSH_AST_LITERAL_HPP
+#endif // RUSH_AST_EXPRS_LITERAL_HPP

@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef RUSH_AST_DECL_CONSTANT_HPP
-#define RUSH_AST_DECL_CONSTANT_HPP
+#ifndef RUSH_AST_DECLS_CONSTANT_HPP
+#define RUSH_AST_DECLS_CONSTANT_HPP
 
 #include "rush/ast/decls/storage.hpp"
 
@@ -86,4 +86,4 @@ namespace rush::ast {
 	} // rush::ast::decls
 } // rush::ast
 
-#endif // RUSH_AST_DECL_CONSTANT_HPP
+#endif // RUSH_AST_DECLS_CONSTANT_HPP

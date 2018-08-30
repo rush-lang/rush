@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef RUSH_AST_STMT_STATEMENT_DECLARATION_HPP
-#define RUSH_AST_STMT_STATEMENT_DECLARATION_HPP
+#ifndef RUSH_AST_STMTS_DECLARATION_HPP
+#define RUSH_AST_STMTS_DECLARATION_HPP
 
 #include "rush/ast/declaration.hpp"
 #include "rush/ast/statement.hpp"
@@ -44,4 +44,4 @@ namespace rush::ast {
 		}
 } // rush::ast
 
-#endif // RUSH_AST_STMT_STATEMENT_DECLARATION_HPP
+#endif // RUSH_AST_STMTS_DECLARATION_HPP

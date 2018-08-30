@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef RUSH_AST_NAME_HPP
-#define RUSH_AST_NAME_HPP
+#ifndef RUSH_AST_SYMBOL_HPP
+#define RUSH_AST_SYMBOL_HPP
 
 #include "rush/ast/node.hpp"
 #include "rush/ast/type.hpp"
@@ -45,4 +45,4 @@ namespace rush::ast {
 	};
 } // rush::ast
 
-#endif // RUSH_AST_NAME_HPP
+#endif // RUSH_AST_SYMBOL_HPP

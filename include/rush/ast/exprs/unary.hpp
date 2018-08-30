@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef RUSH_AST_UNARY_HPP
-#define RUSH_AST_UNARY_HPP
+#ifndef RUSH_AST_EXPRS_UNARY_HPP
+#define RUSH_AST_EXPRS_UNARY_HPP
 
 #include "rush/ast/expression.hpp"
 
@@ -48,4 +48,4 @@ namespace rush::ast {
 #define RUSH_UNARY_EXPRESSION_FACTORY_FUNC_DECLS
 #include "rush/ast/exprs/_expressions.hpp"
 
-#endif // RUSH_AST_UNARY_HPP
+#endif // RUSH_AST_EXPRS_UNARY_HPP

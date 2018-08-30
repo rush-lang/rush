@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef RUSH_AST_STMT_RETURN_HPP
-#define RUSH_AST_STMT_RETURN_HPP
+#ifndef RUSH_AST_STMTS_RETURN_HPP
+#define RUSH_AST_STMTS_RETURN_HPP
 
 #include "rush/ast/statement.hpp"
 #include "rush/ast/expression.hpp"
@@ -61,4 +61,4 @@ namespace rush::ast {
 	}
 } // rush::ast
 
-#endif // RUSH_AST_STMT_RETURN_HPP
+#endif // RUSH_AST_STMTS_RETURN_HPP

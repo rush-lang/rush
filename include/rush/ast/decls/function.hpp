@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef RUSH_AST_DECL_FUNCTION_HPP
-#define RUSH_AST_DECL_FUNCTION_HPP
+#ifndef RUSH_AST_DECLS_FUNCTION_HPP
+#define RUSH_AST_DECLS_FUNCTION_HPP
 
 #include "rush/core/iterator_range.hpp"
 #include "rush/ast/declaration.hpp"
@@ -97,4 +97,4 @@ namespace rush::ast {
 	} // rush::ast::decls
 } // rush::ast
 
-#endif // RUSH_AST_DECL_FUNCTION_HPP
+#endif // RUSH_AST_DECLS_FUNCTION_HPP
