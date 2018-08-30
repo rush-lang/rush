@@ -1,5 +1,5 @@
 #include <catch2/catch.hpp>
-#include "rush/ast/expr/literal.hpp"
+#include "rush/ast/exprs/literal.hpp"
 
 namespace ast = rush::ast;
 namespace exprs = ast::exprs;

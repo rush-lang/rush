@@ -16,7 +16,7 @@ namespace rush::ast {
 	};
 }
 
-#include "rush/ast/decl/storage.hpp"
-#include "rush/ast/decl/function.hpp"
+#include "rush/ast/decls/storage.hpp"
+#include "rush/ast/decls/function.hpp"
 
 #endif // RUSH_AST_DECLARATION_HPP

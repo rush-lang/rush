@@ -1,4 +1,4 @@
-#include "rush/ast/expr/unary.hpp"
+#include "rush/ast/exprs/unary.hpp"
 
 namespace rush::ast {
 	inline std::unique_ptr<unary_expression> make_unary_expression(
@@ -13,4 +13,4 @@ namespace rush::ast {
 } // rush::ast
 
 #define RUSH_UNARY_EXPRESSION_FACTORY_FUNC_DEFNS
-#include "rush/ast/expr/_expressions.hpp"
+#include "rush/ast/exprs/_expressions.hpp"

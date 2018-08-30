@@ -1,4 +1,4 @@
-#include "rush/ast/expr/binary.hpp"
+#include "rush/ast/exprs/binary.hpp"
 
 namespace rush::ast {
 	inline std::unique_ptr<binary_expression> make_binary_expr(
@@ -15,4 +15,4 @@ namespace rush::ast {
 } // rush::ast
 
 #define RUSH_BINARY_EXPRESSION_FACTORY_FUNC_DEFNS
-#include "rush/ast/expr/_expressions.hpp"
+#include "rush/ast/exprs/_expressions.hpp"

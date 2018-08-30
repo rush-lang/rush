@@ -3,7 +3,7 @@
 #ifndef RUSH_AST_DECL_VARIABLE_HPP
 #define RUSH_AST_DECL_VARIABLE_HPP
 
-#include "rush/ast/decl/storage.hpp"
+#include "rush/ast/decls/storage.hpp"
 
 
 namespace rush::ast {

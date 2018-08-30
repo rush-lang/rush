@@ -1,7 +1,7 @@
 #include <catch2/catch.hpp>
-#include "rush/ast/expr/literal.hpp"
-#include "rush/ast/decl/variable.hpp"
-#include "rush/ast/decl/constant.hpp"
+#include "rush/ast/exprs/literal.hpp"
+#include "rush/ast/decls/variable.hpp"
+#include "rush/ast/decls/constant.hpp"
 
 namespace ast = rush::ast;
 namespace exprs = ast::exprs;

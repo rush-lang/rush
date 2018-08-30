@@ -46,6 +46,6 @@ namespace rush::ast {
 } // rush
 
 #define RUSH_UNARY_EXPRESSION_FACTORY_FUNC_DECLS
-#include "rush/ast/expr/_expressions.hpp"
+#include "rush/ast/exprs/_expressions.hpp"
 
 #endif // RUSH_AST_UNARY_HPP

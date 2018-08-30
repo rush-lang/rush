@@ -26,9 +26,9 @@ namespace rush::ast {
 	};
 }
 
-#include "rush/ast/expr/unary.hpp"
-#include "rush/ast/expr/binary.hpp"
-#include "rush/ast/expr/literal.hpp"
-#include "rush/ast/expr/identifier.hpp"
+#include "rush/ast/exprs/unary.hpp"
+#include "rush/ast/exprs/binary.hpp"
+#include "rush/ast/exprs/literal.hpp"
+#include "rush/ast/exprs/identifier.hpp"
 
 #endif // RUSH_AST_EXPRESSION_HPP

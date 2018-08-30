@@ -1,5 +1,5 @@
-#include "rush/ast/decl/constant.hpp"
-#include "rush/ast/decl/variable.hpp"
+#include "rush/ast/decls/constant.hpp"
+#include "rush/ast/decls/variable.hpp"
 
 #include "rush/parser/parser.hpp"
 

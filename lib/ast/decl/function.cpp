@@ -1,4 +1,4 @@
-#include "rush/ast/decl/function.hpp"
+#include "rush/ast/decls/function.hpp"
 #include "rush/ast/statement.hpp"
 
 namespace rush::ast {

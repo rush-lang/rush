@@ -43,7 +43,7 @@ namespace rush::ast {
 } // rush::ast
 
 
-#include "rush/ast/decl/constant.hpp"
-#include "rush/ast/decl/variable.hpp"
+#include "rush/ast/decls/constant.hpp"
+#include "rush/ast/decls/variable.hpp"
 
 #endif // RUSH_AST_DECL_STORAGE_HPP

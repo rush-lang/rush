@@ -26,7 +26,7 @@ namespace rush::ast {
 			: _expr(std::move(expr)) {}
 
 		virtual statement_kind kind() const noexcept override {
-			return statement_kind::return_;
+			return statement_kind::control;
 		}
 
 		ast::type type() const noexcept {

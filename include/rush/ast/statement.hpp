@@ -10,7 +10,7 @@
 
 namespace rush::ast {
 	enum class statement_kind : std::uint8_t {
-		loop
+		loop,
 		branch,
 		control,
 		expression,
@@ -27,8 +27,10 @@ namespace rush::ast {
 	};
 } // rush::ast
 
-#include "rush/ast/stmt/statement_block.hpp"
-#include "rush/ast/stmt/statement_declaration.hpp"
-#include "rush/ast/stmt/return.hpp"
+#include "rush/ast/stmts/block.hpp"
+#include "rush/ast/stmts/declaration.hpp"
+#include "rush/ast/stmts/control.hpp"
+#include "rush/ast/stmts/branch.hpp"
+#include "rush/ast/stmts/loop.hpp"
 
 #endif // RUSH_AST_STATEMENT_HPP
