@@ -27,6 +27,10 @@ namespace rush::ast {
 			std::unique_ptr<statement> body,
 			factory_tag_t);
 
+		virtual declaration_kind kind() const noexcept override {
+			return declaration_kind::function;
+		}
+
 		ast::type return_type() const noexcept {
 			return _symbol.type();
 		}

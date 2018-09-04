@@ -13,7 +13,6 @@
 #include <string>
 
 namespace rush::ast {
-
 	class storage_declaration : public declaration {
 	public:
 		std::string name() const noexcept {

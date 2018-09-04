@@ -27,6 +27,10 @@ namespace rush::ast {
 		variable_declaration(sema::symbol symbol, std::unique_ptr<expression> init, factory_tag_t)
 			: storage_declaration { symbol, std::move(init) } {}
 
+		virtual declaration_kind kind() const noexcept override {
+			return declaration_kind::variable;
+		}
+
 		using node::accept;
 		virtual void accept(ast::visitor& v) const override {
 			v.visit_variable_decl(*this);

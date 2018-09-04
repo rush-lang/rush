@@ -5,7 +5,24 @@
 
 #include "rush/ast/node.hpp"
 
+#include <cstdint>
+
 namespace rush::ast {
+	enum class declaration_kind : std::uint8_t {
+		import,
+		constant,
+		variable,
+		function,
+		alias,
+		enum_,
+		class_,
+		struct_,
+		concept,
+		interface,
+		extension,
+		operator_,
+	};
+
 	class declaration : public node {
 	private:
 		declaration(declaration const&) = delete;
@@ -13,6 +30,8 @@ namespace rush::ast {
 
 	public:
 		declaration() = default;
+
+		virtual declaration_kind kind() const noxecept = 0;
 	};
 }
 
