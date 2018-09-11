@@ -32,15 +32,8 @@ namespace rush::ast {
 		sema::symbol _symbol;
 	};
 
-	class parameter_list : public node {
-	public:
-	private:
-		std::vector<std::unique_ptr<parameter>> _params;
-	};
-
 	std::unique_ptr<unnamed_parameter> param(ast::type type);
 	std::unique_ptr<named_parameter> param(std::string name, ast::type type);
-	std::unique_ptr<parameter_list> list(std::initializer_list<std::unique_ptr<named_parameter>> params);
 } // rush::ast
 
 #endif // RUSH_AST_PARAMETER_HPP

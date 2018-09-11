@@ -7,6 +7,7 @@
 #include "rush/ast/declaration.hpp"
 #include "rush/ast/type.hpp"
 #include "rush/ast/parameter.hpp"
+#include "rush/ast/list.hpp"
 #include "rush/sema/symbol.hpp"
 #include "rush/sema/scope.hpp"
 

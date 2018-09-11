@@ -25,14 +25,8 @@ namespace rush::ast {
 	};
 
 
-	class argument_list : public node {
-	private:
-		std::vector<std::unique_ptr<argument>> _args;
-	};
-
 	std::unique_ptr<argument> arg(std::unique_ptr<expression> expr);
 	std::unique_ptr<named_argument> arg(std::string name, std::unique_ptr<expression> expr);
-	std::unique_ptr<argument_list> list(std::initializer_list<std::unique_ptr<argument>> args);
 } // rush::ast
 
 #endif // RUSH_AST_ARGUMENT_HPP
