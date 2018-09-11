@@ -22,6 +22,8 @@ import-declaration = "import" qualified-name
 module-declaration = "module" qualified-name
 qualified-name ::= identifier [ "." module-name ]
 
+type-alias-declaration ::= "alias" named-type "=" type
+
 constant-declaration-list ::= "let" name-pattern-list [ type-annotation ] intializer
 variable-declaration-list ::= "var" name-pattern-list [ type-annotation ] intializer
 intializer ::= "=" expression { "," expression }
@@ -87,7 +89,8 @@ else-clause ::= "else" ( compound-statement | ":" statement )
 
 switch-statement ::= "switch" expression ":" switch-block
 switch-block ::= <indent> switch-case { switch-case } <dedent>
-switch-case ::= "case" #################################
+switch-case ::= switch-case-pattern { switch-case-pattern } statement
+switch-case-pattern ::= "case" pattern ":"
 
 for-statement ::= "for" ( range-expression | pattern "in" expression ) ":" statement
 
@@ -110,7 +113,6 @@ expression ::=
 	| binary-expression
 	| unary-expression
 
-
 primary-expression ::=
 	| literal
 	| identifier
@@ -122,9 +124,47 @@ binary-expression ::=
 	| expression binary-op expression
 
 
-## Misc.
+## Types
 
 type-annotation ::= ":" type
+
+type ::=
+	| named-type
+	| tuple-type
+	| array-type
+	| dictionary-type
+	| optional-type
+	| function-type
+	| "(" type ")"
+	| "int" | "uint"
+	| "long" | "ulong"
+	| "short" | "ushort"
+	| "float" | "double"
+	| "char" | "string"
+	| "byte" | "sbyte"
+	| "void"
+	| "bool"
+	| "any"
+
+tuple-type ::= "(" type "," type-list ")"
+
+named-type ::= identifier [ generic-type-clause ] { "." named-type }
+generic-type-clause ::= "<" type-list ">"
+
+array-type ::= type array-type-clause
+array-type-clause ::= "[" [ integer-literal ] { "," [ integer-literal ] } "]"
+
+dictionary-type ::= type dictionary-type-clause
+dictionary-type-clause ::= "[" type "]"
+
+optional-type ::= type "?"
+
+function-type ::= "(" [ type-list ] ")" "=>" type
+
+type-list ::= type { "," type }
+
+
+## Misc.
 
 name-pattern-list ::= name-pattern { "," name-pattern }
 name-pattern ::=
