@@ -364,4 +364,14 @@ TEST_CASE( "rush::lex (tab-indentation)" ) {
 		tok::identifier("def", { 3, 2 }),
 		tok::dedent({ 4, 1 })
 	}));
+
+	CHECK( valid_lex("\tabc\n\t\tdef\nghi", {
+		tok::indent({ 1, 1 }),
+		tok::identifier("abc", { 1, 2 }),
+		tok::indent({ 2, 1 }),
+		tok::identifier("def", { 2, 3 }),
+		tok::dedent({ 3, 1 }),
+		tok::dedent({ 3, 1 }),
+		tok::identifier("ghi", { 3, 1 }),
+	}));
 }

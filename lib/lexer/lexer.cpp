@@ -155,8 +155,8 @@ namespace rush {
 
 				if (!is_newline(peek())) {
 					auto indent = _indent.measure(wspace.begin(), wspace.end());
-					if (indent < _indent) { _indent = indent; return tok::dedent(location()); }
-					if (indent > _indent) { _indent = indent; return tok::indent(location()); }
+					if (indent < _indent) { _indent.decrement(); return tok::dedent(location()); }
+					if (indent > _indent) { _indent.increment(); return tok::indent(location()); }
 					break;
 				}
 			} else {
