@@ -31,7 +31,7 @@ namespace rush::ast {
 	public:
 		declaration() = default;
 
-		virtual declaration_kind kind() const noxecept = 0;
+		virtual declaration_kind kind() const noexcept = 0;
 	};
 }
 
