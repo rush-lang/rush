@@ -28,7 +28,6 @@ namespace rush::ast {
 } // rush::ast
 
 #include "rush/ast/stmts/block.hpp"
-#include "rush/ast/stmts/declaration.hpp"
 #include "rush/ast/stmts/control.hpp"
 #include "rush/ast/stmts/branch.hpp"
 #include "rush/ast/stmts/loop.hpp"

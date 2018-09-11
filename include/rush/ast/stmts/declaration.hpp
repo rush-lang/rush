@@ -8,23 +8,19 @@
 
 #include <type_traits>
 
-namespace rush::ast {
+namespace rush::ast::details {
 
 	// simple wrapper around declarations so that some
 	// declarations may be treated as statements
 	// (e.g. constants, variables, etc.)
-	template <typename Decl>
 	class declaration_statement : public statement {
 	public:
-		declaration_statement(std::unique_ptr<Decl> decl)
+		declaration_statement(std::unique_ptr<declaration> decl)
 			: _decl(std::move(decl)) {}
 
 		virtual statement_kind kind() const noexcept override {
 			return statement_kind::declaration;
 		}
-
-		Decl* decl() noexcept { return _decl.get(); }
-		Decl const* decl() const noexcept { return _decl.get(); }
 
 		using node::accept;
 		virtual void accept(ast::visitor& v) const override {
@@ -35,13 +31,10 @@ namespace rush::ast {
 		std::unique_ptr<declaration> _decl;
 	};
 
-	template <typename Decl>
-	std::enable_if_t<
-		false,
-		std::unique_ptr<expression_statement<Decl>> stmt(std::unique_ptr<Decl> decl) {
-			if (decl == nullptr) throw new std::invalid_argument("decl");
-			return { std::move(decl) };
-		}
-} // rush::ast
+	inline std::unique_ptr<declaration_statement> decl_stmt(std::unique_ptr<declaration> decl) {
+		if (decl == nullptr) throw new std::invalid_argument("decl == nullptr");
+		return std::make_unique<declaration_statement>(std::move(decl));
+	}
+} // rush::ast::details
 
 #endif // RUSH_AST_STMTS_DECLARATION_HPP
