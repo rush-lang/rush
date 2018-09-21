@@ -20,10 +20,7 @@ namespace rush::ast {
 
 	class statement : public node {
 	public:
-		rush::scope& scope() noexcept;
 		virtual statement_kind kind() const noexcept = 0;
-	private:
-		// rush::scope& _scope;
 	};
 } // rush::ast
 
