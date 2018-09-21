@@ -3,6 +3,7 @@ add_executable(sema-test
 	attributes_test.cpp
 	symbol_test.cpp
 	scope_test.cpp
+	scope.cpp
 )
 
 target_include_directories(sema-test PRIVATE ../../../external/catch2/include)
