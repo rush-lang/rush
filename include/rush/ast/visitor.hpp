@@ -55,9 +55,9 @@ namespace rush::ast {
 		// expressions
 		virtual void visit_unary_expr(unary_expression const&) {};
 		virtual void visit_binary_expr(binary_expression const&) {};
-		virtual void visit_literal_expr(literal_expression const&) {};
 		virtual void visit_identifier_expr(identifier_expression const&) {};
 
+		virtual void visit_literal_expr(nil_literal_expression const&) {}
 		virtual void visit_literal_expr(string_literal_expression const&) {}
 		virtual void visit_literal_expr(boolean_literal_expression const&) {}
 		virtual void visit_literal_expr(integer_literal_expression const&) {}
@@ -66,17 +66,6 @@ namespace rush::ast {
 #		define RUSH_VISITOR_FUNC_PROTOTYPES
 #		include "rush/ast/_operators.hpp"
 	};
-
-	namespace detail {
-		// class ascending_visitor;
-		class descending_visitor;
-	}
-
-	// detail::ascending_visitor ascending(visitor&);
-	// detail::ascending_visitor ascending(visitor const&);
-
-	detail::descending_visitor descending_visitor(visitor&);
-	detail::descending_visitor descending_visitor(visitor const&);
 } // rush
 
 #endif // RUSH_AST_VISITOR_HPP

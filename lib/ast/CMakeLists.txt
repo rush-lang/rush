@@ -5,6 +5,7 @@ rush_add_library(ast
 	expr/literal.cpp
 	expr/binary.cpp
 	expr/unary.cpp
+	traversal.cpp
 	type.cpp
 )
 

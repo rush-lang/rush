@@ -94,8 +94,8 @@ namespace rush {
 			dedent();
 		}
 
-		virtual void visit_literal_expr(literal_expression const& expr) override {
-			print_expression("literal", expr);
+		virtual void visit_literal_expr(nil_literal_expression const& expr) override {
+			print_expression("nil", expr);
 			writeln();
 		}
 
