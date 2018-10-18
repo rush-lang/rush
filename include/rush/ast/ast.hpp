@@ -4,11 +4,11 @@
 #define RUSH_AST_AST_HPP
 
 #include "rush/ast/type.hpp"
-#include "rush/ast/argument.hpp"
-#include "rush/ast/parameter.hpp"
+#include "rush/ast/expressions.hpp"
+#include "rush/ast/statements.hpp"
+#include "rush/ast/declarations.hpp"
 
-#include "rush/ast/expression.hpp"
-#include "rush/ast/statement.hpp"
-#include "rush/ast/declaration.hpp"
+#include "rush/ast/visitor.hpp"
+#include "rush/ast/traversal.hpp"
 
 #endif // RUSH_AST_AST_HPP

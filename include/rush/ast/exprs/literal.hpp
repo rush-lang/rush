@@ -3,7 +3,7 @@
 #ifndef RUSH_AST_EXPRS_LITERAL_HPP
 #define RUSH_AST_EXPRS_LITERAL_HPP
 
-#include "rush/ast/expression.hpp"
+#include "rush/ast/exprs/expression.hpp"
 #include "rush/ast/type.hpp"
 
 #include <variant>
@@ -31,11 +31,6 @@ namespace rush::ast {
 			return _type;
 		}
 
-		using node::accept;
-		virtual void accept(ast::visitor& v) const override {
-			v.visit_literal_expr(*this);
-		}
-
 	protected:
 		template <typename T>
 		T const& value() const {
@@ -50,6 +45,8 @@ namespace rush::ast {
 	class nil_literal_expression : public literal_expression {
 	public:
 		using literal_expression::literal_expression;
+
+		using node::accept;
 		virtual void accept(ast::visitor& v) const override { v.visit_literal_expr(*this); }
 	};
 
@@ -57,6 +54,8 @@ namespace rush::ast {
 	public:
 		using literal_expression::literal_expression;
 		std::string value() const { return literal_expression::value<std::string>(); }
+
+		using node::accept;
 		virtual void accept(ast::visitor& v) const override { v.visit_literal_expr(*this); }
 	};
 
@@ -64,6 +63,8 @@ namespace rush::ast {
 	public:
 		using literal_expression::literal_expression;
 		bool value() const { return literal_expression::value<bool>(); }
+
+		using node::accept;
 		virtual void accept(ast::visitor& v) const override { v.visit_literal_expr(*this); }
 	};
 
@@ -71,6 +72,8 @@ namespace rush::ast {
 	public:
 		using literal_expression::literal_expression;
 		std::uint64_t value() const { return literal_expression::value<std::uint64_t>(); }
+
+		using node::accept;
 		virtual void accept(ast::visitor& v) const override { v.visit_literal_expr(*this); }
 	};
 
@@ -78,6 +81,8 @@ namespace rush::ast {
 	public:
 		using literal_expression::literal_expression;
 		double value() const { return literal_expression::value<double>(); }
+
+		using node::accept;
 		virtual void accept(ast::visitor& v) const override { v.visit_literal_expr(*this); }
 	};
 }

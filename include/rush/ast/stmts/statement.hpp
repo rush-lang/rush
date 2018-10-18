@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef RUSH_AST_STATEMENT_HPP
-#define RUSH_AST_STATEMENT_HPP
+#ifndef RUSH_AST_STMTS_STATEMENT_HPP
+#define RUSH_AST_STMTS_STATEMENT_HPP
 
 #include "rush/ast/node.hpp"
 #include "rush/sema/scope.hpp"
@@ -24,9 +24,4 @@ namespace rush::ast {
 	};
 } // rush::ast
 
-#include "rush/ast/stmts/block.hpp"
-#include "rush/ast/stmts/control.hpp"
-#include "rush/ast/stmts/branch.hpp"
-#include "rush/ast/stmts/loop.hpp"
-
-#endif // RUSH_AST_STATEMENT_HPP
+#endif // RUSH_AST_STMTS_STATEMENT_HPP

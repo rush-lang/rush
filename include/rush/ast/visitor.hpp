@@ -29,6 +29,7 @@ namespace rush::ast {
 	class declaration;
 	class constant_declaration;
 	class variable_declaration;
+	class function_declaration;
 
 	class visitor {
 	public:
@@ -40,15 +41,15 @@ namespace rush::ast {
 		// declarations
 		virtual void visit_constant_decl(constant_declaration const&) {};
 		virtual void visit_variable_decl(variable_declaration const&) {};
+		virtual void visit_function_decl(function_declaration const&) {};
 
 		// statements
 		virtual void visit_block_stmt(statement_block const&) {};
 
 		virtual void visit_if_stmt(if_statement const&) {};
-		virtual void visit_switch_stmt(switch_statement const&) {};
-
 		virtual void visit_for_stmt(for_statement const&) {};
 		virtual void visit_while_stmt(while_statement const&) {};
+		virtual void visit_switch_stmt(switch_statement const&) {};
 
 		virtual void visit_return_stmt(return_statement const&) {};
 

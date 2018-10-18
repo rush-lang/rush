@@ -1,5 +1,6 @@
 #include "catch2/catch.hpp"
 #include "rush/parser/parse.hpp"
+#include "rush/ast/exprs/binary.hpp"
 #include "rush/ast/exprs/literal.hpp"
 #include "rush/ast/visitor.hpp"
 

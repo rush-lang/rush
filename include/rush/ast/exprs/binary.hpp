@@ -3,7 +3,7 @@
 #ifndef RUSH_AST_EXPRS_BINARY_HPP
 #define RUSH_AST_EXPRS_BINARY_HPP
 
-#include "rush/ast/expression.hpp"
+#include "rush/ast/exprs/expression.hpp"
 #include "rush/sema/types.hpp"
 
 #include <memory>

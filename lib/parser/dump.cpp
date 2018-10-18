@@ -1,7 +1,7 @@
 #include "rush/ast/type.hpp"
-#include "rush/ast/declaration.hpp"
-#include "rush/ast/statement.hpp"
-#include "rush/ast/expression.hpp"
+#include "rush/ast/declarations.hpp"
+#include "rush/ast/statements.hpp"
+#include "rush/ast/expressions.hpp"
 
 #include "rush/parser/options.hpp"
 #include "rush/parser/parse.hpp"

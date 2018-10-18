@@ -5,8 +5,8 @@
 
 #include "rush/ast/node.hpp"
 #include "rush/ast/visitor.hpp"
-#include "rush/ast/argument.hpp"
-#include "rush/ast/parameter.hpp"
+#include "rush/ast/exprs/argument.hpp"
+#include "rush/ast/decls/parameter.hpp"
 
 #include <initializer_list>
 

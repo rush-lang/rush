@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef RUSH_AST_EXPRESSION_HPP
-#define RUSH_AST_EXPRESSION_HPP
+#ifndef RUSH_AST_EXPRS_EXPRESSION_HPP
+#define RUSH_AST_EXPRS_EXPRESSION_HPP
 
 #include "rush/ast/node.hpp"
 #include "rush/ast/type.hpp"
@@ -26,9 +26,4 @@ namespace rush::ast {
 	};
 }
 
-#include "rush/ast/exprs/unary.hpp"
-#include "rush/ast/exprs/binary.hpp"
-#include "rush/ast/exprs/literal.hpp"
-#include "rush/ast/exprs/identifier.hpp"
-
-#endif // RUSH_AST_EXPRESSION_HPP
+#endif // RUSH_AST_EXPRS_EXPRESSION_HPP

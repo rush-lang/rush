@@ -1,7 +1,7 @@
 #include "rush/ast/traversal.hpp"
-#include "rush/ast/expression.hpp"
-#include "rush/ast/statement.hpp"
-#include "rush/ast/declaration.hpp"
+#include "rush/ast/expressions.hpp"
+#include "rush/ast/statements.hpp"
+#include "rush/ast/declarations.hpp"
 
 namespace rush::ast {
 	// void traversal::visit_type(ast::type const&) {}

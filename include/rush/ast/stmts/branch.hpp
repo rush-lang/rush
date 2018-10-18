@@ -3,8 +3,8 @@
 #ifndef RUSH_AST_STMTS_BRANCH_HPP
 #define RUSH_AST_STMTS_BRANCH_HPP
 
-#include "rush/ast/expression.hpp"
-#include "rush/ast/statement.hpp"
+#include "rush/ast/exprs/expression.hpp"
+#include "rush/ast/stmts/statement.hpp"
 
 namespace rush::ast {
 	class if_statement {

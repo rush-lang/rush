@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef RUSH_AST_DECLARATION_HPP
-#define RUSH_AST_DECLARATION_HPP
+#ifndef RUSH_AST_DECLS_DECLARATION_HPP
+#define RUSH_AST_DECLS_DECLARATION_HPP
 
 #include "rush/ast/node.hpp"
 
@@ -35,7 +35,4 @@ namespace rush::ast {
 	};
 }
 
-#include "rush/ast/decls/storage.hpp"
-#include "rush/ast/decls/function.hpp"
-
-#endif // RUSH_AST_DECLARATION_HPP
+#endif // RUSH_AST_DECLS_DECLARATION_HPP

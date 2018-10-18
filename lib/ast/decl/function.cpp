@@ -1,5 +1,5 @@
 #include "rush/ast/decls/function.hpp"
-#include "rush/ast/statement.hpp"
+#include "rush/ast/stmts/statement.hpp"
 
 namespace rush::ast {
 

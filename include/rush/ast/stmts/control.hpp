@@ -3,8 +3,8 @@
 #ifndef RUSH_AST_STMTS_RETURN_HPP
 #define RUSH_AST_STMTS_RETURN_HPP
 
-#include "rush/ast/statement.hpp"
-#include "rush/ast/expression.hpp"
+#include "rush/ast/stmts/statement.hpp"
+#include "rush/ast/exprs/expression.hpp"
 #include "rush/ast/type.hpp"
 
 namespace rush::ast {

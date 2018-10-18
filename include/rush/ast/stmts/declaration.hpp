@@ -3,8 +3,8 @@
 #ifndef RUSH_AST_STMTS_DECLARATION_HPP
 #define RUSH_AST_STMTS_DECLARATION_HPP
 
-#include "rush/ast/declaration.hpp"
-#include "rush/ast/statement.hpp"
+#include "rush/ast/decls/declaration.hpp"
+#include "rush/ast/stmts/statement.hpp"
 
 #include <type_traits>
 

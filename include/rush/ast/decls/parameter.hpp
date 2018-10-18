@@ -32,8 +32,10 @@ namespace rush::ast {
 		sema::symbol _symbol;
 	};
 
-	std::unique_ptr<unnamed_parameter> param(ast::type type);
-	std::unique_ptr<named_parameter> param(std::string name, ast::type type);
+	namespace decls {
+		std::unique_ptr<unnamed_parameter> param(ast::type type);
+		std::unique_ptr<named_parameter> param(std::string name, ast::type type);
+	}
 } // rush::ast
 
 #endif // RUSH_AST_PARAMETER_HPP

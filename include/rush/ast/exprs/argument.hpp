@@ -4,7 +4,7 @@
 #define RUSH_AST_ARGUMENT_HPP
 
 #include "rush/ast/node.hpp"
-#include "rush/ast/expression.hpp"
+#include "rush/ast/exprs/expression.hpp"
 #include "rush/sema/scope.hpp"
 #include "rush/sema/symbol.hpp"
 
@@ -24,9 +24,10 @@ namespace rush::ast {
 		sema::symbol _ident;
 	};
 
-
-	std::unique_ptr<argument> arg(std::unique_ptr<expression> expr);
-	std::unique_ptr<named_argument> arg(std::string name, std::unique_ptr<expression> expr);
+	namespace exprs {
+		std::unique_ptr<argument> arg(std::unique_ptr<expression> expr);
+		std::unique_ptr<named_argument> arg(std::string name, std::unique_ptr<expression> expr);
+	}
 } // rush::ast
 
 #endif // RUSH_AST_ARGUMENT_HPP
