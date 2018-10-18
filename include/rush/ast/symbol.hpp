@@ -33,11 +33,6 @@ namespace rush::ast {
 				: sema::symbol_kind::undefined;
 		}
 
-		// used by the semantic analysis visitor to establish
-		// the scope of named types after the syntax tree has
-		// been constructed.
-		void place(sema::scope&);
-
 	private:
 		std::variant<
 			std::string,
