@@ -58,11 +58,11 @@ namespace rush::ast {
 		virtual void visit_binary_expr(binary_expression const&) {};
 		virtual void visit_identifier_expr(identifier_expression const&) {};
 
-		virtual void visit_literal_expr(nil_literal_expression const&) {}
-		virtual void visit_literal_expr(string_literal_expression const&) {}
-		virtual void visit_literal_expr(boolean_literal_expression const&) {}
-		virtual void visit_literal_expr(integer_literal_expression const&) {}
-		virtual void visit_literal_expr(floating_literal_expression const&) {}
+		virtual void visit_literal_expr(nil_literal_expression const&) {};
+		virtual void visit_literal_expr(string_literal_expression const&) {};
+		virtual void visit_literal_expr(boolean_literal_expression const&) {};
+		virtual void visit_literal_expr(integer_literal_expression const&) {};
+		virtual void visit_literal_expr(floating_literal_expression const&) {};
 
 #		define RUSH_VISITOR_FUNC_PROTOTYPES
 #		include "rush/ast/_operators.hpp"
