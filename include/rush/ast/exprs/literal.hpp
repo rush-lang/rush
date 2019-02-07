@@ -20,14 +20,14 @@ namespace rush::ast {
 
 		template <typename LiteralExprT>
 		friend std::unique_ptr<LiteralExprT> make_literal_expr(
-			variant_type val, type const& val_type);
+			variant_type val, ast::type const& val_type);
 
 	public:
 		literal_expression(variant_type val, ast::type const& val_type, factory_tag_t)
 			: _val(std::move(val))
 			, _type(val_type) {}
 
-		virtual ast::type result_type() const noexcept override {
+		ast::type type() const noexcept {
 			return _type;
 		}
 
@@ -39,7 +39,7 @@ namespace rush::ast {
 
 	private:
 		variant_type _val;
-		type _type;
+		ast::type _type;
 	};
 
 	class nil_literal_expression : public literal_expression {
@@ -101,7 +101,7 @@ namespace rush::ast::exprs {
 	std::unique_ptr<integer_literal_expression> literal(std::uint8_t, ast::type const& = byte_type);
 	std::unique_ptr<integer_literal_expression> literal(std::uint16_t, ast::type const& = ushort_type);
 	std::unique_ptr<integer_literal_expression> literal(std::uint32_t, ast::type const& = uint_type);
-	std::unique_ptr<integer_literal_expression> literal(std::uint64_t, ast::type const& = uint_type);
+	std::unique_ptr<integer_literal_expression> literal(std::uint64_t, ast::type const& = ulong_type);
 
 	std::unique_ptr<floating_literal_expression> literal(float, ast::type const& = float_type);
 	std::unique_ptr<floating_literal_expression> literal(double, ast::type const& = double_type);

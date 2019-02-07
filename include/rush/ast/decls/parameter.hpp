@@ -4,7 +4,6 @@
 #define RUSH_AST_PARAMETER_HPP
 
 #include "rush/ast/node.hpp"
-#include "rush/sema/symbol.hpp"
 
 namespace rush::ast {
 	class parameter : public node {
@@ -13,23 +12,22 @@ namespace rush::ast {
 		virtual void accept(ast::visitor& v) const override {
 			// v.visit_parameter(*this);
 		}
-	private:
-		sema::symbol _symbol;
 	};
 
 	class named_parameter : public parameter {
 	public:
-		std::string name() { return _symbol.name(); }
-		ast::type type() { return { _symbol.type() }; }
+		ast::type type() { return _type; }
+		std::string name() { return _name; }
 	private:
-		sema::symbol _symbol;
+		ast::type _type;
+		std::string _name;
 	};
 
 	class unnamed_parameter : public parameter {
 	public:
-		ast::type type() { return { _symbol }; }
+		ast::type type() { return _type; }
 	private:
-		sema::symbol _symbol;
+		ast::type _type;
 	};
 
 	namespace decls {

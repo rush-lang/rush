@@ -11,7 +11,6 @@ namespace rush::ast {
 
 	namespace decls {
 		std::unique_ptr<constant_declaration> constant(
-			rush::scope& scope,
 			std::string name,
 			ast::type type,
 			std::unique_ptr<expression> init);
@@ -21,11 +20,15 @@ namespace rush::ast {
 		struct factory_tag_t {};
 
 		friend std::unique_ptr<constant_declaration>
-			decls::constant(rush::scope&, std::string, ast::type, std::unique_ptr<expression>);
+			decls::constant(std::string, ast::type, std::unique_ptr<expression>);
 
 	public:
-		constant_declaration(sema::symbol symbol, std::unique_ptr<expression> init, factory_tag_t)
-			: storage_declaration { symbol, std::move(init) } {}
+		constant_declaration(std::string name, ast::type type, std::unique_ptr<expression> init, factory_tag_t)
+			: storage_declaration {
+				std::move(name),
+				std::move(type),
+				std::move(init)
+			} {}
 
 		virtual declaration_kind kind() const noexcept override {
 			return declaration_kind::constant;
@@ -39,43 +42,16 @@ namespace rush::ast {
 
 	namespace decls {
 		inline std::unique_ptr<constant_declaration> constant(
-			rush::scope& scope,
 			std::string name,
 			ast::type type,
 			std::unique_ptr<expression> init
 		) {
-			if (!init) throw std::invalid_argument("constant declaration requires an intializer.");
-			// todo: handle the case where the constant has already been defined.
-			// should probably do this outside of the factory functions.. be S.O.L.I.D
-			auto symbol = scope.insert(sema::make_constant_entry(std::move(name), type.symbol()));
+			if (!init) throw std::invalid_argument("constant declaration requires an initializer.");
 			return std::make_unique<constant_declaration>(
-				std::move(symbol),
-				std::move(init),
-				constant_declaration::factory_tag_t{});
-		}
-
-		inline std::unique_ptr<constant_declaration> constant(
-			rush::scope& scope,
-			std::string name,
-			std::unique_ptr<expression> init
-		) {
-			return constant(
-				scope,
-				std::move(name),
-				init->result_type(),
-				std::move(init));
-		}
-
-		inline std::unique_ptr<constant_declaration> constant(
-			std::string name,
-			ast::type type,
-			std::unique_ptr<expression> init
-		) {
-			return constant(
-				rush::global_scope,
 				std::move(name),
 				std::move(type),
-				std::move(init));
+				std::move(init),
+				constant_declaration::factory_tag_t {});
 		}
 
 		inline std::unique_ptr<constant_declaration> constant(
@@ -84,7 +60,8 @@ namespace rush::ast {
 		) {
 			return constant(
 				std::move(name),
-				init->result_type(),
+				// init->result_type(),
+				ast::error_type,
 				std::move(init));
 		}
 	} // rush::ast::decls

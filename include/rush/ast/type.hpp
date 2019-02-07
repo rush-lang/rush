@@ -5,34 +5,31 @@
 
 #include "rush/ast/node.hpp"
 #include "rush/ast/visitor.hpp"
-#include "rush/sema/scope.hpp"
-#include "rush/sema/symbol.hpp"
 
 #include <string>
 
 namespace rush::ast {
 	class type : public node {
-		friend type make_type(sema::symbol const& s);
-		friend type make_type(scope&, std::string name);
-	public:
-		type(sema::symbol const& s)
-			: _symbol(s) {}
+		friend type make_primitive_type(std::string const& name);
 
-		std::size_t id() const noexcept {
-			return _symbol.id();
-		}
+	public:
+		type(std::string const& s) : _name(s) {}
+
+		// std::size_t id() const noexcept {
+		// 	return _name.id();
+		// }
 
 		std::string name() const noexcept {
-			return _symbol.name();
+			return _name;
 		}
 
-		sema::symbol symbol() const noexcept {
-			return _symbol;
-		}
+		// sema::symbol symbol() const noexcept {
+		// 	return _name;
+		// }
 
-		bool is_undefined() const noexcept {
-			return _symbol.is_undefined();
-		}
+		// bool is_undefined() const noexcept {
+		// 	return _name.is_undefined();
+		// }
 
 		using node::accept;
 		virtual void accept(ast::visitor& v) const {
@@ -40,11 +37,11 @@ namespace rush::ast {
 		}
 
 	private:
-		sema::symbol _symbol;
+		std::string _name;
 	};
 
 	inline bool operator == (type const& lhs, type const& rhs) {
-		return lhs.id() == rhs.id();
+		return lhs.name() == rhs.name();
 	}
 
 	inline bool operator != (type const& lhs, type const& rhs) {
@@ -69,20 +66,6 @@ namespace rush::ast {
 	extern type const double_type;
 	extern type const string_type;
 	extern type const char_type;
-
-
-	// \brief Returns the nearest base type of type.
-	type base_of(type const& type);
-
-	// \brief Returns the common type between two types,
-	type intersection_of(type const&, type const&);
-
-	// \brief Returns the common type between several types.
-	template <typename... Types>
-	inline type intersection_of(type const& first, type const& second, Types const&... rest) {
-		static_assert(std::conjunction_v<std::is_same<type, Types>...>);
-		return intersection_of(intersection_of(first, second), rest...);
-	}
 }
 
 #endif // RUSH_AST_TYPE_HPP

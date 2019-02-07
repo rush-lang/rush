@@ -24,10 +24,6 @@ namespace rush::ast {
 		unary_operator opkind() const noexcept { return _opkind; }
 		expression const& operand() const noexcept { return *_operand; }
 
-		virtual ast::type result_type() const override {
-			return _operand->result_type();
-		}
-
 		using node::accept;
 		virtual void accept(ast::visitor& v) const override {
 			v.visit_unary_expr(*this);

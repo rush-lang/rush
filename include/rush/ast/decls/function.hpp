@@ -4,8 +4,6 @@
 #define RUSH_AST_DECLS_FUNCTION_HPP
 
 #include "rush/core/iterator_range.hpp"
-#include "rush/sema/symbol.hpp"
-#include "rush/sema/scope.hpp"
 #include "rush/ast/type.hpp"
 #include "rush/ast/list.hpp"
 #include "rush/ast/decls/declaration.hpp"
@@ -24,21 +22,26 @@ namespace rush::ast {
 			typename std::vector<std::unique_ptr<parameter>>::iterator>;
 
 		function_declaration(
-			sema::symbol symbol,
+			std::string name,
+			ast::type return_type,
 			std::vector<std::unique_ptr<parameter>> params,
 			std::unique_ptr<statement> body,
-			factory_tag_t);
+			factory_tag_t)
+			: _name { std::move(name) }
+			, _type { std::move(return_type) }
+			, _params { std::move(params) }
+			, _body { std::move(body) } {}
 
 		virtual declaration_kind kind() const noexcept override {
 			return declaration_kind::function;
 		}
 
 		ast::type return_type() const noexcept {
-			return _symbol.type();
+			return _type;
 		}
 
 		std::string name() const noexcept {
-			return _symbol.name();
+			return _name;
 		}
 
 		parameter_range parameters() const {
@@ -51,55 +54,52 @@ namespace rush::ast {
 		}
 
 	private:
-		sema::symbol _symbol;
+		ast::type _type;
+		std::string _name;
 		std::unique_ptr<statement> _body;
 		std::vector<std::unique_ptr<parameter>> _params;
 	};
 
 	namespace decls {
-		std::unique_ptr<function_declaration> function(
+		inline std::unique_ptr<function_declaration> function(
 			std::string name,
-			std::unique_ptr<statement> body);
+			std::unique_ptr<statement> body) {
+				return decls::function(
+					std::move(name),
+					std::move(body));
+			}
 
-		std::unique_ptr<function_declaration> function(
-			std::string name,
-			ast::type return_type,
-			std::unique_ptr<statement> body);
-
-		std::unique_ptr<function_declaration> function(
-			std::string name,
-			std::unique_ptr<parameter_list> params,
-			std::unique_ptr<statement> body);
-
-		std::unique_ptr<function_declaration> function(
+		inline std::unique_ptr<function_declaration> function(
 			std::string name,
 			ast::type return_type,
-			std::unique_ptr<parameter_list> params,
-			std::unique_ptr<statement> body);
+			std::unique_ptr<statement> body) {
+				return decls::function(
+					std::move(name),
+					std::move(return_type),
+					std::move(body));
+			}
 
-		std::unique_ptr<function_declaration> function(
-			rush::scope&,
-			std::string name,
-			std::unique_ptr<statement> body);
-
-		std::unique_ptr<function_declaration> function(
-			rush::scope&,
-			std::string name,
-			ast::type return_type,
-			std::unique_ptr<statement> body);
-
-		std::unique_ptr<function_declaration> function(
-			rush::scope&,
+		inline std::unique_ptr<function_declaration> function(
 			std::string name,
 			std::unique_ptr<parameter_list> params,
-			std::unique_ptr<statement> body);
+			std::unique_ptr<statement> body) {
+				return decls::function(
+					std::move(name),
+					std::move(params),
+					std::move(body));
+			}
 
-		std::unique_ptr<function_declaration> function(
-			rush::scope&,
+		inline std::unique_ptr<function_declaration> function(
 			std::string name,
 			ast::type return_type,
 			std::unique_ptr<parameter_list> params,
-			std::unique_ptr<statement> body);
+			std::unique_ptr<statement> body) {
+				return decls::function(
+					std::move(name),
+					std::move(return_type),
+					std::move(params),
+					std::move(body));
+			}
 	} // rush::ast::decls
 } // rush::ast
 

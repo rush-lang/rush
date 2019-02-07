@@ -5,8 +5,6 @@
 
 #include "rush/ast/node.hpp"
 #include "rush/ast/exprs/expression.hpp"
-#include "rush/sema/scope.hpp"
-#include "rush/sema/symbol.hpp"
 
 #include <vector>
 
@@ -21,7 +19,7 @@ namespace rush::ast {
 	class named_argument : public argument {
 	public:
 	private:
-		sema::symbol _ident;
+		std::string _name;
 	};
 
 	namespace exprs {

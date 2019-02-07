@@ -9,49 +9,36 @@
 #include <vector>
 
 namespace rush::ast {
+	class statement_block;
+	namespace stmts { std::unique_ptr<statement_block> block(std::initializer_list<details::statement_fwdr> init); }
+}
+
+namespace rush::ast {
 	class statement_block : public statement {
+		friend std::unique_ptr<statement_block> stmts::block(std::initializer_list<details::statement_fwdr> init);
 	public:
-		statement_block(rush::scope scope, std::vector<std::unique_ptr<statement>> stmts)
-			: _scope(std::move(scope))
-			, _stmts(std::move(stmts)) {}
+		statement_block(std::vector<std::unique_ptr<statement>> stmts)
+			: _stmts(std::move(stmts)) {}
 
 		virtual statement_kind kind() const noexcept override {
 			return statement_kind::block;
 		}
 
-		void detach();
-		void attach(rush::scope&);
-
 		using node::accept;
 		virtual void accept(ast::visitor& v) const override {
-			// v.visit_block(*this)
+			v.visit_block_stmt(*this);
 		}
 
 	private:
-		rush::scope _scope;
 		std::vector<std::unique_ptr<statement>> _stmts;
 	};
 
 	namespace stmts {
-		inline std::unique_ptr<statement_block> block(
-			std::initializer_list<details::statement_fwdr> init) {
-
-			// auto scp = rush::scope { };
-			// auto vis = detail::attaching_visitor { scp };
-			// auto stmts = std::vector<std::unique_ptr<statement>> { init.size() };
-
-			// std::for_each(
-			// 	std::make_move_iterator(init.begin()),
-			// 	std::make_move_iterator(init.end()),
-			// 	[&](std::unique_ptr<statement> stmt) {
-			// 		stmt->accept(vis);
-			// 		stmts.push_back(std::move(stmt));
-			// 	});
-
-			// return { std::move(scp), std::move(stmts) };
+		inline std::unique_ptr<statement_block> block(std::initializer_list<details::statement_fwdr> init) {
 			return nullptr;
+			// return std::make_unique<statement_block>(std::vector<std::unique_ptr<statement>> { std::move(init) });
 		}
-	} // stmts
+	} // rush::ast::stmts
 } // rush::ast
 
 #endif // RUSH_AST_STMT_BLOCK_STATEMENT_HPP

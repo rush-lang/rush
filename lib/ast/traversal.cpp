@@ -25,13 +25,13 @@ namespace rush::ast {
 
 	void traversal::visit_unary_expr(unary_expression const& expr) {
 		expr.operand().accept(*this);
-		expr.result_type().accept(*this);
+		// expr.result_type().accept(*this);
 	}
 
 	void traversal::visit_binary_expr(binary_expression const& expr) {
 		expr.left_operand().accept(*this);
 		expr.right_operand().accept(*this);
-		expr.result_type().accept(*this);
+		// expr.result_type().accept(*this);
 	}
 
 	// void traversal::visit_identifier_expr(identifier_expression const&) {}

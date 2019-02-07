@@ -8,35 +8,32 @@
 #include "rush/ast/visitor.hpp"
 #include "rush/ast/type.hpp"
 
-#include "rush/sema/symbol.hpp"
-
 #include <string>
 
 namespace rush::ast {
 	class storage_declaration : public declaration {
 	public:
 		std::string name() const noexcept {
-			return _symbol.name();
-		}
-
-		ast::type type() const noexcept {
-			auto static_type = ast::type { _symbol.type() };
-			return static_type.is_undefined()
-				? _init->result_type()
-				: static_type;
+			return _name;
 		}
 
 		expression const& initializer() const noexcept {
 			return *_init;
 		}
 
+		ast::type type() const noexcept {
+			return _type;
+		}
+
 	protected:
-		storage_declaration(sema::symbol symbol, std::unique_ptr<expression> init)
-			: _symbol { symbol }
+		storage_declaration(std::string name, ast::type type, std::unique_ptr<expression> init)
+			: _name { std::move(name) }
+			, _type { std::move(type) }
 			, _init { std::move(init) } {}
 
 	private:
-		sema::symbol _symbol;
+		ast::type _type;
+		std::string _name;
 		std::unique_ptr<expression> _init;
 	};
 } // rush::ast

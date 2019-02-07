@@ -1,10 +1,9 @@
 project(ast VERSION ${RUSH_VERSION} LANGUAGES CXX)
 
 rush_add_library(ast
-	decl/function.cpp
-	expr/literal.cpp
-	expr/binary.cpp
-	expr/unary.cpp
+	exprs/literal.cpp
+	exprs/binary.cpp
+	exprs/unary.cpp
 	traversal.cpp
 	type.cpp
 )
@@ -24,5 +23,3 @@ target_include_directories(ast PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../include>
 	$<INSTALL_INTERFACE:../../include>
 )
-
-target_link_libraries(ast PUBLIC sema)

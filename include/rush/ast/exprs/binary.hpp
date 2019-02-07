@@ -4,7 +4,6 @@
 #define RUSH_AST_EXPRS_BINARY_HPP
 
 #include "rush/ast/exprs/expression.hpp"
-#include "rush/sema/types.hpp"
 
 #include <memory>
 
@@ -27,28 +26,6 @@ namespace rush::ast {
 		binary_operator opkind() const noexcept { return _opkind; }
 		expression const& left_operand() const noexcept { return *_left; }
 		expression const& right_operand() const noexcept { return *_right; }
-
-		virtual ast::type result_type() const override {
-			switch (opkind()) {
-			case binary_operator::logical_or:
-			case binary_operator::logical_and:
-			case binary_operator::less_than:
-			case binary_operator::less_equals:
-			case binary_operator::greater_than:
-			case binary_operator::greater_equals:
-				return ast::bool_type;
-
-			default:
-				auto lhs = left_operand().result_type().symbol();
-				auto rhs = right_operand().result_type().symbol();
-
-				if (lhs.is_type() && rhs.is_type()) {
-					auto tred = sema::reduce_type_symbols(lhs, rhs);
-					return { std::get<sema::symbol>(tred) };
-				}
-			}
-			return ast::error_type;
-		}
 
 		using node::accept;
 		virtual void accept(ast::visitor& v) const override {

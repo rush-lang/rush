@@ -29,12 +29,6 @@ namespace rush::ast {
 			return statement_kind::control;
 		}
 
-		ast::type type() const noexcept {
-			return _expr != nullptr
-				? _expr->result_type()
-				: ast::void_type;
-		}
-
 		expression const* const expr() const noexcept {
 			return _expr.get();
 		}
