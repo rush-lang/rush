@@ -134,23 +134,22 @@ namespace rush {
 		std::basic_ostream<CharT, Traits>& _ostr;
 
 		void print_expression(std::string name, expression const& expr) {
-			write("<{} [expr]: ", name);
-			expr.result_type().accept(*this);
-			write(">");
+			write("<{} [expr]>", name);
 		}
 
 		void print_literal_expr(std::string value, literal_expression const& expr) {
-			print_expression("literal", expr);
-			writeln(" [value: {}]", value);
+			write("<literal:");
+			expr.type().accept(*this);
+			writeln(" [expr]> [value: {}]", value);
 		}
 
 		void print_storage_decl(std::string name, storage_declaration const& decl) {
-			write("<{} [decl]: ", name);
+			write("<{}:", name);
 			decl.type().accept(*this);
-			write(">");
+			write(" [decl]>");
 			writeln(" [name: \"{}\"]", decl.name());
 			indent();
-			write("init: "); decl.initializer().accept(*this);
+			write("initializer: "); decl.initializer().accept(*this);
 			dedent();
 		}
 	};

@@ -7,8 +7,6 @@
 
 #include "rush/core/iterator.hpp"
 
-#include "rush/sema/scope.hpp"
-
 #include "rush/ast/type.hpp"
 #include "rush/ast/expressions.hpp"
 #include "rush/ast/declarations.hpp"
@@ -28,8 +26,7 @@ namespace rush {
 
 	public:
 		explicit parser(parser_options const& opts)
-			: _opts(opts)
-			, _scope(*opts.scope) {}
+			: _opts(opts) {}
 
 		std::unique_ptr<ast::node> parse(lexical_analysis const& lxa) {
 			initialize(lxa);
@@ -51,7 +48,6 @@ namespace rush {
 	private:
 		static const lexical_token eof;
 
-		scope& _scope;
 		parser_options _opts;
 		std::pair<
 			lxa_iterator,
@@ -125,13 +121,13 @@ namespace rush {
 				return std::nullopt;
 			}
 
-			auto sym = _scope.lookup(tok.text());
-			if (!sym.is_type()) {
-				error("symbol '{}' does not name a type.", tok);
-				return std::nullopt;
-			}
+			// auto sym = _scope.lookup(tok.text());
+			// if (!sym.is_type()) {
+			// 	error("symbol '{}' does not name a type.", tok);
+			// 	return std::nullopt;
+			// }
 
-			return { sym };
+			return { tok.text() };
 		}
 
 		std::unique_ptr<ast::expression> parse_initializer();
@@ -140,7 +136,7 @@ namespace rush {
 		// declarations.
 		template <typename DeclT>
 		std::unique_ptr<DeclT> _parse_storage_decl(std::string,
-			std::unique_ptr<DeclT> (*)(rush::scope&, std::string, ast::type, std::unique_ptr<ast::expression>));
+			std::unique_ptr<DeclT> (*)(std::string, ast::type, std::unique_ptr<ast::expression>));
 
 		std::unique_ptr<ast::constant_declaration> parse_constant_decl();
 		std::unique_ptr<ast::variable_declaration> parse_variable_decl();
