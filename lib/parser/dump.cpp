@@ -149,7 +149,8 @@ namespace rush {
 			write(" [decl]>");
 			writeln(" [name: \"{}\"]", decl.name());
 			indent();
-			write("initializer: "); decl.initializer().accept(*this);
+			if (decl.initializer() != nullptr)
+				write("initializer: "); decl.initializer()->accept(*this);
 			dedent();
 		}
 	};

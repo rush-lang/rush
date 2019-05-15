@@ -17,8 +17,8 @@ namespace rush::ast {
 			return _name;
 		}
 
-		expression const& initializer() const noexcept {
-			return *_init;
+		expression* initializer() const noexcept {
+			return _init.get();
 		}
 
 		ast::type type() const noexcept {
