@@ -23,39 +23,39 @@ TEST_CASE("rush::parse", "[unit][parser]") {
 TEST_CASE( "rush::parse (expressions)", "[unit][parser]" ) {
 	// auto ast = rush::parse("123");
 	SECTION( "integer literals" ) {
-		CHECK( valid_parse("0", exprs::literal(0, ast::int_type)) );
-		CHECK( valid_parse("1", exprs::literal(1, ast::int_type)) );
-		CHECK( valid_parse("9", exprs::literal(9, ast::int_type)) );
-		CHECK( valid_parse("123", exprs::literal(9, ast::int_type)) );
+		CHECK( valid_parse("0", exprs::literal(0, ast::types::int_type)) );
+		CHECK( valid_parse("1", exprs::literal(1, ast::types::int_type)) );
+		CHECK( valid_parse("9", exprs::literal(9, ast::types::int_type)) );
+		CHECK( valid_parse("123", exprs::literal(9, ast::types::int_type)) );
 
-		CHECK( valid_parse("345u", exprs::literal(9, ast::uint_type)) );
-		CHECK( valid_parse("645l", exprs::literal(9, ast::long_type)) );
+		CHECK( valid_parse("345u", exprs::literal(9, ast::types::uint_type)) );
+		CHECK( valid_parse("645l", exprs::literal(9, ast::types::long_type)) );
 		// CHECK( valid_parse("645ul", exprs::literal(9, ast::ulong_type)) );
 	}
 
 	SECTION( "binary expressions" ) {
 		CHECK( valid_parse("1 + 1",
 			exprs::addition(
-				exprs::literal(1, ast::int_type),
-				exprs::literal(1, ast::int_type)
+				exprs::literal(1, ast::types::int_type),
+				exprs::literal(1, ast::types::int_type)
 			)));
 
 		CHECK( valid_parse("2 - 1",
 			exprs::subtraction(
-				exprs::literal(1, ast::int_type),
-				exprs::literal(1, ast::int_type)
+				exprs::literal(1, ast::types::int_type),
+				exprs::literal(1, ast::types::int_type)
 			)));
 
 		CHECK( valid_parse("x * 2",
 			exprs::multiplication(
-				exprs::literal(1, ast::int_type),
-				exprs::literal(1, ast::int_type)
+				exprs::literal(1, ast::types::int_type),
+				exprs::literal(1, ast::types::int_type)
 			)));
 
 		CHECK( valid_parse("x / y",
 			exprs::division(
-				exprs::literal(1, ast::int_type),
-				exprs::literal(1, ast::int_type)
+				exprs::literal(1, ast::types::int_type),
+				exprs::literal(1, ast::types::int_type)
 			)));
 	}
 }

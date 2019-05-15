@@ -62,7 +62,7 @@ namespace rush::ast {
 			return constant(
 				std::move(name),
 				// init->result_type(),
-				ast::error_type,
+				types::inferred_type,
 				std::move(init));
 		}
 	} // rush::ast::decls

@@ -7,46 +7,47 @@
 #include "rush/ast/visitor.hpp"
 
 #include <string>
+#include <variant>
 
 namespace rush::ast {
-	class type : public node {
-		friend type make_primitive_type(std::string const& name);
+   class named_type;
+   class unnamed_type;
 
-	public:
-		type(std::string const& s) : _name(s) {}
+   // Value object that stores a pointer to an actual type, named or unnamed.
+	class type {
+		template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
+		template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
 
-		// std::size_t id() const noexcept {
-		// 	return _name.id();
-		// }
+   public:
+      type(ast::named_type const& ty)
+         : _ptr { std::addressof(ty) } {}
 
-		std::string name() const noexcept {
-			return _name;
-		}
+      type(ast::unnamed_type const& ty)
+         : _ptr { std::addressof(ty) } {}
 
-		// sema::symbol symbol() const noexcept {
-		// 	return _name;
-		// }
+      template <typename Type>
+      type(std::unique_ptr<Type> const& pty)
+         : _ptr { pty.get() } {}
 
-		// bool is_undefined() const noexcept {
-		// 	return _name.is_undefined();
-		// }
+      void accept(ast::visitor& v) {
+         std::visit(overloaded {
+            [&v](ast::named_type const* t) { v.visit_named_type(*t); },
+            [&v](ast::unnamed_type const* t) { v.visit_unnamed_type(*t); },
+         }, _ptr);
+      }
 
-		using node::accept;
-		virtual void accept(ast::visitor& v) const {
-			v.visit_type(*this);
-		}
+      void accept(ast::visitor&& v) {
+         std::visit(overloaded {
+            [&v](ast::named_type const* t) { v.visit_named_type(*t); },
+            [&v](ast::unnamed_type const* t) { v.visit_unnamed_type(*t); },
+         }, _ptr);
+      }
 
-	private:
-		std::string _name;
-	};
-
-	inline bool operator == (type const& lhs, type const& rhs) {
-		return lhs.name() == rhs.name();
-	}
-
-	inline bool operator != (type const& lhs, type const& rhs) {
-		return !(lhs == rhs);
-	}
+   private:
+      std::variant<
+         ast::named_type const*,
+         ast::unnamed_type const*> _ptr;
+   };
 }
 
 #endif // RUSH_AST_TYPE_HPP

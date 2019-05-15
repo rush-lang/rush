@@ -49,7 +49,7 @@ namespace rush {
 			, _current_indent(0)
 			, _ostr(out) {}
 
-		virtual void visit_type(ast::type const& t) override {
+		virtual void visit_named_type(ast::named_type const& t) override {
 			write(t.name());
 		}
 

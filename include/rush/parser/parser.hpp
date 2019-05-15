@@ -127,7 +127,7 @@ namespace rush {
 			// 	return std::nullopt;
 			// }
 
-			return { tok.text() };
+			return ast::types::error_type;
 		}
 
 		std::unique_ptr<ast::expression> parse_initializer();

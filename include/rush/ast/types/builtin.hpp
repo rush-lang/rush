@@ -3,32 +3,41 @@
 #ifndef RUSH_BUILTIN_TYPE_HPP
 #define RUSH_BUILTIN_TYPE_HPP
 
-#include "rush/ast/types/type.hpp"
+#include "rush/ast/types/named.hpp"
 
 namespace rush::ast {
-	class builtin_type : public type {
+   class builtin_type : public named_type {
+   public:
+      builtin_type(std::string name)
+         : named_type(name) {}
 
-	};
+      using node::accept;
+      virtual void accept(ast::visitor& v) const override {
+			// v.visit_builtin_type(*this);
+		}
+   };
 
-	// sentinal types
-	extern type const error_type;
-	extern type const inferred_type;
+   namespace types {
+      // sentinal types
+      extern std::unique_ptr<builtin_type> const error_type;
+      extern std::unique_ptr<builtin_type> const inferred_type;
 
-	// known/built-in types
-	extern type const void_type;
-	extern type const bool_type;
-	extern type const byte_type;
-	extern type const sbyte_type;
-	extern type const short_type;
-	extern type const ushort_type;
-	extern type const int_type;
-	extern type const uint_type;
-	extern type const long_type;
-	extern type const ulong_type;
-	extern type const float_type;
-	extern type const double_type;
-	extern type const string_type;
-	extern type const char_type;
+      // known/built-in types
+      extern std::unique_ptr<builtin_type> const void_type;
+      extern std::unique_ptr<builtin_type> const bool_type;
+      extern std::unique_ptr<builtin_type> const byte_type;
+      extern std::unique_ptr<builtin_type> const sbyte_type;
+      extern std::unique_ptr<builtin_type> const short_type;
+      extern std::unique_ptr<builtin_type> const ushort_type;
+      extern std::unique_ptr<builtin_type> const int_type;
+      extern std::unique_ptr<builtin_type> const uint_type;
+      extern std::unique_ptr<builtin_type> const long_type;
+      extern std::unique_ptr<builtin_type> const ulong_type;
+      extern std::unique_ptr<builtin_type> const float_type;
+      extern std::unique_ptr<builtin_type> const double_type;
+      extern std::unique_ptr<builtin_type> const string_type;
+      extern std::unique_ptr<builtin_type> const char_type;
+   }
 }
 
 #endif // RUSH_BUILTIN_TYPE_HPP

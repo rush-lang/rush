@@ -5,6 +5,9 @@
 
 namespace rush::ast {
 	class type;
+   class named_type;
+   class unnamed_type;
+
 	class expression;
 	class unary_expression;
 	class binary_expression;
@@ -37,6 +40,8 @@ namespace rush::ast {
 
 		// types
 		virtual void visit_type(ast::type const&) {};
+      virtual void visit_named_type(ast::named_type const&) {};
+      virtual void visit_unnamed_type(ast::unnamed_type const&) {};
 
 		// declarations
 		virtual void visit_constant_decl(constant_declaration const&) {};

@@ -37,7 +37,7 @@ namespace rush {
 
 			return type != std::nullopt
 				? (*fptr)(ident.text(), *type, std::move(init))
-				: (*fptr)(ident.text(), ast::error_type, std::move(init));
+				: (*fptr)(ident.text(), ast::types::error_type, std::move(init));
 		}
 
 		return error("expected an identifier before '{}'.", next_skip_indent());
