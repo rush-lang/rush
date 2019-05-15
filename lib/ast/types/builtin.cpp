@@ -7,7 +7,7 @@ namespace rush::ast::types {
 		return std::make_unique<builtin_type>(std::move(name));
 	}
 
-	// sentinals
+   // sentinals
 	std::unique_ptr<builtin_type> const error_type = make_builtin_type("<error-type>");
 	std::unique_ptr<builtin_type> const inferred_type = make_builtin_type("<inferred-type>");
 

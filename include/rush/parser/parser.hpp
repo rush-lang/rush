@@ -8,6 +8,7 @@
 #include "rush/core/iterator.hpp"
 
 #include "rush/ast/types/type.hpp"
+#include "rush/ast/types/builtin.hpp"
 #include "rush/ast/expressions.hpp"
 #include "rush/ast/declarations.hpp"
 #include "rush/ast/statements.hpp"
@@ -111,27 +112,9 @@ namespace rush {
 			return *ptok;
 		}
 
-		std::optional<ast::type> parse_type_annotation() {
-			assert(peek_skip_indent().is(symbols::colon) && "expected a type annotation symbol ':'");
-			next_skip_indent();
 
-			auto tok = next_skip_indent();
-			if (!tok.is_keyword() && !tok.is_identifier()) {
-				error("expected a type identifier before '{}'", tok);
-				return std::nullopt;
-			}
-
-			// auto sym = _scope.lookup(tok.text());
-			// if (!sym.is_type()) {
-			// 	error("symbol '{}' does not name a type.", tok);
-			// 	return std::nullopt;
-			// }
-
-			return ast::types::error_type;
-		}
-
-		std::unique_ptr<ast::expression> parse_initializer();
-
+      // types
+		std::optional<ast::type> parse_type_annotation();
 
 		// declarations.
 		template <typename DeclT>
@@ -165,6 +148,8 @@ namespace rush {
 		std::unique_ptr<ast::unary_expression> parse_unary_expr();
 		std::unique_ptr<ast::binary_expression> parse_binary_expr(std::unique_ptr<ast::expression> lhs);
 		std::unique_ptr<ast::expression> parse_binary_expr_rhs();
+
+		std::unique_ptr<ast::expression> parse_initializer();
 	};
 }
 

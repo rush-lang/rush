@@ -3,7 +3,8 @@ project(parser VERSION ${RUSH_VERSION} LANGUAGES CXX)
 rush_add_library(parser
 	parse_statement.cpp
 	parse_expression.cpp
-	parse_declaration.cpp
+   parse_declaration.cpp
+   parse_type.cpp
 	parse.cpp
 	dump.cpp
 )
