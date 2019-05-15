@@ -7,7 +7,7 @@
 
 #include "rush/core/iterator.hpp"
 
-#include "rush/ast/type.hpp"
+#include "rush/ast/types/type.hpp"
 #include "rush/ast/expressions.hpp"
 #include "rush/ast/declarations.hpp"
 #include "rush/ast/statements.hpp"

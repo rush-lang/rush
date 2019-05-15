@@ -4,8 +4,8 @@
 #define RUSH_AST_DECLS_FUNCTION_HPP
 
 #include "rush/core/iterator_range.hpp"
-#include "rush/ast/type.hpp"
 #include "rush/ast/list.hpp"
+#include "rush/ast/types/type.hpp"
 #include "rush/ast/decls/declaration.hpp"
 #include "rush/ast/decls/parameter.hpp"
 #include "rush/ast/exprs/argument.hpp"

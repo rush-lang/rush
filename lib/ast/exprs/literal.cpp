@@ -1,4 +1,5 @@
 #include "rush/ast/exprs/literal.hpp"
+#include "rush/ast/types/builtin.hpp"
 
 namespace rush::ast {
 	template <typename LiteralExprT>

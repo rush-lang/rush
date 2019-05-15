@@ -4,6 +4,7 @@
 #define RUSH_AST_EXPRS_BINARY_HPP
 
 #include "rush/ast/exprs/expression.hpp"
+#include "rush/ast/visitor.hpp"
 
 #include <memory>
 

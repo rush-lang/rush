@@ -1,4 +1,4 @@
-#include "rush/ast/type.hpp"
+#include "rush/ast/types.hpp"
 #include "rush/ast/declarations.hpp"
 #include "rush/ast/statements.hpp"
 #include "rush/ast/expressions.hpp"

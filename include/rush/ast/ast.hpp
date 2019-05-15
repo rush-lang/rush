@@ -3,7 +3,7 @@
 #ifndef RUSH_AST_AST_HPP
 #define RUSH_AST_AST_HPP
 
-#include "rush/ast/type.hpp"
+#include "rush/ast/types.hpp"
 #include "rush/ast/expressions.hpp"
 #include "rush/ast/statements.hpp"
 #include "rush/ast/declarations.hpp"

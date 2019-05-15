@@ -4,7 +4,7 @@
 #define RUSH_AST_EXPRS_LITERAL_HPP
 
 #include "rush/ast/exprs/expression.hpp"
-#include "rush/ast/type.hpp"
+#include "rush/ast/types/builtin.hpp"
 
 #include <variant>
 #include <string>

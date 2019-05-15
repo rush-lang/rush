@@ -4,6 +4,7 @@
 #define RUSH_AST_DECLS_VARIABLE_HPP
 
 #include "rush/ast/decls/storage.hpp"
+#include "rush/ast/types/builtin.hpp"
 
 
 namespace rush::ast {

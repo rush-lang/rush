@@ -4,6 +4,7 @@
 #define RUSH_AST_DECLS_CONSTANT_HPP
 
 #include "rush/ast/decls/storage.hpp"
+#include "rush/ast/types/type.hpp"
 
 
 namespace rush::ast {

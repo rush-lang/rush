@@ -5,8 +5,8 @@
 
 #include "rush/ast/exprs/expression.hpp"
 #include "rush/ast/decls/declaration.hpp"
+#include "rush/ast/types/type.hpp"
 #include "rush/ast/visitor.hpp"
-#include "rush/ast/type.hpp"
 
 #include <string>
 

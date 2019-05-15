@@ -1,5 +1,4 @@
-#include "rush/ast/type.hpp"
-#include <unordered_map>
+#include "rush/ast/types/builtin.hpp"
 
 namespace rush::ast {
 
@@ -25,4 +24,4 @@ namespace rush::ast {
 	type const double_type = make_primitive_type("double");
 	type const string_type = make_primitive_type("string");
 	type const char_type = make_primitive_type("chars");
-} // rush
+}

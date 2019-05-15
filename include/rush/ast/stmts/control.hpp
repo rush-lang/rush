@@ -5,7 +5,6 @@
 
 #include "rush/ast/stmts/statement.hpp"
 #include "rush/ast/exprs/expression.hpp"
-#include "rush/ast/type.hpp"
 
 namespace rush::ast {
 

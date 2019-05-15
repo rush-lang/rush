@@ -4,7 +4,6 @@
 #define RUSH_AST_EXPRS_EXPRESSION_HPP
 
 #include "rush/ast/node.hpp"
-#include "rush/ast/type.hpp"
 
 #include <utility>
 #include <memory>

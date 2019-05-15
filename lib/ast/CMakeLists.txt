@@ -4,8 +4,8 @@ rush_add_library(ast
 	exprs/literal.cpp
 	exprs/binary.cpp
 	exprs/unary.cpp
+	types/builtin_type.cpp
 	traversal.cpp
-	type.cpp
 )
 
 target_compile_features(ast PUBLIC cxx_std_17)
