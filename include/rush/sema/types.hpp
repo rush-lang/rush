@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef RUSH_UTILITY_HPP
-#define RUSH_UTILITY_HPP
+#ifndef RUSH_SEMA_TYPES_HPP
+#define RUSH_SEMA_TYPES_HPP
 
 #include "rush/sema/symbol.hpp"
 #include <tuple>
@@ -12,4 +12,4 @@ namespace rush::sema {
 	std::tuple<symbol, bool> reduce_type_symbols(symbol const& lhs, symbol const& rhs);
 }
 
-#endif // RUSH_UTILITY_HPP
+#endif // RUSH_SEMA_TYPES_HPP
