@@ -27,8 +27,9 @@ namespace rush::ast {
 			std::vector<std::unique_ptr<parameter>> params,
 			std::unique_ptr<statement> body,
 			factory_tag_t)
-			: _name { std::move(name) }
-			, _type { std::move(return_type) }
+         : declaration {
+            std::move(name),
+            std::move(return_type) }
 			, _params { std::move(params) }
 			, _body { std::move(body) } {}
 
@@ -36,12 +37,8 @@ namespace rush::ast {
 			return declaration_kind::function;
 		}
 
-		ast::type return_type() const noexcept {
-			return _type;
-		}
-
-		std::string name() const noexcept {
-			return _name;
+      ast::type return_type() const noexcept {
+			return this->type();
 		}
 
 		parameter_range parameters() const {
@@ -54,8 +51,6 @@ namespace rush::ast {
 		}
 
 	private:
-		ast::type _type;
-		std::string _name;
 		std::unique_ptr<statement> _body;
 		std::vector<std::unique_ptr<parameter>> _params;
 	};

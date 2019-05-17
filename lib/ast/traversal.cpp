@@ -7,12 +7,12 @@ namespace rush::ast {
 	// void traversal::visit_type(ast::type const&) {}
 
 	void traversal::visit_constant_decl(constant_declaration const& decl) {
-		decl.initializer().accept(*this);
+		decl.initializer()->accept(*this);
 		decl.type().accept(*this);
 	}
 
 	void traversal::visit_variable_decl(variable_declaration const& decl) {
-		decl.initializer().accept(*this);
+		decl.initializer()->accept(*this);
 		decl.type().accept(*this);
 	}
 

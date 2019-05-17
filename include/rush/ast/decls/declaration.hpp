@@ -4,12 +4,13 @@
 #define RUSH_AST_DECLS_DECLARATION_HPP
 
 #include "rush/ast/node.hpp"
+#include "rush/ast/types/type.hpp"
 
+#include <string>
 #include <cstdint>
 
 namespace rush::ast {
 	enum class declaration_kind : std::uint8_t {
-		import,
 		constant,
 		variable,
 		function,
@@ -24,14 +25,27 @@ namespace rush::ast {
 	};
 
 	class declaration : public node {
-	private:
 		declaration(declaration const&) = delete;
 		void operator = (declaration const&) = delete;
 
 	public:
-		declaration() = default;
+      declaration(std::string name, ast::type type)
+         : _name(std::move(name))
+         , _type(std::move(type)) {}
+
+      ast::type type() const noexcept {
+			return _type;
+		}
+
+      std::string name() const noexcept {
+			return _name;
+		}
 
 		virtual declaration_kind kind() const noexcept = 0;
+
+   private:
+      std::string _name;
+      ast::type _type;
 	};
 }
 

@@ -13,3 +13,5 @@ target_include_directories(sema PUBLIC
 )
 
 target_compile_features(sema PUBLIC cxx_std_17)
+target_link_libraries(sema PUBLIC ast)
+
