@@ -6,12 +6,17 @@
 #include "rush/ast/node.hpp"
 #include "rush/ast/visitor.hpp"
 
+#include <memory>
 #include <string>
 #include <variant>
 
 namespace rush::ast {
    class named_type;
-   class unnamed_type;
+   class array_type;
+   class tuple_type;
+   class builtin_type;
+   class function_type;
+
 
    // Value object that stores a pointer to an actual type, named or unnamed.
 	class type {
@@ -19,34 +24,39 @@ namespace rush::ast {
 		template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
 
    public:
-      type(ast::named_type const& ty)
-         : _ptr { std::addressof(ty) } {}
+      type(std::unique_ptr<ast::builtin_type> const& ty)
+         : _ptr { ty.get() } {}
 
-      type(ast::unnamed_type const& ty)
-         : _ptr { std::addressof(ty) } {}
+      type(std::unique_ptr<ast::array_type> const& ty)
+         : _ptr { ty.get() } {}
 
-      template <typename Type>
-      type(std::unique_ptr<Type> const& pty)
-         : _ptr { pty.get() } {}
+      type(std::unique_ptr<ast::tuple_type> const& ty)
+         : _ptr { ty.get() } {}
+
+      type(std::unique_ptr<ast::function_type> const& ty)
+         : _ptr { ty.get() } {}
 
       void accept(ast::visitor& v) {
-         std::visit(overloaded {
-            [&v](ast::named_type const* t) { v.visit_named_type(*t); },
-            [&v](ast::unnamed_type const* t) { v.visit_unnamed_type(*t); },
-         }, _ptr);
+         // std::visit(overloaded {
+         //    [&v](ast::named_type const* t) { v.visit_named_type(*t); },
+         //    [&v](ast::unnamed_type const* t) { v.visit_unnamed_type(*t); },
+         // }, _ptr);
       }
 
       void accept(ast::visitor&& v) {
-         std::visit(overloaded {
-            [&v](ast::named_type const* t) { v.visit_named_type(*t); },
-            [&v](ast::unnamed_type const* t) { v.visit_unnamed_type(*t); },
-         }, _ptr);
+         // std::visit(overloaded {
+         //    [&v](ast::named_type const* t) { v.visit_named_type(*t); },
+         //    [&v](ast::unnamed_type const* t) { v.visit_unnamed_type(*t); },
+         // }, _ptr);
       }
 
    private:
       std::variant<
          ast::named_type const*,
-         ast::unnamed_type const*> _ptr;
+         ast::builtin_type const*,
+         ast::array_type const*,
+         ast::tuple_type const*,
+         ast::function_type const*> _ptr;
    };
 }
 

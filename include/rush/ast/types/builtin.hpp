@@ -3,7 +3,11 @@
 #ifndef RUSH_BUILTIN_TYPE_HPP
 #define RUSH_BUILTIN_TYPE_HPP
 
+#include "rush/ast/visitor.hpp"
 #include "rush/ast/types/named.hpp"
+
+#include <string>
+#include <memory>
 
 namespace rush::ast {
    class builtin_type : public named_type {

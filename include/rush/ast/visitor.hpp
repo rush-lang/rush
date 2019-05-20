@@ -6,7 +6,14 @@
 namespace rush::ast {
 	class type;
    class named_type;
-   class unnamed_type;
+   class array_type;
+   class tuple_type;
+   class enum_type;
+   class class_type;
+   class struct_type;
+   class concept_type;
+   class interface_type;
+   class function_type;
 
 	class expression;
 	class unary_expression;
@@ -15,6 +22,8 @@ namespace rush::ast {
 
 	class literal_expression;
 	class nil_literal_expression;
+   class array_literal_expression;
+   class tuple_literal_expression;
 	class string_literal_expression;
 	class boolean_literal_expression;
 	class integer_literal_expression;
@@ -41,7 +50,14 @@ namespace rush::ast {
 		// types
 		virtual void visit_type(ast::type const&) {};
       virtual void visit_named_type(ast::named_type const&) {};
-      virtual void visit_unnamed_type(ast::unnamed_type const&) {};
+      virtual void visit_array_type(ast::array_type const&) {};
+      virtual void visit_tuple_type(ast::tuple_type const&) {};
+      virtual void visit_enum_type(ast::enum_type const&) {};
+      virtual void visit_class_type(ast::class_type const&) {};
+      virtual void visit_struct_type(ast::struct_type const&) {};
+      virtual void visit_concept_type(ast::concept_type const&) {};
+      virtual void visit_interface_type(ast::interface_type const&) {};
+      virtual void visit_function_type(ast::function_type const&) {};
 
 		// declarations
 		virtual void visit_constant_decl(constant_declaration const&) {};

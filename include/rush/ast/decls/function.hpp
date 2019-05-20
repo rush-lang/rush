@@ -5,9 +5,10 @@
 
 #include "rush/core/iterator_range.hpp"
 #include "rush/ast/list.hpp"
-#include "rush/ast/types/type.hpp"
+#include "rush/ast/types/function.hpp"
 #include "rush/ast/decls/declaration.hpp"
 #include "rush/ast/decls/parameter.hpp"
+#include "rush/ast/list.hpp"
 #include "rush/ast/exprs/argument.hpp"
 
 #include <vector>
@@ -23,14 +24,11 @@ namespace rush::ast {
 
 		function_declaration(
 			std::string name,
-			ast::type return_type,
-			std::vector<std::unique_ptr<parameter>> params,
-			std::unique_ptr<statement> body,
+			std::unique_ptr<ast::statement> body,
+         std::unique_ptr<ast::function_type> fntype,
 			factory_tag_t)
-         : declaration {
-            std::move(name),
-            std::move(return_type) }
-			, _params { std::move(params) }
+         : declaration { std::move(name), ast::type { fntype } }
+         , _type { std::move(fntype) }
 			, _body { std::move(body) } {}
 
 		virtual declaration_kind kind() const noexcept override {
@@ -38,21 +36,25 @@ namespace rush::ast {
 		}
 
       ast::type return_type() const noexcept {
-			return this->type();
+			return _type->return_type();
 		}
 
-		parameter_range parameters() const {
-			// return { _params };
-			throw std::runtime_error("not implemented");
+		rush::iterator_range<parameter const&> parameters() const {
+         return _type->parameters();
 		}
 
 		statement const& body() const noexcept {
 			return *_body;
 		}
 
+      using node::accept;
+      virtual void accept(ast::visitor& v) {
+         v.visit_function_decl(*this);
+      }
+
 	private:
 		std::unique_ptr<statement> _body;
-		std::vector<std::unique_ptr<parameter>> _params;
+      std::unique_ptr<function_type> _type;
 	};
 
 	namespace decls {
@@ -89,11 +91,11 @@ namespace rush::ast {
 			ast::type return_type,
 			std::unique_ptr<parameter_list> params,
 			std::unique_ptr<statement> body) {
-				return decls::function(
-					std::move(name),
-					std::move(return_type),
-					std::move(params),
-					std::move(body));
+				// return decls::function(
+				// 	std::move(name),
+				// 	std::move(return_type),
+				// 	std::move(params),
+				// 	std::move(body));
 			}
 	} // rush::ast::decls
 } // rush::ast
