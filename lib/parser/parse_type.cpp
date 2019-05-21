@@ -2,7 +2,7 @@
 #include "rush/parser/parser.hpp"
 
 namespace rush {
-   ast::type_ref builtin_type_from_keyword(keywords::keyword_t kw) {
+   ast::type_ref builtin_type_from_keyword(keywords::keyword_token_t kw) {
       switch (kw) {
          case keywords::void_: return ast::types::void_type;
          case keywords::bool_: return ast::types::bool_type;

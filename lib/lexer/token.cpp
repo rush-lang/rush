@@ -26,7 +26,7 @@ namespace rush {
 					default: return str;
 				}
 			},
-			[](symbol_t const& arg) -> std::string {
+			[](symbol_token_t const& arg) -> std::string {
 				switch (arg) {
 				case symbols::eof: return "<eof>";
 				case symbols::indent: return "<indent>";

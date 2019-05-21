@@ -267,7 +267,7 @@ namespace rush {
 	}
 
 
-	lexical_token lexer::scan_symbol(symbol_t symbol) {
+	lexical_token lexer::scan_symbol(symbol_token_t symbol) {
 		assert(symbol != symbols::unknown && "unknown symbol");
 
 		switch (symbol) {

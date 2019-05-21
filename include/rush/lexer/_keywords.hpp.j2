@@ -7,7 +7,7 @@
 
 namespace rush {
 	namespace keywords {
-		enum keyword_t {
+		enum keyword_token_t {
 			unknown,
 ## for type in types
 			{# newline #}
@@ -20,11 +20,11 @@ namespace rush {
 
 		};
 
-		std::string to_string(keyword_t);
-		keyword_t to_value(std::string_view);
+		std::string to_string(keyword_token_t);
+		keyword_token_t to_value(std::string_view);
 	}
 
-	using keywords::keyword_t;
+	using keywords::keyword_token_t;
 	using keywords::to_string;
 }
 

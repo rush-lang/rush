@@ -16,12 +16,12 @@ namespace rush {
 		}
 
 		// \brief Returns an instance of rush::lexical_token representing the specified symbol.
-		inline lexical_token make_symbol_token(symbol_t val, location const& loc) {
+		inline lexical_token make_symbol_token(symbol_token_t val, location const& loc) {
 			return lexical_token { val, loc };
 		}
 
 		// \brief Returns an instance of rush::lexical_token representing the specified keyword.
-		inline lexical_token make_keyword_token(keyword_t val, location const& loc) {
+		inline lexical_token make_keyword_token(keyword_token_t val, location const& loc) {
 			return lexical_token { val, loc };
 		}
 

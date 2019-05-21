@@ -5,7 +5,7 @@
 #include <string_view>
 #include <unordered_map>
 
-static const std::unordered_map<std::string_view, rush::symbol_t>
+static const std::unordered_map<std::string_view, rush::symbol_token_t>
 	_symbol_map {
 ## for symbol in symbols
 ## if existsIn(symbol, "symbol")
@@ -22,14 +22,14 @@ static const std::unordered_map<std::string_view, rush::symbol_t>
 	};
 
 namespace rush::symbols {
-	symbol_t to_value(std::string const& s) {
+	symbol_token_t to_value(std::string const& s) {
 		auto it = _symbol_map.find(s);
 		return it == _symbol_map.end()
 			? symbols::unknown
 			: it->second;
 	}
 
-	std::string to_string(symbol_t s) {
+	std::string to_string(symbol_token_t s) {
 		switch (s) {
 ## for symbol in symbols
 ## if existsIn(symbol, "symbol")
@@ -48,7 +48,7 @@ namespace rush::symbols {
 		}
 	}
 
-	std::size_t precedence(symbol_t s) {
+	std::size_t precedence(symbol_token_t s) {
 		switch(s) {
 ## for symbol in symbols
 ## if existsIn(symbol, "precedence")

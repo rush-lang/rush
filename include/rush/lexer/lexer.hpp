@@ -86,7 +86,7 @@ namespace rush {
 		lexical_token scan_integer_literal(function_ref<bool(codepoint_t)>, int base);
 		lexical_token scan_numeric_literal();
 
-		lexical_token scan_symbol(symbol_t symbol);
+		lexical_token scan_symbol(symbol_token_t symbol);
 
 		lexical_token _unwind_indentation();
 	};

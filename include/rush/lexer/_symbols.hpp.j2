@@ -7,7 +7,7 @@
 
 namespace rush {
 	namespace symbols {
-		enum symbol_t {
+		enum symbol_token_t {
 			unknown,
 ## for symbol in symbols
 			{# newline #}
@@ -21,11 +21,11 @@ namespace rush {
 ## endfor
 		};
 
-		std::string to_string(symbol_t);
-		symbol_t to_value(std::string const&);
+		std::string to_string(symbol_token_t);
+		symbol_token_t to_value(std::string const&);
 	}
 
-	using symbols::symbol_t;
+	using symbols::symbol_token_t;
 	using symbols::to_string;
 }
 

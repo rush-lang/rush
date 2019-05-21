@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <string_view>
 
-static const std::unordered_map<std::string_view, rush::keyword_t>
+static const std::unordered_map<std::string_view, rush::keyword_token_t>
 	_keyword_map {
 ## for type in types
 {# spacing #}
@@ -17,14 +17,14 @@ static const std::unordered_map<std::string_view, rush::keyword_t>
 	};
 
 namespace rush::keywords {
-	keyword_t to_value(std::string_view kw) {
+	keyword_token_t to_value(std::string_view kw) {
 		auto it = _keyword_map.find(kw);
 		return it == _keyword_map.end()
 			? keywords::unknown
 			: it->second;
 	}
 
-	std::string to_string(keyword_t kw) {
+	std::string to_string(keyword_token_t kw) {
 		switch (kw) {
 ## for type in types
 {# spacing #}

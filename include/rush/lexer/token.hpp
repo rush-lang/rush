@@ -40,8 +40,8 @@ namespace rush {
 
 	namespace tokens {
 		lexical_token make_error_token(std::string, location const& = location::undefined);
-		lexical_token make_symbol_token(symbol_t, location const& = location::undefined);
-		lexical_token make_keyword_token(keyword_t, location const& = location::undefined);
+		lexical_token make_symbol_token(symbol_token_t, location const& = location::undefined);
+		lexical_token make_keyword_token(keyword_token_t, location const& = location::undefined);
 
 		lexical_token identifier(std::string, location const& = location::undefined);
 		lexical_token prefixed_string_literal(std::string, lexical_token_prefix, location const& = location::undefined);
@@ -95,16 +95,16 @@ namespace rush {
 		using variant_type =
 		std::variant<
 			error_t,				// errors.
-			symbol_t,         // symbols.
-			keyword_t,        // keywords.
+			symbol_token_t,         // symbols.
+			keyword_token_t,        // keywords.
 			identifier_t,     // identifiers.
 			std::string, 		// string literals.
 			integral_t,    // integer literals.
 			floating_t>;          // floating literals. (todo: guarantee double is 64-bit)
 
 		friend lexical_token tokens::make_error_token(std::string, location const&);
-		friend lexical_token tokens::make_symbol_token(symbol_t, location const&);
-		friend lexical_token tokens::make_keyword_token(keyword_t, location const&);
+		friend lexical_token tokens::make_symbol_token(symbol_token_t, location const&);
+		friend lexical_token tokens::make_keyword_token(keyword_token_t, location const&);
 
 		friend lexical_token tokens::identifier(std::string, location const&);
 		friend lexical_token tokens::prefixed_string_literal(std::string, lexical_token_prefix, location const&);
@@ -149,15 +149,15 @@ namespace rush {
 			return 0;
 		}
 
-		symbol_t symbol() const {
+		symbol_token_t symbol() const {
 			assert(is_symbol() && "token is not a symbol");
-			if (auto pval = std::get_if<symbol_t>(&_val)) return *pval;
+			if (auto pval = std::get_if<symbol_token_t>(&_val)) return *pval;
 			return symbols::unknown;
 		}
 
-		keyword_t keyword() const {
+		keyword_token_t keyword() const {
 			assert(is_keyword() && "token is not a keyword");
-			if (auto pval = std::get_if<keyword_t>(&_val)) return *pval;
+			if (auto pval = std::get_if<keyword_token_t>(&_val)) return *pval;
 			return keywords::unknown;
 		}
 
@@ -168,8 +168,8 @@ namespace rush {
 		lexical_token_type type() const noexcept {
 			return std::visit(overloaded {
 				[](auto&) { return lexical_token_type::error; },
-				[](symbol_t const&) { return lexical_token_type::symbol; },
-				[](keyword_t const&) { return lexical_token_type::keyword; },
+				[](symbol_token_t const&) { return lexical_token_type::symbol; },
+				[](keyword_token_t const&) { return lexical_token_type::keyword; },
 				[](integral_t const&) { return lexical_token_type::integer_literal; },
 				[](floating_t const&) { return lexical_token_type::floating_literal; },
 				[](std::string const&) { return lexical_token_type::string_literal; },
@@ -192,48 +192,48 @@ namespace rush {
 		}
 
 		// \brief Returns true if the token is an instance of the specified symbol; false otherwise.
-		bool is(symbol_t sym) const noexcept {
-			if (auto pval = std::get_if<symbol_t>(&_val)) return *pval == sym;
+		bool is(symbol_token_t sym) const noexcept {
+			if (auto pval = std::get_if<symbol_token_t>(&_val)) return *pval == sym;
 			return false;
 		}
 
 		// \brief Returns true if the token is an instance of the specified keyword; false otherwise.
-		bool is(keyword_t kw) const noexcept {
-			if (auto pval = std::get_if<keyword_t>(&_val)) return *pval == kw;
+		bool is(keyword_token_t kw) const noexcept {
+			if (auto pval = std::get_if<keyword_token_t>(&_val)) return *pval == kw;
 			return false;
 		}
 
 		// \brief Returns true if the token matches any of the keywords or symbols passed; false otherwise.
 		template <typename... Ts>
-		bool is_any(keyword_t first, Ts... rest) const noexcept {
+		bool is_any(keyword_token_t first, Ts... rest) const noexcept {
 			return is(first) || is_any(rest...);
 		}
 
 		// \brief Returns true if the token matches any of the keywords or symbols passed; false otherwise.
 		template <typename... Ts>
-		bool is_any(symbol_t first, Ts... rest) const noexcept {
+		bool is_any(symbol_token_t first, Ts... rest) const noexcept {
 			return is(first) || is_any(rest...);
 		}
 
 		// \brief Returns true if the token is not an instance of the specified symbol; false otherwise.
-		bool is_not(symbol_t sym) const noexcept {
+		bool is_not(symbol_token_t sym) const noexcept {
 			return !is(sym);
 		}
 
 		// \brief Returns true if the token is not an instance of the specified keyword; false otherwise.
-		bool is_not(keyword_t kw) const noexcept {
+		bool is_not(keyword_token_t kw) const noexcept {
 			return !is(kw);
 		}
 
 		// \brief Returns true if the token does not matche any of the keywords or symbols passed; false otherwise.
 		template <typename... Ts>
-		bool is_not_any(keyword_t first, Ts... rest) const noexcept {
+		bool is_not_any(keyword_token_t first, Ts... rest) const noexcept {
 			return is_not(first) && is_not_any(rest...);
 		}
 
 		// \brief Returns true if the token does not matche any of the keywords or symbols passed; false otherwise.
 		template <typename... Ts>
-		bool is_not_any(symbol_t first, Ts... rest) const noexcept {
+		bool is_not_any(symbol_token_t first, Ts... rest) const noexcept {
 			return is_not(first) && is_not_any(rest...);
 		}
 
@@ -243,12 +243,12 @@ namespace rush {
 
 		// \brief Returns true if the token is categorically a symbol; false otherwise.
 		bool is_symbol() const noexcept {
-			return std::holds_alternative<symbol_t>(_val);
+			return std::holds_alternative<symbol_token_t>(_val);
 		}
 
 		// \brief Returns true if the token is categorically a keyword; false otherwise.
 		bool is_keyword() const noexcept {
-			return std::holds_alternative<keyword_t>(_val);
+			return std::holds_alternative<keyword_token_t>(_val);
 		}
 
 		// \brief Returns true if the token is categorically an identifier; false otherwise.
@@ -269,7 +269,7 @@ namespace rush {
 		}
 
 		bool is_boolean_literal() const noexcept {
-			if (auto pval = std::get_if<keyword_t>(&_val))
+			if (auto pval = std::get_if<keyword_token_t>(&_val))
 				return *pval == keywords::true_ || *pval == keywords::false_;
 				return false;
 		}
