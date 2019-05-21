@@ -166,14 +166,6 @@ namespace rush {
    void dump(std::istream& input, std::ostream& out) { dump(parse(input), out); }
    void dump(std::string input, parser_options const& opts, std::ostream& out) { dump(parse(input, opts), out); }
    void dump(std::istream& input, parser_options const& opts, std::ostream& out) { dump(parse(input, opts), out); }
-   void dump(parse_result const& input) { dump(*input.ast()); }
-   void dump(parse_result const& input, std::ostream& out) { dump(*input.ast(), out); }
-
-   void dump(ast::node const& input) {
-      dump(input, std::cout);
-   }
-
-   void dump(ast::node const& input, std::ostream& out) {
-      input.accept(printer { out });
-   }
+   void dump(rush::parse_result const& input, std::ostream& out) { dump(*input.ast(), out); }
+   void dump(ast::node const& input, std::ostream& out) { input.accept(printer { out }); }
 } // rush
