@@ -1,8 +1,7 @@
-#include "rush/sema/symbol.hpp"
-#include "rush/sema/scope.hpp"
+#include "rush/parser/symbol.hpp"
+#include "rush/parser/scope.hpp"
 
 #include <iostream>
-using namespace rush::sema;
 
 namespace rush {
 	// scope& ensure_global_scope() {

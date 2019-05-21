@@ -1,16 +1,16 @@
 #pragma once
 
-#ifndef RUSH_SEMA_SCOPE_HPP
-#define RUSH_SEMA_SCOPE_HPP
+#ifndef RUSH_PARSER_SCOPE_HPP
+#define RUSH_PARSER_SCOPE_HPP
 
-#include "rush/sema/symbol.hpp"
+#include "rush/parser/symbol.hpp"
 
 #include <unordered_map>
 #include <stack>
 #include <optional>
 #include <string>
 
-namespace rush::sema {
+namespace rush {
    class scope;
    class scope_chain;
 
@@ -50,7 +50,7 @@ namespace rush::sema {
          , _parent(other._parent)
          , _kind(other._kind) {}
 
-      using symbol_t = sema::symbol;
+      using symbol_t = rush::symbol;
       using symbol_table_t = std::unordered_map<std::string, symbol_t>;
 
       //! \brief Gets the depth of the scope relative to its ancestor scopes.
@@ -108,7 +108,7 @@ namespace rush::sema {
     */
    class scope_chain final {
    public:
-      using symbol_t = sema::symbol;
+      using symbol_t = rush::symbol;
 
       /*! \brief Returns a reference to the most deeply nested scope. */
       scope& current() const noexcept;
@@ -132,4 +132,4 @@ namespace rush::sema {
    };
 }
 
-#endif // RUSH_SEMA_SCOPE_HPP
+#endif // RUSH_PARSER_SCOPE_HPP

@@ -1,7 +1,7 @@
-#include "rush/sema/symbol.hpp"
-#include "rush/sema/scope.hpp"
+#include "rush/parser/symbol.hpp"
+#include "rush/parser/scope.hpp"
 
-namespace rush::sema {
+namespace rush {
 
    const symbol symbol::undefined = {};
 
@@ -29,7 +29,7 @@ namespace rush::sema {
 		return has_attributes(flags, first) && has_attributes(flags, rest...);
 	}
 
-	// sema::scope const& symbol::scope() const noexcept {
+	// rush::scope const& symbol::scope() const noexcept {
 	// 	return *_scope;
 	// }
 
@@ -113,4 +113,4 @@ namespace rush::sema {
 	// bool symbol::is_thread_local_storage_duration() const noexcept {
 	// 	return has_attributes(_entry->flags(), storage_class_specifier::thread_local_);
 	// }
-} // rush::sema
+} // rush

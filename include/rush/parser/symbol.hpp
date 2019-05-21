@@ -1,14 +1,14 @@
 #pragma once
 
-#ifndef RUSH_SEMA_SYMBOL_HPP
-#define RUSH_SEMA_SYMBOL_HPP
+#ifndef RUSH_PARSER_SYMBOL_HPP
+#define RUSH_PARSER_SYMBOL_HPP
 
-#include "rush/sema/attributes.hpp"
+#include "rush/parser/attributes.hpp"
 #include "rush/ast/decls/declaration.hpp"
 
 #include <string>
 
-namespace rush::sema {
+namespace rush {
 
    /*! \brief A value type that points to a declaration in an AST.
 	 *         This type tracks declarations within lexical scopes
@@ -27,7 +27,7 @@ namespace rush::sema {
       }
 
       // symbol kind
-		symbol_kind kind() const noexcept;
+		rush::symbol_kind kind() const noexcept;
 
       // symbol kind convenience members.
 		bool is_constant() const noexcept {
@@ -44,7 +44,7 @@ namespace rush::sema {
 		bool is_undefined() const noexcept;
 
       // access modifiers
-		access_modifier access_modifier() const noexcept;
+		rush::access_modifier access_modifier() const noexcept;
 
 		// access modifier convenience members.
 		bool is_internal() const noexcept;
@@ -54,7 +54,7 @@ namespace rush::sema {
 		bool is_protected() const noexcept;
 
       // storage class specifiers
-		storage_class_specifier storage_duration() const noexcept;
+		rush::storage_class_specifier storage_duration() const noexcept;
 
 		// convenience members
 		bool is_auto_storage_duration() const noexcept;
@@ -76,4 +76,4 @@ namespace rush::sema {
 	// extern symbol const& symbol_undefined;
 }
 
-#endif // RUSH_SEMA_SYMBOL_HPP
+#endif // RUSH_PARSER_SYMBOL_HPP

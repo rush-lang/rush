@@ -13,6 +13,7 @@ namespace rush {
 	namespace ast::exprs {}
 	namespace ast::decls {}
 	namespace ast::stmts {}
+   namespace ast::types {}
 
 	namespace sema {}
 }
@@ -31,6 +32,7 @@ namespace rush::namespaces {
 	namespace exprs = ::rush::ast::exprs;
 	namespace decls = ::rush::ast::decls;
 	namespace stmts = ::rush::ast::stmts;
+   namespace types = ::rush::ast::types;
 
 	namespace sema = ::rush::sema;
 }

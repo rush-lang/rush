@@ -4,7 +4,6 @@
 #define RUSH_AST_STMTS_STATEMENT_HPP
 
 #include "rush/ast/node.hpp"
-#include "rush/sema/scope.hpp"
 
 #include <cstdint>
 

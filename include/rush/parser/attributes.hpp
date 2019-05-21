@@ -5,7 +5,7 @@
 
 #include <cstdint>
 
-namespace rush::sema {
+namespace rush {
 
 	// bits 1-3: symbol_kind
 	// bits 4-7: access_modifier
@@ -40,6 +40,6 @@ namespace rush::sema {
 		static_,
 		thread_local_
 	};
-} // rush::sema
+} // rush
 
 #endif // RUSH_SEMA_ATTRIBUTES_HPP

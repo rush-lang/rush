@@ -1,9 +1,6 @@
 add_executable(sema-test
-	$<TARGET_OBJECTS:catch2>
-	attributes_test.cpp
-	symbol_test.cpp
-	scope_test.cpp
-	scope.cpp
+   $<TARGET_OBJECTS:catch2>
+   analyzer_test.cpp
 )
 
 target_include_directories(sema-test PRIVATE ../../../external/catch2/include)

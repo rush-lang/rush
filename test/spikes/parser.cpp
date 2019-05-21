@@ -10,7 +10,6 @@ namespace ast = rush::ast;
 namespace exprs = rush::ast::exprs;
 namespace decls = rush::ast::decls;
 namespace stmts = rush::ast::stmts;
-namespace sema = rush::sema;
 
 int main() {
 	std::cout << src1 << std::endl;
