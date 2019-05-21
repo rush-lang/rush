@@ -29,23 +29,14 @@ namespace rush::ast {
 		void operator = (declaration const&) = delete;
 
 	public:
-      declaration(std::string name, ast::type type)
-         : _name(std::move(name))
-         , _type(std::move(type)) {}
+      virtual std::string name() const = 0;
 
-      ast::type type() const noexcept {
-			return _type;
-		}
+      virtual ast::type_ref type() const = 0;
 
-      std::string name() const noexcept {
-			return _name;
-		}
+		virtual declaration_kind kind() const = 0;
 
-		virtual declaration_kind kind() const noexcept = 0;
-
-   private:
-      std::string _name;
-      ast::type _type;
+   protected:
+      declaration() = default;
 	};
 }
 

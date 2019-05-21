@@ -13,7 +13,7 @@ namespace rush::ast {
 	namespace decls {
 		std::unique_ptr<variable_declaration> variable(
 			std::string name,
-			ast::type type,
+			ast::type_ref type,
 			std::unique_ptr<expression> init);
 	}
 
@@ -21,10 +21,14 @@ namespace rush::ast {
 		struct factory_tag_t {};
 
 		friend std::unique_ptr<variable_declaration>
-			decls::variable(std::string, ast::type, std::unique_ptr<expression>);
+			decls::variable(std::string, ast::type_ref, std::unique_ptr<expression>);
 
 	public:
-		variable_declaration(std::string name, ast::type type, std::unique_ptr<expression> init, factory_tag_t)
+		variable_declaration(
+         std::string name,
+         ast::type_ref type,
+         std::unique_ptr<expression> init,
+         factory_tag_t)
 			: storage_declaration {
 				std::move(name),
 				std::move(type),
@@ -44,7 +48,7 @@ namespace rush::ast {
 	namespace decls {
 		inline std::unique_ptr<variable_declaration> variable(
 			std::string name,
-			ast::type type,
+			ast::type_ref type,
 			std::unique_ptr<expression> init
 		) {
 			return std::make_unique<variable_declaration>(
@@ -61,8 +65,7 @@ namespace rush::ast {
 			if (!init) throw std::invalid_argument("un-typed variable declaration requires an initializer.");
 			return variable(
 				std::move(name),
-				// init->result_type(),
-				types::error_type,
+				init->result_type(),
 				std::move(init));
 		}
 	} // rush::ast::decls

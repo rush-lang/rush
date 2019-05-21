@@ -4,6 +4,7 @@
 #define RUSH_AST_PARAMETER_HPP
 
 #include "rush/ast/node.hpp"
+#include "rush/ast/types/type.hpp"
 
 namespace rush::ast {
 	class parameter : public node {
@@ -16,23 +17,23 @@ namespace rush::ast {
 
 	class named_parameter : public parameter {
 	public:
-		ast::type type() { return _type; }
+		ast::type_ref type() { return _type; }
 		std::string name() { return _name; }
 	private:
-		ast::type _type;
+		ast::type_ref _type;
 		std::string _name;
 	};
 
 	class unnamed_parameter : public parameter {
 	public:
-		ast::type type() { return _type; }
+		ast::type_ref type() { return _type; }
 	private:
-		ast::type _type;
+		ast::type_ref _type;
 	};
 
 	namespace decls {
-		std::unique_ptr<unnamed_parameter> param(ast::type type);
-		std::unique_ptr<named_parameter> param(std::string name, ast::type type);
+		std::unique_ptr<unnamed_parameter> param(ast::type_ref type);
+		std::unique_ptr<named_parameter> param(std::string name, ast::type_ref type);
 	}
 } // rush::ast
 

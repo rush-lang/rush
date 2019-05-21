@@ -3,58 +3,84 @@
 #ifndef RUSH_AST_DECLS_FUNCTION_HPP
 #define RUSH_AST_DECLS_FUNCTION_HPP
 
-#include "rush/core/iterator_range.hpp"
+#include "rush/ast/identifier.hpp"
 #include "rush/ast/list.hpp"
 #include "rush/ast/types/function.hpp"
 #include "rush/ast/decls/declaration.hpp"
 #include "rush/ast/decls/parameter.hpp"
+#include "rush/ast/exprs/identifier.hpp"
 #include "rush/ast/list.hpp"
 #include "rush/ast/exprs/argument.hpp"
 
 #include <vector>
+
+namespace rush::ast::decls {
+   std::unique_ptr<function_declaration> function(
+      std::string,
+      ast::type_ref,
+      std::unique_ptr<parameter_list>,
+      std::unique_ptr<statement>);
+}
 
 namespace rush::ast {
 	class statement;
 
 	class function_declaration : public declaration {
 		struct factory_tag_t {};
-	public:
-		using parameter_range = rush::iterator_range<
-			typename std::vector<std::unique_ptr<parameter>>::iterator>;
 
+      friend std::unique_ptr<function_declaration> decls::function(
+			std::string,
+         ast::type_ref,
+			std::unique_ptr<parameter_list>,
+			std::unique_ptr<statement>);
+
+	public:
 		function_declaration(
 			std::string name,
+         ast::function_type fntype,
 			std::unique_ptr<ast::statement> body,
-         std::unique_ptr<ast::function_type> fntype,
 			factory_tag_t)
-         : declaration { std::move(name), ast::type { fntype } }
+         : _name { std::move(name) }
          , _type { std::move(fntype) }
 			, _body { std::move(body) } {}
+
+      virtual std::string name() const noexcept override {
+         return _name;
+      }
+
+      virtual ast::type_ref type() const noexcept override {
+         return { _type };
+      }
 
 		virtual declaration_kind kind() const noexcept override {
 			return declaration_kind::function;
 		}
 
-      ast::type return_type() const noexcept {
-			return _type->return_type();
+      ast::type_ref return_type() const noexcept {
+			return _type.return_type();
 		}
 
-		rush::iterator_range<parameter const&> parameters() const {
-         return _type->parameters();
+		ast::parameter_list const& parameters() const {
+         return _type.parameters();
 		}
 
 		statement const& body() const noexcept {
 			return *_body;
 		}
 
+      ast::identifier identifier() const noexcept {
+         return { *this };
+      }
+
       using node::accept;
-      virtual void accept(ast::visitor& v) {
+      virtual void accept(ast::visitor& v) const override {
          v.visit_function_decl(*this);
       }
 
 	private:
+      std::string _name;
+      ast::function_type _type;
 		std::unique_ptr<statement> _body;
-      std::unique_ptr<function_type> _type;
 	};
 
 	namespace decls {
@@ -68,7 +94,7 @@ namespace rush::ast {
 
 		inline std::unique_ptr<function_declaration> function(
 			std::string name,
-			ast::type return_type,
+			ast::type_ref return_type,
 			std::unique_ptr<statement> body) {
 				return decls::function(
 					std::move(name),
@@ -88,14 +114,17 @@ namespace rush::ast {
 
 		inline std::unique_ptr<function_declaration> function(
 			std::string name,
-			ast::type return_type,
+         ast::type_ref return_type,
 			std::unique_ptr<parameter_list> params,
 			std::unique_ptr<statement> body) {
-				// return decls::function(
-				// 	std::move(name),
-				// 	std::move(return_type),
-				// 	std::move(params),
-				// 	std::move(body));
+            return std::make_unique<function_declaration>(
+               std::move(name),
+               ast::function_type {
+                  std::move(return_type),
+                  std::move(params),
+                  function_type::factory_tag_t {} },
+               std::move(body),
+               function_declaration::factory_tag_t {});
 			}
 	} // rush::ast::decls
 } // rush::ast

@@ -12,7 +12,7 @@ namespace rush {
 
 	template <typename DeclT>
 	std::unique_ptr<DeclT> parser::_parse_storage_decl(std::string storage_type,
-		std::unique_ptr<DeclT> (*fptr)(std::string, ast::type, std::unique_ptr<ast::expression>)
+		std::unique_ptr<DeclT> (*fptr)(std::string, ast::type_ref, std::unique_ptr<ast::expression>)
 	) {
 		if (peek_skip_indent().is(symbols::left_bracket)) {
 			// parse_destructure_pattern.
@@ -21,7 +21,7 @@ namespace rush {
 
 		if (peek_skip_indent().is_identifier()) {
 			auto ident = next_skip_indent();
-			std::optional<ast::type> type;
+			std::optional<ast::type_ref> type;
 
 			if (peek_skip_indent().is(symbols::colon)) {
 				type = parse_type_annotation();
@@ -37,7 +37,7 @@ namespace rush {
 
 			return type != std::nullopt
 				? (*fptr)(ident.text(), *type, std::move(init))
-				: (*fptr)(ident.text(), ast::types::error_type, std::move(init));
+				: (*fptr)(ident.text(), init->result_type(), std::move(init));
 		}
 
 		return error("expected an identifier before '{}'.", next_skip_indent());
@@ -48,7 +48,7 @@ namespace rush {
 		next_skip_indent(); // consume let token
 		using function_type = std::unique_ptr<ast::constant_declaration>(*)(
 			std::string name,
-			ast::type type,
+			ast::type_ref type,
 			std::unique_ptr<ast::expression> init);
 		return _parse_storage_decl("constant", static_cast<function_type>(&decls::constant));
 	}
@@ -58,7 +58,7 @@ namespace rush {
 		next_skip_indent(); // consume var token
 		using function_type = std::unique_ptr<ast::variable_declaration>(*)(
 			std::string name,
-			ast::type type,
+			ast::type_ref type,
 			std::unique_ptr<ast::expression> init);
 		return _parse_storage_decl("variable", static_cast<function_type>(&decls::variable));
 	}

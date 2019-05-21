@@ -1,5 +1,6 @@
 #include "rush/ast/types/builtin.hpp"
 #include <memory>
+#include <array>
 
 namespace rush::ast::types {
 
@@ -7,23 +8,42 @@ namespace rush::ast::types {
 		return std::make_unique<builtin_type>(std::move(name));
 	}
 
+   std::array<std::unique_ptr<builtin_type>, 16> const _builtin_types = {
+      make_builtin_type("<error-type>"),
+      make_builtin_type("<inferred-type>"),
+      make_builtin_type("void"),
+	   make_builtin_type("bool"),
+	   make_builtin_type("byte"),
+	   make_builtin_type("sbyte"),
+	   make_builtin_type("short"),
+	   make_builtin_type("ushort"),
+	   make_builtin_type("int"),
+	   make_builtin_type("uint"),
+	   make_builtin_type("long"),
+	   make_builtin_type("ulong"),
+	   make_builtin_type("float"),
+	   make_builtin_type("double"),
+	   make_builtin_type("string"),
+	   make_builtin_type("chars"),
+   };
+
    // sentinals
-	std::unique_ptr<builtin_type> const error_type = make_builtin_type("<error-type>");
-	std::unique_ptr<builtin_type> const inferred_type = make_builtin_type("<inferred-type>");
+	ast::type_ref const error_type = *_builtin_types[0];
+	ast::type_ref const inferred_type = *_builtin_types[1];
 
 	// known/built-in types
-	std::unique_ptr<builtin_type> const void_type = make_builtin_type("void");
-	std::unique_ptr<builtin_type> const bool_type = make_builtin_type("bool");
-	std::unique_ptr<builtin_type> const byte_type = make_builtin_type("byte");
-	std::unique_ptr<builtin_type> const sbyte_type = make_builtin_type("sbyte");
-	std::unique_ptr<builtin_type> const short_type = make_builtin_type("short");
-	std::unique_ptr<builtin_type> const ushort_type = make_builtin_type("ushort");
-	std::unique_ptr<builtin_type> const int_type = make_builtin_type("int");
-	std::unique_ptr<builtin_type> const uint_type = make_builtin_type("uint");
-	std::unique_ptr<builtin_type> const long_type = make_builtin_type("long");
-	std::unique_ptr<builtin_type> const ulong_type = make_builtin_type("ulong");
-	std::unique_ptr<builtin_type> const float_type = make_builtin_type("float");
-	std::unique_ptr<builtin_type> const double_type = make_builtin_type("double");
-	std::unique_ptr<builtin_type> const string_type = make_builtin_type("string");
-	std::unique_ptr<builtin_type> const char_type = make_builtin_type("chars");
+	ast::type_ref const void_type = *_builtin_types[2];
+	ast::type_ref const bool_type = *_builtin_types[3];
+	ast::type_ref const byte_type = *_builtin_types[4];
+	ast::type_ref const sbyte_type = *_builtin_types[5];
+	ast::type_ref const short_type = *_builtin_types[6];
+	ast::type_ref const ushort_type = *_builtin_types[7];
+	ast::type_ref const int_type = *_builtin_types[8];
+	ast::type_ref const uint_type = *_builtin_types[9];
+	ast::type_ref const long_type = *_builtin_types[10];
+	ast::type_ref const ulong_type = *_builtin_types[11];
+	ast::type_ref const float_type = *_builtin_types[12];
+	ast::type_ref const double_type = *_builtin_types[13];
+	ast::type_ref const string_type = *_builtin_types[14];
+	ast::type_ref const char_type = *_builtin_types[15];
 }

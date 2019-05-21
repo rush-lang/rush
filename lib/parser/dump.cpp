@@ -1,3 +1,4 @@
+#include "rush/ast/node.hpp"
 #include "rush/ast/types.hpp"
 #include "rush/ast/declarations.hpp"
 #include "rush/ast/statements.hpp"
@@ -49,7 +50,7 @@ namespace rush {
 			, _current_indent(0)
 			, _ostr(out) {}
 
-		virtual void visit_named_type(ast::named_type const& t) override {
+		virtual void visit_builtin_type(ast::builtin_type const& t) override {
 			write(t.name());
 		}
 
@@ -134,12 +135,14 @@ namespace rush {
 		std::basic_ostream<CharT, Traits>& _ostr;
 
 		void print_expression(std::string name, expression const& expr) {
-			write("<{} [expr]>", name);
+			write("<{}:", name);
+			expr.result_type().accept(*this);
+			write(" [expr]>");
 		}
 
 		void print_literal_expr(std::string value, literal_expression const& expr) {
 			write("<literal:");
-			expr.type().accept(*this);
+			expr.result_type().accept(*this);
 			writeln(" [expr]> [value: {}]", value);
 		}
 
@@ -156,20 +159,21 @@ namespace rush {
 	};
 
 
-	using printer = basic_printer<char>;
-	using wprinter = basic_printer<wchar_t>;
+   using printer = basic_printer<char>;
+   using wprinter = basic_printer<wchar_t>;
 
-	void dump(std::string input, std::ostream& out) { dump(parse(input), out); }
-	void dump(std::istream& input, std::ostream& out) { dump(parse(input), out); }
-	void dump(std::string input, parser_options const& opts, std::ostream& out) { dump(parse(input, opts), out); }
-	void dump(std::istream& input, parser_options const& opts, std::ostream& out) { dump(parse(input, opts), out); }
+   void dump(std::string input, std::ostream& out) { dump(parse(input), out); }
+   void dump(std::istream& input, std::ostream& out) { dump(parse(input), out); }
+   void dump(std::string input, parser_options const& opts, std::ostream& out) { dump(parse(input, opts), out); }
+   void dump(std::istream& input, parser_options const& opts, std::ostream& out) { dump(parse(input, opts), out); }
+   void dump(parse_result const& input) { dump(*input.ast()); }
+   void dump(parse_result const& input, std::ostream& out) { dump(*input.ast(), out); }
 
-	void dump(parse_result const& input) {
-		dump(input, std::cout);
-	}
+   void dump(ast::node const& input) {
+      dump(input, std::cout);
+   }
 
-	void dump(parse_result const& input, std::ostream& out) {
-		if (input.ast() != nullptr)
-			input.ast()->accept(printer { out });
-	}
+   void dump(ast::node const& input, std::ostream& out) {
+      input.accept(printer { out });
+   }
 } // rush

@@ -4,6 +4,7 @@
 #define RUSH_AST_EXPRS_BINARY_HPP
 
 #include "rush/ast/exprs/expression.hpp"
+#include "rush/ast/types/utility.hpp"
 #include "rush/ast/visitor.hpp"
 
 #include <memory>
@@ -27,6 +28,12 @@ namespace rush::ast {
 		binary_operator opkind() const noexcept { return _opkind; }
 		expression const& left_operand() const noexcept { return *_left; }
 		expression const& right_operand() const noexcept { return *_right; }
+
+      virtual ast::type_ref result_type() const noexcept override {
+         return types::reduce(
+            _left->result_type(),
+            _right->result_type());
+      }
 
 		using node::accept;
 		virtual void accept(ast::visitor& v) const override {

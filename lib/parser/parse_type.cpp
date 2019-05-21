@@ -2,7 +2,7 @@
 #include "rush/parser/parser.hpp"
 
 namespace rush {
-   ast::type builtin_type_from_keyword(keywords::keyword_t kw) {
+   ast::type_ref builtin_type_from_keyword(keywords::keyword_t kw) {
       switch (kw) {
          case keywords::void_: return ast::types::void_type;
          case keywords::bool_: return ast::types::bool_type;
@@ -22,7 +22,7 @@ namespace rush {
       }
    }
 
-   std::optional<ast::type> parser::parse_type_annotation() {
+   std::optional<ast::type_ref> parser::parse_type_annotation() {
       assert(peek_skip_indent().is(symbols::colon) && "expected a type annotation symbol ':'");
       next_skip_indent();
 

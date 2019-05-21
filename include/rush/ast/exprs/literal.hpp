@@ -21,14 +21,14 @@ namespace rush::ast {
 
 		template <typename LiteralExprT>
 		friend std::unique_ptr<LiteralExprT> make_literal_expr(
-			variant_type val, ast::type val_type);
+			variant_type val, ast::type_ref val_type);
 
 	public:
-		literal_expression(variant_type val, ast::type val_type, factory_tag_t)
+		literal_expression(variant_type val, ast::type_ref val_type, factory_tag_t)
 			: _val(std::move(val))
 			, _type(val_type) {}
 
-		ast::type type() const noexcept {
+		virtual ast::type_ref result_type() const noexcept override {
 			return _type;
 		}
 
@@ -40,7 +40,7 @@ namespace rush::ast {
 
 	private:
 		variant_type _val;
-		ast::type _type;
+		ast::type_ref _type;
 	};
 
 	class nil_literal_expression : public literal_expression {
@@ -89,24 +89,24 @@ namespace rush::ast {
 }
 
 namespace rush::ast::exprs {
-	std::unique_ptr<nil_literal_expression> nil(ast::type);
+	std::unique_ptr<nil_literal_expression> nil(ast::type_ref);
 
 	std::unique_ptr<boolean_literal_expression> literal(bool);
 	std::unique_ptr<string_literal_expression>  literal(std::string);
 
-	std::unique_ptr<integer_literal_expression> literal(std::int8_t, ast::type = types::sbyte_type);
-	std::unique_ptr<integer_literal_expression> literal(std::int16_t, ast::type = types::short_type);
-	std::unique_ptr<integer_literal_expression> literal(std::int32_t, ast::type = types::int_type);
-	std::unique_ptr<integer_literal_expression> literal(std::int64_t, ast::type = types::long_type);
+	std::unique_ptr<integer_literal_expression> literal(std::int8_t, ast::type_ref = types::sbyte_type);
+	std::unique_ptr<integer_literal_expression> literal(std::int16_t, ast::type_ref = types::short_type);
+	std::unique_ptr<integer_literal_expression> literal(std::int32_t, ast::type_ref = types::int_type);
+	std::unique_ptr<integer_literal_expression> literal(std::int64_t, ast::type_ref = types::long_type);
 
-	std::unique_ptr<integer_literal_expression> literal(std::uint8_t, ast::type = types::byte_type);
-	std::unique_ptr<integer_literal_expression> literal(std::uint16_t, ast::type = types::ushort_type);
-	std::unique_ptr<integer_literal_expression> literal(std::uint32_t, ast::type = types::uint_type);
-	std::unique_ptr<integer_literal_expression> literal(std::uint64_t, ast::type = types::ulong_type);
+	std::unique_ptr<integer_literal_expression> literal(std::uint8_t, ast::type_ref = types::byte_type);
+	std::unique_ptr<integer_literal_expression> literal(std::uint16_t, ast::type_ref = types::ushort_type);
+	std::unique_ptr<integer_literal_expression> literal(std::uint32_t, ast::type_ref = types::uint_type);
+	std::unique_ptr<integer_literal_expression> literal(std::uint64_t, ast::type_ref = types::ulong_type);
 
-	std::unique_ptr<floating_literal_expression> literal(float, ast::type = types::float_type);
-	std::unique_ptr<floating_literal_expression> literal(double, ast::type = types::double_type);
-	std::unique_ptr<floating_literal_expression> literal(long double, ast::type = types::double_type);
+	std::unique_ptr<floating_literal_expression> literal(float, ast::type_ref = types::float_type);
+	std::unique_ptr<floating_literal_expression> literal(double, ast::type_ref = types::double_type);
+	std::unique_ptr<floating_literal_expression> literal(long double, ast::type_ref = types::double_type);
 } // rush
 
 #endif // RUSH_AST_EXPRS_LITERAL_HPP

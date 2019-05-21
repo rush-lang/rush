@@ -4,11 +4,12 @@
 #define RUSH_AST_TYPES_NAMED_HPP
 
 #include "rush/ast/node.hpp"
+#include "rush/ast/types/type.hpp"
 
 #include <string>
 
 namespace rush::ast {
-   class named_type : public node {
+   class named_type : public type {
    public:
       named_type(std::string name)
          : _name(name) {}

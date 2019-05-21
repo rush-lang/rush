@@ -7,8 +7,6 @@
 #include "rush/ast/visitor.hpp"
 
 #include <memory>
-#include <string>
-#include <variant>
 
 namespace rush::ast {
    class named_type;
@@ -17,46 +15,38 @@ namespace rush::ast {
    class builtin_type;
    class function_type;
 
+   enum class type_kind {
+      builtin,
+      array,
+      tuple,
+      function
+   };
+
+   class type : public node {
+   public:
+      virtual type_kind kind() const = 0;
+   };
 
    // Value object that stores a pointer to an actual type, named or unnamed.
-	class type {
-		template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
-		template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
-
+	class type_ref {
    public:
-      type(std::unique_ptr<ast::builtin_type> const& ty)
-         : _ptr { ty.get() } {}
+      type_ref(ast::type const& ref)
+         : _ptr { std::addressof(ref) } {}
 
-      type(std::unique_ptr<ast::array_type> const& ty)
-         : _ptr { ty.get() } {}
-
-      type(std::unique_ptr<ast::tuple_type> const& ty)
-         : _ptr { ty.get() } {}
-
-      type(std::unique_ptr<ast::function_type> const& ty)
-         : _ptr { ty.get() } {}
-
-      void accept(ast::visitor& v) {
-         // std::visit(overloaded {
-         //    [&v](ast::named_type const* t) { v.visit_named_type(*t); },
-         //    [&v](ast::unnamed_type const* t) { v.visit_unnamed_type(*t); },
-         // }, _ptr);
+      ast::type_kind kind() const noexcept {
+         return _ptr->kind();
       }
 
-      void accept(ast::visitor&& v) {
-         // std::visit(overloaded {
-         //    [&v](ast::named_type const* t) { v.visit_named_type(*t); },
-         //    [&v](ast::unnamed_type const* t) { v.visit_unnamed_type(*t); },
-         // }, _ptr);
+      void accept(ast::visitor& v) const {
+         _ptr->accept(v);
+      }
+
+      void accept(ast::visitor&& v) const {
+         _ptr->accept(std::move(v));
       }
 
    private:
-      std::variant<
-         ast::named_type const*,
-         ast::builtin_type const*,
-         ast::array_type const*,
-         ast::tuple_type const*,
-         ast::function_type const*> _ptr;
+      ast::type const* _ptr;
    };
 }
 

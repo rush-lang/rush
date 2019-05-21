@@ -4,6 +4,7 @@
 #define RUSH_AST_EXPRS_EXPRESSION_HPP
 
 #include "rush/ast/node.hpp"
+#include "rush/ast/types/type.hpp"
 
 #include <utility>
 #include <memory>
@@ -19,6 +20,8 @@ namespace rush::ast {
 
 	public:
 		expression() = default;
+
+      virtual ast::type_ref result_type() const = 0;
 	};
 }
 

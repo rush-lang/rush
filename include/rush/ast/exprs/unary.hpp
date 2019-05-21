@@ -3,6 +3,7 @@
 #ifndef RUSH_AST_EXPRS_UNARY_HPP
 #define RUSH_AST_EXPRS_UNARY_HPP
 
+#include "rush/ast/types/type.hpp"
 #include "rush/ast/exprs/expression.hpp"
 #include "rush/ast/visitor.hpp"
 
@@ -24,6 +25,10 @@ namespace rush::ast {
 
 		unary_operator opkind() const noexcept { return _opkind; }
 		expression const& operand() const noexcept { return *_operand; }
+
+      virtual ast::type_ref result_type() const noexcept override {
+         return _operand->result_type();
+      }
 
 		using node::accept;
 		virtual void accept(ast::visitor& v) const override {

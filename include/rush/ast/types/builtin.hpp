@@ -15,32 +15,36 @@ namespace rush::ast {
       builtin_type(std::string name)
          : named_type(name) {}
 
+      virtual ast::type_kind kind() const noexcept override{
+         return ast::type_kind::builtin;
+      };
+
       using node::accept;
       virtual void accept(ast::visitor& v) const override {
-			// v.visit_builtin_type(*this);
+			v.visit_builtin_type(*this);
 		}
    };
 
    namespace types {
       // sentinal types
-      extern std::unique_ptr<builtin_type> const error_type;
-      extern std::unique_ptr<builtin_type> const inferred_type;
+      extern ast::type_ref const error_type;
+      extern ast::type_ref const inferred_type;
 
       // known/built-in types
-      extern std::unique_ptr<builtin_type> const void_type;
-      extern std::unique_ptr<builtin_type> const bool_type;
-      extern std::unique_ptr<builtin_type> const byte_type;
-      extern std::unique_ptr<builtin_type> const sbyte_type;
-      extern std::unique_ptr<builtin_type> const short_type;
-      extern std::unique_ptr<builtin_type> const ushort_type;
-      extern std::unique_ptr<builtin_type> const int_type;
-      extern std::unique_ptr<builtin_type> const uint_type;
-      extern std::unique_ptr<builtin_type> const long_type;
-      extern std::unique_ptr<builtin_type> const ulong_type;
-      extern std::unique_ptr<builtin_type> const float_type;
-      extern std::unique_ptr<builtin_type> const double_type;
-      extern std::unique_ptr<builtin_type> const string_type;
-      extern std::unique_ptr<builtin_type> const char_type;
+      extern ast::type_ref const void_type;
+      extern ast::type_ref const bool_type;
+      extern ast::type_ref const byte_type;
+      extern ast::type_ref const sbyte_type;
+      extern ast::type_ref const short_type;
+      extern ast::type_ref const ushort_type;
+      extern ast::type_ref const int_type;
+      extern ast::type_ref const uint_type;
+      extern ast::type_ref const long_type;
+      extern ast::type_ref const ulong_type;
+      extern ast::type_ref const float_type;
+      extern ast::type_ref const double_type;
+      extern ast::type_ref const string_type;
+      extern ast::type_ref const char_type;
    }
 }
 

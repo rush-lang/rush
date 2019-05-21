@@ -6,7 +6,14 @@
 #include <iostream>
 #include <string>
 
+namespace rush::ast {
+   class node;
+}
+
 namespace rush {
+   void dump(ast::node const& input);
+   void dump(ast::node const& input, std::ostream& out);
+
 	class parse_result;
 	void dump(parse_result const& input);
 	void dump(parse_result const& input, std::ostream& out);

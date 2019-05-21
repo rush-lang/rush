@@ -114,12 +114,12 @@ namespace rush {
 
 
       // types
-		std::optional<ast::type> parse_type_annotation();
+		std::optional<ast::type_ref> parse_type_annotation();
 
 		// declarations.
 		template <typename DeclT>
 		std::unique_ptr<DeclT> _parse_storage_decl(std::string,
-			std::unique_ptr<DeclT> (*)(std::string, ast::type, std::unique_ptr<ast::expression>));
+			std::unique_ptr<DeclT> (*)(std::string, ast::type_ref, std::unique_ptr<ast::expression>));
 
 		std::unique_ptr<ast::constant_declaration> parse_constant_decl();
 		std::unique_ptr<ast::variable_declaration> parse_variable_decl();
