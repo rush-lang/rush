@@ -18,12 +18,22 @@ namespace rush {
    public:
       static const symbol undefined;
 
+      symbol()
+         : _decl { nullptr } {}
+
+      symbol(ast::declaration const& decl)
+         : _decl { &decl } {}
+
       // rush::scope const& scope() const noexcept;
 
       std::string name() const noexcept {
          return !is_undefined()
-            ? "" //_decl->name()
+            ? _decl->name()
             : "<undefined>";
+      }
+
+      ast::declaration const* declaration() {
+         return _decl;
       }
 
       // symbol kind
@@ -34,14 +44,37 @@ namespace rush {
          return _decl->kind() == ast::declaration_kind::constant;
       }
 
-		bool is_variable() const noexcept;
-		bool is_function() const noexcept;
-      bool is_struct() const noexcept;
-      bool is_class() const noexcept;
-      bool is_enum() const noexcept;
-      bool is_concept() const noexcept;
-      bool is_interface() const noexcept;
-		bool is_undefined() const noexcept;
+		bool is_variable() const noexcept {
+         return _decl->kind() == ast::declaration_kind::variable;
+      }
+
+		bool is_function() const noexcept {
+         return _decl->kind() == ast::declaration_kind::function;
+      }
+
+      bool is_struct() const noexcept {
+         return _decl->kind() == ast::declaration_kind::struct_;
+      }
+
+      bool is_class() const noexcept {
+         return _decl->kind() == ast::declaration_kind::class_;
+      }
+
+      bool is_enum() const noexcept {
+         return _decl->kind() == ast::declaration_kind::enum_;
+      }
+
+      bool is_concept() const noexcept {
+         return _decl->kind() == ast::declaration_kind::concept;
+      }
+
+      bool is_interface() const noexcept {
+         return _decl->kind() == ast::declaration_kind::interface;
+      }
+
+		bool is_undefined() const noexcept {
+         return _decl == nullptr;
+      }
 
       // access modifiers
 		rush::access_modifier access_modifier() const noexcept;
@@ -62,7 +95,7 @@ namespace rush {
 		bool is_thread_local_storage_duration() const noexcept;
 
    private:
-      ast::declaration* _decl;
+      ast::declaration const* _decl;
    };
 
    // inline bool operator == (symbol const& lhs, symbol const& rhs) {

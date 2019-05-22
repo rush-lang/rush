@@ -15,6 +15,7 @@ namespace rush {
    class scope_chain;
 
    enum class scope_kind {
+      global,
       function,
       struct_,
       class_,
@@ -89,7 +90,13 @@ namespace rush {
        *         scope recursively until either the root/global scope has been reached
        *         or a symbol entry for the specified name is found.
        */
-      symbol_t lookup(std::string name);
+      symbol_t lookup(std::string name) const;
+
+      /*! \brief Performs a lookup of the symbol with the specified name.
+       *         This lookup is performed only within the scope the function is called on.
+       *         Symbols in outer scopes will not be searched for.
+       */
+      symbol_t lookup_local(std::string name) const;
 
    private:
       symbol_table_t _symtab;
@@ -107,24 +114,28 @@ namespace rush {
     *         accessors for the current scope on top of the stack.
     */
    class scope_chain final {
+      friend scope;
+
    public:
       using symbol_t = rush::symbol;
 
-      /*! \brief Returns a reference to the most deeply nested scope. */
-      scope& current() const noexcept;
+      scope_chain();
+
+      //! \brief Returns a reference to the most deeply nested scope.
+      scope const& current() const noexcept {
+         return _scopes.top();
+      }
 
       //! \brief Inserts a symbol within the current scope's symbol table.
       void insert(symbol_t);
 
-      /*! \brief Performs a lookup of the symbol with the specified name.
-       *         This is a chained lookup, starting at the scope the method
-       *         is invoked on and then performing lookup against its the parent
-       *         scope recursively until either the root/global scope has been reached
-       *         or a symbol entry for the specified name is found.
+      /*! \brief Pushes a new scope of scope_kind onto the end of the chain.
+       *         The new scope will obtain the current scope as its parent.
        */
-      symbol_t lookup(std::string name);
-
       void push(scope_kind);
+
+      /*! \brief Pops the current scope from the chain.
+       */
       void pop();
 
    private:

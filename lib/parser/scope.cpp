@@ -4,47 +4,42 @@
 #include <iostream>
 
 namespace rush {
-	// scope& ensure_global_scope() {
-	// 	static scope* const gs = new scope(nullptr);
-	// 	return *gs;
-	// }
 
-	// scope& global_scope = ensure_global_scope();
+   void scope::insert(scope::symbol_t sym) {
+      _symtab.insert({ sym.name(), sym });
+   }
 
-	// bool scope::is_descendent_of(scope const& sc) const noexcept {
-	// 	if (this->is_global()) return false;
-	// 	if (this->is_local_to(sc)) return true;
-	// 	return this->parent()->is_descendent_of(sc);
-	// }
+   scope::symbol_t scope::lookup(std::string name) const {
+      auto sym = lookup_local(name);
+      return sym.is_undefined()
+         ? parent()->lookup(std::move(name))
+         : sym;
+   }
 
-	// scope& scope::push_scope() {
-	// 	_children.push_back({ this });
-	// 	return _children.back();
-	// }
+   scope::symbol_t scope::lookup_local(std::string name) const {
+      auto it = _symtab.find(std::move(name));
+		if (it != _symtab.end()) return it->second;
+		return symbol::undefined;
+   }
 
-	// std::size_t scope::hash_of(sema::symbol_entry const& s) const {
-	// 	return _symbols.hash_function()(s);
-	// }
 
-	// sema::symbol scope::insert(symbol_entry s) {
-	// 	// inserts or gets the entry s.
-	// 	auto result = _symbols.insert(s);
-	// 	return to_symbol(*result.first);
-	// }
+   scope_chain::scope_chain() {
+      _scopes.push({ scope_kind::global, nullptr });
+   }
 
-	// symbol scope::lookup(std::string name) {
-	// 	auto it = _symbols.find({ name });
-	// 	if (it != _symbols.end()) return to_symbol(*it);
+   void scope_chain::insert(scope_chain::symbol_t sym) {
+      _scopes.top().insert(std::move(sym));
+   }
 
-	// 	return parent() != nullptr
-	// 		? parent()->lookup(std::move(name))
-	// 		: insert(make_undefined_entry(std::move(name)));
-	// }
+   void scope_chain::push(scope_kind kind) {
+      // assert(!_scopes.empty() && "scope chain always contain a global scope")
+      _scopes.push({ kind, &_scopes.top() });
+   }
 
-	// symbol scope::lookup_local(std::string name) {
-	// 	auto it = _symbols.find({ name });
-	// 	if (it != _symbols.end()) return to_symbol(*it);
-
-	// 	return insert(make_undefined_entry(std::move(name)));
-	// }
+   void scope_chain::pop() {
+      _scopes.pop();
+      if (_scopes.empty()) {
+         _scopes.push({ scope_kind::global, nullptr });
+      }
+   }
 } // rush
