@@ -11,7 +11,7 @@ namespace rush {
 
    scope::symbol_t scope::lookup(std::string name) const {
       auto sym = lookup_local(name);
-      return sym.is_undefined()
+      return sym.is_undefined() && !is_global()
          ? parent()->lookup(std::move(name))
          : sym;
    }

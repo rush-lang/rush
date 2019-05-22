@@ -56,6 +56,10 @@ namespace rush::ast {
 			return declaration_kind::function;
 		}
 
+      virtual ast::identifier identifier() const noexcept override {
+         return { *this };
+      }
+
       ast::type_ref return_type() const noexcept {
 			return _type.return_type();
 		}
@@ -67,10 +71,6 @@ namespace rush::ast {
 		statement const& body() const noexcept {
 			return *_body;
 		}
-
-      ast::identifier identifier() const noexcept {
-         return { *this };
-      }
 
       using node::accept;
       virtual void accept(ast::visitor& v) const override {

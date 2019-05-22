@@ -23,7 +23,7 @@ namespace rush::ast {
          return _type;
       }
 
-      ast::identifier identifier() const noexcept {
+      virtual ast::identifier identifier() const noexcept override {
          return { *this };
       }
 
