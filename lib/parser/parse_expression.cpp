@@ -101,9 +101,13 @@ namespace rush {
 
 	std::unique_ptr<ast::expression> parser::parse_identifier_expr() {
 		assert(peek_skip_indent().is_identifier() && "expected token to be an identifier.");
+
 		auto tok = next_skip_indent();
-		auto ident = tok.text();
-		return exprs::literal(0); // exprs::identifier(ident);
+      auto sym = _scope.current().lookup(tok.text());
+      if (sym.is_undefined())
+         return error("the name '{}' does not exist in the current context.", tok);
+
+      return exprs::identifier(sym.declaration()->identifier());
 	}
 
 	std::unique_ptr<ast::binary_expression> parser::parse_binary_expr(std::unique_ptr<ast::expression> lhs) {

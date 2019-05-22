@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef RUSH_AST_STMT_BLOCK_STATEMENT_HPP
-#define RUSH_AST_STMT_BLOCK_STATEMENT_HPP
+#ifndef RUSH_AST_STMT_STATEMENT_BLOCK_HPP
+#define RUSH_AST_STMT_STATEMENT_BLOCK_HPP
 
 #include "rush/ast/stmts/statement.hpp"
 #include "rush/ast/stmts/forwarding.hpp"
@@ -34,11 +34,11 @@ namespace rush::ast {
 	};
 
 	namespace stmts {
-		inline std::unique_ptr<statement_block> block(std::initializer_list<details::statement_fwdr> init) {
+		inline std::unique_ptr<statement_block> block(std::vector<details::statement_fwdr> stmts) {
 			return nullptr;
 			// return std::make_unique<statement_block>(std::vector<std::unique_ptr<statement>> { std::move(init) });
 		}
 	} // rush::ast::stmts
 } // rush::ast
 
-#endif // RUSH_AST_STMT_BLOCK_STATEMENT_HPP
+#endif // RUSH_AST_STMT_STATEMENT_BLOCK_HPP

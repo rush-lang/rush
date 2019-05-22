@@ -10,6 +10,18 @@ namespace rush {
 		return parse_expr();
 	}
 
+   std::unique_ptr<ast::declaration> parser::parse_toplevel_decl() {
+		auto tok = peek_skip_indent();
+      if (tok.is_keyword()) {
+         switch (tok.keyword()) {
+         case keywords::let_: return parse_constant_decl();
+         case keywords::var_: return parse_variable_decl();
+         case keywords::func_: return parse_function_decl();
+         default: return nullptr;
+         }
+      }
+   }
+
 	template <typename DeclT>
 	std::unique_ptr<DeclT> parser::_parse_storage_decl(std::string storage_type,
 		std::unique_ptr<DeclT> (*fptr)(std::string, ast::type_ref, std::unique_ptr<ast::expression>)
@@ -35,9 +47,12 @@ namespace rush {
 			auto init = parse_initializer();
 			if (!init) return nullptr;
 
-			return type != std::nullopt
+			auto decl = type != std::nullopt
 				? (*fptr)(ident.text(), *type, std::move(init))
 				: (*fptr)(ident.text(), init->result_type(), std::move(init));
+
+         _scope.insert({ *decl });
+         return std::move(decl);
 		}
 
 		return error("expected an identifier before '{}'.", next_skip_indent());

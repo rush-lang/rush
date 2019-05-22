@@ -12,10 +12,14 @@
 #include "rush/ast/expressions.hpp"
 #include "rush/ast/declarations.hpp"
 #include "rush/ast/statements.hpp"
+#include "rush/ast/stmts/block.hpp"
 
 #include "rush/lexer/token.hpp"
 #include "rush/lexer/analysis.hpp"
+
 #include "rush/parser/options.hpp"
+#include "rush/parser/symbol.hpp"
+#include "rush/parser/scope.hpp"
 #include "rush/parser/parse.hpp"
 
 #include <optional>
@@ -31,24 +35,27 @@ namespace rush {
 
 		std::unique_ptr<ast::node> parse(lexical_analysis const& lxa) {
 			initialize(lxa);
-			auto tok = peek_skip_indent();
 
-			if (tok.is_keyword()) {
-				switch (tok.keyword()) {
-				case keywords::let_: return parse_constant_decl();
-				case keywords::var_: return parse_variable_decl();
-				case keywords::func_: return parse_function_decl();
-				default: break;
-				}
-			}
+         std::vector<std::unique_ptr<ast::declaration>> decls;
+         while (peek_with_indent().is_not(symbols::eof)) {
+			   auto decl = parse_toplevel_decl();
+            if (decl == nullptr) {
+               // parse top-level expression.
+			      auto expr = parse_expr();
+            } else {
+               decls.push_back(std::move(decl));
+            }
+         }
 
-			// parse top-level expression.
-			return parse_expr();
+         return !decls.empty()
+            ? ast::decls::block(std::move(decls))
+            : nullptr;
 		}
 
 	private:
 		static const lexical_token eof;
 
+      rush::scope_chain _scope;
 		parser_options _opts;
 		std::pair<
 			lxa_iterator,
@@ -117,6 +124,8 @@ namespace rush {
 		std::optional<ast::type_ref> parse_type_annotation();
 
 		// declarations.
+      std::unique_ptr<ast::declaration> parse_toplevel_decl();
+
 		template <typename DeclT>
 		std::unique_ptr<DeclT> _parse_storage_decl(std::string,
 			std::unique_ptr<DeclT> (*)(std::string, ast::type_ref, std::unique_ptr<ast::expression>));
