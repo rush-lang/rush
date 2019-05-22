@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef RUSH_SEMA_ATTRIBUTES_HPP
-#define RUSH_SEMA_ATTRIBUTES_HPP
+#ifndef RUSH_PARSER_ATTRIBUTES_HPP
+#define RUSH_PARSER_ATTRIBUTES_HPP
 
 #include <cstdint>
 
@@ -42,4 +42,4 @@ namespace rush {
 	};
 } // rush
 
-#endif // RUSH_SEMA_ATTRIBUTES_HPP
+#endif // RUSH_PARSER_ATTRIBUTES_HPP
