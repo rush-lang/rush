@@ -121,7 +121,8 @@ namespace rush {
 
 
       // types
-		std::optional<ast::type_ref> parse_type_annotation();
+      std::optional<ast::type_ref> try_parse_type();
+		std::optional<ast::type_ref> try_parse_type_annotation();
 
 		// declarations.
       std::unique_ptr<ast::declaration> parse_toplevel_decl();
@@ -133,6 +134,10 @@ namespace rush {
 		std::unique_ptr<ast::constant_declaration> parse_constant_decl();
 		std::unique_ptr<ast::variable_declaration> parse_variable_decl();
 		std::unique_ptr<ast::function_declaration> parse_function_decl();
+
+      std::unique_ptr<ast::statement> parse_function_body();
+      std::unique_ptr<ast::statement> parse_function_expr_body();
+      std::unique_ptr<ast::statement> parse_function_stmt_body();
 
 		// statements.
 		std::unique_ptr<ast::statement> parse_if_stmt();

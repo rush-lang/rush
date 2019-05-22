@@ -129,6 +129,26 @@ namespace rush {
 			print_storage_decl("variable", decl);
 		}
 
+      virtual void visit_function_decl(function_declaration const& decl) override {
+         write("<function:");
+         decl.type().accept(*this);
+         writeln(" [decl]> [name: {}]", decl.name());
+         indent();
+         writeln("body: ");
+         indent();
+         decl.body().accept(*this);
+         dedent();
+         dedent();
+      }
+
+      virtual void visit_return_stmt(return_statement const& stmt) override {
+         writeln("<return [stmt]>");
+         indent();
+         if (stmt.expr() != nullptr)
+            stmt.expr()->accept(*this);
+         dedent();
+      }
+
 	private:
 		std::size_t _indent;
 		std::size_t _current_indent;

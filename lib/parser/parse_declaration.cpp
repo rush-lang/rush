@@ -1,10 +1,12 @@
 #include "rush/ast/decls/constant.hpp"
 #include "rush/ast/decls/variable.hpp"
+#include "rush/ast/stmts/control.hpp"
 
 #include "rush/parser/parser.hpp"
 
 namespace rush {
 	namespace decls = ast::decls;
+   namespace stmts = ast::stmts;
 
 	std::unique_ptr<ast::expression> parser::parse_initializer() {
 		return parse_expr();
@@ -36,7 +38,7 @@ namespace rush {
 			std::optional<ast::type_ref> type;
 
 			if (peek_skip_indent().is(symbols::colon)) {
-				type = parse_type_annotation();
+				type = try_parse_type_annotation();
 			}
 
 			if (!peek_skip_indent().is(symbols::equals)) {
@@ -88,20 +90,26 @@ namespace rush {
 	// }
 
 	std::unique_ptr<ast::function_declaration> parser::parse_function_decl() {
-		// assert(peek_skip_indent().is(keywords::func_) && "expected the 'func' keyword.");
-		// next_skip_indent(); // consume func keyword.
+		assert(peek_skip_indent().is(keywords::func_) && "expected the 'func' keyword.");
+		next_skip_indent(); // consume func keyword.
 
-		// if (!peek_skip_indent().is_identifier()) {
-		// 	return error("expected an identifier for the function name before '{}'.", next_skip_indent());
-		// auto ident = next_skip_indent();
+		if (!peek_skip_indent().is_identifier())
+			return error("expected an identifier for the function name before '{}'.", next_skip_indent());
+		auto ident = next_skip_indent();
 
-		// if (peek_skip_indent().is_not(symbols::left_parenthesis))
-		// 	return error("expected '(' before '{}'.", next_skip_indent());
+		if (peek_skip_indent().is_not(symbols::left_parenthesis))
+		 	return error("expected '(' before '{}'.", next_skip_indent());
+      next_skip_indent(); // consume left parenthesis
+
 		// auto plist = parse_parameter_list();
 		// if (!plist) return nullptr;
 
-		// std::unique_ptr<statement> body;
-		// std::optional<ast::type> rtype;
+      if (peek_skip_indent().is_not(symbols::right_parenthesis))
+         return error("expected '(' before '{}'.", next_skip_indent());
+      next_skip_indent();
+
+      // auto type = try_parse_type();
+		auto body = parse_function_body();
 
 		// if (peek_skip_indent().is(symbols::arrow)) {
 		// 	auto expr = parse_expr();
@@ -121,9 +129,27 @@ namespace rush {
 		// 	return error("expected function body before '{}'", next_with_indent());
 		// }
 
-		// return decls::function(
-		// 	ident.text(), plist,
-		// 	stmts::return_(body));
-		return nullptr;
+		return decls::function(ident.text(), std::move(body));
 	}
+
+   std::unique_ptr<ast::statement> parser::parse_function_body() {
+      if (peek_skip_indent().is(symbols::arrow))
+         return parse_function_expr_body();
+      else if (peek_skip_indent().is(symbols::colon))
+         return parse_function_stmt_body();
+
+      return error("expected function definition before '{}'", next_skip_indent());
+   }
+
+   std::unique_ptr<ast::statement> parser::parse_function_expr_body() {
+		assert(peek_skip_indent().is(symbols::arrow) && "expected an '=>' symbol.");
+      next_skip_indent();
+      auto expr = parse_expr();
+      return stmts::return_(std::move(expr));
+   }
+
+   std::unique_ptr<ast::statement> parser::parse_function_stmt_body() {
+		assert(peek_skip_indent().is(symbols::arrow) && "expected an '=>' symbol.");
+      next_skip_indent();
+   }
 }

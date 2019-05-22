@@ -25,7 +25,9 @@ namespace rush::ast::detail {
 		const_iterator cend() const noexcept { return _elems.cend(); }
 
 		using node::accept;
-		virtual void accept(ast::visitor& v) const override;
+		virtual void accept(ast::visitor& v) const override {
+
+      }
 
 	private:
 		std::vector<std::unique_ptr<T>> _elems;

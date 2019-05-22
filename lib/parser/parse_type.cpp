@@ -22,16 +22,50 @@ namespace rush {
       }
    }
 
-   std::optional<ast::type_ref> parser::parse_type_annotation() {
+   std::optional<ast::type_ref> parser::try_parse_type() {
+      auto tok = next_skip_indent();
+
+      if (tok.is_keyword())
+         return builtin_type_from_keyword(tok.keyword());
+
+      if (tok.is_identifier()) {
+         auto sym = _scope.current().lookup(tok.text());
+         if (sym.is_undefined()) {
+            error("the type or namespace '{}' could not be found", tok);
+            return std::nullopt;
+         }
+
+         auto& decl = *sym.declaration();
+         switch (decl.kind()) {
+            case ast::declaration_kind::alias:
+            case ast::declaration_kind::enum_:
+            case ast::declaration_kind::class_:
+            case ast::declaration_kind::struct_:
+            case ast::declaration_kind::concept:
+            case ast::declaration_kind::interface: return decl.type();
+            case ast::declaration_kind::constant:
+               error("'{}' is a constant but is used like a type.", tok);
+               return std::nullopt;
+            case ast::declaration_kind::variable:
+               error("'{}' is a variable but is used like a type.", tok);
+               return std::nullopt;
+            case ast::declaration_kind::function:
+               error("'{}' is a function but is used like a type.", tok);
+               return std::nullopt;
+            case ast::declaration_kind::extension:
+            default:
+               error("try_parse_type unexpected!", tok);
+               return std::nullopt;
+         }
+      }; // todo: implement.
+
+      return std::nullopt;
+   }
+
+   std::optional<ast::type_ref> parser::try_parse_type_annotation() {
       assert(peek_skip_indent().is(symbols::colon) && "expected a type annotation symbol ':'");
       next_skip_indent();
 
-      auto tok = next_skip_indent();
-
-      if (tok.is_keyword()) return builtin_type_from_keyword(tok.keyword());
-      if (tok.is_identifier()) return ast::types::error_type; // todo: implement.
-
-      error("expected a type identifier before '{}'", tok);
-      return std::nullopt;
+      return try_parse_type();
    }
 }

@@ -34,7 +34,7 @@ namespace rush::ast {
 
 		using node::accept;
 		virtual void accept(ast::visitor& v) const override {
-
+         v.visit_return_stmt(*this);
 		}
 
 	private:
