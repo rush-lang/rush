@@ -90,7 +90,7 @@ namespace rush::ast {
 				return decls::function(
 					std::move(name),
                types::int_type,
-               std::make_unique<parameter_list>(),
+               decls::param_list(),
 					std::move(body));
 			}
 
@@ -101,7 +101,7 @@ namespace rush::ast {
 				return decls::function(
 					std::move(name),
 					std::move(return_type),
-               std::make_unique<parameter_list>(),
+               decls::param_list(),
 					std::move(body));
 			}
 

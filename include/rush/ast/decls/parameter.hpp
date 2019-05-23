@@ -10,15 +10,19 @@ namespace rush::ast {
 	class parameter : public node {
 	public:
 		using node::accept;
-		virtual void accept(ast::visitor& v) const override {
-			// v.visit_parameter(*this);
-		}
+      virtual ast::type_ref type() const = 0;
 	};
 
 	class named_parameter : public parameter {
 	public:
-		ast::type_ref type() { return _type; }
-		std::string name() { return _name; }
+		virtual ast::type_ref type() const noexcept override {
+         return _type;
+      }
+
+		std::string name() {
+         return _name;
+      }
+
 	private:
 		ast::type_ref _type;
 		std::string _name;
@@ -26,7 +30,10 @@ namespace rush::ast {
 
 	class unnamed_parameter : public parameter {
 	public:
-		ast::type_ref type() { return _type; }
+      virtual ast::type_ref type() const noexcept override {
+         return _type;
+      }
+
 	private:
 		ast::type_ref _type;
 	};
