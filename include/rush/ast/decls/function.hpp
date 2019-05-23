@@ -6,6 +6,7 @@
 #include "rush/ast/identifier.hpp"
 #include "rush/ast/list.hpp"
 #include "rush/ast/types/function.hpp"
+#include "rush/ast/stmts/statement.hpp"
 #include "rush/ast/decls/declaration.hpp"
 #include "rush/ast/decls/parameter.hpp"
 #include "rush/ast/exprs/identifier.hpp"
@@ -23,8 +24,6 @@ namespace rush::ast::decls {
 }
 
 namespace rush::ast {
-	class statement;
-
 	class function_declaration : public declaration {
 		struct factory_tag_t {};
 
@@ -68,7 +67,7 @@ namespace rush::ast {
          return _type.parameters();
 		}
 
-		statement const& body() const noexcept {
+		ast::statement const& body() const noexcept {
 			return *_body;
 		}
 
@@ -80,7 +79,7 @@ namespace rush::ast {
 	private:
       std::string _name;
       ast::function_type _type;
-		std::unique_ptr<statement> _body;
+		std::unique_ptr<ast::statement> _body;
 	};
 
 	namespace decls {

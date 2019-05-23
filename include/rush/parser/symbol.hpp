@@ -32,7 +32,7 @@ namespace rush {
             : "<undefined>";
       }
 
-      ast::declaration const* declaration() {
+      ast::declaration const* declaration() const noexcept {
          return _decl;
       }
 

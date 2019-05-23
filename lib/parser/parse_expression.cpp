@@ -21,12 +21,13 @@ namespace rush {
 	}
 
    std::unique_ptr<ast::expression> parser::parse_initializer() {
+      assert(peek_skip_indent().is(symbols::equals) && "expected token to be '='");
+      next_skip_indent(); // consume '=' token.
 		return parse_expr();
 	}
 
 	std::unique_ptr<ast::expression> parser::parse_expr() {
 		auto expr = parse_primary_expr();
-		if (!expr) return nullptr;
 
 		if (is_binary_op(peek_skip_indent()))
 			return parse_binary_expr(std::move(expr));
@@ -118,10 +119,10 @@ namespace rush {
 		assert(is_binary_op(peek_skip_indent()) && "expected binary operator.");
 
 		auto tok = peek_skip_indent();
-		std::unique_ptr<ast::binary_expression> expr;
-
 		auto rhs = parse_binary_expr_rhs();
-		if (!rhs) return error("expected right-hand expression of '{1}' before '{0}'", peek_skip_indent(), tok);
+      if (!lhs || !rhs) return nullptr;
+
+		std::unique_ptr<ast::binary_expression> expr;
 
 		switch (tok.symbol()) {
 		default: return error("binary operator '{}' not yet supported", tok);
@@ -147,12 +148,17 @@ namespace rush {
 		assert(is_binary_op(peek_skip_indent()) && "expected binary operator.");
 
 		auto prev = next_skip_indent(); // consume binary operator symbol.
-		auto rhs = parse_primary_expr();
-		auto curr = peek_skip_indent(); // look-ahead for possible binary operator.
+      auto next = peek_skip_indent(); // store the next token.
 
-		if (compare_binary_op_precedence(curr, prev) < 0)
-			rhs = parse_binary_expr(std::move(rhs));
+		if (auto rhs = parse_primary_expr()) {
+         next = peek_skip_indent(); // look-ahead for possible binary operator.
 
-		return std::move(rhs);
+         if (compare_binary_op_precedence(next, prev) < 0)
+            rhs = parse_binary_expr(std::move(rhs));
+
+         return std::move(rhs);
+      }
+
+      return error("expected right-hand expression of '{1}' before '{0}'", next, prev);
 	}
 }

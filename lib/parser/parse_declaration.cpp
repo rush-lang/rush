@@ -44,7 +44,6 @@ namespace rush {
 				return error("expected initializer for {1} '{2}', before '{0}'.", peek_skip_indent(), storage_type, ident);
 			}
 
-			next_skip_indent(); // consume '=' token.
 			auto init = parse_initializer();
 			if (!init) return nullptr;
 

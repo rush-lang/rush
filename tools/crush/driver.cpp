@@ -32,7 +32,7 @@ int main(int argc, char const** argv) {
             }
 
             std::cout << "syntax analysis: ----------\n"  << std::endl;
-            rush::dump(rush::parse(src));
+            rush::dump(src);
             std::cout << std::endl;
             ++page;
          }

@@ -39,9 +39,13 @@ namespace rush {
          std::vector<std::unique_ptr<ast::declaration>> decls;
          while (peek_with_indent().is_not(symbols::eof)) {
 			   auto decl = parse_toplevel_decl();
+            if (!decl) return nullptr;
+
             if (decl == nullptr) {
                // parse top-level expression.
 			      auto expr = parse_expr();
+               if (!expr) return nullptr;
+
             } else {
                decls.push_back(std::move(decl));
             }
