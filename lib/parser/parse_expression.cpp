@@ -20,6 +20,10 @@ namespace rush {
 			? binary_precedence(lhs) - binary_precedence(rhs) : 0;
 	}
 
+   std::unique_ptr<ast::expression> parser::parse_initializer() {
+		return parse_expr();
+	}
+
 	std::unique_ptr<ast::expression> parser::parse_expr() {
 		auto expr = parse_primary_expr();
 		if (!expr) return nullptr;
