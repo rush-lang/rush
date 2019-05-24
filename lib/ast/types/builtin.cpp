@@ -4,27 +4,31 @@
 
 namespace rush::ast::types {
 
-	std::unique_ptr<builtin_type> make_builtin_type(std::string name) {
-		return std::make_unique<builtin_type>(std::move(name));
+   std::unique_ptr<builtin_integral_type> make_builtin_integral_type(ast::integral_kind kind, bool sign) {
+		return std::make_unique<builtin_integral_type>(kind, sign);
+	}
+
+   std::unique_ptr<builtin_floating_type> make_builtin_floating_type(ast::floating_kind k) {
+		return std::make_unique<builtin_floating_type>(k);
 	}
 
    std::array<std::unique_ptr<builtin_type>, 16> const _builtin_types = {
-      make_builtin_type("<error-type>"),
-      make_builtin_type("<inferred-type>"),
-      make_builtin_type("void"),
-	   make_builtin_type("bool"),
-	   make_builtin_type("byte"),
-	   make_builtin_type("sbyte"),
-	   make_builtin_type("short"),
-	   make_builtin_type("ushort"),
-	   make_builtin_type("int"),
-	   make_builtin_type("uint"),
-	   make_builtin_type("long"),
-	   make_builtin_type("ulong"),
-	   make_builtin_type("float"),
-	   make_builtin_type("double"),
-	   make_builtin_type("string"),
-	   make_builtin_type("chars"),
+      std::make_unique<builtin_void_type>(),
+      std::make_unique<builtin_void_type>(),
+      std::make_unique<builtin_void_type>(),
+      std::make_unique<builtin_bool_type>(),
+	   make_builtin_integral_type(ast::integral_kind::byte, false),
+	   make_builtin_integral_type(ast::integral_kind::byte, true),
+	   make_builtin_integral_type(ast::integral_kind::word, true),
+	   make_builtin_integral_type(ast::integral_kind::word, false),
+	   make_builtin_integral_type(ast::integral_kind::dword, true),
+	   make_builtin_integral_type(ast::integral_kind::dword, false),
+	   make_builtin_integral_type(ast::integral_kind::qword, true),
+	   make_builtin_integral_type(ast::integral_kind::qword, false),
+	   make_builtin_floating_type(ast::floating_kind::ieee32),
+	   make_builtin_floating_type(ast::floating_kind::ieee64),
+	   std::make_unique<builtin_void_type>(),
+      std::make_unique<builtin_void_type>(),
    };
 
    // sentinals

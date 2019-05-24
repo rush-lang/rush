@@ -10,8 +10,13 @@ namespace ast = rush::ast;
 namespace exprs = rush::ast::exprs;
 namespace decls = rush::ast::decls;
 namespace stmts = rush::ast::stmts;
+namespace types = rush::ast::types;
 
 int main() {
+   auto t = types::int_type;
+
+   t.as<ast::builtin_integral_type>().size();
+
 	std::cout << src1 << std::endl;
 	std::cout << "--------------------" << std::endl;
 	rush::dump(src1);

@@ -1,9 +1,8 @@
 #include "rush/ast/node.hpp"
+#include "rush/ast/printer.hpp"
 #include "rush/parser/options.hpp"
 #include "rush/parser/parse.hpp"
 #include "rush/parser/dump.hpp"
-
-#include "printer.hpp"
 
 namespace rush {
 

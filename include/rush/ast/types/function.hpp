@@ -4,7 +4,6 @@
 #define RUSH_AST_TYPES_FUNCTION_HPP
 
 #include "rush/ast/types/type.hpp"
-#include "rush/ast/types/named.hpp"
 #include "rush/ast/decls/parameter.hpp"
 #include "rush/ast/list.hpp"
 

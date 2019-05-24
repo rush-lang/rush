@@ -51,17 +51,37 @@ namespace rush {
 			, _current_indent(0)
 			, _ostr(out) {}
 
-		virtual void visit_builtin_type(ast::builtin_type const& type) override {
-			write(type.name());
-		}
+      virtual void visit_builtin_void_type(ast::builtin_void_type const& type) override {
+         write("void");
+      }
+
+      virtual void visit_builtin_bool_type(ast::builtin_bool_type const& type) override {
+         write("bool");
+      }
+
+      virtual void visit_builtin_integral_type(ast::builtin_integral_type const& type) override {
+         switch (type.unit()) {
+         case ast::integral_kind::byte: type.is_signed() ? write("sbyte") : write("byte"); break;
+         case ast::integral_kind::word: type.is_signed() ? write("short") : write("ushort"); break;
+         case ast::integral_kind::dword: type.is_signed() ? write("int") : write("uint"); break;
+         case ast::integral_kind::qword: type.is_signed() ? write("long") : write("ulong"); break;
+         }
+      }
+
+      virtual void visit_builtin_floating_type(ast::builtin_floating_type const& type) override {
+         switch (type.fpkind()) {
+         case ast::floating_kind::ieee32: write("float"); break;
+         case ast::floating_kind::ieee64: write("double"); break;
+         }
+      }
+
 
       virtual void visit_function_type(ast::function_type const& type) override {
          if (type.parameters().empty()) {
             write("()");
          } else if (type.parameters().count() == 1) {
             type.parameters()
-               .first()
-               .type()
+               .first().type()
                .accept(*this);
          } else {
             write("(");
