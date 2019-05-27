@@ -1,5 +1,4 @@
-#include "rush/ast/decls/constant.hpp"
-#include "rush/ast/decls/variable.hpp"
+#include "rush/ast/declarations.hpp"
 #include "rush/ast/stmts/control.hpp"
 
 #include "rush/parser/parser.hpp"
@@ -112,11 +111,15 @@ namespace rush {
             std::back_inserter(ps), [this, &type](auto n) {
                auto p = decls::param(n.text(), *type);
                return !_scope.insert({ *p })
-                  ? error("local already defined", n)
+                  ? error("redefinition of parameter '{}'.", n)
                   : std::move(p);
          });
 
       } while (consume_skip_indent(symbols::comma));
+
+      // check for any parameter parsing failures.
+      if (std::any_of(ps.begin(), ps.end(), [](auto& p) { return p == nullptr; }))
+         return nullptr;
 
       if (peek_skip_indent().is_not(symbols::right_parenthesis))
          return error("expected '(' before '{}'.", next_skip_indent());
@@ -185,7 +188,6 @@ namespace rush {
          return error("expected function body before '{}'", next_with_indent());
       }
 
-      // todo: pass the kind of statement block.
       return parse_block_stmt();
    }
 }

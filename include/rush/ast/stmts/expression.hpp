@@ -8,7 +8,7 @@
 
 #include "rush/ast/visitor.hpp"
 
-namespace rush::ast::details {
+namespace rush::ast {
 
 	// simple wrapper around expressions so that some
 	// expressions may be treated as statements
@@ -30,10 +30,12 @@ namespace rush::ast::details {
 		std::unique_ptr<expression> _expr;
 	};
 
-	inline std::unique_ptr<expression_statement> expr_stmt(std::unique_ptr<expression> expr) {
-		if (expr == nullptr) throw new std::invalid_argument("expr == nullptr");
-		return std::make_unique<expression_statement>(std::move(expr));
-	}
+   namespace stmts {
+      inline std::unique_ptr<expression_statement> expr_stmt(std::unique_ptr<expression> expr) {
+         if (expr == nullptr) throw new std::invalid_argument("expr == nullptr");
+         return std::make_unique<expression_statement>(std::move(expr));
+      }
+   }
 } // rush::ast::details
 
 #endif // RUSH_AST_STMTS_EXPRESSION_HPP

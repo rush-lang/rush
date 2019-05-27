@@ -10,19 +10,28 @@
 
 namespace rush::ast {
 	class statement_block;
-	namespace stmts { std::unique_ptr<statement_block> block(std::initializer_list<details::statement_fwdr> init); }
+	namespace stmts {
+      std::unique_ptr<statement_block> block(std::vector<std::unique_ptr<ast::statement>> stmts);
+   }
 }
 
 namespace rush::ast {
 	class statement_block : public statement {
-		friend std::unique_ptr<statement_block> stmts::block(std::initializer_list<details::statement_fwdr> init);
+      friend std::unique_ptr<statement_block> stmts::block(std::vector<std::unique_ptr<ast::statement>> stmts);
 	public:
-		statement_block(std::vector<std::unique_ptr<statement>> stmts)
+      using container_type = std::vector<std::unique_ptr<ast::statement>>;
+
+      using const_iterator = typename container_type::const_iterator;
+
+		statement_block(std::vector<std::unique_ptr<ast::statement>> stmts)
 			: _stmts(std::move(stmts)) {}
 
 		virtual statement_kind kind() const noexcept override {
 			return statement_kind::block;
 		}
+
+      const_iterator begin() const noexcept { return _stmts.begin(); }
+      const_iterator end() const noexcept { return _stmts.end(); }
 
 		using node::accept;
 		virtual void accept(ast::visitor& v) const override {
@@ -34,10 +43,9 @@ namespace rush::ast {
 	};
 
 	namespace stmts {
-		inline std::unique_ptr<statement_block> block(std::vector<details::statement_fwdr> stmts) {
-			return nullptr;
-			// return std::make_unique<statement_block>(std::vector<std::unique_ptr<statement>> { std::move(init) });
-		}
+      inline std::unique_ptr<statement_block> block(std::vector<std::unique_ptr<ast::statement>> stmts) {
+         return std::make_unique<statement_block>(std::move(stmts));
+      }
 	} // rush::ast::stmts
 } // rush::ast
 

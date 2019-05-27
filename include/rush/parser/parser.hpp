@@ -162,6 +162,7 @@ namespace rush {
       std::unique_ptr<ast::parameter_list> parse_parameter_list();
 
 		// statements.
+      std::unique_ptr<ast::statement> parse_stmt();
 		std::unique_ptr<ast::statement> parse_if_stmt();
 		std::unique_ptr<ast::statement> parse_for_stmt();
 		std::unique_ptr<ast::statement> parse_while_stmt();

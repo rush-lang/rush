@@ -8,7 +8,7 @@
 
 #include <type_traits>
 
-namespace rush::ast::details {
+namespace rush::ast {
 
 	// simple wrapper around declarations so that some
 	// declarations may be treated as statements
@@ -31,10 +31,12 @@ namespace rush::ast::details {
 		std::unique_ptr<declaration> _decl;
 	};
 
-	inline std::unique_ptr<declaration_statement> decl_stmt(std::unique_ptr<declaration> decl) {
-		if (decl == nullptr) throw new std::invalid_argument("decl == nullptr");
-		return std::make_unique<declaration_statement>(std::move(decl));
-	}
+   namespace stmts {
+      inline std::unique_ptr<declaration_statement> decl_stmt(std::unique_ptr<declaration> decl) {
+         if (decl == nullptr) throw new std::invalid_argument("decl == nullptr");
+         return std::make_unique<declaration_statement>(std::move(decl));
+      }
+   }
 } // rush::ast::details
 
 #endif // RUSH_AST_STMTS_DECLARATION_HPP

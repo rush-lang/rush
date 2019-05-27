@@ -4,9 +4,6 @@
 #define RUSH_AST_STMTS_FORWARDING_HPP
 
 #include "rush/ast/stmts/statement.hpp"
-#include "rush/ast/exprs/expression.hpp"
-#include "rush/ast/decls/declaration.hpp"
-
 #include "rush/ast/stmts/expression.hpp"
 #include "rush/ast/stmts/declaration.hpp"
 
@@ -27,12 +24,12 @@ namespace rush::ast::details {
 		template <typename Expr>
 		statement_fwdr(std::unique_ptr<Expr> expr,
 			std::enable_if_t<std::is_base_of_v<expression, Expr>>* = nullptr)
-			: _stmt(expr_stmt(std::move(expr))) {}
+			: _stmt(ast::stmts::expr_stmt(std::move(expr))) {}
 
 		template <typename Decl>
 		statement_fwdr(std::unique_ptr<Decl> decl,
 			std::enable_if_t<std::is_base_of_v<declaration, Decl>>* = nullptr)
-			: _stmt(decl_stmt(std::move(decl))) {}
+			: _stmt(ast::stmts::decl_stmt(std::move(decl))) {}
 
 		operator std::unique_ptr<statement>() && {
 			return std::move(_stmt);
