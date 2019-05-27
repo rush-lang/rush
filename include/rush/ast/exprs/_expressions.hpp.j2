@@ -1,7 +1,13 @@
 
 #ifdef RUSH_UNARY_EXPRESSION_FACTORY_FUNC_DECLS
 namespace rush::ast::exprs {
-## for operator in unary
+## for operator in prefix
+{# spacing #}
+std::unique_ptr<::rush::ast::unary_expression> {{ operator/name }}(
+	std::unique_ptr<::rush::ast::expression> operand);
+## endfor
+{# spacing #}
+## for operator in postfix
 {# spacing #}
 std::unique_ptr<::rush::ast::unary_expression> {{ operator/name }}(
 	std::unique_ptr<::rush::ast::expression> operand);
@@ -28,7 +34,17 @@ std::unique_ptr<::rush::ast::binary_expression> {{ operator/name }}(
 
 #ifdef RUSH_UNARY_EXPRESSION_FACTORY_FUNC_DEFNS
 namespace rush::ast::exprs {
-## for operator in unary
+## for operator in prefix
+{# spacing #}
+std::unique_ptr<::rush::ast::unary_expression>
+	{{ operator/name }}(
+	std::unique_ptr<::rush::ast::expression> operand) {
+	return make_unary_expression(std::move(operand),
+		::rush::ast::unary_operator::{{ operator/name }});
+}
+## endfor
+{# spacing #}
+## for operator in postfix
 {# spacing #}
 std::unique_ptr<::rush::ast::unary_expression>
 	{{ operator/name }}(

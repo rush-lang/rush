@@ -10,7 +10,8 @@ namespace exprs = ast::exprs;
 
 namespace rush {
 
-#define RUSH_IS_UNARY_OP_FUNC
+#define RUSH_IS_UNARY_PREFIX_OP_FUNC
+#define RUSH_IS_UNARY_POSTFIX_OP_FUNC
 #define RUSH_IS_BINARY_OP_FUNC
 #define RUSH_PRECEDENCE_FUNC
 #include "rush/ast/_operators.hpp"
@@ -28,6 +29,9 @@ namespace rush {
 
 	std::unique_ptr<ast::expression> parser::parse_expr() {
 		auto expr = parse_primary_expr();
+
+      if (is_unary_postfix_op(peek_skip_indent()))
+         expr = parse_unary_postfix_expr(std::move(expr));
 
 		if (is_binary_op(peek_skip_indent()))
 			return parse_binary_expr(std::move(expr));
@@ -66,6 +70,7 @@ namespace rush {
 			case keywords::false_: next_skip_indent(); return exprs::literal(false);
 			}
 		case lexical_token_type::symbol:
+         if (is_unary_prefix_op(tok)) return parse_unary_expr();
 			switch (tok.symbol()) {
 			default: return error("unexpected symbol '{}' parsing primary expression", tok);
 			case symbols::left_parenthesis: return parse_paren_expr();
@@ -114,6 +119,35 @@ namespace rush {
 
       return exprs::identifier(sym.declaration()->identifier());
 	}
+
+
+   std::unique_ptr<ast::unary_expression> parser::parse_unary_expr() {
+      assert(is_unary_prefix_op(peek_skip_indent()) && "expected unary operator.");
+
+      auto tok = next_skip_indent(); // consume unary operator token.
+      auto operand = parse_primary_expr();
+      switch (tok.symbol()) {
+      default: return error("unary operator '{}' not yet supported", tok);
+      case symbols::plus: return exprs::positive(std::move(operand));
+      case symbols::minus: return exprs::negative(std::move(operand));
+      case symbols::plus_plus: return exprs::pre_increment(std::move(operand));
+      case symbols::minus_minus: return exprs::pre_decrement(std::move(operand));
+      case symbols::exclamation_mark: return exprs::logical_negation(std::move(operand));
+      case symbols::tilde: return exprs::bitwise_negation(std::move(operand));
+      }
+   }
+
+   std::unique_ptr<ast::unary_expression> parser::parse_unary_postfix_expr(std::unique_ptr<ast::expression> op) {
+      assert(is_unary_postfix_op(peek_skip_indent()) && "expected unary postfix operator.");
+      if (!op) return nullptr;
+
+      auto tok = next_skip_indent();
+      switch (tok.symbol()) {
+      default: return error("unary postfix operator not yet supported.", tok);
+      case symbols::plus_plus: return exprs::post_increment(std::move(op));
+      case symbols::minus_minus: return exprs::post_decrement(std::move(op));
+      }
+   }
 
 	std::unique_ptr<ast::binary_expression> parser::parse_binary_expr(std::unique_ptr<ast::expression> lhs) {
 		assert(is_binary_op(peek_skip_indent()) && "expected binary operator.");

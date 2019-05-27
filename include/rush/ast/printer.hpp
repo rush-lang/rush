@@ -97,12 +97,14 @@ namespace rush {
 		virtual void visit_unary_expr(ast::unary_expression const& expr) override {
 			switch (expr.opkind()) {
 			default: throw;
-			case ast::unary_operator::plus: print_expression("plus", expr); break;
-			case ast::unary_operator::negate: print_expression("negate", expr); break;
-			case ast::unary_operator::increment: print_expression("increment", expr); break;
-			case ast::unary_operator::decrement: print_expression("decrement", expr); break;
-			case ast::unary_operator::logical_not: print_expression("logical_not", expr); break;
-			case ast::unary_operator::bitwise_not: print_expression("bitwise_not", expr); break;
+			case ast::unary_operator::positive: print_expression("positive", expr); break;
+			case ast::unary_operator::negative: print_expression("negative", expr); break;
+			case ast::unary_operator::pre_increment: print_expression("pre_increment", expr); break;
+			case ast::unary_operator::pre_decrement: print_expression("pre_decrement", expr); break;
+			case ast::unary_operator::post_increment: print_expression("post_increment", expr); break;
+			case ast::unary_operator::post_decrement: print_expression("post_decrement", expr); break;
+			case ast::unary_operator::logical_negation: print_expression("logical_negation", expr); break;
+			case ast::unary_operator::bitwise_negation: print_expression("bitwise_negation", expr); break;
 			}
 			writeln();
 			indent();

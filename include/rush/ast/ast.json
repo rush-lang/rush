@@ -1,12 +1,17 @@
 {
-	"unary": [
-		{ "name": "plus", "symbol": "+", "symbol_token": "plus", "precedence": 30 },
-		{ "name": "negate", "symbol": "-", "symbol_token": "minus", "precedence": 30 },
-		{ "name": "increment", "symbol": "++", "symbol_token": "plus_plus", "precedence": 30 },
-		{ "name": "decrement", "symbol": "--", "symbol_token": "minus_minus", "precedence": 30 },
-		{ "name": "logical_not", "symbol": "!", "symbol_token": "exclamation_mark", "precedence": 30 },
-		{ "name": "bitwise_not", "symbol": "~", "symbol_token": "tilde", "precedence": 30 }
-	],
+	"prefix": [
+		{ "name": "positive", "symbol": "+", "symbol_token": "plus", "precedence": 30 },
+		{ "name": "negative", "symbol": "-", "symbol_token": "minus", "precedence": 30 },
+		{ "name": "pre_increment", "symbol": "++", "symbol_token": "plus_plus", "precedence": 30 },
+		{ "name": "pre_decrement", "symbol": "--", "symbol_token": "minus_minus", "precedence": 30 },
+		{ "name": "logical_negation", "symbol": "!", "symbol_token": "exclamation_mark", "precedence": 30 },
+      { "name": "bitwise_negation", "symbol": "~", "symbol_token": "tilde", "precedence": 30 }
+   ],
+
+   "postfix": [
+      { "name": "post_increment", "symbol": "++", "symbol_token": "plus_plus", "precedence": 30 },
+      { "name": "post_decrement", "symbol": "--", "symbol_token": "minus_minus", "precedence": 30 }
+   ],
 
 	"binary": [
 		{ "name": "equal", "symbol": "==", "symbol_token": "equals_equals", "precedence": 60 },
