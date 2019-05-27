@@ -7,7 +7,37 @@
 #include "rush/ast/stmts/statement.hpp"
 
 namespace rush::ast {
-	class if_statement {
+	class if_statement : public statement {
+   public:
+      if_statement(
+         std::unique_ptr<expression> cond,
+         std::unique_ptr<statement> then,
+         std::unique_ptr<statement> else_)
+         : _cond { std::move(cond) }
+         , _then { std::move(then) }
+         , _else { std::move(else_) } {}
+
+		virtual ast::statement_kind kind() const noexcept override {
+         return ast::statement_kind::branch;
+      }
+
+      ast::expression const& condition() const noexcept {
+         return *_cond;
+      }
+
+      ast::statement const& then() const noexcept {
+         return *_then;
+      }
+
+      ast::statement const* else_() const noexcept {
+         return _else.get();
+      }
+
+      using node::accept;
+      virtual void accept(ast::visitor& v) const override {
+         v.visit_if_stmt(*this);
+      }
+
 	private:
 		std::unique_ptr<expression> _cond;
 		std::unique_ptr<statement> _then;
@@ -26,14 +56,24 @@ namespace rush::ast {
 	};
 
 	namespace stmts {
-		std::unique_ptr<if_statement> if_(
-			std::unique_ptr<expression> cond,
-			std::unique_ptr<statement> then);
-
-		std::unique_ptr<if_statement> if_(
+		inline std::unique_ptr<if_statement> if_(
 			std::unique_ptr<expression> cond,
 			std::unique_ptr<statement> then,
-			std::unique_ptr<statement> else_);
+			std::unique_ptr<statement> else_) {
+            return std::make_unique<if_statement>(
+               std::move(cond),
+               std::move(then),
+               std::move(else_));
+         }
+
+      inline std::unique_ptr<if_statement> if_(
+			std::unique_ptr<expression> cond,
+			std::unique_ptr<statement> then) {
+            return if_(
+               std::move(cond),
+               std::move(then),
+               nullptr);
+         }
 
 
 		std::unique_ptr<case_statement> case_(

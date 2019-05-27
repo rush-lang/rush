@@ -187,6 +187,16 @@ namespace rush::ast {
          dedent();
       }
 
+      virtual void visit_if_stmt(ast::if_statement const& stmt) override {
+         writeln("<if_stmt>");
+         indent();
+         stmt.condition().accept(*this);
+         stmt.then().accept(*this);
+         if (stmt.else_())
+            stmt.else_()->accept(*this);
+         dedent();
+      }
+
 	private:
 		std::size_t _indent;
 		std::size_t _current_indent;

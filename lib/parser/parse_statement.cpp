@@ -38,7 +38,56 @@ namespace rush {
    }
 
    std::unique_ptr<ast::statement> parser::parse_if_stmt() {
-      return nullptr;
+      assert(peek_skip_indent().is(keywords::if_) && "expected 'if' keyword.");
+      next_skip_indent(); // consume 'if' keyword.
+
+      auto cond = parse_expr();
+      if (!cond) return nullptr;
+
+      if (!peek_skip_indent().is(symbols::colon))
+         return error("expected body of 'if' statement before '{}'", next_skip_indent());
+      next_skip_indent(); // consume ':' symbol.
+
+      _scope.push(scope_kind::block);
+      auto then = (peek_with_indent().is(symbols::indent))
+         ? parse_block_stmt()
+         : parse_stmt(); // stdc++ does not support move-only initializer-list ast::stmts::block({ parse_stmt() });
+      _scope.pop();
+
+      if (!peek_skip_indent().is(keywords::else_)) {
+         return ast::stmts::if_(
+            std::move(cond),
+            std::move(then));
+      }
+
+      auto else_ = parse_else_stmt();
+      if (!else_) return nullptr;
+      return ast::stmts::if_(
+         std::move(cond),
+         std::move(then),
+         std::move(else_));
+   }
+
+   std::unique_ptr<ast::statement> parser::parse_else_stmt() {
+      assert(peek_skip_indent().is(keywords::else_) && "expected 'else' keyword");
+      next_skip_indent(); // consume 'else' keyword
+
+      auto tok = peek_skip_indent();
+      if (tok.is_keyword()) {
+         return parse_compound_stmt();
+      } else if (tok.is(symbols::colon)) {
+         next_skip_indent(); // consume ':' symbol.
+
+         _scope.push(scope_kind::block);
+         auto else_ = (peek_with_indent().is(symbols::indent))
+            ? parse_block_stmt()
+            : parse_stmt(); // stdc++ does not support move-only initializer-list ast::stmts::block({ parse_stmt() });
+         _scope.pop();
+
+         return std::move(else_);
+      }
+
+      return error("expected a compound statement or block statement before '{}'", tok);
    }
 
    std::unique_ptr<ast::statement> parser::parse_for_stmt() {
@@ -59,6 +108,10 @@ namespace rush {
    }
 
    std::unique_ptr<ast::statement> parser::parse_compound_stmt() {
-      return nullptr;
+      auto tok = peek_skip_indent();
+      switch (tok.keyword()) {
+      default: return error("expected compound statement before '{}'", tok);
+      case keywords::if_: return parse_if_stmt();
+      }
    }
 }

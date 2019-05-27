@@ -164,6 +164,7 @@ namespace rush {
 		// statements.
       std::unique_ptr<ast::statement> parse_stmt();
 		std::unique_ptr<ast::statement> parse_if_stmt();
+      std::unique_ptr<ast::statement> parse_else_stmt();
 		std::unique_ptr<ast::statement> parse_for_stmt();
 		std::unique_ptr<ast::statement> parse_while_stmt();
 		std::unique_ptr<ast::statement> parse_return_stmt();
