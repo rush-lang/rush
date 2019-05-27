@@ -14,6 +14,7 @@
    ],
 
 	"binary": [
+      { "name": "assignment", "symbol": "=", "symbol_token": "equals", "precedence": 30 },
 		{ "name": "equal", "symbol": "==", "symbol_token": "equals_equals", "precedence": 60 },
 		{ "name": "not_equal", "symbol": "!=", "symbol_token": "exclamation_mark_equals", "precedence": 60 },
 		{ "name": "addition", "symbol": "+", "symbol_token": "plus", "precedence": 60 },

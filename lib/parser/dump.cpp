@@ -27,6 +27,6 @@ namespace rush {
    }
 
    void dump(rush::ast::node const& input, std::ostream& out) {
-      input.accept(printer { out });
+      input.accept(ast::printer { out });
    }
 } // rush

@@ -124,6 +124,25 @@ switch (opkind()) {
 #undef RUSH_UNARY_EXPRESSION_VISIT_SWITCH
 #endif
 
+#ifdef RUSH_UNARY_EXPRESSION_PRINT_VISIT_SWITCH
+switch (expr.opkind()) {
+default: assert("unreachable");
+{% for operator in prefix %}case ast::unary_operator::{{ operator/name }}: print_expression("{{ operator/name }}", expr); break;
+{% endfor %}{% for operator in postfix %}case ast::unary_operator::{{ operator/name }}: print_expression("{{ operator/name }}", expr); break;
+{% endfor %}
+}
+#undef RUSH_UNARY_EXPRESSION_PRINT_VISIT_SWITCH
+#endif
+
+#ifdef RUSH_BINARY_EXPRESSION_PRINT_VISIT_SWITCH
+switch (expr.opkind()) {
+default: assert("unreachable");
+{% for operator in binary %}case ast::binary_operator::{{ operator/name }}: print_expression("{{ operator/name }}", expr); break;
+{% endfor %}
+}
+#undef RUSH_BINARY_EXPRESSION_PRINT_VISIT_SWITCH
+#endif
+
 #ifdef RUSH_BINARY_EXPRESSION_VISIT_SWITCH
 switch (opkind()) {
 ## for operator in binary

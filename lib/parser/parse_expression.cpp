@@ -160,6 +160,7 @@ namespace rush {
 
 		switch (tok.symbol()) {
 		default: return error("binary operator '{}' not yet supported", tok);
+      case symbols::equals: expr = exprs::assignment(std::move(lhs), std::move(rhs)); break;
 		case symbols::plus: expr = exprs::addition(std::move(lhs), std::move(rhs)); break;
 		case symbols::minus: expr = exprs::subtraction(std::move(lhs), std::move(rhs)); break;
 		case symbols::percent: expr = exprs::modulo(std::move(lhs), std::move(rhs)); break;

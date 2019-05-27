@@ -13,7 +13,7 @@
 #include "fmt/format.h"
 #include <iostream>
 
-namespace rush {
+namespace rush::ast {
 	template <typename CharT, typename Traits = std::char_traits<CharT>>
 	class basic_printer : public ast::visitor {
 		void indent() { ++_indent; }
@@ -102,17 +102,8 @@ namespace rush {
       }
 
 		virtual void visit_unary_expr(ast::unary_expression const& expr) override {
-			switch (expr.opkind()) {
-			default: throw;
-			case ast::unary_operator::positive: print_expression("positive", expr); break;
-			case ast::unary_operator::negative: print_expression("negative", expr); break;
-			case ast::unary_operator::pre_increment: print_expression("pre_increment", expr); break;
-			case ast::unary_operator::pre_decrement: print_expression("pre_decrement", expr); break;
-			case ast::unary_operator::post_increment: print_expression("post_increment", expr); break;
-			case ast::unary_operator::post_decrement: print_expression("post_decrement", expr); break;
-			case ast::unary_operator::logical_negation: print_expression("logical_negation", expr); break;
-			case ast::unary_operator::bitwise_negation: print_expression("bitwise_negation", expr); break;
-			}
+#        define RUSH_UNARY_EXPRESSION_PRINT_VISIT_SWITCH
+#        include "rush/ast/_operators.hpp"
 			writeln();
 			indent();
 			expr.operand().accept(*this);
@@ -120,22 +111,8 @@ namespace rush {
 		}
 
 		virtual void visit_binary_expr(ast::binary_expression const& expr) override {
-			switch (expr.opkind()) {
-			default: throw;
-			case ast::binary_operator::equal: print_expression("equals", expr); break;
-			case ast::binary_operator::not_equal: print_expression("not_equal", expr); break;
-			case ast::binary_operator::addition: print_expression("add", expr); break;
-			case ast::binary_operator::subtraction: print_expression("subtract", expr); break;
-			case ast::binary_operator::multiplication: print_expression("multiply", expr); break;
-			case ast::binary_operator::division: print_expression("divide", expr); break;
-			case ast::binary_operator::modulo: print_expression("modulo", expr); break;
-			case ast::binary_operator::logical_or: print_expression("logical_or", expr); break;
-			case ast::binary_operator::logical_and: print_expression("logical_and", expr); break;
-			case ast::binary_operator::less_than: print_expression("less_than", expr); break;
-			case ast::binary_operator::less_equals: print_expression("less_equals", expr); break;
-			case ast::binary_operator::greater_than: print_expression("greater_than", expr); break;
-			case ast::binary_operator::greater_equals: print_expression("greater_equals", expr); break;
-			}
+#        define RUSH_BINARY_EXPRESSION_PRINT_VISIT_SWITCH
+#        include "rush/ast/_operators.hpp"
 
 			writeln();
 			indent();
@@ -192,6 +169,13 @@ namespace rush {
          indent();
          decl.parameters().accept(*this);
          decl.body().accept(*this);
+         dedent();
+      }
+
+      virtual void visit_block_stmt(ast::statement_block const& stmt) override {
+         writeln("<block_stmt>");
+         indent();
+         std::for_each(stmt.begin(), stmt.end(), [this](auto& s) { s->accept(*this); });
          dedent();
       }
 
