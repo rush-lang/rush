@@ -14,6 +14,7 @@ namespace rush::ast {
    class identifier;
 
 	enum class declaration_kind : std::uint8_t {
+      parameter,
 		constant,
 		variable,
 		function,

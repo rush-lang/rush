@@ -27,8 +27,13 @@ namespace rush {
       _scopes.push({ scope_kind::global, nullptr });
    }
 
-   void scope_chain::insert(scope_chain::symbol_t sym) {
-      _scopes.top().insert(std::move(sym));
+   bool scope_chain::insert(scope_chain::symbol_t sym) {
+      if (_scopes.top().lookup_local(sym.name()).is_undefined()) {
+         _scopes.top().insert(std::move(sym));
+         return true;
+      }
+
+      return false;
    }
 
    void scope_chain::push(scope_kind kind) {

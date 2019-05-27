@@ -111,6 +111,22 @@ namespace rush {
 			return *ptok;
 		}
 
+      bool consume_skip_indent(symbol_token_t sym) {
+         if (peek_skip_indent().is(sym)) {
+            next_skip_indent();
+            return true;
+         }
+         return false;
+      }
+
+      bool consume_skip_indent(keyword_token_t kw) {
+         if (peek_skip_indent().is(kw)) {
+            next_skip_indent();
+            return true;
+         }
+         return false;
+      }
+
 		lexical_token const& next_with_indent() {
 			auto temp = _range.first;
 			advance(_range.first, _range.second, 1);
@@ -143,6 +159,8 @@ namespace rush {
       std::unique_ptr<ast::statement> parse_function_expr_body();
       std::unique_ptr<ast::statement> parse_function_stmt_body();
 
+      std::unique_ptr<ast::parameter_list> parse_parameter_list();
+
 		// statements.
 		std::unique_ptr<ast::statement> parse_if_stmt();
 		std::unique_ptr<ast::statement> parse_for_stmt();
@@ -164,6 +182,7 @@ namespace rush {
 		std::unique_ptr<ast::expression> parse_identifier_expr();
 
 		std::unique_ptr<ast::unary_expression> parse_unary_expr();
+		std::unique_ptr<ast::unary_expression> parse_unary_postfix_expr(std::unique_ptr<ast::expression> op);
 		std::unique_ptr<ast::binary_expression> parse_binary_expr(std::unique_ptr<ast::expression> lhs);
 		std::unique_ptr<ast::expression> parse_binary_expr_rhs();
 

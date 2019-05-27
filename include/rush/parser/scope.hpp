@@ -127,7 +127,7 @@ namespace rush {
       }
 
       //! \brief Inserts a symbol within the current scope's symbol table.
-      void insert(symbol_t);
+      bool insert(symbol_t);
 
       /*! \brief Pushes a new scope of scope_kind onto the end of the chain.
        *         The new scope will obtain the current scope as its parent.

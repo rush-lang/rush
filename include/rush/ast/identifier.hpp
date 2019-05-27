@@ -9,10 +9,12 @@
 #include <string>
 
 namespace rush::ast {
+   class parameter;
    class storage_declaration;
    class function_declaration;
 
    class identifier {
+      friend class parameter;
       friend class storage_declaration;
       friend class function_declaration;
 

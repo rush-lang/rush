@@ -70,8 +70,12 @@ namespace rush {
 
       virtual void visit_builtin_floating_type(ast::builtin_floating_type const& type) override {
          switch (type.fpkind()) {
+         case ast::floating_kind::ieee16: write("builtin.ieee16"); break;
          case ast::floating_kind::ieee32: write("float"); break;
          case ast::floating_kind::ieee64: write("double"); break;
+         case ast::floating_kind::ieee80: write("builtin.ieee80"); break;
+         case ast::floating_kind::ieee128: write("builtin.ieee128"); break;
+         case ast::floating_kind::ppc128: write("builtin.ppc218"); break;
          }
       }
 
@@ -81,12 +85,15 @@ namespace rush {
             write("()");
          } else if (type.parameters().count() == 1) {
             type.parameters()
-               .first().type()
+               .first()->type()
                .accept(*this);
          } else {
             write("(");
             std::for_each(type.parameters().begin(), type.parameters().end(),
-               [this](auto& p) { p.type().accept(*this); });
+               [this, &type](auto& p) {
+                  p->type().accept(*this);
+                  if (p != type.parameters().last()) write(", ");
+               });
             write(")");
          }
 
@@ -172,11 +179,18 @@ namespace rush {
 			print_storage_decl("variable", decl);
 		}
 
+      virtual void visit_parameter_decl(ast::parameter const& param) override {
+         write("<param: ");
+         param.type().accept(*this);
+         writeln(" (name=\"{}\")>", param.name());
+      }
+
       virtual void visit_function_decl(ast::function_declaration const& decl) override {
          write("<function_decl: ");
          decl.type().accept(*this);
          writeln(" (name=\"{}\")>", decl.name());
          indent();
+         decl.parameters().accept(*this);
          decl.body().accept(*this);
          dedent();
       }

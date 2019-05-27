@@ -55,6 +55,7 @@ namespace rush::ast {
       template <typename T>
       bool is(std::enable_if_t<std::is_base_of_v<ast::type, T>>* = nullptr) const noexcept {
          // return type_traits<T>::kind() == _ptr->kind();
+         return false;
       }
 
       template <typename T>

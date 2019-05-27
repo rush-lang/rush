@@ -42,6 +42,7 @@ namespace rush::ast {
 	class return_statement;
 
 	class declaration;
+   class parameter;
 	class constant_declaration;
 	class variable_declaration;
 	class function_declaration;
@@ -67,9 +68,10 @@ namespace rush::ast {
       virtual void visit_function_type(ast::function_type const&) {};
 
 		// declarations
-		virtual void visit_constant_decl(constant_declaration const&) {};
-		virtual void visit_variable_decl(variable_declaration const&) {};
-		virtual void visit_function_decl(function_declaration const&) {};
+      virtual void visit_parameter_decl(ast::parameter const&) {};
+		virtual void visit_constant_decl(ast::constant_declaration const&) {};
+		virtual void visit_variable_decl(ast::variable_declaration const&) {};
+		virtual void visit_function_decl(ast::function_declaration const&) {};
 
 		// statements
 		virtual void visit_block_stmt(statement_block const&) {};

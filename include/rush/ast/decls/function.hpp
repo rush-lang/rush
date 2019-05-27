@@ -110,6 +110,7 @@ namespace rush::ast {
 			std::unique_ptr<statement> body) {
 				return decls::function(
 					std::move(name),
+               types::int_type,
 					std::move(params),
 					std::move(body));
 			}

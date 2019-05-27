@@ -15,7 +15,7 @@ namespace rush::ast::detail {
 	template <typename T>
 	class basic_list : public node {
 	public:
-		using container_type = std::vector<T>;
+		using container_type = std::vector<std::unique_ptr<T>>;
 
       using value_type = typename container_type::value_type;
       using const_pointer = typename container_type::const_pointer;
@@ -29,8 +29,6 @@ namespace rush::ast::detail {
 
       basic_list(container_type elems)
          : _elems { std::move(elems) } {}
-
-      basic_list(std::vector<std::unique_ptr<T>> elems) {}
 
       bool empty() const noexcept {
          return _elems.empty();
@@ -66,7 +64,7 @@ namespace rush::ast::detail {
 
 		using node::accept;
 		virtual void accept(ast::visitor& v) const override {
-
+         std::for_each(_elems.begin(), _elems.end(), [&v](auto& p) { p->accept(v); });
       }
 
 	private:
@@ -96,7 +94,7 @@ namespace rush::ast::decls {
       return std::make_unique<parameter_list>();
    }
 
-	inline std::unique_ptr<parameter_list> param_list(std::vector<std::unique_ptr<parameter>> params) {
+	inline std::unique_ptr<parameter_list> param_list(std::vector<std::unique_ptr<ast::parameter>> params) {
       return std::make_unique<parameter_list>(std::move(params));
    }
 } // rush::ast::decls
