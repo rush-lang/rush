@@ -177,7 +177,13 @@ namespace rush {
    std::unique_ptr<ast::statement> parser::parse_function_expr_body() {
 		assert(peek_skip_indent().is(symbols::arrow) && "expected an '=>' symbol.");
       next_skip_indent();
-      return stmts::return_(parse_expr());
+
+      auto expr = parse_expr();
+      if (!expr) return nullptr;
+
+      std::vector<std::unique_ptr<ast::statement>> stmts;
+      stmts.emplace_back(stmts::return_(std::move(expr)));
+      return stmts::block(std::move(stmts));
    }
 
    std::unique_ptr<ast::statement> parser::parse_function_stmt_body() {

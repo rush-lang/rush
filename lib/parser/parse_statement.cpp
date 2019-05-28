@@ -55,6 +55,15 @@ namespace rush {
       return ast::stmts::block(std::move(stmts));
    }
 
+   std::unique_ptr<ast::statement_block> parser::parse_single_block_stmt() {
+      auto stmt = parse_stmt();
+      if (!stmt) return nullptr;
+
+      std::vector<std::unique_ptr<ast::statement>> stmts;
+      stmts.emplace_back(std::move(stmt));
+      return ast::stmts::block(std::move(stmts));
+   }
+
    std::unique_ptr<ast::statement> parser::parse_if_stmt() {
       assert(peek_skip_indent().is(keywords::if_) && "expected 'if' keyword.");
       next_skip_indent(); // consume 'if' keyword.
@@ -69,7 +78,7 @@ namespace rush {
       _scope.push(scope_kind::block);
       auto then = (peek_with_indent().is(symbols::indent))
          ? parse_block_stmt()
-         : parse_stmt(); // stdc++ does not support move-only initializer-list ast::stmts::block({ parse_stmt() });
+         : parse_single_block_stmt();
       _scope.pop();
 
       if (!peek_skip_indent().is(keywords::else_)) {
@@ -99,7 +108,7 @@ namespace rush {
          _scope.push(scope_kind::block);
          auto else_ = (peek_with_indent().is(symbols::indent))
             ? parse_block_stmt()
-            : parse_stmt(); // stdc++ does not support move-only initializer-list ast::stmts::block({ parse_stmt() });
+            : parse_single_block_stmt();
          _scope.pop();
 
          return std::move(else_);
