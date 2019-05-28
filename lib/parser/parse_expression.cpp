@@ -168,6 +168,8 @@ namespace rush {
 		case symbols::forward_slash: expr = exprs::division(std::move(lhs), std::move(rhs)); break;
 		case symbols::double_pipe: expr = exprs::logical_or(std::move(lhs), std::move(rhs)); break;
 		case symbols::double_ampersand: expr = exprs::logical_and(std::move(lhs), std::move(rhs)); break;
+      case symbols::equals_equals: expr = exprs::equal(std::move(lhs), std::move(rhs)); break;
+      case symbols::exclamation_mark_equals: expr = exprs::not_equal(std::move(lhs), std::move(rhs)); break;
 		case symbols::left_chevron: expr = exprs::less_than(std::move(lhs), std::move(rhs)); break;
 		case symbols::right_chevron: expr = exprs::greater_than(std::move(lhs), std::move(rhs)); break;
 		case symbols::left_chevron_equals: expr = exprs::less_equals(std::move(lhs), std::move(rhs)); break;

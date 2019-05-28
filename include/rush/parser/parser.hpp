@@ -168,6 +168,13 @@ namespace rush {
 		std::unique_ptr<ast::statement> parse_for_stmt();
 		std::unique_ptr<ast::statement> parse_while_stmt();
 		std::unique_ptr<ast::statement> parse_return_stmt();
+      std::unique_ptr<ast::statement> parse_break_stmt();
+      std::unique_ptr<ast::statement> parse_continue_stmt();
+      std::unique_ptr<ast::statement> parse_switch_stmt();
+      std::unique_ptr<ast::statement> parse_throw_stmt();
+      std::unique_ptr<ast::statement> parse_try_stmt();
+      std::unique_ptr<ast::statement> parse_yield_stmt();
+      std::unique_ptr<ast::statement> parse_with_stmt();
 
 		std::unique_ptr<ast::statement> parse_compound_stmt();
 		std::unique_ptr<ast::statement_block> parse_block_stmt();

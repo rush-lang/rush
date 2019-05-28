@@ -170,7 +170,7 @@ namespace rush {
          body = parse_function_stmt_body();
 
       return body == nullptr
-         ? error("expected function definition before '{}'", next_skip_indent())
+         ? error("expected end of function body '<dedent>' before '{}'", next_skip_indent())
          : std::move(body);
    }
 
@@ -185,7 +185,7 @@ namespace rush {
       next_skip_indent();
 
       if (peek_with_indent().is_not(symbols::indent)) {
-         return error("expected function body before '{}'", next_with_indent());
+         return error("expected start of function body '<indent>' before '{}'", next_with_indent());
       }
 
       return parse_block_stmt();

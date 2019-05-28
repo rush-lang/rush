@@ -179,6 +179,21 @@ namespace rush::ast {
          dedent();
       }
 
+      virtual void visit_break_stmt(ast::break_statement const& stmt) override {
+         writeln("<break_stmt>");
+      }
+
+      virtual void visit_continue_stmt(ast::continue_statement const& stmt) override {
+         writeln("<continue_stmt>");
+      }
+
+      virtual void visit_yield_stmt(ast::yield_statement const& stmt) override {
+         writeln("<yield_stmt>");
+         indent();
+         stmt.expr().accept(*this);
+         dedent();
+      }
+
       virtual void visit_return_stmt(ast::return_statement const& stmt) override {
          writeln("<return_stmt>");
          indent();

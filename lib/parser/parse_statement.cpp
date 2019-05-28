@@ -7,12 +7,30 @@ namespace rush {
       auto tok = peek_skip_indent();
       if (tok.is_keyword()) {
          switch (tok.keyword()) {
-            case keywords::let_: return ast::stmts::decl_stmt(parse_constant_decl());
-            case keywords::var_: return ast::stmts::decl_stmt(parse_variable_decl());
+            default: return error("'{}' is not a valid statement.", tok);
+            case keywords::let_: {
+               auto decl = parse_constant_decl();
+               if (!decl) return nullptr;
+               return ast::stmts::decl_stmt(std::move(decl));
+            }
+            case keywords::var_: {
+               auto decl = parse_variable_decl();
+               if (!decl) return nullptr;
+               return ast::stmts::decl_stmt(std::move(decl));
+            }
             case keywords::if_: return parse_if_stmt();
             case keywords::for_: return parse_for_stmt();
             case keywords::while_: return parse_while_stmt();
             case keywords::return_: return parse_return_stmt();
+            case keywords::break_: return parse_break_stmt();
+            case keywords::continue_: return parse_continue_stmt();
+            case keywords::switch_: return parse_switch_stmt();
+            case keywords::throw_: return parse_throw_stmt();
+            case keywords::try_: return parse_try_stmt();
+            case keywords::yield_: return parse_yield_stmt();
+            case keywords::with_: return parse_with_stmt();
+            case keywords::base_:
+            case keywords::this_: break; // these keywords will form part of a statement expression
          }
       }
 
@@ -102,10 +120,87 @@ namespace rush {
       assert(peek_skip_indent().is(keywords::return_) && "expected 'return' keyword.");
       next_skip_indent(); // consume 'return' keyword.
 
+      // hack: check for possible empty return statements
+      // by predicting the possibility that the next token
+      // starts an expression.
+      auto tok = peek_with_indent();
+      if (tok.is(symbols::dedent)) {
+         return ast::stmts::return_();
+      } else if (tok.is_keyword()) {
+         switch (tok.keyword()) {
+         default: return ast::stmts::return_();
+         case keywords::new_:
+         case keywords::nil_:
+         case keywords::this_:
+         case keywords::base_:
+         case keywords::true_:
+         case keywords::false_:
+         case keywords::sizeof_:
+         case keywords::switch_:
+         case keywords::typeof_: break;
+         }
+      }
+
       auto expr = parse_expr();
       if (!expr) return nullptr;
+
+      if (peek_with_indent().is_not(symbols::dedent))
+         return error("return statement is not the last statement in the control block", tok);
+
       return ast::stmts::return_(std::move(expr));
    }
+
+   std::unique_ptr<ast::statement> parser::parse_break_stmt() {
+      assert(peek_skip_indent().is(keywords::break_) && "expected 'break' keyword.");
+      next_skip_indent(); // consume 'break' keyword.
+
+      return ast::stmts::break_();
+   }
+
+   std::unique_ptr<ast::statement> parser::parse_continue_stmt() {
+      assert(peek_skip_indent().is(keywords::continue_) && "expected 'continue' keyword.");
+      next_skip_indent(); // consume 'continue' keyword.
+
+      return ast::stmts::continue_();
+   }
+
+   std::unique_ptr<ast::statement> parser::parse_switch_stmt() {
+      assert(peek_skip_indent().is(keywords::switch_) && "expected 'switch' keyword.");
+      next_skip_indent(); // consume 'switch' keyword.
+
+      return nullptr;
+   }
+
+   std::unique_ptr<ast::statement> parser::parse_throw_stmt() {
+      assert(peek_skip_indent().is(keywords::throw_) && "expected 'throw' keyword.");
+      next_skip_indent(); // consume 'throw' keyword.
+
+      return nullptr;
+   }
+
+   std::unique_ptr<ast::statement> parser::parse_try_stmt() {
+      assert(peek_skip_indent().is(keywords::try_) && "expected 'try' keyword.");
+      next_skip_indent(); // consume 'try' keyword.
+
+      return nullptr;
+   }
+
+   std::unique_ptr<ast::statement> parser::parse_yield_stmt() {
+      assert(peek_skip_indent().is(keywords::yield_) && "expected 'yield' keyword.");
+      next_skip_indent(); // consume 'yield' keyword.
+
+      auto expr = parse_expr();
+      if (!expr) return nullptr;
+      return ast::stmts::yield_(std::move(expr));
+   }
+
+   std::unique_ptr<ast::statement> parser::parse_with_stmt() {
+      assert(peek_skip_indent().is(keywords::with_) && "expected 'with' keyword.");
+      next_skip_indent(); // consume 'with' keyword.
+
+      return nullptr;
+   }
+
 
    std::unique_ptr<ast::statement> parser::parse_compound_stmt() {
       auto tok = peek_skip_indent();
