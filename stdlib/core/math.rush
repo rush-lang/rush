@@ -1,0 +1,7 @@
+module std.math
+
+func min(a: orderable) => a
+func max(a: orderable) => a
+
+func min(a, b, rest: ...orderable) => min(a < b ? a : b, rest...)
+func max(a, b, rest: ...orderable) => max(a < b ? b : a, rest...)
