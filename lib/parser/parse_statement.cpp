@@ -128,7 +128,22 @@ namespace rush {
       assert(peek_skip_indent().is(keywords::while_) && "expected 'while' keyword.");
       next_skip_indent(); // consume 'while' keyword.
 
-      return nullptr;
+      auto cond = parse_expr();
+      if (!cond) return nullptr;
+
+      if (!peek_skip_indent().is(symbols::colon))
+         return error("expected body of 'while' statement before '{}'", next_skip_indent());
+      next_skip_indent(); // consume ':' symbol.
+
+      _scope.push(scope_kind::block);
+      auto then = (peek_with_indent().is(symbols::indent))
+         ? parse_block_stmt()
+         : parse_block_single_stmt();
+      _scope.pop();
+
+      return ast::stmts::while_(
+         std::move(cond),
+         std::move(then));
    }
 
    std::unique_ptr<ast::statement> parser::parse_return_stmt() {
@@ -222,6 +237,10 @@ namespace rush {
       switch (tok.keyword()) {
       default: return error("expected compound statement before '{}'", tok);
       case keywords::if_: return parse_if_stmt();
+      case keywords::for_: return parse_for_stmt();
+      case keywords::while_: return parse_while_stmt();
+      case keywords::try_: return parse_try_stmt();
+      case keywords::with_: return parse_with_stmt();
       }
    }
 }

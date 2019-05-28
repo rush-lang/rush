@@ -82,6 +82,10 @@ namespace rush::ast {
          }
       }
 
+      std::size_t bit_width() const noexcept {
+         return size() * 8;
+      }
+
       using node::accept;
       virtual void accept(ast::visitor& v) const override {
 			v.visit_builtin_integral_type(*this);

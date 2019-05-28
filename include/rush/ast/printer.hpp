@@ -60,22 +60,17 @@ namespace rush::ast {
       }
 
       virtual void visit_builtin_integral_type(ast::builtin_integral_type const& type) override {
-         switch (type.unit()) {
-         case ast::integral_kind::byte: type.is_signed() ? write("sbyte") : write("byte"); break;
-         case ast::integral_kind::word: type.is_signed() ? write("short") : write("ushort"); break;
-         case ast::integral_kind::dword: type.is_signed() ? write("int") : write("uint"); break;
-         case ast::integral_kind::qword: type.is_signed() ? write("long") : write("ulong"); break;
-         }
+         write("builtin.int{}", type.bit_width());
       }
 
       virtual void visit_builtin_floating_type(ast::builtin_floating_type const& type) override {
          switch (type.fpkind()) {
          case ast::floating_kind::ieee16: write("builtin.ieee16"); break;
-         case ast::floating_kind::ieee32: write("float"); break;
-         case ast::floating_kind::ieee64: write("double"); break;
+         case ast::floating_kind::ieee32: write("builtin.ieee32"); break;
+         case ast::floating_kind::ieee64: write("builtin.ieee64"); break;
          case ast::floating_kind::ieee80: write("builtin.ieee80"); break;
          case ast::floating_kind::ieee128: write("builtin.ieee128"); break;
-         case ast::floating_kind::ppc128: write("builtin.ppc218"); break;
+         case ast::floating_kind::ppc128: write("builtin.ppc128"); break;
          }
       }
 
@@ -219,6 +214,14 @@ namespace rush::ast {
          stmt.then().accept(*this);
          if (stmt.else_())
             stmt.else_()->accept(*this);
+         dedent();
+      }
+
+      virtual void visit_while_stmt(ast::while_statement const& stmt) override {
+         writeln("<while_stmt>");
+         indent();
+         stmt.condition().accept(*this);
+         stmt.body().accept(*this);
          dedent();
       }
 
