@@ -55,7 +55,7 @@ namespace rush {
       return ast::stmts::block(std::move(stmts));
    }
 
-   std::unique_ptr<ast::statement_block> parser::parse_single_block_stmt() {
+   std::unique_ptr<ast::statement_block> parser::parse_block_single_stmt() {
       auto stmt = parse_stmt();
       if (!stmt) return nullptr;
 
@@ -78,7 +78,7 @@ namespace rush {
       _scope.push(scope_kind::block);
       auto then = (peek_with_indent().is(symbols::indent))
          ? parse_block_stmt()
-         : parse_single_block_stmt();
+         : parse_block_single_stmt();
       _scope.pop();
 
       if (!peek_skip_indent().is(keywords::else_)) {
@@ -108,7 +108,7 @@ namespace rush {
          _scope.push(scope_kind::block);
          auto else_ = (peek_with_indent().is(symbols::indent))
             ? parse_block_stmt()
-            : parse_single_block_stmt();
+            : parse_block_single_stmt();
          _scope.pop();
 
          return std::move(else_);
@@ -118,10 +118,16 @@ namespace rush {
    }
 
    std::unique_ptr<ast::statement> parser::parse_for_stmt() {
+      assert(peek_skip_indent().is(keywords::for_) && "expected 'for' keyword.");
+      next_skip_indent(); // consume 'for' keyword.
+
       return nullptr;
    }
 
    std::unique_ptr<ast::statement> parser::parse_while_stmt() {
+      assert(peek_skip_indent().is(keywords::while_) && "expected 'while' keyword.");
+      next_skip_indent(); // consume 'while' keyword.
+
       return nullptr;
    }
 
@@ -153,8 +159,8 @@ namespace rush {
       auto expr = parse_expr();
       if (!expr) return nullptr;
 
-      if (peek_with_indent().is_not(symbols::dedent))
-         return error("return statement is not the last statement in the control block", tok);
+      // if (peek_with_indent().is_not(symbols::dedent))
+      //    return error("return statement is not the last statement in the control block", tok);
 
       return ast::stmts::return_(std::move(expr));
    }
