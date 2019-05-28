@@ -82,10 +82,12 @@ namespace rush {
 
 	std::unique_ptr<ast::parameter_list> parser::parse_parameter_list() {
 		assert(peek_skip_indent().is(symbols::left_parenthesis) && "expected an opening parenthesis '('");
-		next_skip_indent(); // consume '(' symbol
+		next_skip_indent(); // consume '(' symbol.
 
-      if (peek_skip_indent().is(symbols::right_parenthesis))
+      if (peek_skip_indent().is(symbols::right_parenthesis)) {
+         next_skip_indent(); // consume ')' symbol.
          return decls::param_list(); // empty parameter list case.
+      }
 
       std::vector<std::unique_ptr<ast::parameter>> ps;
       do {
@@ -122,7 +124,7 @@ namespace rush {
          return nullptr;
 
       if (peek_skip_indent().is_not(symbols::right_parenthesis))
-         return error("expected '(' before '{}'.", next_skip_indent());
+         return error("expected ')' before '{}'.", next_skip_indent());
       next_skip_indent();
 
       return decls::param_list(std::move(ps));
