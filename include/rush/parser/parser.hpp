@@ -195,6 +195,8 @@ namespace rush {
 		std::unique_ptr<ast::binary_expression> parse_binary_expr(std::unique_ptr<ast::expression> lhs);
 		std::unique_ptr<ast::expression> parse_binary_expr_rhs();
 
+      std::unique_ptr<ast::expression> parse_ternary_expression(std::unique_ptr<ast::expression> cond);
+
 		std::unique_ptr<ast::expression> parse_initializer();
 	};
 }

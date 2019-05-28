@@ -121,6 +121,16 @@ namespace rush::ast {
 			dedent();
 		}
 
+      virtual void visit_ternary_expr(ast::ternary_expression const& expr) override {
+         print_expression("ternary", expr);
+         writeln();
+         indent();
+         expr.condition().accept(*this);
+         expr.true_expr().accept(*this);
+         expr.false_expr().accept(*this);
+         dedent();
+      }
+
 		virtual void visit_literal_expr(ast::nil_literal_expression const& expr) override {
 			print_expression("nil", expr);
 			writeln();

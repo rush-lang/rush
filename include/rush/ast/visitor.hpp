@@ -21,6 +21,7 @@ namespace rush::ast {
 	class expression;
 	class unary_expression;
 	class binary_expression;
+   class ternary_expression;
 	class identifier_expression;
 
 	class literal_expression;
@@ -92,6 +93,7 @@ namespace rush::ast {
 		// expressions
 		virtual void visit_unary_expr(unary_expression const&) {};
 		virtual void visit_binary_expr(binary_expression const&) {};
+      virtual void visit_ternary_expr(ternary_expression const&) {};
 		virtual void visit_identifier_expr(identifier_expression const&) {};
 
 		virtual void visit_literal_expr(nil_literal_expression const&) {};

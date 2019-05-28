@@ -43,7 +43,7 @@ bool is_unary_postfix_op(lexical_token const& tok) {
    switch (tok.symbol()) {
    default: return false;
 ## for operator in postfix
-## existsIn(operator, "symbol_token")
+## if existsIn(operator, "symbol_token")
    {# spacing #}
    case rush::symbols::{{ operator/symbol_token }}:
 ## endif

@@ -34,7 +34,10 @@ namespace rush {
          expr = parse_unary_postfix_expr(std::move(expr));
 
 		if (is_binary_op(peek_skip_indent()))
-			return parse_binary_expr(std::move(expr));
+			expr = parse_binary_expr(std::move(expr));
+
+      if (peek_skip_indent().is(symbols::question_mark))
+         expr = parse_ternary_expression(std::move(expr));
 
 		return std::move(expr);
 	}
@@ -198,4 +201,25 @@ namespace rush {
 
       return error("expected right-hand expression of '{1}' before '{0}'", next, prev);
 	}
+
+   std::unique_ptr<ast::expression> parser::parse_ternary_expression(std::unique_ptr<ast::expression> cond) {
+      assert(peek_skip_indent().is(symbols::question_mark) && "expected ternary expression sequence.");
+      next_skip_indent(); // consume '?' symbol.
+
+      auto true_ = parse_expr();
+      if (!true_) return nullptr;
+
+      if (peek_skip_indent().is_not(symbols::colon))
+         return error("syntax error, expected ':'", next_skip_indent());
+      next_skip_indent(); // consume ':' symbol.
+
+      auto false_ = parse_expr();
+      if (!false_) return nullptr;
+
+      return exprs::ternary(
+         std::move(cond),
+         std::move(true_),
+         std::move(false_));
+   }
+
 }

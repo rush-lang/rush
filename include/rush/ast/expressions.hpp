@@ -5,6 +5,7 @@
 
 #include "rush/ast/exprs/unary.hpp"
 #include "rush/ast/exprs/binary.hpp"
+#include "rush/ast/exprs/ternary.hpp"
 #include "rush/ast/exprs/literal.hpp"
 #include "rush/ast/exprs/argument.hpp"
 #include "rush/ast/exprs/identifier.hpp"
