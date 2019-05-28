@@ -154,10 +154,9 @@ namespace rush {
 		auto body = parse_function_body();
       if (!body) return nullptr;
 
-		auto decl = decls::function(
-         ident.text(),
-         std::move(plist),
-         std::move(body));
+		auto decl = std::nullopt != type
+         ? decls::function(ident.text(), *type, std::move(plist), std::move(body))
+         : decls::function(ident.text(), std::move(plist), std::move(body));
 
       _scope.pop();
       _scope.insert({ *decl });
