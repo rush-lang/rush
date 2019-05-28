@@ -6,31 +6,15 @@ namespace rush {
    std::unique_ptr<ast::statement> parser::parse_stmt() {
       auto tok = peek_skip_indent();
       if (tok.is_keyword()) {
-         switch (tok.keyword()) {
+         auto kw = tok.keyword();
+         if (auto stmt = parse_simple_stmt(kw)) return std::move(stmt);
+         if (auto stmt = parse_compound_stmt(kw)) return std::move(stmt);
+
+         switch (kw) {
             default: return error("'{}' is not a valid statement.", tok);
-            case keywords::let_: {
-               auto decl = parse_constant_decl();
-               if (!decl) return nullptr;
-               return ast::stmts::decl_stmt(std::move(decl));
-            }
-            case keywords::var_: {
-               auto decl = parse_variable_decl();
-               if (!decl) return nullptr;
-               return ast::stmts::decl_stmt(std::move(decl));
-            }
-            case keywords::if_: return parse_if_stmt();
-            case keywords::for_: return parse_for_stmt();
-            case keywords::while_: return parse_while_stmt();
-            case keywords::return_: return parse_return_stmt();
-            case keywords::break_: return parse_break_stmt();
-            case keywords::continue_: return parse_continue_stmt();
-            case keywords::switch_: return parse_switch_stmt();
-            case keywords::throw_: return parse_throw_stmt();
-            case keywords::try_: return parse_try_stmt();
-            case keywords::yield_: return parse_yield_stmt();
-            case keywords::with_: return parse_with_stmt();
+            // these keywords may form part of a expression statement
             case keywords::base_:
-            case keywords::this_: break; // these keywords will form part of a statement expression
+            case keywords::this_: break;
          }
       }
 
@@ -101,7 +85,8 @@ namespace rush {
 
       auto tok = peek_skip_indent();
       if (tok.is_keyword()) {
-         return parse_compound_stmt();
+         if (auto stmt = parse_compound_stmt(tok.keyword())) return std::move(stmt);
+         return error("expected compound statement before '{}'", tok);
       } else if (tok.is(symbols::colon)) {
          next_skip_indent(); // consume ':' symbol.
 
@@ -174,9 +159,6 @@ namespace rush {
       auto expr = parse_expr();
       if (!expr) return nullptr;
 
-      // if (peek_with_indent().is_not(symbols::dedent))
-      //    return error("return statement is not the last statement in the control block", tok);
-
       return ast::stmts::return_(std::move(expr));
    }
 
@@ -231,14 +213,34 @@ namespace rush {
       return nullptr;
    }
 
+   std::unique_ptr<ast::statement> parser::parse_simple_stmt(keyword_token_t kw) {
+      switch (kw) {
+      default: return nullptr;
+      case keywords::let_: {
+         auto decl = parse_constant_decl();
+         if (!decl) return nullptr;
+         return ast::stmts::decl_stmt(std::move(decl));
+      }
+      case keywords::var_: {
+         auto decl = parse_variable_decl();
+         if (!decl) return nullptr;
+         return ast::stmts::decl_stmt(std::move(decl));
+      }
+      case keywords::return_: return parse_return_stmt();
+      case keywords::break_: return parse_break_stmt();
+      case keywords::continue_: return parse_continue_stmt();
+      case keywords::throw_: return parse_throw_stmt();
+      case keywords::yield_: return parse_yield_stmt();
+      }
+   }
 
-   std::unique_ptr<ast::statement> parser::parse_compound_stmt() {
-      auto tok = peek_skip_indent();
-      switch (tok.keyword()) {
-      default: return error("expected compound statement before '{}'", tok);
+   std::unique_ptr<ast::statement> parser::parse_compound_stmt(keyword_token_t kw) {
+      switch (kw) {
+      default: return nullptr;
       case keywords::if_: return parse_if_stmt();
       case keywords::for_: return parse_for_stmt();
       case keywords::while_: return parse_while_stmt();
+      case keywords::switch_: return parse_switch_stmt();
       case keywords::try_: return parse_try_stmt();
       case keywords::with_: return parse_with_stmt();
       }

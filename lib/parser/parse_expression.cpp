@@ -29,6 +29,7 @@ namespace rush {
 
 	std::unique_ptr<ast::expression> parser::parse_expr() {
 		auto expr = parse_primary_expr();
+      if (!expr) return nullptr;
 
       if (is_unary_postfix_op(peek_skip_indent()))
          expr = parse_unary_postfix_expr(std::move(expr));
@@ -61,7 +62,6 @@ namespace rush {
 		auto tok = peek_skip_indent();
 		switch (tok.type()) {
 		default: return error("expected primary expression, but found '{}'", tok);
-		case lexical_token_type::error: return error("", tok);
 		case lexical_token_type::identifier: return parse_identifier_expr();
 		case lexical_token_type::string_literal: return parse_string_expr();
 		case lexical_token_type::integer_literal: return parse_integer_expr();
