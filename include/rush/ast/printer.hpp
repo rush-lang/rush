@@ -99,7 +99,6 @@ namespace rush::ast {
 		virtual void visit_unary_expr(ast::unary_expression const& expr) override {
 #        define RUSH_UNARY_EXPRESSION_PRINT_VISIT_SWITCH
 #        include "rush/ast/_operators.hpp"
-			writeln();
 			indent();
 			expr.operand().accept(*this);
 			dedent();
@@ -108,8 +107,6 @@ namespace rush::ast {
 		virtual void visit_binary_expr(ast::binary_expression const& expr) override {
 #        define RUSH_BINARY_EXPRESSION_PRINT_VISIT_SWITCH
 #        include "rush/ast/_operators.hpp"
-
-			writeln();
 			indent();
 			expr.left_operand().accept(*this);
 			expr.right_operand().accept(*this);
@@ -118,7 +115,6 @@ namespace rush::ast {
 
       virtual void visit_ternary_expr(ast::ternary_expression const& expr) override {
          print_expression("ternary", expr);
-         writeln();
          indent();
          expr.condition().accept(*this);
          expr.true_expr().accept(*this);
@@ -128,7 +124,6 @@ namespace rush::ast {
 
 		virtual void visit_literal_expr(ast::nil_literal_expression const& expr) override {
 			print_expression("nil", expr);
-			writeln();
 		}
 
 		virtual void visit_literal_expr(ast::string_literal_expression const& expr) override {
@@ -152,6 +147,14 @@ namespace rush::ast {
 			expr.result_type().accept(*this);
 			writeln(" (name=\"{}\")>", expr.name());
 		}
+
+      virtual void visit_invocation_expr(ast::invocation_expression const& expr) override {
+         print_expression("invocation", expr);
+         indent();
+         expr.callable().accept(*this);
+         expr.arguments().accept(*this);
+         dedent();
+      }
 
 		virtual void visit_constant_decl(ast::constant_declaration const& decl) override {
 			print_storage_decl("constant", decl);
@@ -233,7 +236,7 @@ namespace rush::ast {
 		void print_expression(std::string name, ast::expression const& expr) {
 			write("<{}_expr: ", name);
 			expr.result_type().accept(*this);
-			write(">");
+			writeln(">");
 		}
 
 		void print_literal_expr(std::string value, ast::literal_expression const& expr) {

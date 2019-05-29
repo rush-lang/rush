@@ -1,7 +1,4 @@
-#include "rush/ast/exprs/identifier.hpp"
-#include "rush/ast/exprs/literal.hpp"
-#include "rush/ast/exprs/binary.hpp"
-#include "rush/ast/exprs/unary.hpp"
+#include "rush/ast/expressions.hpp"
 
 #include "rush/parser/parser.hpp"
 
@@ -34,11 +31,14 @@ namespace rush {
       if (is_unary_postfix_op(peek_skip_indent()))
          expr = parse_unary_postfix_expr(std::move(expr));
 
+		if (peek_skip_indent().is(symbols::left_parenthesis))
+			expr = parse_invocation_expr(std::move(expr));
+
 		if (is_binary_op(peek_skip_indent()))
 			expr = parse_binary_expr(std::move(expr));
 
       if (peek_skip_indent().is(symbols::question_mark))
-         expr = parse_ternary_expression(std::move(expr));
+         expr = parse_ternary_expr(std::move(expr));
 
 		return std::move(expr);
 	}
@@ -202,7 +202,7 @@ namespace rush {
       return error("expected right-hand expression of '{1}' before '{0}'", next, prev);
 	}
 
-   std::unique_ptr<ast::expression> parser::parse_ternary_expression(std::unique_ptr<ast::expression> cond) {
+   std::unique_ptr<ast::expression> parser::parse_ternary_expr(std::unique_ptr<ast::expression> cond) {
       assert(peek_skip_indent().is(symbols::question_mark) && "expected ternary expression sequence.");
       next_skip_indent(); // consume '?' symbol.
 
@@ -220,5 +220,39 @@ namespace rush {
          std::move(cond),
          std::move(true_),
          std::move(false_));
+   }
+
+   std::unique_ptr<ast::argument_list> parser::parse_argument_list() {
+      assert(peek_skip_indent().is(symbols::left_parenthesis) && "expected ternary expression sequence.");
+		next_skip_indent(); // consume '(' symbol
+
+      if (peek_skip_indent().is(symbols::right_parenthesis)) {
+			next_skip_indent(); // consume ')' symbol
+         return exprs::arg_list();
+		}
+
+      std::vector<std::unique_ptr<ast::argument>> args;
+      do {
+         auto expr = parse_expr();
+         if (!expr) return nullptr;
+
+         args.push_back(exprs::arg(std::move(expr)));
+      } while (consume_skip_indent(symbols::comma));
+
+      if (peek_skip_indent().is_not(symbols::right_parenthesis))
+         return error("expected ')' before '{}'.", next_skip_indent());
+      next_skip_indent();
+
+      return exprs::arg_list(std::move(args));
+   }
+
+
+   std::unique_ptr<ast::expression> parser::parse_invocation_expr(std::unique_ptr<ast::expression> fn) {
+      assert(peek_skip_indent().is(symbols::left_parenthesis) && "expected ternary expression sequence.");
+
+      auto args = parse_argument_list();
+		return exprs::invocation(
+         std::move(fn),
+         std::move(args));
    }
 }
