@@ -52,7 +52,7 @@ namespace rush {
          , _kind(other._kind) {}
 
       using symbol_t = rush::symbol;
-      using resolver_t = ast::declaration::resolver;
+      using resolver_t = ast::identifier::resolver;
       using symbol_table_t = std::unordered_map<std::string, symbol_t>;
       using resolver_table_t = std::unordered_map<std::string, std::unique_ptr<resolver_t>>;
 
@@ -94,7 +94,7 @@ namespace rush {
       //! \brief Gets a resolver for the given name. Later, when the declaration with the given
       //         name is inserted, the resolver is called with the declaration inserted
       //         which is used to update identifiers referencing said declaration.
-      resolver_t* resolver(std::string const& name);
+      resolver_t& resolver(std::string const& name);
 
       /*! \brief Performs a lookup of the symbol with the specified name.
        *         This is a chained lookup, starting at the scope the method
@@ -149,7 +149,7 @@ namespace rush {
       //! \brief Gets a resolver for the given name. Later, when the declaration with the given
       //         name is inserted, the resolver is called with the declaration inserted
       //         which is used to update identifiers referencing said declaration.
-      resolver_t* resolver(std::string const& name);
+      resolver_t& resolver(std::string const& name);
 
       /*! \brief Pushes a new scope of scope_kind onto the end of the chain.
        *         The new scope will obtain the current scope as its parent.

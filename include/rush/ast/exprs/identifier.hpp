@@ -15,8 +15,8 @@
 namespace rush::ast {
 	class identifier_expression;
 	namespace exprs {
-      std::unique_ptr<identifier_expression> identifier(ast::identifier);
-      std::unique_ptr<identifier_expression> identifier(ast::declaration::resolver*);
+      std::unique_ptr<identifier_expression> identifier(ast::identifier ident);
+      std::unique_ptr<identifier_expression> identifier(ast::identifier::resolver&);
    }
 }
 
@@ -27,51 +27,28 @@ namespace rush::ast {
    //        or function within an expression.
 	class identifier_expression : public expression {
 		struct factory_tag_t {};
-		friend std::unique_ptr<identifier_expression> exprs::identifier(ast::identifier);
-      friend std::unique_ptr<identifier_expression> exprs::identifier(ast::declaration::resolver*);
+		friend std::unique_ptr<identifier_expression> exprs::identifier(ast::identifier ident);
+      friend std::unique_ptr<identifier_expression> exprs::identifier(ast::identifier::resolver&);
 
-      using base_resolver_callback_t = declaration::resolver_callback_t;
-
-      class resolver_callback_t : public base_resolver_callback_t {
-      public:
-         resolver_callback_t(identifier_expression* self)
-            : _self { self } {}
-
-         virtual void operator ()(ast::declaration const* decl) const override {
-            _self->_ident = decl->identifier();
-         }
-
-      private:
-         identifier_expression* _self;
-      };
 
 	public:
-      using resolver = ast::declaration::resolver;
-
 		identifier_expression(ast::identifier ident, factory_tag_t) noexcept
-			: _ident { ident } {}
-
-      identifier_expression(resolver* resolver, factory_tag_t) noexcept
-         : _ident { resolver_callback_t { this } } { resolver->listen(&std::get<resolver_callback_t>(_ident)); }
-
+			: _ident { std::move(ident) } {}
 
       bool is_unresolved() const noexcept {
-         return std::holds_alternative<resolver_callback_t>(_ident);
+         return _ident.is_unresolved();
       }
 
 		std::string name() const {
-         assert(!is_unresolved() && "attempted to get the 'name' of an unresolved identifier.");
-         return std::get<ast::identifier>(_ident).name();
+         return _ident.name();
 		}
 
       virtual ast::type_ref result_type() const noexcept override {
-         assert(!is_unresolved() && "attempted to get the 'type' of an unresolved identifier.");
-         return std::get<ast::identifier>(_ident).type();
+         return _ident.type();
       };
 
       declaration const& declaration() const noexcept {
-         assert(!is_unresolved() && "attempted to get the 'declaration' of an unresolved identifier.");
-         return std::get<ast::identifier>(_ident).declaration();
+         return _ident.declaration();
       }
 
 		using node::accept;
@@ -80,18 +57,16 @@ namespace rush::ast {
 		}
 
 	private:
-   	std::variant<
-         ast::identifier,
-         resolver_callback_t> _ident;
+   	ast::identifier _ident;
 	};
 
 	namespace exprs {
 		inline std::unique_ptr<identifier_expression> identifier(ast::identifier ident) {
-			return std::make_unique<identifier_expression>(ident, identifier_expression::factory_tag_t {});
+			return std::make_unique<identifier_expression>(std::move(ident), identifier_expression::factory_tag_t {});
 		}
 
-      inline std::unique_ptr<identifier_expression> identifier(ast::declaration::resolver* res) {
-         return std::make_unique<identifier_expression>(res, identifier_expression::factory_tag_t {});
+      inline std::unique_ptr<identifier_expression> identifier(ast::identifier::resolver& res) {
+         return std::make_unique<identifier_expression>(ast::identifier { res }, identifier_expression::factory_tag_t {});
       }
 	} // rush::ast::exprs
 } // rush::ast

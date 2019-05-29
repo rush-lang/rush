@@ -10,7 +10,7 @@
 #include <variant>
 #include <memory>
 
-namespace rush::ast::details {
+namespace rush::ast::detail {
 	// wraps declarations and expressions in a statement,
 	// enable the former to be implicitly converted statement
 	// and in the case of a genuine statement, just move.

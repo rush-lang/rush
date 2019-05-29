@@ -16,7 +16,7 @@ namespace rush {
       return result.second;
    }
 
-   scope::resolver_t* scope::resolver(std::string const& name) {
+   scope::resolver_t& scope::resolver(std::string const& name) {
       scope::resolver_table_t* restab;
       switch (kind()) {
       // in the case of function and block scopes we
@@ -37,11 +37,11 @@ namespace rush {
 
       auto it = _restab.find(name);
       if (it == _restab.end()) {
-         auto result = _restab.insert({ name, std::make_unique<scope::resolver_t>() });
-         return result.first->second.get();
+         auto result = _restab.insert({ name, std::make_unique<scope::resolver_t>(name) });
+         return *result.first->second;
       }
 
-      return it->second.get();
+      return *it->second;
    }
 
    scope::symbol_t scope::lookup(std::string name) const {
@@ -70,7 +70,7 @@ namespace rush {
       return _scopes.top().insert(std::move(sym));
    }
 
-   scope_chain::resolver_t* scope_chain::resolver(std::string const& name) {
+   scope_chain::resolver_t& scope_chain::resolver(std::string const& name) {
       return _scopes.top().resolver(name);
    }
 
