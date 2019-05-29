@@ -1,34 +1,48 @@
 {
 	"prefix": [
-		{ "name": "positive", "symbol": "+", "symbol_token": "plus", "precedence": 30 },
-		{ "name": "negative", "symbol": "-", "symbol_token": "minus", "precedence": 30 },
-		{ "name": "pre_increment", "symbol": "++", "symbol_token": "plus_plus", "precedence": 30 },
-		{ "name": "pre_decrement", "symbol": "--", "symbol_token": "minus_minus", "precedence": 30 },
-		{ "name": "logical_negation", "symbol": "!", "symbol_token": "exclamation_mark", "precedence": 30 },
-      { "name": "bitwise_negation", "symbol": "~", "symbol_token": "tilde", "precedence": 30 }
+		{ "precedence": 30, "name": "positive", "symbol_token": "plus" },
+		{ "precedence": 30, "name": "negative", "symbol_token": "minus" },
+		{ "precedence": 30, "name": "pre_increment", "symbol_token": "plus_plus" },
+		{ "precedence": 30, "name": "pre_decrement", "symbol_token": "minus_minus" },
+		{ "precedence": 30, "name": "logical_negation", "symbol_token": "exclamation_mark" },
+      { "precedence": 30, "name": "bitwise_negation", "symbol_token": "tilde" }
    ],
 
    "postfix": [
-      { "name": "post_increment", "symbol": "++", "symbol_token": "plus_plus", "precedence": 30 },
-      { "name": "post_decrement", "symbol": "--", "symbol_token": "minus_minus", "precedence": 30 }
+      { "precedence": 20, "name": "dot", "symbol_token": "period" },
+      { "precedence": 20, "name": "post_increment", "symbol_token": "plus_plus" },
+      { "precedence": 20, "name": "post_decrement", "symbol_token": "minus_minus" }
    ],
 
 	"binary": [
-      { "name": "assignment", "symbol": "=", "symbol_token": "equals", "precedence": 30 },
-		{ "name": "equal", "symbol": "==", "symbol_token": "equals_equals", "precedence": 60 },
-		{ "name": "not_equal", "symbol": "!=", "symbol_token": "exclamation_mark_equals", "precedence": 60 },
-		{ "name": "addition", "symbol": "+", "symbol_token": "plus", "precedence": 60 },
-		{ "name": "subtraction", "symbol": "-", "symbol_token": "minus", "precedence": 60 },
-		{ "name": "multiplication", "symbol": "*", "symbol_token": "asterisk", "precedence": 50 },
-		{ "name": "division", "symbol": "/", "symbol_token": "forward_slash", "precedence": 50 },
-		{ "name": "modulo", "symbol": "%", "symbol_token": "percent", "precedence": 50 },
-		{ "name": "logical_or", "symbol": "||", "symbol_token": "double_pipe", "precedence": 150 },
-		{ "name": "logical_and", "symbol": "&&", "symbol_token": "double_ampersand", "precedence": 140 },
-		{ "name": "bitwise_or", "symbol": "|", "symbol_token": "pipe", "precedence": 130 },
-		{ "name": "bitwise_and", "symbol": "&", "symbol_token": "ampersand", "precedence": 110 },
-		{ "name": "less_than", "symbol": "<", "symbol_token": "left_chevron", "precedence": 90 },
-		{ "name": "less_equals", "symbol": "<", "symbol_token": "left_chevron_equals", "precedence": 90 },
-		{ "name": "greater_than", "symbol": ">=", "symbol_token": "right_chevron", "precedence": 90 },
-		{ "name": "greater_equals", "symbol": ">=", "symbol_token": "right_chevron_equals", "precedence": 90 }
+      { "associativity": -1, "precedence": 50, "name": "multiplication", "symbol_token": "asterisk" },
+		{ "associativity": -1, "precedence": 50, "name": "division", "symbol_token": "forward_slash" },
+		{ "associativity": -1, "precedence": 50, "name": "modulo", "symbol_token": "percent" },
+		{ "associativity": -1, "precedence": 60, "name": "addition", "symbol_token": "plus" },
+		{ "associativity": -1, "precedence": 60, "name": "subtraction", "symbol_token": "minus" },
+		{ "associativity": -1, "precedence": 70, "name": "left_shift", "symbol_token": "double_left_chevron" },
+		{ "associativity": -1, "precedence": 70, "name": "right_shift", "symbol_token": "double_right_chevron" },
+		{ "associativity": -1, "precedence": 90, "name": "less_than", "symbol_token": "left_chevron" },
+		{ "associativity": -1, "precedence": 90, "name": "less_equals", "symbol_token": "left_chevron_equals" },
+		{ "associativity": -1, "precedence": 90, "name": "greater_than", "symbol_token": "right_chevron" },
+		{ "associativity": -1, "precedence": 90, "name": "greater_equals", "symbol_token": "right_chevron_equals" },
+      { "associativity": -1, "precedence": 100, "name": "equal", "symbol_token": "equals_equals" },
+		{ "associativity": -1, "precedence": 100, "name": "not_equal", "symbol_token": "exclamation_mark_equals" },
+		{ "associativity": -1, "precedence": 110, "name": "bitwise_and", "symbol_token": "ampersand" },
+		{ "associativity": -1, "precedence": 120, "name": "bitwise_xor", "symbol_token": "caret" },
+		{ "associativity": -1, "precedence": 130, "name": "bitwise_or", "symbol_token": "pipe"  },
+		{ "associativity": -1, "precedence": 140, "name": "logical_and", "symbol_token": "double_ampersand" },
+		{ "associativity": -1, "precedence": 150, "name": "logical_or", "symbol_token": "double_pipe" },
+      { "associativity": 1, "precedence": 160, "name": "assignment", "symbol_token": "equals" },
+      { "associativity": 1, "precedence": 160, "name": "compound_addition", "symbol_token": "plus_equals" },
+      { "associativity": 1, "precedence": 160, "name": "compound_subtraction", "symbol_token": "minus_equals"  },
+      { "associativity": 1, "precedence": 160, "name": "compound_multiplication", "symbol_token": "asterisk_equals"  },
+      { "associativity": 1, "precedence": 160, "name": "compound_division", "symbol_token": "forward_slash_equals"  },
+      { "associativity": 1, "precedence": 160, "name": "compound_modulo", "symbol_token": "percent_equals"  },
+      { "associativity": 1, "precedence": 160, "name": "compound_left_shift", "symbol_token": "double_left_chevron_equals"  },
+      { "associativity": 1, "precedence": 160, "name": "compound_right_shift", "symbol_token": "double_right_chevron_equals"  },
+      { "associativity": 1, "precedence": 160, "name": "compound_bitwise_or", "symbol_token": "pipe_equals"  },
+      { "associativity": 1, "precedence": 160, "name": "compound_bitwise_xor", "symbol_token": "caret_equals"  },
+      { "associativity": 1, "precedence": 160, "name": "compound_bitwise_and", "symbol_token": "ampersand_equals"  }
 	]
 }

@@ -271,7 +271,7 @@ namespace rush {
 		assert(symbol != symbols::unknown && "unknown symbol");
 
 		switch (symbol) {
-			case symbols::ampersand: {
+         case symbols::ampersand: {
 				if (check('&', 1)) { skip(2); return tok::double_ampersand(location()); }
 				if (check('=', 1)) { skip(2); return tok::ampersand_equals(location()); }
 			} break;
@@ -290,6 +290,10 @@ namespace rush {
 				if (check('-', 1)) { skip(2); return tok::minus_minus(location()); }
 				if (check('=', 1)) { skip(2); return tok::minus_equals(location()); }
 			} break;
+
+         case symbols::caret: {
+            if (check('=', 1)) { skip(2); return tok::caret_equals(location()); }
+         } break;
 
 			case symbols::asterisk: {
 				if (check('=', 1)) { skip(2); return tok::asterisk_equals(location()); }
@@ -314,10 +318,18 @@ namespace rush {
 
 			case symbols::left_chevron: {
 				if (check('=', 1)) { skip(2); return tok::left_chevron_equals(location()); }
+				if (check('<', 1)) { skip(2);
+				   if (check('=')) { skip(1); return tok::double_left_chevron_equals(location()); }
+               return tok::double_left_chevron(location());
+            }
 			} break;
 
 			case symbols::right_chevron: {
 				if (check('=', 1)) { skip(2); return tok::right_chevron_equals(location()); }
+            if (check('>', 1)) { skip(2);
+				   if (check('=')) { skip(1); return tok::double_right_chevron_equals(location()); }
+               return tok::double_right_chevron(location());
+            }
 			} break;
 
 			case symbols::period: {
