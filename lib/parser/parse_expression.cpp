@@ -164,11 +164,36 @@ namespace rush {
 		switch (tok.symbol()) {
 		default: return error("binary operator '{}' not yet supported", tok);
       case symbols::equals: expr = exprs::assignment(std::move(lhs), std::move(rhs)); break;
+
+      // arithmetic binary operators
 		case symbols::plus: expr = exprs::addition(std::move(lhs), std::move(rhs)); break;
 		case symbols::minus: expr = exprs::subtraction(std::move(lhs), std::move(rhs)); break;
 		case symbols::percent: expr = exprs::modulo(std::move(lhs), std::move(rhs)); break;
 		case symbols::asterisk: expr = exprs::multiplication(std::move(lhs), std::move(rhs)); break;
 		case symbols::forward_slash: expr = exprs::division(std::move(lhs), std::move(rhs)); break;
+
+      // compound arithmetic binary operators
+      case symbols::plus_equals: expr = exprs::compound_addition(std::move(lhs), std::move(rhs)); break;
+      case symbols::minus_equals: expr = exprs::compound_subtraction(std::move(lhs), std::move(rhs)); break;
+      case symbols::percent_equals: expr = exprs::compound_modulo(std::move(lhs), std::move(rhs)); break;
+      case symbols::asterisk_equals: expr = exprs::compound_multiplication(std::move(lhs), std::move(rhs)); break;
+      case symbols::forward_slash_equals: expr = exprs::compound_division(std::move(lhs), std::move(rhs)); break;
+
+      // bit-wise binary operators
+      case symbols::pipe: expr = exprs::bitwise_or(std::move(lhs), std::move(rhs)); break;
+      case symbols::caret: expr = exprs::bitwise_xor(std::move(lhs), std::move(rhs)); break;
+      case symbols::ampersand: expr = exprs::bitwise_and(std::move(lhs), std::move(rhs)); break;
+      case symbols::double_left_chevron: expr = exprs::left_shift(std::move(lhs), std::move(rhs)); break;
+      case symbols::double_right_chevron: expr = exprs::right_shift(std::move(lhs), std::move(rhs)); break;
+
+      // compound bit-wise binary operators
+      case symbols::pipe_equals: expr = exprs::compound_bitwise_or(std::move(lhs), std::move(rhs)); break;
+      case symbols::caret_equals: expr = exprs::compound_bitwise_xor(std::move(lhs), std::move(rhs)); break;
+      case symbols::ampersand_equals: expr = exprs::compound_bitwise_and(std::move(lhs), std::move(rhs)); break;
+      case symbols::double_left_chevron_equals: expr = exprs::compound_left_shift(std::move(lhs), std::move(rhs)); break;
+      case symbols::double_right_chevron_equals: expr = exprs::compound_right_shift(std::move(lhs), std::move(rhs)); break;
+
+      // logical binary operators
 		case symbols::double_pipe: expr = exprs::logical_or(std::move(lhs), std::move(rhs)); break;
 		case symbols::double_ampersand: expr = exprs::logical_and(std::move(lhs), std::move(rhs)); break;
       case symbols::equals_equals: expr = exprs::equal(std::move(lhs), std::move(rhs)); break;
