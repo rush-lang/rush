@@ -9,6 +9,7 @@
 #include <stack>
 #include <optional>
 #include <string>
+#include <memory>
 
 namespace rush {
    class scope;
@@ -51,7 +52,14 @@ namespace rush {
          , _kind(other._kind) {}
 
       using symbol_t = rush::symbol;
+      using resolver_t = ast::declaration::resolver;
       using symbol_table_t = std::unordered_map<std::string, symbol_t>;
+      using resolver_table_t = std::unordered_map<std::string, std::unique_ptr<resolver_t>>;
+
+      //! \brief Gets the kind of this scope.
+      scope_kind kind() const noexcept {
+         return _kind;
+      }
 
       //! \brief Gets the depth of the scope relative to its ancestor scopes.
       std::size_t depth() const noexcept {
@@ -83,6 +91,11 @@ namespace rush {
       //! \brief Inserts a symbol within the scope's symbol table.
       bool insert(symbol_t);
 
+      //! \brief Gets a resolver for the given name. Later, when the declaration with the given
+      //         name is inserted, the resolver is called with the declaration inserted
+      //         which is used to update identifiers referencing said declaration.
+      resolver_t* resolver(std::string const& name);
+
       /*! \brief Performs a lookup of the symbol with the specified name.
        *         This is a chained lookup, starting at the scope the method
        *         is invoked on and then performing lookup against its the parent
@@ -99,6 +112,8 @@ namespace rush {
 
    private:
       symbol_table_t _symtab;
+      resolver_table_t _restab;
+
       scope_kind _kind;
       scope* _parent;
 
@@ -106,6 +121,8 @@ namespace rush {
          : _symtab {}
          , _kind(kind)
          , _parent(parent) {}
+
+      void hoist_resolvers();
 	};
 
 
@@ -116,7 +133,8 @@ namespace rush {
       friend scope;
 
    public:
-      using symbol_t = rush::symbol;
+      using symbol_t = scope::symbol_t;
+      using resolver_t = scope::resolver_t;
 
       scope_chain();
 
@@ -127,6 +145,11 @@ namespace rush {
 
       //! \brief Inserts a symbol within the current scope's symbol table.
       bool insert(symbol_t);
+
+      //! \brief Gets a resolver for the given name. Later, when the declaration with the given
+      //         name is inserted, the resolver is called with the declaration inserted
+      //         which is used to update identifiers referencing said declaration.
+      resolver_t* resolver(std::string const& name);
 
       /*! \brief Pushes a new scope of scope_kind onto the end of the chain.
        *         The new scope will obtain the current scope as its parent.

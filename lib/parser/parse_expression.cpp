@@ -117,10 +117,10 @@ namespace rush {
 
 		auto tok = next_skip_indent();
       auto sym = _scope.current().lookup(tok.text());
-      if (sym.is_undefined())
-         return error("the name '{}' does not exist in the current context.", tok);
 
-      return exprs::identifier(sym.declaration()->identifier());
+      return sym.is_undefined()
+         ? exprs::identifier(_scope.resolver(tok.text()))
+         : exprs::identifier(sym.declaration()->identifier());
 	}
 
 

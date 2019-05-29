@@ -9,6 +9,7 @@
 
 #include <string>
 #include <cstdint>
+#include <vector>
 
 namespace rush::ast {
 	enum class declaration_kind : std::uint8_t {
@@ -41,6 +42,30 @@ namespace rush::ast {
          return { this };
       };
 
+      struct resolver_callback_t {
+         virtual ~resolver_callback_t() = default;
+         virtual void operator ()(ast::declaration const*) const = 0;
+      };
+
+      /*! \brief When parsing some identifiers may appear before the associated
+       *         declaration has been parsed.
+       *         In which case an identifier expression is created with a resolver callback
+       *         to resolve the identifier at the moment the declaration is inserted
+       *         into the scope. */
+      class resolver {
+      public:
+         void listen(resolver_callback_t* cb) {
+            _cbs.push_back(cb);
+         }
+
+         void resolve(ast::declaration const* decl) {
+            std::for_each(_cbs.begin(), _cbs.end(),
+               [&decl](auto& cb) { cb->operator()(decl); });
+         }
+
+      private:
+         std::vector<resolver_callback_t*> _cbs;
+      };
 
    protected:
       declaration() = default;
