@@ -5,8 +5,12 @@
 
 namespace rush {
 
-   void scope::insert(scope::symbol_t sym) {
-      _symtab.insert({ sym.name(), sym });
+   bool scope::insert(scope::symbol_t sym) {
+      auto result = _symtab.insert({ sym.name(), sym });
+      if (!result.second) return false;
+
+
+      return true;
    }
 
    scope::symbol_t scope::lookup(std::string name) const {
@@ -28,12 +32,7 @@ namespace rush {
    }
 
    bool scope_chain::insert(scope_chain::symbol_t sym) {
-      if (_scopes.top().lookup_local(sym.name()).is_undefined()) {
-         _scopes.top().insert(std::move(sym));
-         return true;
-      }
-
-      return false;
+      return _scopes.top().insert(std::move(sym));
    }
 
    void scope_chain::push(scope_kind kind) {

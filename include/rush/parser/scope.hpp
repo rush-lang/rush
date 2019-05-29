@@ -30,8 +30,7 @@ namespace rush {
    /*! \brief Represents a lexical scope of a particular kind (e.g. block, function, class).
     *         Each scope maintains a table of symbols and a pointer to its parent scope which
     *         enables a chained lookup of symbols while isolating symbol lookup from
-    *         unrelated scopes.
-    */
+    *         unrelated scopes. */
 	class scope final {
       friend class scope_chain;
 
@@ -82,7 +81,7 @@ namespace rush {
       }
 
       //! \brief Inserts a symbol within the scope's symbol table.
-      void insert(symbol_t);
+      bool insert(symbol_t);
 
       /*! \brief Performs a lookup of the symbol with the specified name.
        *         This is a chained lookup, starting at the scope the method

@@ -53,7 +53,15 @@ namespace rush {
 				? (*fptr)(ident.text(), *type, std::move(init))
 				: (*fptr)(ident.text(), init->result_type(), std::move(init));
 
-         _scope.insert({ *decl });
+         if (!_scope.insert({ *decl })) {
+            auto existing_decl = _scope.current().lookup_local(ident.text());
+            switch (existing_decl.declaration()->kind()) {
+            default: assert("unreachable");
+            case ast::declaration_kind::constant: return error("local constant named '{}' is already defined in this scope.", ident);
+            case ast::declaration_kind::variable: return error("local variable named '{}' is already defined in this scope.", ident);
+            }
+         }
+
          return std::move(decl);
 		}
 
@@ -159,20 +167,20 @@ namespace rush {
          : decls::function(ident.text(), std::move(plist), std::move(body));
 
       _scope.pop();
-      _scope.insert({ *decl });
+      if (!_scope.insert({ *decl })) {
+         return error("the current context already contains a definition for '{}'.", ident);
+      }
+
       return std::move(decl);
 	}
 
    std::unique_ptr<ast::statement> parser::parse_function_body() {
-      auto body = std::unique_ptr<ast::statement> {};
       if (peek_skip_indent().is(symbols::arrow))
-         body = parse_function_expr_body();
-      else if (peek_skip_indent().is(symbols::colon))
-         body = parse_function_stmt_body();
+         return parse_function_expr_body();
+      if (peek_skip_indent().is(symbols::colon))
+         return parse_function_stmt_body();
 
-      return body == nullptr
-         ? error("expected end of function body '<dedent>' before '{}'", next_skip_indent())
-         : std::move(body);
+      return nullptr;
    }
 
    std::unique_ptr<ast::statement> parser::parse_function_expr_body() {
