@@ -4,38 +4,93 @@
 #define RUSH_AST_TRAVERSAL_HPP
 
 #include "rush/ast/visitor.hpp"
+#include "rush/ast/declarations.hpp"
+#include "rush/ast/expressions.hpp"
+#include "rush/ast/statements.hpp"
 
 namespace rush::ast {
-	// A travesal derives the AST visitor, in which relevant visitation
-	// methods are overloaded to visit the AST in its entirety.
-	class traversal : public visitor {
-	public:
-		// types
-		// virtual void visit_type(ast::type const&) override;
-
+   /*! \brief A traversal_visitor derives the AST visitor, in which relevant visitation
+    *         methods are overloaded to visit an AST in its entirety. */
+   class traversal : public ast::visitor {
+   public:
 		// declarations
-		virtual void visit_constant_decl(constant_declaration const&) override;
-		virtual void visit_variable_decl(variable_declaration const&) override;
+		virtual void visit_constant_decl(ast::constant_declaration const& decl) override {
+         if (decl.initializer()) accept(*decl.initializer());
+      }
+
+		virtual void visit_variable_decl(ast::variable_declaration const& decl) override {
+         if (decl.initializer()) accept(*decl.initializer());
+      }
+
+		virtual void visit_function_decl(ast::function_declaration const& decl) override {
+         accept(decl.parameters());
+         accept(decl.body());
+      }
 
 		// statements
-		virtual void visit_block_stmt(statement_block const&) override;
-		virtual void visit_if_stmt(if_statement const&) override;
-		virtual void visit_for_stmt(for_statement const&) override;
-		virtual void visit_switch_stmt(switch_statement const&) override;
-		virtual void visit_while_stmt(while_statement const&) override;
-		virtual void visit_return_stmt(return_statement const&) override;
+		virtual void visit_block_stmt(ast::statement_block const& stmt) override {
+         for (auto& s : stmt) accept(*s);
+      }
+
+		virtual void visit_if_stmt(ast::if_statement const& stmt) override {
+         accept(stmt.condition());
+         accept(stmt.then());
+         if (stmt.else_())
+            accept(*stmt.else_());
+      }
+
+		virtual void visit_for_stmt(ast::for_statement const& stmt) override {
+         // todo: implement when for statements are implemented.
+      }
+
+		virtual void visit_while_stmt(ast::while_statement const& stmt) override {
+         accept(stmt.condition());
+         accept(stmt.body());
+      }
+
+		virtual void visit_switch_stmt(ast::switch_statement const& stmt) override {
+         // todo: implement when switch statements are implemented.
+      }
+
+		virtual void visit_return_stmt(ast::return_statement const& stmt) override {
+         if (stmt.expr()) accept(*stmt.expr());
+      }
+
+		virtual void visit_yield_stmt(ast::yield_statement const& stmt) override {
+         accept(stmt.expr());
+      }
 
 		// expressions
-		virtual void visit_unary_expr(unary_expression const&) override;
-		virtual void visit_binary_expr(binary_expression const&) override;
-		// virtual void visit_identifier_expr(identifier_expression const&) override;
+		virtual void visit_unary_expr(ast::unary_expression const& expr) override {
+         accept(expr.operand());
+      }
 
-		// virtual void visit_literal_expr(nil_literal_expression const&) override;
-		// virtual void visit_literal_expr(string_literal_expression const&) override;
-		// virtual void visit_literal_expr(boolean_literal_expression const&) override;
-		// virtual void visit_literal_expr(integer_literal_expression const&) override;
-		// virtual void visit_literal_expr(floating_literal_expression const&) override;
-	};
+		virtual void visit_binary_expr(ast::binary_expression const& expr) override {
+         accept(expr.left_operand());
+         accept(expr.right_operand());
+      }
+
+      virtual void visit_ternary_expr(ast::ternary_expression const& expr) override {
+         accept(expr.condition());
+         accept(expr.true_expr());
+         accept(expr.false_expr());
+      }
+
+      virtual void visit_invocation_expr(ast::invocation_expression const& expr) override {
+         accept(expr.arguments());
+         accept(expr.callable());
+      }
+
+   protected:
+      void traverse(ast::node const& ast);
+
+      virtual void accept(ast::node const& ast) {
+         ast.accept(*this);
+      }
+
+   private:
+      ast::visitor* _vis;
+   };
 } // rush::ast
 
 #endif // RUSH_AST_TRAVERSAL_HPP

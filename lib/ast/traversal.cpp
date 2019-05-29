@@ -1,43 +1,29 @@
-#include "rush/ast/traversal.hpp"
-#include "rush/ast/expressions.hpp"
+#include "rush/ast/types.hpp"
 #include "rush/ast/statements.hpp"
+#include "rush/ast/expressions.hpp"
 #include "rush/ast/declarations.hpp"
+#include "rush/ast/traversal.hpp"
+#include "rush/ast/visitor.hpp"
+
+
+using namespace rush;
 
 namespace rush::ast {
-	// void traversal::visit_type(ast::type const&) {}
+   class traversal_roundtrip : public traversal {
+      friend class traversal;
 
-	void traversal::visit_constant_decl(constant_declaration const& decl) {
-		decl.initializer()->accept(*this);
-		decl.type().accept(*this);
-	}
+   protected:
+      virtual void accept(ast::node const& ast) override {
+         ast.accept(*_v);
+      }
 
-	void traversal::visit_variable_decl(variable_declaration const& decl) {
-		decl.initializer()->accept(*this);
-		decl.type().accept(*this);
-	}
+   private:
+      ast::visitor* _v;
+      traversal_roundtrip(ast::visitor* v) : _v { v } {}
+   };
 
-	void traversal::visit_block_stmt(statement_block const&) {}
-	void traversal::visit_if_stmt(if_statement const&) {}
-	void traversal::visit_for_stmt(for_statement const&) {}
-	void traversal::visit_switch_stmt(switch_statement const&) {}
-	void traversal::visit_while_stmt(while_statement const&) {}
-	void traversal::visit_return_stmt(return_statement const&) {}
-
-	void traversal::visit_unary_expr(unary_expression const& expr) {
-		expr.operand().accept(*this);
-		// expr.result_type().accept(*this);
-	}
-
-	void traversal::visit_binary_expr(binary_expression const& expr) {
-		expr.left_operand().accept(*this);
-		expr.right_operand().accept(*this);
-		// expr.result_type().accept(*this);
-	}
-
-	// void traversal::visit_identifier_expr(identifier_expression const&) {}
-	// void traversal::visit_literal_expr(nil_literal_expression const&) {}
-	// void traversal::visit_literal_expr(string_literal_expression const&) {}
-	// void traversal::visit_literal_expr(boolean_literal_expression const&) {}
-	// void traversal::visit_literal_expr(integer_literal_expression const&) {}
-	// void traversal::visit_literal_expr(floating_literal_expression const&) {}
+   void traversal::traverse(ast::node const& ast) {
+      auto v = traversal_roundtrip { this };
+      ast.accept(v);
+   }
 }
