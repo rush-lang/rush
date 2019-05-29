@@ -36,7 +36,7 @@ namespace rush {
 			std::optional<ast::type_ref> type;
 
 			if (peek_skip_indent().is(symbols::colon)) {
-				type = try_parse_type_annotation();
+				type = parse_type_annotation();
             if (type == std::nullopt) {
                return error("expected type annotation before '{}'", peek_skip_indent());
             }
@@ -113,7 +113,7 @@ namespace rush {
          if (peek_skip_indent().is_not(symbols::colon))
             return error("expected type annotation for parameters.", next_skip_indent());
 
-         auto type = try_parse_type_annotation();
+         auto type = parse_type_annotation();
          if (type == std::nullopt) return nullptr;
 
          std::transform(
@@ -158,7 +158,7 @@ namespace rush {
       std::optional<ast::type_ref> type = {};
       if (peek_skip_indent().is_not(symbols::arrow)
       &&  peek_skip_indent().is_not(symbols::colon))
-         type = try_parse_type();
+         type = parse_type();
 
 		auto body = parse_function_body();
       if (!body) return nullptr;

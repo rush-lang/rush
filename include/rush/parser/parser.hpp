@@ -139,10 +139,9 @@ namespace rush {
 			return *ptok;
 		}
 
-
       // types
-      std::optional<ast::type_ref> try_parse_type();
-		std::optional<ast::type_ref> try_parse_type_annotation();
+      std::optional<ast::type_ref> parse_type();
+		std::optional<ast::type_ref> parse_type_annotation();
 
 		// declarations.
       std::unique_ptr<ast::declaration> parse_toplevel_decl();

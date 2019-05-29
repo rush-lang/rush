@@ -22,7 +22,7 @@ namespace rush {
       }
    }
 
-   std::optional<ast::type_ref> parser::try_parse_type() {
+   std::optional<ast::type_ref> parser::parse_type() {
       auto tok = next_skip_indent();
 
       if (tok.is_keyword())
@@ -54,7 +54,7 @@ namespace rush {
                return std::nullopt;
             case ast::declaration_kind::extension:
             default:
-               error("try_parse_type unexpected!", tok);
+               error("parse_type unexpected!", tok);
                return std::nullopt;
          }
       }; // todo: implement.
@@ -62,10 +62,10 @@ namespace rush {
       return std::nullopt;
    }
 
-   std::optional<ast::type_ref> parser::try_parse_type_annotation() {
+   std::optional<ast::type_ref> parser::parse_type_annotation() {
       assert(peek_skip_indent().is(symbols::colon) && "expected a type annotation symbol ':'");
       next_skip_indent();
 
-      return try_parse_type();
+      return parse_type();
    }
 }
