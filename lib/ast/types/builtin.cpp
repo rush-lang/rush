@@ -32,8 +32,8 @@ namespace rush::ast::types {
    };
 
    // sentinals
-	ast::type_ref const error_type = *_builtin_types[0];
-	ast::type_ref const inferred_type = *_builtin_types[1];
+	ast::type_ref const undefined = *_builtin_types[0];
+	ast::type_ref const error_type = *_builtin_types[1];
 
 	// known/built-in types
 	ast::type_ref const void_type = *_builtin_types[2];

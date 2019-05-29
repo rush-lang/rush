@@ -132,8 +132,8 @@ namespace rush::ast {
 
    namespace types {
       // sentinal types
+      extern ast::type_ref const undefined;
       extern ast::type_ref const error_type;
-      extern ast::type_ref const inferred_type;
 
       // known/built-in types
       extern ast::type_ref const void_type;

@@ -24,6 +24,9 @@ namespace rush::ast::types {
          : _first { first } {}
 
       ast::type_ref operator ()(ast::type_ref second) const noexcept {
+         if (_first == second)
+            return _first;
+
          return types::error_type;
       }
 

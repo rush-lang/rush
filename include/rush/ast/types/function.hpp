@@ -9,6 +9,7 @@
 
 #include <vector>
 #include <memory>
+#include <optional>
 
 namespace rush::ast::decls {
    std::unique_ptr<function_declaration> function(
@@ -19,14 +20,17 @@ namespace rush::ast::decls {
 }
 
 namespace rush::ast {
+   class function_declaration;
+
    class function_type : public ast::type {
+      friend class function_declaration;
       struct factory_tag_t {};
 
       friend std::unique_ptr<function_declaration> decls::function(
-			std::string,
+         std::string,
          ast::type_ref,
-			std::unique_ptr<parameter_list>,
-			std::unique_ptr<statement>);
+         std::unique_ptr<parameter_list>,
+         std::unique_ptr<statement>);
 
    public:
       function_type(ast::type_ref return_type, std::unique_ptr<ast::parameter_list> params, factory_tag_t)
@@ -51,8 +55,10 @@ namespace rush::ast {
       }
 
    private:
-      ast::type_ref _return_type;
+      mutable ast::type_ref _return_type;
       std::unique_ptr<ast::parameter_list> _params;
+
+      void resolve_return_type(ast::statement const&) const;
    };
 }
 

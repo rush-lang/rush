@@ -5,7 +5,8 @@ rush_add_library(ast
 	exprs/binary.cpp
 	exprs/unary.cpp
 	exprs/invocation.cpp
-	types/builtin.cpp
+   types/builtin.cpp
+   types/function.cpp
    types/utility.cpp
    identifier.cpp
 	traversal.cpp

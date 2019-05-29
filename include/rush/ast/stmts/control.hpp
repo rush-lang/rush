@@ -5,6 +5,9 @@
 
 #include "rush/ast/stmts/statement.hpp"
 #include "rush/ast/exprs/expression.hpp"
+#include "rush/ast/types/builtin.hpp"
+
+#include <cassert>
 
 namespace rush::ast {
 
@@ -67,6 +70,12 @@ namespace rush::ast {
 			return _expr.get();
 		}
 
+      ast::type_ref return_type() const noexcept {
+         return _expr
+            ? _expr->result_type()
+            : types::undefined;
+      }
+
 		using node::accept;
 		virtual void accept(ast::visitor& v) const override {
          v.visit_return_stmt(*this);
@@ -94,6 +103,10 @@ namespace rush::ast {
 			return *_expr;
 		}
 
+      ast::type_ref return_type() const noexcept {
+         return _expr->result_type();
+      }
+
 		using node::accept;
 		virtual void accept(ast::visitor& v) const override {
          v.visit_yield_stmt(*this);
@@ -116,6 +129,7 @@ namespace rush::ast {
 
 		inline std::unique_ptr<return_statement> return_(
 			std::unique_ptr<expression> expr) {
+            assert(expr && "return expected an expression.");
 				return std::make_unique<return_statement>(
 					std::move(expr), return_statement::factory_tag_t {});
 			}
@@ -126,6 +140,7 @@ namespace rush::ast {
 
       inline std::unique_ptr<yield_statement> yield_(
          std::unique_ptr<ast::expression> expr) {
+            assert(expr && "yield must have an expression.");
             return std::make_unique<yield_statement>(
                std::move(expr), yield_statement::factory_tag_t {});
          }

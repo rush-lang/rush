@@ -4,16 +4,13 @@
 #define RUSH_AST_DECLS_FUNCTION_HPP
 
 #include "rush/ast/identifier.hpp"
-#include "rush/ast/list.hpp"
+#include "rush/ast/types/builtin.hpp"
 #include "rush/ast/types/function.hpp"
 #include "rush/ast/stmts/statement.hpp"
 #include "rush/ast/decls/declaration.hpp"
 #include "rush/ast/decls/parameter.hpp"
 #include "rush/ast/exprs/identifier.hpp"
 #include "rush/ast/list.hpp"
-#include "rush/ast/exprs/argument.hpp"
-
-#include <vector>
 
 namespace rush::ast::decls {
    std::unique_ptr<function_declaration> function(
@@ -28,10 +25,10 @@ namespace rush::ast {
 		struct factory_tag_t {};
 
       friend std::unique_ptr<function_declaration> decls::function(
-			std::string,
+         std::string,
          ast::type_ref,
-			std::unique_ptr<parameter_list>,
-			std::unique_ptr<statement>);
+         std::unique_ptr<parameter_list>,
+         std::unique_ptr<statement>);
 
 	public:
 		function_declaration(
@@ -48,6 +45,7 @@ namespace rush::ast {
       }
 
       virtual ast::type_ref type() const noexcept override {
+         _type.resolve_return_type(body());
          return { _type };
       }
 
@@ -56,7 +54,8 @@ namespace rush::ast {
 		}
 
       ast::type_ref return_type() const noexcept {
-			return _type.return_type();
+         _type.resolve_return_type(body());
+         return _type.return_type();
 		}
 
 		ast::parameter_list const& parameters() const {
@@ -84,7 +83,7 @@ namespace rush::ast {
 			std::unique_ptr<statement> body) {
 				return decls::function(
 					std::move(name),
-               types::int_type,
+               ast::types::undefined,
                decls::param_list(),
 					std::move(body));
 			}
@@ -106,7 +105,7 @@ namespace rush::ast {
 			std::unique_ptr<statement> body) {
 				return decls::function(
 					std::move(name),
-               types::int_type,
+               ast::types::undefined,
 					std::move(params),
 					std::move(body));
 			}
