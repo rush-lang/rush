@@ -4,37 +4,24 @@
 #define RUSH_AST_IDENTIFIER_HPP
 
 #include "rush/ast/types/type.hpp"
-#include "rush/ast/decls/declaration.hpp"
 
 #include <string>
 
 namespace rush::ast {
-   class parameter;
-   class storage_declaration;
-   class function_declaration;
+   class declaration;
 
    class identifier {
-      friend class parameter;
-      friend class storage_declaration;
-      friend class function_declaration;
+      friend class declaration;
 
    public:
-      std::string name() const noexcept {
-         return _decl.name();
-      }
-
-      ast::type_ref type() const noexcept {
-         return _decl.type();
-      }
-
-      ast::declaration const& declaration() const noexcept {
-         return _decl;
-      }
+      std::string name() const noexcept;
+      ast::type_ref type() const noexcept;
+      ast::declaration const& declaration() const noexcept;
 
    private:
-      ast::declaration const& _decl;
+      ast::declaration const* _decl;
 
-      identifier(ast::declaration const& decl)
+      identifier(ast::declaration const* decl)
          : _decl { decl } {}
    };
 }

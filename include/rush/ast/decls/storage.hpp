@@ -23,10 +23,6 @@ namespace rush::ast {
          return _type;
       }
 
-      virtual ast::identifier identifier() const noexcept override {
-         return { *this };
-      }
-
 		expression* initializer() const noexcept {
 			return _init.get();
 		}

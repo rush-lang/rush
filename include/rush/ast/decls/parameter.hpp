@@ -22,10 +22,6 @@ namespace rush::ast {
          return ast::declaration_kind::parameter;
       }
 
-      virtual ast::identifier identifier() const noexcept override {
-         return { *this };
-      }
-
       parameter(
          std::string name,
          ast::type_ref type)
