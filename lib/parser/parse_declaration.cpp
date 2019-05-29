@@ -52,6 +52,7 @@ namespace rush {
 			auto decl = type != std::nullopt
 				? (*fptr)(ident.text(), *type, std::move(init))
 				: (*fptr)(ident.text(), init->result_type(), std::move(init));
+         if (!decl) return nullptr;
 
          if (!_scope.insert({ *decl })) {
             auto existing_decl = _scope.current().lookup_local(ident.text());

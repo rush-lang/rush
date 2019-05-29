@@ -27,17 +27,28 @@ namespace rush::ast {
    public:
       using resolver = detail::identifier_resolver;
 
+      //! \brief Constructs an instance of an identifier with specified resolver.
+      //!        The identifier will also subscribe to the resolver.
       identifier(resolver& res);
 
+      //! \brief Move constructor, when passed an unresolved identifier this identifier will subscribe to the same resolver.
       identifier(identifier&& other);
+
+      //! \brief Move assignment, when passed an unresolved identifier this identifier will subscribe to the same resolver.
       void operator = (identifier&& other);
 
+      //! \brief Returns true if the declaration for this identifier hasn't been resolved yet.
       bool is_unresolved() const noexcept;
 
+      //! \brief Returns the name of the identifier.
       std::string name() const noexcept;
 
+      //! \brief Returns the type of identifier as specified by the declaration if resolved; otherwise an error type.
       ast::type_ref type() const noexcept;
 
+      //! \brief Returns the declaration for a resolved identifier.
+      //!        Note: calling this function before the identifier has been resolved is an error.
+      //!              The caller should first check is_unresolved before calling this function.
       ast::declaration const& declaration() const noexcept;
 
    private:
@@ -59,6 +70,7 @@ namespace rush::ast {
          friend class ast::identifier;
 
          class resolver_callback_t {
+            friend class identifier_resolver;
          public:
             resolver_callback_t(ast::identifier* id)
                : _ident { id } {}
@@ -80,7 +92,8 @@ namespace rush::ast {
          }
 
          void resolve(ast::declaration const* decl) {
-            std::for_each(_cbs.begin(), _cbs.end(), [&decl](auto& cb) { cb.operator()(decl); });
+            std::for_each(_cbs.begin(), _cbs.end(),
+               [&decl](auto& cb) { cb.operator()(decl); });
          }
 
       private:
@@ -92,7 +105,10 @@ namespace rush::ast {
          }
 
          void replace_listener(identifier* orig, identifier* id) {
-            listen(id);
+            std::replace_if(
+               _cbs.begin(), _cbs.end(),
+               [&orig](auto& elem) { return elem._ident == orig; },
+               resolver_callback_t { id });
          }
       };
    }

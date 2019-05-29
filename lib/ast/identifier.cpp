@@ -3,7 +3,6 @@
 #include "rush/ast/types/builtin.hpp"
 
 #include <cassert>
-#include <iostream>
 
 using namespace rush;
 
