@@ -7,8 +7,12 @@ namespace rush {
       auto tok = peek_skip_indent();
       if (tok.is_keyword()) {
          auto kw = tok.keyword();
-         if (auto stmt = parse_simple_stmt(kw)) return std::move(stmt);
-         if (auto stmt = parse_compound_stmt(kw)) return std::move(stmt);
+
+         auto simp = parse_simple_stmt(kw);
+         if (simp.second) return std::move(simp.first);
+
+         auto comp = parse_compound_stmt(kw);
+         if (comp.second) return std::move(comp.first);
 
          switch (kw) {
             default: return error("'{}' is not a valid statement.", tok);
@@ -85,7 +89,8 @@ namespace rush {
 
       auto tok = peek_skip_indent();
       if (tok.is_keyword()) {
-         if (auto stmt = parse_compound_stmt(tok.keyword())) return std::move(stmt);
+         auto stmt = parse_compound_stmt(tok.keyword());
+         if (stmt.second) return std::move(stmt.first);
          return error("expected compound statement before '{}'", tok);
       } else if (tok.is(symbols::colon)) {
          next_skip_indent(); // consume ':' symbol.
@@ -213,36 +218,36 @@ namespace rush {
       return nullptr;
    }
 
-   std::unique_ptr<ast::statement> parser::parse_simple_stmt(keyword_token_t kw) {
+   std::pair<std::unique_ptr<ast::statement>, bool> parser::parse_simple_stmt(keyword_token_t kw) {
       switch (kw) {
-      default: return nullptr;
+      default: return { nullptr, false };
       case keywords::let_: {
          auto decl = parse_constant_decl();
-         if (!decl) return nullptr;
-         return ast::stmts::decl_stmt(std::move(decl));
+         if (!decl) return { nullptr, true };
+         return { ast::stmts::decl_stmt(std::move(decl)), true };
       }
       case keywords::var_: {
          auto decl = parse_variable_decl();
-         if (!decl) return nullptr;
-         return ast::stmts::decl_stmt(std::move(decl));
+         if (!decl) return { nullptr, true };
+         return { ast::stmts::decl_stmt(std::move(decl)), true };
       }
-      case keywords::return_: return parse_return_stmt();
-      case keywords::break_: return parse_break_stmt();
-      case keywords::continue_: return parse_continue_stmt();
-      case keywords::throw_: return parse_throw_stmt();
-      case keywords::yield_: return parse_yield_stmt();
+      case keywords::return_: return { parse_return_stmt(), true };
+      case keywords::break_: return { parse_break_stmt(), true };
+      case keywords::continue_: return { parse_continue_stmt(), true };
+      case keywords::throw_: return { parse_throw_stmt(), true };
+      case keywords::yield_: return { parse_yield_stmt(), true };
       }
    }
 
-   std::unique_ptr<ast::statement> parser::parse_compound_stmt(keyword_token_t kw) {
+   std::pair<std::unique_ptr<ast::statement>, bool> parser::parse_compound_stmt(keyword_token_t kw) {
       switch (kw) {
-      default: return nullptr;
-      case keywords::if_: return parse_if_stmt();
-      case keywords::for_: return parse_for_stmt();
-      case keywords::while_: return parse_while_stmt();
-      case keywords::switch_: return parse_switch_stmt();
-      case keywords::try_: return parse_try_stmt();
-      case keywords::with_: return parse_with_stmt();
+      default: return { nullptr, false };
+      case keywords::if_: return { parse_if_stmt(), true };
+      case keywords::for_: return { parse_for_stmt(), true };
+      case keywords::while_: return { parse_while_stmt(), true };
+      case keywords::switch_: return { parse_switch_stmt(), true };
+      case keywords::try_: return { parse_try_stmt(), true };
+      case keywords::with_: return { parse_with_stmt(), true };
       }
    }
 }

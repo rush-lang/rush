@@ -221,5 +221,4 @@ namespace rush {
          std::move(true_),
          std::move(false_));
    }
-
 }

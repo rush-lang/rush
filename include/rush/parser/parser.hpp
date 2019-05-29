@@ -179,8 +179,8 @@ namespace rush {
 		std::unique_ptr<ast::statement_block> parse_block_stmt();
       std::unique_ptr<ast::statement_block> parse_block_single_stmt();
 
-      std::unique_ptr<ast::statement> parse_simple_stmt(keyword_token_t kw);
-      std::unique_ptr<ast::statement> parse_compound_stmt(keyword_token_t kw);
+      std::pair<std::unique_ptr<ast::statement>, bool> parse_simple_stmt(keyword_token_t kw);
+      std::pair<std::unique_ptr<ast::statement>, bool> parse_compound_stmt(keyword_token_t kw);
 
 		// expressions.
 		std::unique_ptr<ast::expression> parse_expr();
