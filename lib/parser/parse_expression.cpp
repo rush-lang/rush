@@ -94,10 +94,10 @@ namespace rush {
 		auto tok = next_skip_indent();
 		auto val = tok.integer_value();
 		switch (tok.suffix()) {
-		case lexical_token_suffix::none: return exprs::literal(val, ast::types::int_type);
-		case lexical_token_suffix::long_literal: return exprs::literal(val, ast::types::long_type);
-		case lexical_token_suffix::unsigned_literal: return exprs::literal(val, ast::types::uint_type);
-		// case lexical_token_suffix::unsigned_long_literal: return exprs::literal(tok.integer(), ast::ulong_type);
+		case lexical_token_suffix::none: return exprs::literal(val, ast::types::int32_type);
+		case lexical_token_suffix::long_literal: return exprs::literal(val, ast::types::int64_type);
+		case lexical_token_suffix::unsigned_literal: return exprs::literal(val, ast::types::uint32_type);
+		// case lexical_token_suffix::unsigned_long_literal: return exprs::literal(tok.integer(), ast::uint64_type);
 		default: throw;
 		}
 	}
@@ -107,8 +107,8 @@ namespace rush {
 		auto tok = next_skip_indent();
 		auto val = tok.floating_value();
 		switch (tok.suffix()) {
-		case lexical_token_suffix::none: return exprs::literal(val, ast::types::double_type);
-		case lexical_token_suffix::float_literal: return exprs::literal(val, ast::types::float_type);
+		case lexical_token_suffix::none: return exprs::literal(val, ast::types::ieee64_type);
+		case lexical_token_suffix::float_literal: return exprs::literal(val, ast::types::ieee32_type);
 		default: throw;
 		}
 	}

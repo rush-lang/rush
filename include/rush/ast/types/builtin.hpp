@@ -138,16 +138,16 @@ namespace rush::ast {
       // known/built-in types
       extern ast::type_ref const void_type;
       extern ast::type_ref const bool_type;
-      extern ast::type_ref const byte_type;
-      extern ast::type_ref const sbyte_type;
-      extern ast::type_ref const short_type;
-      extern ast::type_ref const ushort_type;
-      extern ast::type_ref const int_type;
-      extern ast::type_ref const uint_type;
-      extern ast::type_ref const long_type;
-      extern ast::type_ref const ulong_type;
-      extern ast::type_ref const float_type;
-      extern ast::type_ref const double_type;
+      extern ast::type_ref const uint8_type;
+      extern ast::type_ref const int8_type;
+      extern ast::type_ref const int16_type;
+      extern ast::type_ref const uint16_type;
+      extern ast::type_ref const int32_type;
+      extern ast::type_ref const uint32_type;
+      extern ast::type_ref const int64_type;
+      extern ast::type_ref const uint64_type;
+      extern ast::type_ref const ieee32_type;
+      extern ast::type_ref const ieee64_type;
       extern ast::type_ref const string_type;
       extern ast::type_ref const char_type;
    }

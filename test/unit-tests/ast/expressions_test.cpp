@@ -13,9 +13,9 @@ TEST_CASE( "rush::literal_expression (string)", "[unit][ast]" ) {
 }
 
 TEST_CASE( "rush::literal_expression (integral)", "[unit][ast]" ) {
-	auto expr = exprs::literal(1, ast::types::int_type);
+	auto expr = exprs::literal(1, ast::types::int32_type);
 }
 
 TEST_CASE( "rush::literal_expression (floating)", "[unit][ast]" ) {
-	auto expr = exprs::literal(1.3, ast::types::float_type);
+	auto expr = exprs::literal(1.3, ast::types::ieee32_type);
 }

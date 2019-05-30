@@ -6,16 +6,16 @@ namespace rush {
       switch (kw) {
          case keywords::void_: return ast::types::void_type;
          case keywords::bool_: return ast::types::bool_type;
-         case keywords::byte_: return ast::types::byte_type;
-         case keywords::sbyte_: return ast::types::sbyte_type;
-         case keywords::short_: return ast::types::short_type;
-         case keywords::ushort_: return ast::types::ushort_type;
-         case keywords::int_: return ast::types::int_type;
-         case keywords::uint_: return ast::types::uint_type;
-         case keywords::long_: return ast::types::long_type;
-         case keywords::ulong_: return ast::types::ulong_type;
-         case keywords::float_: return ast::types::float_type;
-         case keywords::double_: return ast::types::double_type;
+         case keywords::byte_: return ast::types::uint8_type;
+         case keywords::sbyte_: return ast::types::int8_type;
+         case keywords::short_: return ast::types::int16_type;
+         case keywords::ushort_: return ast::types::uint16_type;
+         case keywords::int_: return ast::types::int32_type;
+         case keywords::uint_: return ast::types::uint32_type;
+         case keywords::long_: return ast::types::int64_type;
+         case keywords::ulong_: return ast::types::uint64_type;
+         case keywords::float_: return ast::types::ieee32_type;
+         case keywords::double_: return ast::types::ieee64_type;
          case keywords::string_: return ast::types::string_type;
          case keywords::char_: return ast::types::char_type;
          default: return ast::types::error_type;
