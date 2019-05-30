@@ -33,4 +33,14 @@ namespace rush::ast {
       case statement_kind::return_: visit_return_stmt(stmt); break;
       }
    };
+
+   void visitor::visit_unary_expr(unary_expression const& expr) {
+#     define RUSH_UNARY_EXPRESSION_VISIT_SWITCH
+#     include "rush/ast/exprs/_operators.hpp"
+   }
+
+   void visitor::visit_binary_expr(binary_expression const& expr) {
+#		define RUSH_BINARY_EXPRESSION_VISIT_SWITCH
+#		include "rush/ast/exprs/_operators.hpp"
+   }
 } // rush::ast

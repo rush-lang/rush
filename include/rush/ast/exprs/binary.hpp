@@ -38,8 +38,6 @@ namespace rush::ast {
 		using node::accept;
 		virtual void accept(ast::visitor& v) const override {
 			v.visit_binary_expr(*this);
-#			define RUSH_BINARY_EXPRESSION_VISIT_SWITCH
-#			include "rush/ast/exprs/_operators.hpp"
 		}
 
 	private:

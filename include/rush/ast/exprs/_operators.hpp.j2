@@ -132,9 +132,9 @@ virtual void visit_{{ operator/name }}_expr(binary_expression const&) {}
 #endif
 
 #ifdef RUSH_UNARY_EXPRESSION_VISIT_SWITCH
-switch (opkind()) {
-{% for operator in prefix %}case unary_operator::{{ operator/name }}: v.visit_{{ operator/name }}_expr(*this); break;
-{% endfor %}{% for operator in postfix %}case unary_operator::{{ operator/name }}: v.visit_{{ operator/name }}_expr(*this); break;
+switch (expr.opkind()) {
+{% for operator in prefix %}case unary_operator::{{ operator/name }}: visit_{{ operator/name }}_expr(expr); break;
+{% endfor %}{% for operator in postfix %}case unary_operator::{{ operator/name }}: visit_{{ operator/name }}_expr(expr); break;
 {% endfor %}
 }
 #undef RUSH_UNARY_EXPRESSION_VISIT_SWITCH
@@ -160,10 +160,10 @@ default: assert("unreachable");
 #endif
 
 #ifdef RUSH_BINARY_EXPRESSION_VISIT_SWITCH
-switch (opkind()) {
+switch (expr.opkind()) {
 ## for operator in binary
 {# spacing #}
-case binary_operator::{{ operator/name }}: v.visit_{{ operator/name }}_expr(*this); break;
+case binary_operator::{{ operator/name }}: visit_{{ operator/name }}_expr(expr); break;
 ## endfor
 {# spacing #}
 }
