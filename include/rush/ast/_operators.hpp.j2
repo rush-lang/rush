@@ -98,6 +98,22 @@ int binary_precedence(lexical_token const& tok) {
 #undef RUSH_PRECEDENCE_FUNC
 #endif
 
+#ifdef RUSH_ASSOCIATIVITY_FUNC
+
+int binary_associativity(lexical_token const& tok) {
+   switch (tok.symbol()) {
+   default: return 0;
+## for operator in binary
+	{# spacing #}
+   case rush::symbols::{{ operator/symbol_token }}: return {{ operator/associativity }};
+## endfor
+	{# spacing #}
+   }
+}
+
+#undef RUSH_ASSOCIATIVITY_FUNC
+#endif
+
 #ifdef RUSH_VISITOR_FUNC_PROTOTYPES
 ## for operator in prefix
 {# spacing #}

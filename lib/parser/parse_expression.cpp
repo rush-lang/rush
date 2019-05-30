@@ -11,6 +11,7 @@ namespace rush {
 #define RUSH_IS_UNARY_POSTFIX_OP_FUNC
 #define RUSH_IS_BINARY_OP_FUNC
 #define RUSH_PRECEDENCE_FUNC
+#define RUSH_ASSOCIATIVITY_FUNC
 #include "rush/ast/_operators.hpp"
 
 	int compare_binary_op_precedence(lexical_token const& lhs, lexical_token const& rhs) {
@@ -218,8 +219,11 @@ namespace rush {
 		if (auto rhs = parse_primary_expr()) {
          next = peek_skip_indent(); // look-ahead for possible binary operator.
 
-         if (compare_binary_op_precedence(next, prev) < 0)
+         if (is_binary_op(next)) {
+            auto opcmp = compare_binary_op_precedence(next, prev);
+            if (opcmp < 0 || (opcmp == 0 && binary_associativity(next) > 0))
             rhs = parse_binary_expr(std::move(rhs));
+         }
 
          return std::move(rhs);
       }
