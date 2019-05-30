@@ -8,7 +8,7 @@
 #include "rush/parser/dump.hpp"
 
 #include <optional>
-#include <iterator>
+#include <numeric>
 
 using namespace rush;
 
@@ -53,10 +53,14 @@ public:
    }
 
    ast::type_ref result() const noexcept {
-      // todo: type reduce the resulting types to the common most type and return that.
-      return !_results.empty()
-         ? _results.front()
-         : _last_result;
+      if (_results.empty())
+         return _last_result;
+
+      return std::accumulate(
+         std::next(_results.begin()),
+         _results.end(),
+         _results.front(),
+         ast::types::reduce);
    }
 
 private:
