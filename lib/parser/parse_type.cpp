@@ -18,7 +18,7 @@ namespace rush {
          case keywords::double_: return ast::types::ieee64_type;
          case keywords::string_: return ast::types::string_type;
          case keywords::char_: return ast::types::char_type;
-         default: return ast::types::error_type;
+         default: return ast::types::undefined;
       }
    }
 

@@ -22,6 +22,7 @@ namespace rush::ast {
    class function_type;
 
    enum class type_kind {
+      builtin_error,
       builtin_void,
       builtin_bool,
       builtin_integral,

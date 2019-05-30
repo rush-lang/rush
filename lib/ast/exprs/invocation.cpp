@@ -12,7 +12,7 @@ using namespace rush;
 class invocation_result_type_resolver : public ast::visitor {
 public:
    invocation_result_type_resolver()
-      : _result { ast::types::error_type } {}
+      : _result { ast::types::undefined } {}
 
    ast::type_ref result() const noexcept {
       return _result;

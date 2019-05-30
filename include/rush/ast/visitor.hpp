@@ -5,6 +5,7 @@
 
 namespace rush::ast {
 	class type;
+   class builtin_error_type;
    class builtin_void_type;
    class builtin_bool_type;
    class builtin_integral_type;
@@ -57,6 +58,7 @@ namespace rush::ast {
 
 		// types
 		virtual void visit_type(ast::type const&) {};
+      virtual void visit_builtin_error_type(ast::builtin_error_type const&) {}
       virtual void visit_builtin_void_type(ast::builtin_void_type const&) {}
       virtual void visit_builtin_bool_type(ast::builtin_bool_type const&) {}
       virtual void visit_builtin_integral_type(ast::builtin_integral_type const&) {}

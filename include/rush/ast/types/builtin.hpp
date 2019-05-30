@@ -30,6 +30,28 @@ namespace rush::ast {
    public:
    };
 
+   class builtin_error_type : public builtin_type {
+   public:
+      builtin_error_type() = default;
+      builtin_error_type(std::string msg)
+         : _msg { std::move(msg) } {}
+
+      std::string const& message() const noexcept {
+         return _msg;
+      }
+
+      virtual ast::type_kind kind() const noexcept override {
+         return ast::type_kind::builtin_error;
+      }
+
+      using node::accept;
+      virtual void accept(ast::visitor& v) const override {
+			v.visit_builtin_error_type(*this);
+		}
+   private:
+      std::string _msg;
+   };
+
    class builtin_void_type : public builtin_type {
    public:
       virtual ast::type_kind kind() const noexcept override {
@@ -133,7 +155,6 @@ namespace rush::ast {
    namespace types {
       // sentinal types
       extern ast::type_ref const undefined;
-      extern ast::type_ref const error_type;
 
       // known/built-in types
       extern ast::type_ref const void_type;
@@ -150,6 +171,9 @@ namespace rush::ast {
       extern ast::type_ref const ieee64_type;
       extern ast::type_ref const string_type;
       extern ast::type_ref const char_type;
+
+      ast::builtin_error_type error_type();
+      ast::builtin_error_type error_type(std::string msg);
    }
 }
 

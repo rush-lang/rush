@@ -13,7 +13,7 @@ struct identifier_name_visitor {
 
 struct identifier_type_visitor {
    ast::type_ref operator ()(ast::declaration const* decl) { return decl->type(); }
-   ast::type_ref operator ()(ast::identifier::resolver* res) { return ast::types::error_type; }
+   ast::type_ref operator ()(ast::identifier::resolver* res) { return ast::types::undefined; }
 };
 
 namespace rush::ast {
