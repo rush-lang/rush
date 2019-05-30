@@ -188,11 +188,18 @@ namespace rush {
 		assert(peek_skip_indent().is(symbols::arrow) && "expected an '=>' symbol.");
       next_skip_indent();
 
-      auto expr = parse_expr();
-      if (!expr) return nullptr;
+      std::unique_ptr<ast::statement> stmt;
+      if (peek_skip_indent().is(keywords::pass_)) {
+         next_skip_indent();
+         stmt = stmts::pass();
+      } else {
+         auto expr = parse_expr();
+         if (!expr) return nullptr;
+         stmt = stmts::return_(std::move(expr));
+      }
 
       std::vector<std::unique_ptr<ast::statement>> stmts;
-      stmts.emplace_back(stmts::return_(std::move(expr)));
+      stmts.emplace_back(std::move(stmt));
       return stmts::block(std::move(stmts));
    }
 

@@ -41,9 +41,12 @@ namespace rush::ast {
 	class case_statement;
 	class switch_statement;
 	class while_statement;
-	class return_statement;
-   class yield_statement;
+
+   class pass_statement;
+   class throw_statement;
    class break_statement;
+   class yield_statement;
+	class return_statement;
    class continue_statement;
 
 	class declaration;
@@ -86,9 +89,11 @@ namespace rush::ast {
 		virtual void visit_while_stmt(while_statement const&) {};
 		virtual void visit_switch_stmt(switch_statement const&) {};
 
-		virtual void visit_return_stmt(return_statement const&) {};
+		virtual void visit_pass_stmt(pass_statement const&) {};
+		virtual void visit_throw_stmt(throw_statement const&) {};
 		virtual void visit_yield_stmt(yield_statement const&) {};
       virtual void visit_break_stmt(break_statement const&) {};
+		virtual void visit_return_stmt(return_statement const&) {};
       virtual void visit_continue_stmt(continue_statement const&) {};
 
 		// expressions

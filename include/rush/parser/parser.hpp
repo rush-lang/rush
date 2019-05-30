@@ -150,9 +150,9 @@ namespace rush {
 		std::unique_ptr<DeclT> _parse_storage_decl(std::string,
 			std::unique_ptr<DeclT> (*)(std::string, ast::type_ref, std::unique_ptr<ast::expression>));
 
-		std::unique_ptr<ast::constant_declaration> parse_constant_decl();
-		std::unique_ptr<ast::variable_declaration> parse_variable_decl();
-		std::unique_ptr<ast::function_declaration> parse_function_decl();
+		std::unique_ptr<ast::declaration> parse_constant_decl();
+		std::unique_ptr<ast::declaration> parse_variable_decl();
+		std::unique_ptr<ast::declaration> parse_function_decl();
 
       std::unique_ptr<ast::statement> parse_function_body();
       std::unique_ptr<ast::statement> parse_function_expr_body();
@@ -162,21 +162,24 @@ namespace rush {
 
 		// statements.
       std::unique_ptr<ast::statement> parse_stmt();
-		std::unique_ptr<ast::statement> parse_if_stmt();
-      std::unique_ptr<ast::statement> parse_else_stmt();
-		std::unique_ptr<ast::statement> parse_for_stmt();
-		std::unique_ptr<ast::statement> parse_while_stmt();
-		std::unique_ptr<ast::statement> parse_return_stmt();
-      std::unique_ptr<ast::statement> parse_break_stmt();
-      std::unique_ptr<ast::statement> parse_continue_stmt();
-      std::unique_ptr<ast::statement> parse_switch_stmt();
+
+      std::unique_ptr<ast::statement> parse_pass_stmt();
       std::unique_ptr<ast::statement> parse_throw_stmt();
-      std::unique_ptr<ast::statement> parse_try_stmt();
+      std::unique_ptr<ast::statement> parse_break_stmt();
       std::unique_ptr<ast::statement> parse_yield_stmt();
+		std::unique_ptr<ast::statement> parse_return_stmt();
+      std::unique_ptr<ast::statement> parse_continue_stmt();
+
+		std::unique_ptr<ast::statement> parse_if_stmt();
+		std::unique_ptr<ast::statement> parse_for_stmt();
+      std::unique_ptr<ast::statement> parse_else_stmt();
+		std::unique_ptr<ast::statement> parse_while_stmt();
+      std::unique_ptr<ast::statement> parse_switch_stmt();
+      std::unique_ptr<ast::statement> parse_try_stmt();
       std::unique_ptr<ast::statement> parse_with_stmt();
 
-		std::unique_ptr<ast::statement_block> parse_block_stmt();
-      std::unique_ptr<ast::statement_block> parse_block_single_stmt();
+		std::unique_ptr<ast::statement> parse_block_stmt();
+      std::unique_ptr<ast::statement> parse_block_single_stmt();
 
       std::pair<std::unique_ptr<ast::statement>, bool> parse_simple_stmt(keyword_token_t kw);
       std::pair<std::unique_ptr<ast::statement>, bool> parse_compound_stmt(keyword_token_t kw);
@@ -192,9 +195,9 @@ namespace rush {
 		std::unique_ptr<ast::expression> parse_floating_expr();
 		std::unique_ptr<ast::expression> parse_identifier_expr();
 
-		std::unique_ptr<ast::unary_expression> parse_unary_expr();
-		std::unique_ptr<ast::unary_expression> parse_unary_postfix_expr(std::unique_ptr<ast::expression> op);
-		std::unique_ptr<ast::binary_expression> parse_binary_expr(std::unique_ptr<ast::expression> lhs);
+		std::unique_ptr<ast::expression> parse_unary_expr();
+		std::unique_ptr<ast::expression> parse_unary_postfix_expr(std::unique_ptr<ast::expression> op);
+		std::unique_ptr<ast::expression> parse_binary_expr(std::unique_ptr<ast::expression> lhs);
 		std::unique_ptr<ast::expression> parse_binary_expr_rhs();
 
       std::unique_ptr<ast::expression> parse_ternary_expr(std::unique_ptr<ast::expression> cond);

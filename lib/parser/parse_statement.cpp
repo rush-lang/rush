@@ -19,6 +19,7 @@ namespace rush {
             // these keywords may form part of a expression statement
             case keywords::base_:
             case keywords::this_: break;
+            // case keywords::pass_: return nullptr;
          }
       }
 
@@ -167,6 +168,13 @@ namespace rush {
       return ast::stmts::return_(std::move(expr));
    }
 
+   std::unique_ptr<ast::statement> parser::parse_pass_stmt() {
+      assert(peek_skip_indent().is(keywords::pass_) && "expected 'pass' keyword.");
+      next_skip_indent(); // consume 'pass' keyword.
+
+      return ast::stmts::pass();
+   }
+
    std::unique_ptr<ast::statement> parser::parse_break_stmt() {
       assert(peek_skip_indent().is(keywords::break_) && "expected 'break' keyword.");
       next_skip_indent(); // consume 'break' keyword.
@@ -231,11 +239,12 @@ namespace rush {
          if (!decl) return { nullptr, true };
          return { ast::stmts::decl_stmt(std::move(decl)), true };
       }
-      case keywords::return_: return { parse_return_stmt(), true };
+      case keywords::pass_: return { parse_pass_stmt(), true };
       case keywords::break_: return { parse_break_stmt(), true };
+      case keywords::yield_: return { parse_yield_stmt(), true };
+      case keywords::return_: return { parse_return_stmt(), true };
       case keywords::continue_: return { parse_continue_stmt(), true };
       case keywords::throw_: return { parse_throw_stmt(), true };
-      case keywords::yield_: return { parse_yield_stmt(), true };
       }
    }
 

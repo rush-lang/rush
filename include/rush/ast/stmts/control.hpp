@@ -11,14 +11,36 @@
 
 namespace rush::ast {
 
+   class pass_statement;
+   class break_statement;
+   class yield_statement;
 	class return_statement;
+   class continue_statement;
+
 	namespace stmts {
+      std::unique_ptr<pass_statement> pass();
       std::unique_ptr<break_statement> break_();
       std::unique_ptr<continue_statement> continue_();
 
       std::unique_ptr<yield_statement> yield_(std::unique_ptr<ast::expression>);
 		std::unique_ptr<return_statement> return_(std::unique_ptr<ast::expression>);
 	}
+
+   class pass_statement : public statement {
+      struct factory_tag_t {};
+      friend std::unique_ptr<pass_statement> stmts::pass();
+   public:
+      pass_statement(factory_tag_t) {}
+
+      virtual statement_kind kind() const noexcept override {
+			return statement_kind::control;
+		}
+
+		using node::accept;
+		virtual void accept(ast::visitor& v) const override {
+         v.visit_pass_stmt(*this);
+		}
+   };
 
    class break_statement : public statement {
       struct factory_tag_t {};
@@ -119,17 +141,21 @@ namespace rush::ast {
 
 	namespace stmts {
 
-      inline std::unique_ptr<break_statement> break_() {
+      inline std::unique_ptr<ast::pass_statement> pass() {
+         return std::make_unique<pass_statement>(pass_statement::factory_tag_t {});
+      }
+
+      inline std::unique_ptr<ast::break_statement> break_() {
          return std::make_unique<break_statement>(break_statement::factory_tag_t {});
       }
 
-      inline std::unique_ptr<continue_statement> continue_() {
+      inline std::unique_ptr<ast::continue_statement> continue_() {
          return std::make_unique<continue_statement>(continue_statement::factory_tag_t {});
       }
 
 		inline std::unique_ptr<return_statement> return_(
 			std::unique_ptr<expression> expr) {
-            assert(expr && "return expected an expression.");
+            // assert(expr && "return expected an expression.");
 				return std::make_unique<return_statement>(
 					std::move(expr), return_statement::factory_tag_t {});
 			}
