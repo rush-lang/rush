@@ -85,15 +85,8 @@ namespace rush::ast {
 		virtual void visit_while_stmt(while_statement const&) {};
 		virtual void visit_switch_stmt(switch_statement const&) {};
 
-      virtual void visit_pass_stmt(simple_statement const&) {};
-		virtual void visit_throw_stmt(simple_statement const&) {};
-      virtual void visit_break_stmt(simple_statement const&) {};
-		virtual void visit_return_stmt(simple_statement const&) {};
-      virtual void visit_continue_stmt(simple_statement const&) {};
-
-		virtual void visit_yield_stmt(result_statement const& stmt) {};
-      virtual void visit_throw_stmt(result_statement const& stmt);
-		virtual void visit_return_stmt(result_statement const& stmt);
+#     define RUSH_VISITOR_SIMPLE_STMT_FUNC_PROTOTYPES
+#     include "rush/ast/stmts/_statements.hpp"
 
       virtual void visit_simple_stmt(simple_statement const& stmt);
       virtual void visit_result_stmt(result_statement const& stmt);

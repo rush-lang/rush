@@ -15,23 +15,13 @@ namespace rush::ast {
    };
 
    void visitor::visit_simple_stmt(simple_statement const& stmt) {
-      switch (stmt.kind()) {
-      default: break; // todo: assert! should be unreachable.
-      case statement_kind::pass: visit_pass_stmt(stmt); break;
-      case statement_kind::throw_: visit_throw_stmt(stmt); break;
-      case statement_kind::break_: visit_break_stmt(stmt); break;
-      case statement_kind::return_: visit_return_stmt(stmt); break;
-      case statement_kind::continue_: visit_continue_stmt(stmt); break;
-      }
+#     define RUSH_SIMPLE_STMT_VISIT_SWITCH
+#     include "rush/ast/stmts/_statements.hpp"
    };
 
    void visitor::visit_result_stmt(result_statement const& stmt) {
-      switch (stmt.kind()) {
-      default: break; // todo: assert! should be unreachable.
-      case statement_kind::throw_: visit_throw_stmt(stmt); break;
-      case statement_kind::yield_: visit_yield_stmt(stmt); break;
-      case statement_kind::return_: visit_return_stmt(stmt); break;
-      }
+#     define RUSH_RESULT_STMT_VISIT_SWITCH
+#     include "rush/ast/stmts/_statements.hpp"
    };
 
    void visitor::visit_unary_expr(unary_expression const& expr) {

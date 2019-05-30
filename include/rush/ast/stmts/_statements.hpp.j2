@@ -2,19 +2,48 @@
 
 #ifdef RUSH_STATEMENT_KIND_ENUM
 enum class statement_kind : std::uint8_t {
-## for stmt in statements/simple
-   {# spacing #}
-   {{ stmt/name }}{% if existsIn(stmt, "name_postfix") %}{{ stmt/name_postfix }}{% else %}{{ statements/name_postfix }}{% endif %},
-## endfor
-   {# spacing #}
-## for stmt in statements/compound
-   {# spacing #}
-   {{ stmt/name }}{% if existsIn(stmt, "name_postfix") %}{{ stmt/name_postfix }}{% else %}{{ statements/name_postfix }}{% endif %},
+## for stmt in concat(statements/simple, statements/compound)
+   {{ stmt/name }},
 ## endfor
    expression,
    declaration,
    block
-{# spacing #}
 };
 #undef RUSH_STATEMENT_KIND_ENUM
+#endif
+
+#ifdef RUSH_VISITOR_SIMPLE_STMT_FUNC_PROTOTYPES
+## for stmt in statements/simple
+## if contains(stmt/kinds, "simple")
+virtual void visit_{{ rtrim(stmt/name, "_") }}_stmt(rush::ast::simple_statement const&) {};
+## endif
+## if contains(stmt/kinds, "result")
+virtual void visit_{{ rtrim(stmt/name, "_") }}_stmt(rush::ast::result_statement const&){% if not contains(stmt/kinds, "simple") %} {}{% endif %};
+## endif
+## endfor
+#undef RUSH_VISITOR_SIMPLE_STMT_FUNC_PROTOTYPES
+#endif
+
+#ifdef RUSH_SIMPLE_STMT_VISIT_SWITCH
+switch (stmt.kind()) {
+default: break; // todo: assert! should be unreachable.
+## for stmt in statements/simple
+## if contains(stmt/kinds, "simple")
+case statement_kind::{{ stmt/name }}: visit_{{ rtrim(stmt/name, "_") }}_stmt(stmt); break;
+## endif
+## endfor
+}
+#undef RUSH_SIMPLE_STMT_VISIT_SWITCH
+#endif
+
+#ifdef RUSH_RESULT_STMT_VISIT_SWITCH
+switch (stmt.kind()) {
+default: break; // todo: assert! should be unreachable.
+## for stmt in statements/simple
+## if contains(stmt/kinds, "result")
+case statement_kind::{{ stmt/name }}: visit_{{ rtrim(stmt/name, "_") }}_stmt(stmt); break;
+## endif
+## endfor
+}
+#undef RUSH_RESULT_STMT_VISIT_SWITCH
 #endif

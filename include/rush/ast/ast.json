@@ -47,30 +47,28 @@
    ],
 
    "statements": {
-      "name_postfix": "_",
-
       "simple": [
-         { "name": "pass", "kinds": [ "singular" ], "name_postfix": "" },
-         { "name": "throw", "kinds": [ "singular", "value" ] },
-         { "name": "break", "kinds": [ "singular" ] },
-         { "name": "yield", "kinds": [ "value" ] },
-         { "name": "return", "kinds": [ "singular", "value" ] },
-         { "name": "continue", "kinds": [ "singular" ] },
-         { "name": "import", "kinds": [ "singular" ] },
-         { "name": "module", "kinds": [ "singular" ] }
+         { "name": "pass", "kinds": [ "simple" ] },
+         { "name": "throw_", "kinds": [ "simple", "result" ] },
+         { "name": "break_", "kinds": [ "simple" ] },
+         { "name": "yield_", "kinds": [ "result" ] },
+         { "name": "return_", "kinds": [ "simple", "result" ] },
+         { "name": "continue_", "kinds": [ "simple" ] },
+         { "name": "import_", "kinds": [ "simple" ] },
+         { "name": "module_", "kinds": [ "simple" ] }
       ],
 
       "compound": [
-         { "name": "if" },
-         { "name": "try" },
-         { "name": "for" },
-         { "name": "else" },
-         { "name": "case" },
-         { "name": "while" },
-         { "name": "catch" },
-         { "name": "switch" },
-         { "name": "finally" },
-         { "name": "with" }
+         { "name": "if_" },
+         { "name": "try_" },
+         { "name": "for_" },
+         { "name": "else_" },
+         { "name": "case_" },
+         { "name": "while_" },
+         { "name": "catch_" },
+         { "name": "switch_" },
+         { "name": "finally_" },
+         { "name": "with_" }
       ]
    }
 }

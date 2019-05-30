@@ -92,8 +92,8 @@ namespace rush {
       bool insert(symbol_t);
 
       //! \brief Gets a resolver for the given name. Later, when the declaration with the given
-      //         name is inserted, the resolver is called with the declaration inserted
-      //         which is used to update identifiers referencing said declaration.
+      //         name is added to the scope, the resolver is called with the declaration
+      //         which is used to update identifiers.
       resolver_t& resolver(std::string const& name);
 
       /*! \brief Performs a lookup of the symbol with the specified name.
