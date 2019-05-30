@@ -10,14 +10,11 @@ namespace rush {
 		enum keyword_token_t {
 			unknown,
 ## for type in types
-			{# newline #}
 			{{ type/name }}_,
 ## endfor
 ## for keyword in keywords
-			{# newline #}
 			{{ keyword/name }}_,
 ## endfor
-
 		};
 
 		std::string to_string(keyword_token_t);

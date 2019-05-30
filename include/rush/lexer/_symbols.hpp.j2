@@ -10,11 +10,9 @@ namespace rush {
 		enum symbol_token_t {
 			unknown,
 ## for symbol in symbols
-			{# newline #}
 			{{ symbol/name }},
 ## if existsIn(symbol, "compounded")
 ## for compounded in symbol/compounded
-			{# newline #}
 			{{ compounded/name }},
 ## endfor
 ## endif

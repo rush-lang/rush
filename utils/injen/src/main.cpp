@@ -14,7 +14,7 @@ std::string remove_extension(std::string const& filename) {
 
 void print_render(inja::Environment& env, std::string file, inja::Template const& temp, inja::json data) {
 	std::cout << file << " ======" << std::endl;
-	std::cout << env.render_template(temp, data) << std::endl;
+	std::cout << env.render(temp, data) << std::endl;
 	std::cout << "===========" << std::endl;
 }
 

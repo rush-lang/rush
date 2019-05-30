@@ -60,16 +60,14 @@ namespace rush {
 			return lexical_token { lexical_token::identifier_t { val }, loc };
 		}
 ## for symbol in symbols
-{# spacing #}
-{# spacing #}
+
 		// \brief Returns an instance of rush::lexical_token representing {{ symbol/description }}{% if existsIn(symbol, "symbol") %} ({{ symbol/symbol }}) symbol{% endif %}.
 		inline lexical_token {{ symbol/name }}(location const& loc = location::undefined) {
 			return make_symbol_token(symbols::{{ symbol/name }}, loc);
 		}
 ## if existsIn(symbol, "compounded")
 ## for inner in symbol/compounded
-{# spacing #}
-{# spacing #}
+
 		inline lexical_token {{ inner/name }}(location const& loc = location::undefined) {
 			return make_symbol_token(symbols::{{ inner/name }}, loc);
 		}
@@ -77,22 +75,19 @@ namespace rush {
 ## endif
 ## endfor
 ## for type in types
-{# spacing #}
-{# spacing #}
+
 		// \brief Returns an instance of rush::lexical_token representing {{ type/description }} type.
 		inline lexical_token {{ type/name }}_keyword(location const& loc = location::undefined) {
 			return make_keyword_token(keywords::{{ type/name }}_, loc);
 		}
 ## endfor
 ## for keyword in keywords
-{# spacing #}
-{# spacing #}
+
 		// \brief Returns an instance of rush::lexical_token representing {{ keyword/description }} keyword.
 		inline lexical_token {{ keyword/name }}_keyword(location const& loc = location::undefined) {
 			return make_keyword_token(keywords::{{ keyword/name }}_, loc);
 		}
 ## endfor
-{# spacing #}
 	}
 }
 
