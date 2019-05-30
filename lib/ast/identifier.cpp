@@ -16,6 +16,11 @@ struct identifier_type_visitor {
    ast::type_ref operator ()(ast::identifier::resolver* res) { return ast::types::undefined; }
 };
 
+struct identifier_kind_visitor {
+   ast::declaration_kind operator ()(ast::declaration const* decl) { return decl->kind(); }
+   ast::declaration_kind operator ()(ast::identifier::resolver* res) { return ast::declaration_kind::undefined; }
+};
+
 namespace rush::ast {
 
    identifier::identifier(resolver& res) : _val { &res } {
@@ -45,6 +50,10 @@ namespace rush::ast {
 
    ast::type_ref identifier::type() const noexcept {
       return std::visit(identifier_type_visitor {}, _val);
+   }
+
+   ast::declaration_kind identifier::kind() const noexcept {
+      return std::visit(identifier_kind_visitor {}, _val);
    }
 
    ast::declaration const& identifier::declaration() const noexcept {

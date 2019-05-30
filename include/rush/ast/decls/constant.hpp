@@ -66,7 +66,7 @@ namespace rush::ast {
 		) {
 			return constant(
 				std::move(name),
-				init->result_type(),
+				ast::types::undefined,
 				std::move(init));
 		}
 	} // rush::ast::decls

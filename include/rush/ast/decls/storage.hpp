@@ -20,7 +20,7 @@ namespace rush::ast {
       };
 
       virtual ast::type_ref type() const noexcept override {
-         return _type;
+         return resolve_type();
       }
 
 		expression* initializer() const noexcept {
@@ -42,8 +42,14 @@ namespace rush::ast {
 
 	private:
       std::string _name;
-      ast::type_ref _type;
+      mutable ast::type_ref _type;
 		std::unique_ptr<expression> _init;
+
+      ast::type_ref resolve_type() const {
+         return (_type == ast::types::undefined && initializer())
+            ? _type = initializer()->result_type()
+            : _type;
+      }
 	};
 } // rush::ast
 

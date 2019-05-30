@@ -12,6 +12,7 @@
 
 namespace rush::ast {
    class declaration;
+   enum class declaration_kind : std::uint8_t;
 
    namespace detail {
       class identifier_resolver;
@@ -45,6 +46,9 @@ namespace rush::ast {
 
       //! \brief Returns the type of identifier as specified by the declaration if resolved; otherwise an error type.
       ast::type_ref type() const noexcept;
+
+      //! \brief Returns the kind of declaration this identifier refers to.
+      ast::declaration_kind kind() const noexcept;
 
       //! \brief Returns the declaration for a resolved identifier.
       //!        Note: calling this function before the identifier has been resolved is an error.

@@ -13,6 +13,7 @@
 
 namespace rush::ast {
 	enum class declaration_kind : std::uint8_t {
+      undefined,
       parameter,
 		constant,
 		variable,
