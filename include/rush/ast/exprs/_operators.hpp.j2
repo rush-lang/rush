@@ -26,11 +26,9 @@ bool is_unary_prefix_op(lexical_token const& tok) {
 	default: return false;
 ## for operator in prefix
 ## if existsIn(operator, "symbol_token")
-	{# spacing #}
 	case rush::symbols::{{ operator/symbol_token }}:
 ## endif
 ## endfor
-	{# spacing #}
 		return true;
 	}
 }
@@ -44,11 +42,9 @@ bool is_unary_postfix_op(lexical_token const& tok) {
    default: return false;
 ## for operator in postfix
 ## if existsIn(operator, "symbol_token")
-   {# spacing #}
    case rush::symbols::{{ operator/symbol_token }}:
 ## endif
 ## endfor
-   {# spacing #}
       return true;
    }
 }
@@ -62,11 +58,9 @@ bool is_binary_op(lexical_token const& tok) {
 	default: return false;
 ## for operator in binary
 ## if existsIn(operator, "symbol_token")
-	{# spacing #}
 	case rush::symbols::{{ operator/symbol_token }}:
 ## endif
 ## endfor
-	{# spacing #}
 		return true;
 	}
 }
@@ -78,10 +72,8 @@ int unary_precedence(lexical_token const& tok) {
 	switch (tok.symbol()) {
 	default: return 0;
 ## for operator in prefix
-	{# spacing #}
 	case rush::symbols::{{ operator/symbol_token }}: return {{ operator/precedence }};
 ## endfor
-	{# spacing #}
 	}
 }
 
@@ -89,10 +81,8 @@ int binary_precedence(lexical_token const& tok) {
 	switch (tok.symbol()) {
 	default: return 0;
 ## for operator in binary
-	{# spacing #}
 	case rush::symbols::{{ operator/symbol_token }}: return {{ operator/precedence }};
 ## endfor
-	{# spacing #}
 	}
 }
 #undef RUSH_PRECEDENCE_FUNC
@@ -104,10 +94,8 @@ int binary_associativity(lexical_token const& tok) {
    switch (tok.symbol()) {
    default: return 0;
 ## for operator in binary
-	{# spacing #}
    case rush::symbols::{{ operator/symbol_token }}: return {{ operator/associativity }};
 ## endfor
-	{# spacing #}
    }
 }
 
@@ -116,18 +104,14 @@ int binary_associativity(lexical_token const& tok) {
 
 #ifdef RUSH_VISITOR_FUNC_PROTOTYPES
 ## for operator in prefix
-{# spacing #}
 virtual void visit_{{ operator/name }}_expr(unary_expression const&) {}
 ## endfor
 ## for operator in postfix
-{# spacing #}
 virtual void visit_{{ operator/name }}_expr(unary_expression const&) {}
 ## endfor
 ## for operator in binary
-{# spacing #}
 virtual void visit_{{ operator/name }}_expr(binary_expression const&) {}
 ## endfor
-{# spacing #}
 #undef RUSH_VISITOR_FUNC_PROTOTYPES
 #endif
 
@@ -162,10 +146,8 @@ default: assert("unreachable");
 #ifdef RUSH_BINARY_EXPRESSION_VISIT_SWITCH
 switch (expr.opkind()) {
 ## for operator in binary
-{# spacing #}
 case binary_operator::{{ operator/name }}: visit_{{ operator/name }}_expr(expr); break;
 ## endfor
-{# spacing #}
 }
 #undef RUSH_BINARY_EXPRESSION_VISIT_SWITCH
 #endif

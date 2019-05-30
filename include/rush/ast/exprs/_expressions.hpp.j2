@@ -2,17 +2,15 @@
 #ifdef RUSH_UNARY_EXPRESSION_FACTORY_FUNC_DECLS
 namespace rush::ast::exprs {
 ## for operator in prefix
-{# spacing #}
+
 std::unique_ptr<::rush::ast::unary_expression> {{ operator/name }}(
 	std::unique_ptr<::rush::ast::expression> operand);
 ## endfor
-{# spacing #}
 ## for operator in postfix
-{# spacing #}
+
 std::unique_ptr<::rush::ast::unary_expression> {{ operator/name }}(
 	std::unique_ptr<::rush::ast::expression> operand);
 ## endfor
-{# spacing #}
 }
 #undef RUSH_UNARY_EXPRESSION_FACTORY_FUNC_DECLS
 #endif
@@ -21,12 +19,11 @@ std::unique_ptr<::rush::ast::unary_expression> {{ operator/name }}(
 #ifdef RUSH_BINARY_EXPRESSION_FACTORY_FUNC_DECLS
 namespace rush::ast::exprs {
 ## for operator in binary
-{# spacing #}
+
 std::unique_ptr<::rush::ast::binary_expression> {{ operator/name }}(
 	std::unique_ptr<::rush::ast::expression> lhs,
 	std::unique_ptr<::rush::ast::expression> rhs);
 ## endfor
-{# spacing #}
 }
 #undef RUSH_BINARY_EXPRESSION_FACTORY_FUNC_DECLS
 #endif
@@ -35,7 +32,7 @@ std::unique_ptr<::rush::ast::binary_expression> {{ operator/name }}(
 #ifdef RUSH_UNARY_EXPRESSION_FACTORY_FUNC_DEFNS
 namespace rush::ast::exprs {
 ## for operator in prefix
-{# spacing #}
+
 std::unique_ptr<::rush::ast::unary_expression>
 	{{ operator/name }}(
 	std::unique_ptr<::rush::ast::expression> operand) {
@@ -43,9 +40,8 @@ std::unique_ptr<::rush::ast::unary_expression>
 		::rush::ast::unary_operator::{{ operator/name }});
 }
 ## endfor
-{# spacing #}
 ## for operator in postfix
-{# spacing #}
+
 std::unique_ptr<::rush::ast::unary_expression>
 	{{ operator/name }}(
 	std::unique_ptr<::rush::ast::expression> operand) {
@@ -53,7 +49,6 @@ std::unique_ptr<::rush::ast::unary_expression>
 		::rush::ast::unary_operator::{{ operator/name }});
 }
 ## endfor
-{# spacing #}
 }
 #undef RUSH_UNARY_EXPRESSION_FACTORY_FUNC_DEFNS
 #endif
@@ -61,7 +56,7 @@ std::unique_ptr<::rush::ast::unary_expression>
 #ifdef RUSH_BINARY_EXPRESSION_FACTORY_FUNC_DEFNS
 namespace rush::ast::exprs {
 ## for operator in binary
-{# spacing #}
+
 std::unique_ptr<::rush::ast::binary_expression>
 	{{ operator/name }}(
 	std::unique_ptr<::rush::ast::expression> lhs,
@@ -71,7 +66,6 @@ std::unique_ptr<::rush::ast::binary_expression>
 			::rush::ast::binary_operator::{{ operator/name }});
 }
 ## endfor
-{# spacing #}
 }
 #undef RUSH_BINARY_EXPRESSION_FACTORY_FUNC_DEFNS
 #endif

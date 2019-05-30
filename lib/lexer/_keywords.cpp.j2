@@ -7,11 +7,9 @@
 static const std::unordered_map<std::string_view, rush::keyword_token_t>
 	_keyword_map {
 ## for type in types
-{# spacing #}
 		{ "{{ type/name }}", rush::keywords::{{ type/name }}_ },
 ## endfor
 ## for keyword in keywords
-{# spacing #}
 		{ "{{ keyword/name }}", rush::keywords::{{ keyword/name }}_ },
 ## endfor
 	};
@@ -27,14 +25,11 @@ namespace rush::keywords {
 	std::string to_string(keyword_token_t kw) {
 		switch (kw) {
 ## for type in types
-{# spacing #}
 			case keywords::{{ type/name }}_: return "{{ type/name }}";
 ## endfor
 ## for keyword in keywords
-{# spacing #}
 			case keywords::{{ keyword/name }}_: return "{{ keyword/name }}";
 ## endfor
-{# spacing #}
 			default: throw std::runtime_error("unknown keyword");
 		}
 	}
