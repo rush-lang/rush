@@ -35,7 +35,8 @@ namespace rush::ast {
    public:
       function_type(ast::type_ref return_type, std::unique_ptr<ast::parameter_list> params, factory_tag_t)
          : _params { std::move(params) }
-         , _return_type { std::move(return_type) } {}
+         , _return_type { std::move(return_type) }
+         , _resolve_iter { 0 } {}
 
       virtual ast::type_kind kind() const noexcept override {
          return ast::type_kind::function;
@@ -55,8 +56,9 @@ namespace rush::ast {
       }
 
    private:
-      mutable ast::type_ref _return_type;
       std::unique_ptr<ast::parameter_list> _params;
+      mutable ast::type_ref _return_type;
+      mutable int _resolve_iter;
 
       void resolve_return_type(ast::statement const&) const;
    };

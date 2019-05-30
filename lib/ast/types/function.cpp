@@ -13,7 +13,12 @@
 using namespace rush;
 
 class function_return_type_resolver : public ast::traversal {
+   friend class rush::ast::function_type;
+
 public:
+   function_return_type_resolver()
+      : _last_result { ast::types::void_type } {}
+
    virtual void visit_constant_decl(ast::constant_declaration const&) override { /*ignore*/ }
 	virtual void visit_variable_decl(ast::variable_declaration const&) override { /*ignore*/ }
 
@@ -42,28 +47,39 @@ public:
    }
 
    virtual void visit_return_stmt(ast::result_statement const& stmt) override {
-      _results.push_back(stmt.result_type());
+      _last_result = stmt.result_type();
+      if (_last_result != infinite_recursion_error_type)
+         _results.push_back(stmt.result_type());
    }
 
    ast::type_ref result() const noexcept {
       // todo: type reduce the resulting types to the common most type and return that.
       return !_results.empty()
          ? _results.front()
-         : ast::types::void_type;
+         : _last_result;
    }
 
 private:
+   static const ast::builtin_error_type infinite_recursion_error_type;
    std::vector<ast::type_ref> _results;
-   ast::visitor* _parent;
+   ast::type_ref _last_result;
 };
 
+const ast::builtin_error_type function_return_type_resolver::infinite_recursion_error_type =
+      ast::types::error_type("deducing return type is infinitely recursive.");
 
 namespace rush::ast {
    void function_type::resolve_return_type(ast::statement const& stmt) const {
-      if (_return_type == types::undefined || _return_type == types::error_type) {
+      /// check if the expression resulted in infinite recursion
+      /// via counting the number times this function has been called
+      /// without resolving.
+      if (_resolve_iter > 0) _return_type = function_return_type_resolver::infinite_recursion_error_type;
+      else if (_return_type == types::undefined || _return_type.kind() == type_kind::builtin_error) {
+         ++_resolve_iter;
          auto v = function_return_type_resolver {};
          stmt.accept(v);
          _return_type = v.result();
+         --_resolve_iter;
       }
    }
 }
