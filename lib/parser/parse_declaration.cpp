@@ -1,5 +1,6 @@
 #include "rush/ast/declarations.hpp"
-#include "rush/ast/stmts/control.hpp"
+#include "rush/ast/stmts/simple.hpp"
+#include "rush/ast/stmts/result.hpp"
 
 #include "rush/parser/parser.hpp"
 

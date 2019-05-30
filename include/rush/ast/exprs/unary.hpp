@@ -10,7 +10,7 @@
 #include <memory>
 
 #define RUSH_UNARY_OPERATOR_ENUM
-#include "rush/ast/_operators.hpp"
+#include "rush/ast/exprs/_operators.hpp"
 
 namespace rush::ast {
 	class unary_expression : public expression {
@@ -34,7 +34,7 @@ namespace rush::ast {
 		virtual void accept(ast::visitor& v) const override {
 			v.visit_unary_expr(*this);
 #			define RUSH_UNARY_EXPRESSION_VISIT_SWITCH
-#			include "rush/ast/_operators.hpp"
+#			include "rush/ast/exprs/_operators.hpp"
 		}
 
 	private:

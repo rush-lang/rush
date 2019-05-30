@@ -44,5 +44,33 @@
       { "associativity": 1, "precedence": 160, "name": "compound_bitwise_or", "symbol_token": "pipe_equals"  },
       { "associativity": 1, "precedence": 160, "name": "compound_bitwise_xor", "symbol_token": "caret_equals"  },
       { "associativity": 1, "precedence": 160, "name": "compound_bitwise_and", "symbol_token": "ampersand_equals"  }
-	]
+   ],
+
+   "statements": {
+      "name_postfix": "_",
+
+      "simple": [
+         { "name": "pass", "kinds": [ "singular" ], "name_postfix": "" },
+         { "name": "throw", "kinds": [ "singular", "value" ] },
+         { "name": "break", "kinds": [ "singular" ] },
+         { "name": "yield", "kinds": [ "value" ] },
+         { "name": "return", "kinds": [ "singular", "value" ] },
+         { "name": "continue", "kinds": [ "singular" ] },
+         { "name": "import", "kinds": [ "singular" ] },
+         { "name": "module", "kinds": [ "singular" ] }
+      ],
+
+      "compound": [
+         { "name": "if" },
+         { "name": "try" },
+         { "name": "for" },
+         { "name": "else" },
+         { "name": "case" },
+         { "name": "while" },
+         { "name": "catch" },
+         { "name": "switch" },
+         { "name": "finally" },
+         { "name": "with" }
+      ]
+   }
 }

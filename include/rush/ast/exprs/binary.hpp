@@ -10,7 +10,7 @@
 #include <memory>
 
 #define RUSH_BINARY_OPERATORS_ENUM
-#include "rush/ast/_operators.hpp"
+#include "rush/ast/exprs/_operators.hpp"
 
 namespace rush::ast {
 	class binary_expression : public expression {
@@ -39,7 +39,7 @@ namespace rush::ast {
 		virtual void accept(ast::visitor& v) const override {
 			v.visit_binary_expr(*this);
 #			define RUSH_BINARY_EXPRESSION_VISIT_SWITCH
-#			include "rush/ast/_operators.hpp"
+#			include "rush/ast/exprs/_operators.hpp"
 		}
 
 	private:

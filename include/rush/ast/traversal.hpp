@@ -52,12 +52,12 @@ namespace rush::ast {
          // todo: implement when switch statements are implemented.
       }
 
-		virtual void visit_return_stmt(ast::return_statement const& stmt) override {
-         if (stmt.expr()) accept(*stmt.expr());
+		virtual void visit_return_stmt(ast::result_statement const& stmt) override {
+         accept(stmt.expression());
       }
 
-		virtual void visit_yield_stmt(ast::yield_statement const& stmt) override {
-         accept(stmt.expr());
+		virtual void visit_yield_stmt(ast::result_statement const& stmt) override {
+         accept(stmt.expression());
       }
 
 		// expressions

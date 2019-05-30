@@ -106,7 +106,7 @@ namespace rush::ast {
 
 		virtual void visit_unary_expr(ast::unary_expression const& expr) override {
 #        define RUSH_UNARY_EXPRESSION_PRINT_VISIT_SWITCH
-#        include "rush/ast/_operators.hpp"
+#        include "rush/ast/exprs/_operators.hpp"
 			indent();
 			expr.operand().accept(*this);
 			dedent();
@@ -114,7 +114,7 @@ namespace rush::ast {
 
 		virtual void visit_binary_expr(ast::binary_expression const& expr) override {
 #        define RUSH_BINARY_EXPRESSION_PRINT_VISIT_SWITCH
-#        include "rush/ast/_operators.hpp"
+#        include "rush/ast/exprs/_operators.hpp"
 			indent();
 			expr.left_operand().accept(*this);
 			expr.right_operand().accept(*this);
@@ -195,30 +195,37 @@ namespace rush::ast {
          dedent();
       }
 
-      virtual void visit_pass_stmt(ast::pass_statement const& stmt) override {
+      virtual void visit_pass_stmt(ast::simple_statement const& stmt) override {
          writeln("<pass_stmt>");
       }
 
-      virtual void visit_break_stmt(ast::break_statement const& stmt) override {
+      virtual void visit_break_stmt(ast::simple_statement const& stmt) override {
          writeln("<break_stmt>");
       }
 
-      virtual void visit_continue_stmt(ast::continue_statement const& stmt) override {
+      virtual void visit_continue_stmt(ast::simple_statement const& stmt) override {
          writeln("<continue_stmt>");
       }
 
-      virtual void visit_yield_stmt(ast::yield_statement const& stmt) override {
+      virtual void visit_throw_stmt(ast::simple_statement const& stmt) override {
+         writeln("<throw_stmt>");
+      }
+
+      virtual void visit_return_stmt(ast::simple_statement const& stmt) override {
+         writeln("<return_stmt>");
+      }
+
+      virtual void visit_yield_stmt(ast::result_statement const& stmt) override {
          writeln("<yield_stmt>");
          indent();
-         stmt.expr().accept(*this);
+         stmt.expression().accept(*this);
          dedent();
       }
 
-      virtual void visit_return_stmt(ast::return_statement const& stmt) override {
+      virtual void visit_return_stmt(ast::result_statement const& stmt) override {
          writeln("<return_stmt>");
          indent();
-         if (stmt.expr() != nullptr)
-            stmt.expr()->accept(*this);
+         stmt.expression().accept(*this);
          dedent();
       }
 

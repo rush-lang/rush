@@ -1,0 +1,20 @@
+
+
+#ifdef RUSH_STATEMENT_KIND_ENUM
+enum class statement_kind : std::uint8_t {
+## for stmt in statements/simple
+   {# spacing #}
+   {{ stmt/name }}{% if existsIn(stmt, "name_postfix") %}{{ stmt/name_postfix }}{% else %}{{ statements/name_postfix }}{% endif %},
+## endfor
+   {# spacing #}
+## for stmt in statements/compound
+   {# spacing #}
+   {{ stmt/name }}{% if existsIn(stmt, "name_postfix") %}{{ stmt/name_postfix }}{% else %}{{ statements/name_postfix }}{% endif %},
+## endfor
+   expression,
+   declaration,
+   block
+{# spacing #}
+};
+#undef RUSH_STATEMENT_KIND_ENUM
+#endif

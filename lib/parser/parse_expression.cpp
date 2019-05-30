@@ -12,7 +12,7 @@ namespace rush {
 #define RUSH_IS_BINARY_OP_FUNC
 #define RUSH_PRECEDENCE_FUNC
 #define RUSH_ASSOCIATIVITY_FUNC
-#include "rush/ast/_operators.hpp"
+#include "rush/ast/exprs/_operators.hpp"
 
 	int compare_binary_op_precedence(lexical_token const& lhs, lexical_token const& rhs) {
 		return is_binary_op(lhs) && is_binary_op(rhs)

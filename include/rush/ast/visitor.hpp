@@ -42,12 +42,8 @@ namespace rush::ast {
 	class switch_statement;
 	class while_statement;
 
-   class pass_statement;
-   class throw_statement;
-   class break_statement;
-   class yield_statement;
-	class return_statement;
-   class continue_statement;
+   class simple_statement;
+   class result_statement;
 
 	class declaration;
    class parameter;
@@ -89,12 +85,18 @@ namespace rush::ast {
 		virtual void visit_while_stmt(while_statement const&) {};
 		virtual void visit_switch_stmt(switch_statement const&) {};
 
-		virtual void visit_pass_stmt(pass_statement const&) {};
-		virtual void visit_throw_stmt(throw_statement const&) {};
-		virtual void visit_yield_stmt(yield_statement const&) {};
-      virtual void visit_break_stmt(break_statement const&) {};
-		virtual void visit_return_stmt(return_statement const&) {};
-      virtual void visit_continue_stmt(continue_statement const&) {};
+      virtual void visit_pass_stmt(simple_statement const&) {};
+		virtual void visit_throw_stmt(simple_statement const&) {};
+      virtual void visit_break_stmt(simple_statement const&) {};
+		virtual void visit_return_stmt(simple_statement const&) {};
+      virtual void visit_continue_stmt(simple_statement const&) {};
+
+		virtual void visit_yield_stmt(result_statement const& stmt) {};
+      virtual void visit_throw_stmt(result_statement const& stmt);
+		virtual void visit_return_stmt(result_statement const& stmt);
+
+      virtual void visit_simple_stmt(simple_statement const& stmt);
+      virtual void visit_result_stmt(result_statement const& stmt);
 
 		// expressions
 		virtual void visit_unary_expr(unary_expression const&) {};
@@ -110,7 +112,7 @@ namespace rush::ast {
 		virtual void visit_literal_expr(floating_literal_expression const&) {};
 
 #		define RUSH_VISITOR_FUNC_PROTOTYPES
-#		include "rush/ast/_operators.hpp"
+#		include "rush/ast/exprs/_operators.hpp"
 	};
 } // rush
 

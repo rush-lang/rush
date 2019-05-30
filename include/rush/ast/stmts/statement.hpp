@@ -8,21 +8,21 @@
 #include <cstdint>
 
 namespace rush::ast {
-	enum class statement_kind : std::uint8_t {
-		loop,
-		branch,
-		control,
-      if_,
-      for_loop,
-      while_loop,
-		expression,
-		declaration,
-		block,
-	};
+#  define RUSH_STATEMENT_KIND_ENUM
+#  include "rush/ast/stmts/_statements.hpp"
 
 	class statement : public node {
 	public:
-		virtual statement_kind kind() const noexcept = 0;
+		statement_kind kind() const noexcept {
+         return _kind;
+      };
+
+   protected:
+      statement(statement_kind kind)
+         : _kind { kind } {}
+
+   private:
+      statement_kind _kind;
 	};
 } // rush::ast
 

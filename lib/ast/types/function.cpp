@@ -41,8 +41,8 @@ public:
       // todo: implement when switch statement is implemented
    }
 
-   virtual void visit_return_stmt(ast::return_statement const& stmt) override {
-      _results.push_back(stmt.return_type());
+   virtual void visit_return_stmt(ast::result_statement const& stmt) override {
+      _results.push_back(stmt.result_type());
    }
 
    ast::type_ref result() const noexcept {

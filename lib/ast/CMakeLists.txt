@@ -9,14 +9,16 @@ rush_add_library(ast
    types/function.cpp
    types/utility.cpp
    identifier.cpp
-	traversal.cpp
+   traversal.cpp
+   visitor.cpp
 )
 
 target_compile_features(ast PUBLIC cxx_std_17)
 
 
 rush_render_templates(
-	${CMAKE_SOURCE_DIR}/include/rush/ast/_operators.hpp.j2
+   ${CMAKE_SOURCE_DIR}/include/rush/ast/stmts/_statements.hpp.j2
+	${CMAKE_SOURCE_DIR}/include/rush/ast/exprs/_operators.hpp.j2
 	${CMAKE_SOURCE_DIR}/include/rush/ast/exprs/_expressions.hpp.j2
 	JSON ${CMAKE_SOURCE_DIR}/include/rush/ast/ast.json
 	DEPENDENTS ast

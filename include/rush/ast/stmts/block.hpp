@@ -24,11 +24,8 @@ namespace rush::ast {
       using const_iterator = typename container_type::const_iterator;
 
 		statement_block(std::vector<std::unique_ptr<ast::statement>> stmts)
-			: _stmts(std::move(stmts)) {}
-
-		virtual statement_kind kind() const noexcept override {
-			return statement_kind::block;
-		}
+			: statement { ast::statement_kind::block }
+         , _stmts(std::move(stmts)) {}
 
       const_iterator begin() const noexcept { return _stmts.begin(); }
       const_iterator end() const noexcept { return _stmts.end(); }

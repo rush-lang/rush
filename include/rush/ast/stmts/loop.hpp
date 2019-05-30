@@ -36,12 +36,9 @@ namespace rush::ast {
          std::unique_ptr<ast::expression> cond,
          std::unique_ptr<ast::statement> body,
          factory_tag_t)
-         : _cond { std::move(cond) }
+         : statement { ast::statement_kind::while_ }
+         , _cond { std::move(cond) }
          , _body { std::move(body) } {}
-
-		virtual statement_kind kind() const noexcept override {
-         return ast::statement_kind::while_loop;
-      }
 
       ast::expression const& condition() const noexcept {
          return*_cond;

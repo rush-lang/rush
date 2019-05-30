@@ -13,13 +13,10 @@ namespace rush::ast {
          std::unique_ptr<expression> cond,
          std::unique_ptr<statement> then,
          std::unique_ptr<statement> else_)
-         : _cond { std::move(cond) }
+         : statement { ast::statement_kind::if_ }
+         , _cond { std::move(cond) }
          , _then { std::move(then) }
          , _else { std::move(else_) } {}
-
-		virtual ast::statement_kind kind() const noexcept override {
-         return ast::statement_kind::branch;
-      }
 
       ast::expression const& condition() const noexcept {
          return *_cond;
