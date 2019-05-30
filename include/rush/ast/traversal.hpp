@@ -32,20 +32,18 @@ namespace rush::ast {
          for (auto& s : stmt) accept(*s);
       }
 
-		virtual void visit_if_stmt(ast::if_statement const& stmt) override {
-         accept(stmt.condition());
-         accept(stmt.then());
-         if (stmt.else_())
-            accept(*stmt.else_());
-      }
-
-		virtual void visit_for_stmt(ast::for_statement const& stmt) override {
-         // todo: implement when for statements are implemented.
-      }
-
-		virtual void visit_while_stmt(ast::while_statement const& stmt) override {
+      virtual void visit_conditional_stmt(ast::conditional_statement const& stmt) override {
          accept(stmt.condition());
          accept(stmt.body());
+      }
+
+      virtual void visit_alternating_stmt(ast::alternating_statement const& stmt) override {
+         accept(stmt.primary());
+         accept(stmt.alternate());
+      }
+
+		virtual void visit_for_stmt(ast::iteration_statement const& stmt) override {
+         // todo: implement when for statements are implemented.
       }
 
 		virtual void visit_switch_stmt(ast::switch_statement const& stmt) override {

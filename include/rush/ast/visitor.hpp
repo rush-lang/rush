@@ -37,11 +37,11 @@ namespace rush::ast {
 
 	class statement;
 	class statement_block;
-	class if_statement;
-	class for_statement;
 	class case_statement;
 	class switch_statement;
-	class while_statement;
+   class iteration_statement;
+   class conditional_statement;
+   class alternating_statement;
 
    class simple_statement;
    class result_statement;
@@ -82,9 +82,14 @@ namespace rush::ast {
 		// statements
 		virtual void visit_block_stmt(statement_block const&) {};
 
-		virtual void visit_if_stmt(if_statement const&) {};
-		virtual void visit_for_stmt(for_statement const&) {};
-		virtual void visit_while_stmt(while_statement const&) {};
+      virtual void visit_iteration_stmt(iteration_statement const&) {}
+      virtual void visit_conditional_stmt(conditional_statement const&);
+      virtual void visit_alternating_stmt(alternating_statement const&);
+
+		virtual void visit_if_stmt(conditional_statement const&) {};
+      virtual void visit_else_stmt(alternating_statement const&) {};
+		virtual void visit_for_stmt(iteration_statement const&) {};
+		virtual void visit_while_stmt(conditional_statement const&) {};
 		virtual void visit_switch_stmt(switch_statement const&) {};
 
 #     define RUSH_VISITOR_SIMPLE_STMT_FUNC_PROTOTYPES

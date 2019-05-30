@@ -233,17 +233,20 @@ namespace rush::ast {
          dedent();
       }
 
-      virtual void visit_if_stmt(ast::if_statement const& stmt) override {
+      virtual void visit_alternating_stmt(alternating_statement const& stmt) override {
+         stmt.primary().accept(*this);
+         stmt.alternate().accept(*this);
+      }
+
+      virtual void visit_if_stmt(ast::conditional_statement const& stmt) override {
          writeln("<if_stmt>");
          indent();
          stmt.condition().accept(*this);
-         stmt.then().accept(*this);
-         if (stmt.else_())
-            stmt.else_()->accept(*this);
+         stmt.body().accept(*this);
          dedent();
       }
 
-      virtual void visit_while_stmt(ast::while_statement const& stmt) override {
+      virtual void visit_while_stmt(ast::conditional_statement const& stmt) override {
          writeln("<while_stmt>");
          indent();
          stmt.condition().accept(*this);

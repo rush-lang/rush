@@ -14,6 +14,21 @@ namespace rush::ast {
       visit_return_stmt(static_cast<simple_statement const&>(stmt));
    };
 
+   void visitor::visit_conditional_stmt(conditional_statement const& stmt) {
+      switch (stmt.kind()) {
+      default: break; // assert! should be unreachable.
+      case statement_kind::if_: visit_if_stmt(stmt); break;
+      case statement_kind::while_: visit_while_stmt(stmt); break;
+      }
+   }
+
+   void visitor::visit_alternating_stmt(alternating_statement const& stmt) {
+      switch (stmt.kind()) {
+      default: break; // assert! should be unreachable.
+      case statement_kind::else_: visit_else_stmt(stmt);
+      }
+   }
+
    void visitor::visit_simple_stmt(simple_statement const& stmt) {
 #     define RUSH_SIMPLE_STMT_VISIT_SWITCH
 #     include "rush/ast/stmts/_statements.hpp"
