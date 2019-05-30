@@ -152,3 +152,17 @@ case binary_operator::{{ operator/name }}: visit_{{ operator/name }}_expr(expr);
 #undef RUSH_BINARY_EXPRESSION_VISIT_SWITCH
 #endif
 
+
+#ifdef RUSH_TRAVERSAL_UNARY_EXPR_FUNC_IMPLS
+## for operator in concat(prefix, postfix)
+virtual void visit_{{ operator/name }}_expr(rush::ast::unary_expression const& expr) override { traverse_unary_expr(expr); }
+## endfor
+#undef RUSH_TRAVERSAL_UNARY_EXPR_FUNC_IMPLS
+#endif
+
+#ifdef RUSH_TRAVERSAL_BINARY_EXPR_FUNC_IMPLS
+## for operator in binary
+virtual void visit_{{ operator/name }}_expr(rush::ast::binary_expression const& expr) override { traverse_binary_expr(expr); }
+## endfor
+#undef RUSH_TRAVERSAL_BINARY_EXPR_FUNC_IMPLS
+#endif

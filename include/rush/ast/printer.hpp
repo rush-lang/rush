@@ -8,14 +8,14 @@
 #include "rush/ast/declarations.hpp"
 #include "rush/ast/statements.hpp"
 #include "rush/ast/expressions.hpp"
-#include "rush/ast/visitor.hpp"
+#include "rush/ast/traversal.hpp"
 
 #include "fmt/format.h"
 #include <iostream>
 
 namespace rush::ast {
 	template <typename CharT, typename Traits = std::char_traits<CharT>>
-	class basic_printer : public ast::visitor {
+	class basic_printer : public ast::traversal {
 		void indent() { ++_indent; }
 		void dedent() { --_indent; }
 
@@ -47,9 +47,9 @@ namespace rush::ast {
 
 	public:
 		basic_printer(std::basic_ostream<CharT, Traits>& out)
-			: _indent(0)
-			, _current_indent(0)
-			, _ostr(out) {}
+			: _ostr { out }
+			, _indent { 0 }
+			, _current_indent { 0 } {}
 
       virtual void visit_builtin_error_type(ast::builtin_error_type const& type) override {
          write("<error-type>");
@@ -111,27 +111,36 @@ namespace rush::ast {
 		virtual void visit_unary_expr(ast::unary_expression const& expr) override {
 #        define RUSH_UNARY_EXPRESSION_PRINT_VISIT_SWITCH
 #        include "rush/ast/exprs/_operators.hpp"
-			indent();
-			expr.operand().accept(*this);
-			dedent();
+         indent_traverse(expr);
 		}
 
 		virtual void visit_binary_expr(ast::binary_expression const& expr) override {
 #        define RUSH_BINARY_EXPRESSION_PRINT_VISIT_SWITCH
 #        include "rush/ast/exprs/_operators.hpp"
-			indent();
-			expr.left_operand().accept(*this);
-			expr.right_operand().accept(*this);
-			dedent();
+         indent_traverse(expr);
 		}
+
+      virtual void visit_simple_stmt(ast::simple_statement const& stmt) override {
+#        define RUSH_SIMPLE_STATEMENT_PRINT_VISIT_SWITCH
+#        include "rush/ast/stmts/_statements.hpp"
+         indent_traverse(stmt);
+      }
+
+      virtual void visit_result_stmt(ast::result_statement const& stmt) override {
+#        define RUSH_RESULT_STATEMENT_PRINT_VISIT_SWITCH
+#        include "rush/ast/stmts/_statements.hpp"
+         indent_traverse(stmt);
+      }
+
+      virtual void visit_conditional_stmt(ast::conditional_statement const& stmt) override {
+#        define RUSH_SIMPLE_CONDITIONAL_PRINT_VISIT_SWITCH
+#        include "rush/ast/stmts/_statements.hpp"
+         indent_traverse(stmt);
+      }
 
       virtual void visit_ternary_expr(ast::ternary_expression const& expr) override {
          print_expression("ternary", expr);
-         indent();
-         expr.condition().accept(*this);
-         expr.true_expr().accept(*this);
-         expr.false_expr().accept(*this);
-         dedent();
+         indent_traverse(expr);
       }
 
 		virtual void visit_literal_expr(ast::nil_literal_expression const& expr) override {
@@ -162,10 +171,7 @@ namespace rush::ast {
 
       virtual void visit_invocation_expr(ast::invocation_expression const& expr) override {
          print_expression("invocation", expr);
-         indent();
-         expr.callable().accept(*this);
-         expr.arguments().accept(*this);
-         dedent();
+         indent_traverse(expr);
       }
 
 		virtual void visit_constant_decl(ast::constant_declaration const& decl) override {
@@ -186,78 +192,24 @@ namespace rush::ast {
          write("<function_decl: ");
          decl.type().accept(*this);
          writeln(" (name=\"{}\")>", decl.name());
-         indent();
-         decl.parameters().accept(*this);
-         decl.body().accept(*this);
-         dedent();
+         indent_traverse(decl);
       }
 
       virtual void visit_block_stmt(ast::statement_block const& stmt) override {
          writeln("<block_stmt>");
-         indent();
-         std::for_each(stmt.begin(), stmt.end(), [this](auto& s) { s->accept(*this); });
-         dedent();
-      }
-
-      virtual void visit_pass_stmt(ast::simple_statement const& stmt) override {
-         writeln("<pass_stmt>");
-      }
-
-      virtual void visit_break_stmt(ast::simple_statement const& stmt) override {
-         writeln("<break_stmt>");
-      }
-
-      virtual void visit_continue_stmt(ast::simple_statement const& stmt) override {
-         writeln("<continue_stmt>");
-      }
-
-      virtual void visit_throw_stmt(ast::simple_statement const& stmt) override {
-         writeln("<throw_stmt>");
-      }
-
-      virtual void visit_return_stmt(ast::simple_statement const& stmt) override {
-         writeln("<return_stmt>");
-      }
-
-      virtual void visit_yield_stmt(ast::result_statement const& stmt) override {
-         writeln("<yield_stmt>");
-         indent();
-         stmt.expression().accept(*this);
-         dedent();
-      }
-
-      virtual void visit_return_stmt(ast::result_statement const& stmt) override {
-         writeln("<return_stmt>");
-         indent();
-         stmt.expression().accept(*this);
-         dedent();
-      }
-
-      virtual void visit_alternating_stmt(alternating_statement const& stmt) override {
-         stmt.primary().accept(*this);
-         stmt.alternate().accept(*this);
-      }
-
-      virtual void visit_if_stmt(ast::conditional_statement const& stmt) override {
-         writeln("<if_stmt>");
-         indent();
-         stmt.condition().accept(*this);
-         stmt.body().accept(*this);
-         dedent();
-      }
-
-      virtual void visit_while_stmt(ast::conditional_statement const& stmt) override {
-         writeln("<while_stmt>");
-         indent();
-         stmt.condition().accept(*this);
-         stmt.body().accept(*this);
-         dedent();
+         indent_traverse(stmt);
       }
 
 	private:
 		std::size_t _indent;
 		std::size_t _current_indent;
 		std::basic_ostream<CharT, Traits>& _ostr;
+
+      void indent_traverse(ast::node const& ast) {
+         indent();
+         traverse(ast);
+         dedent();
+      }
 
 		void print_expression(std::string name, ast::expression const& expr) {
 			write("<{}_expr: ", name);

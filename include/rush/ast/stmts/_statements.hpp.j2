@@ -47,3 +47,69 @@ case statement_kind::{{ stmt/name }}: visit_{{ rtrim(stmt/name, "_") }}_stmt(stm
 }
 #undef RUSH_RESULT_STMT_VISIT_SWITCH
 #endif
+
+#ifdef RUSH_TRAVERSAL_RESULT_STMT_FUNC_IMPLS
+## for stmt in statements/simple
+## if contains(stmt/kinds, "result")
+virtual void visit_{{ rtrim(stmt/name, "_") }}_stmt(rush::ast::result_statement const& stmt) override { traverse_result_stmt(stmt); }
+## endif
+## endfor
+#undef RUSH_TRAVERSAL_RESULT_STMT_FUNC_IMPLS
+#endif
+
+#ifdef RUSH_TRAVERSAL_CONDITIONAL_STMT_FUNC_IMPLS
+## for stmt in statements/compound
+## if contains(stmt/kinds, "conditional")
+virtual void visit_{{ rtrim(stmt/name, "_") }}_stmt(rush::ast::conditional_statement const& stmt) override { traverse_conditional_stmt(stmt); }
+## endif
+## endfor
+#undef RUSH_TRAVERSAL_CONDITIONAL_STMT_FUNC_IMPLS
+#endif
+
+#ifdef RUSH_TRAVERSAL_ALTERNATING_STMT_FUNC_IMPLS
+## for stmt in statements/compound
+## if contains(stmt/kinds, "alternating")
+virtual void visit_{{ rtrim(stmt/name, "_") }}_stmt(rush::ast::alternating_statement const& stmt) override { traverse_alternating_stmt(stmt); }
+## endif
+## endfor
+#undef RUSH_TRAVERSAL_ALTERNATING_STMT_FUNC_IMPLS
+#endif
+
+
+#ifdef RUSH_SIMPLE_STATEMENT_PRINT_VISIT_SWITCH
+switch (stmt.kind()) {
+default: break; // assert! should be unreachable.
+## for stmt in statements/simple
+## if contains(stmt/kinds, "simple")
+case rush::ast::statement_kind::{{ stmt/name }}: writeln("<{{ rtrim(stmt/name, "_") }}_stmt>"); break;
+## endif
+## endfor
+}
+#undef RUSH_SIMPLE_STATEMENT_PRINT_VISIT_SWITCH
+#endif
+
+
+#ifdef RUSH_RESULT_STATEMENT_PRINT_VISIT_SWITCH
+switch (stmt.kind()) {
+default: break; // assert! should be unreachable.
+## for stmt in statements/simple
+## if contains(stmt/kinds, "result")
+case rush::ast::statement_kind::{{ stmt/name }}: writeln("<{{ rtrim(stmt/name, "_") }}_stmt>"); break;
+## endif
+## endfor
+}
+#undef RUSH_RESULT_STATEMENT_PRINT_VISIT_SWITCH
+#endif
+
+
+#ifdef RUSH_SIMPLE_CONDITIONAL_PRINT_VISIT_SWITCH
+switch (stmt.kind()) {
+default: break; // assert! should be unreachable.
+## for stmt in statements/compound
+## if contains(stmt/kinds, "conditional")
+case rush::ast::statement_kind::{{ stmt/name }}: writeln("<{{ rtrim(stmt/name, "_") }}_stmt>"); break;
+## endif
+## endfor
+}
+#undef RUSH_SIMPLE_CONDITIONAL_PRINT_VISIT_SWITCH
+#endif

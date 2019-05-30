@@ -11,12 +11,8 @@ using namespace rush;
 namespace rush::ast {
    class traversal_roundtrip : public traversal {
       friend class traversal;
-
    protected:
-      virtual void accept(ast::node const& ast) override {
-         ast.accept(*_v);
-      }
-
+      virtual void accept(ast::node const& ast) override { ast.accept(*_v); }
    private:
       ast::visitor* _v;
       traversal_roundtrip(ast::visitor* v) : _v { v } {}

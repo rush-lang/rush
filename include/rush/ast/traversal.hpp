@@ -9,7 +9,7 @@
 #include "rush/ast/statements.hpp"
 
 namespace rush::ast {
-   /*! \brief A traversal_visitor derives the AST visitor, in which relevant visitation
+   /*! \brief A traversal derives the AST visitor, in which relevant visitation
     *         methods are overloaded to visit an AST in its entirety. */
    class traversal : public ast::visitor {
    public:
@@ -32,40 +32,8 @@ namespace rush::ast {
          for (auto& s : stmt) accept(*s);
       }
 
-      virtual void visit_conditional_stmt(ast::conditional_statement const& stmt) override {
-         accept(stmt.condition());
-         accept(stmt.body());
-      }
-
-      virtual void visit_alternating_stmt(ast::alternating_statement const& stmt) override {
-         accept(stmt.primary());
-         accept(stmt.alternate());
-      }
-
-		virtual void visit_for_stmt(ast::iteration_statement const& stmt) override {
-         // todo: implement when for statements are implemented.
-      }
-
 		virtual void visit_switch_stmt(ast::switch_statement const& stmt) override {
          // todo: implement when switch statements are implemented.
-      }
-
-		virtual void visit_return_stmt(ast::result_statement const& stmt) override {
-         accept(stmt.expression());
-      }
-
-		virtual void visit_yield_stmt(ast::result_statement const& stmt) override {
-         accept(stmt.expression());
-      }
-
-		// expressions
-		virtual void visit_unary_expr(ast::unary_expression const& expr) override {
-         accept(expr.operand());
-      }
-
-		virtual void visit_binary_expr(ast::binary_expression const& expr) override {
-         accept(expr.left_operand());
-         accept(expr.right_operand());
       }
 
       virtual void visit_ternary_expr(ast::ternary_expression const& expr) override {
@@ -79,6 +47,16 @@ namespace rush::ast {
          accept(expr.callable());
       }
 
+#     define RUSH_TRAVERSAL_RESULT_STMT_FUNC_IMPLS
+#     define RUSH_TRAVERSAL_ITERATION_STMT_FUNC_IMPLS
+#     define RUSH_TRAVERSAL_CONDITIONAL_STMT_FUNC_IMPLS
+#     define RUSH_TRAVERSAL_ALTERNATING_STMT_FUNC_IMPLS
+#     include "rush/ast/stmts/_statements.hpp"
+
+#     define RUSH_TRAVERSAL_UNARY_EXPR_FUNC_IMPLS
+#     define RUSH_TRAVERSAL_BINARY_EXPR_FUNC_IMPLS
+#     include "rush/ast/exprs/_operators.hpp"
+
    protected:
       void traverse(ast::node const& ast);
 
@@ -88,6 +66,29 @@ namespace rush::ast {
 
    private:
       ast::visitor* _vis;
+
+      void traverse_result_stmt(ast::result_statement const& stmt) {
+         accept(stmt.expression());
+      }
+
+      void traverse_conditional_stmt(ast::conditional_statement const& stmt) {
+         accept(stmt.condition());
+         accept(stmt.body());
+      }
+
+      void traverse_alternating_stmt(ast::alternating_statement const& stmt) {
+         accept(stmt.primary());
+         accept(stmt.alternate());
+      }
+
+      void traverse_unary_expr(unary_expression const& expr) {
+         accept(expr.operand());
+      }
+
+      void traverse_binary_expr(binary_expression const& expr) {
+         accept(expr.left_operand());
+         accept(expr.right_operand());
+      }
    };
 } // rush::ast
 

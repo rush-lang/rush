@@ -59,16 +59,16 @@
       ],
 
       "compound": [
-         { "name": "if_" },
-         { "name": "try_" },
-         { "name": "for_" },
-         { "name": "else_" },
-         { "name": "case_" },
-         { "name": "while_" },
-         { "name": "catch_" },
-         { "name": "switch_" },
-         { "name": "finally_" },
-         { "name": "with_" }
+         { "name": "if_", "kinds": [ "conditional" ] },
+         { "name": "try_", "kinds": [ ] },
+         { "name": "for_", "kinds": [ "iteration" ] },
+         { "name": "else_", "kinds": [ "alternating" ] },
+         { "name": "case_", "kinds": [ ] },
+         { "name": "while_", "kinds": [ "conditional" ] },
+         { "name": "catch_", "kinds": [ ] },
+         { "name": "switch_", "kinds": [ ] },
+         { "name": "finally_", "kinds": [ ] },
+         { "name": "with_", "kinds": [ ] }
       ]
    }
 }
