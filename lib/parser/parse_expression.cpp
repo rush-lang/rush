@@ -125,11 +125,14 @@ namespace rush {
 	}
 
 
-   std::unique_ptr<ast::unary_expression> parser::parse_unary_expr() {
+   std::unique_ptr<ast::expression> parser::parse_unary_expr() {
       assert(is_unary_prefix_op(peek_skip_indent()) && "expected unary operator.");
 
       auto tok = next_skip_indent(); // consume unary operator token.
       auto operand = parse_primary_expr();
+      if (is_unary_postfix_op(peek_skip_indent()))
+         operand = parse_unary_postfix_expr(std::move(operand));
+
       switch (tok.symbol()) {
       default: return error("unary operator '{}' not yet supported", tok);
       case symbols::plus: return exprs::positive(std::move(operand));
@@ -141,19 +144,23 @@ namespace rush {
       }
    }
 
-   std::unique_ptr<ast::unary_expression> parser::parse_unary_postfix_expr(std::unique_ptr<ast::expression> op) {
+   std::unique_ptr<ast::expression> parser::parse_unary_postfix_expr(std::unique_ptr<ast::expression> op) {
       assert(is_unary_postfix_op(peek_skip_indent()) && "expected unary postfix operator.");
       if (!op) return nullptr;
 
       auto tok = next_skip_indent();
       switch (tok.symbol()) {
       default: return error("unary postfix operator not yet supported.", tok);
-      case symbols::plus_plus: return exprs::post_increment(std::move(op));
-      case symbols::minus_minus: return exprs::post_decrement(std::move(op));
+      case symbols::plus_plus: op = exprs::post_increment(std::move(op)); break;
+      case symbols::minus_minus: op = exprs::post_decrement(std::move(op)); break;
       }
+
+      return is_unary_postfix_op(peek_skip_indent())
+         ? parse_unary_postfix_expr(std::move(op))
+         : std::move(op);
    }
 
-	std::unique_ptr<ast::binary_expression> parser::parse_binary_expr(std::unique_ptr<ast::expression> lhs) {
+	std::unique_ptr<ast::expression> parser::parse_binary_expr(std::unique_ptr<ast::expression> lhs) {
 		assert(is_binary_op(peek_skip_indent()) && "expected binary operator.");
 
 		auto tok = peek_skip_indent();
@@ -162,6 +169,7 @@ namespace rush {
 
 		std::unique_ptr<ast::binary_expression> expr;
 
+      if (tok.is_symbol()) {
 		switch (tok.symbol()) {
 		default: return error("binary operator '{}' not yet supported", tok);
       case symbols::equals: expr = exprs::assignment(std::move(lhs), std::move(rhs)); break;
@@ -204,6 +212,13 @@ namespace rush {
 		case symbols::left_chevron_equals: expr = exprs::less_equals(std::move(lhs), std::move(rhs)); break;
 		case symbols::right_chevron_equals: expr = exprs::greater_equals(std::move(lhs), std::move(rhs)); break;
 		}
+      } else {
+         switch (tok.keyword()) {
+         default: return error("binary operator '{}' not yet supported", tok);
+         // case keywords::is_: expr = exprs::is(std::move(lhs), std::move(rhs)); break;
+         // case keywords::as_: expr = exprs::as(std::move(lhs), std::move(rhs)); break;
+         }
+      }
 
 		return is_binary_op(peek_skip_indent())
 			? parse_binary_expr(std::move(expr))
@@ -222,7 +237,7 @@ namespace rush {
          if (is_binary_op(next)) {
             auto opcmp = compare_binary_op_precedence(next, prev);
             if (opcmp < 0 || (opcmp == 0 && binary_associativity(next) > 0))
-            rhs = parse_binary_expr(std::move(rhs));
+               rhs = parse_binary_expr(std::move(rhs));
          }
 
          return std::move(rhs);

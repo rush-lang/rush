@@ -28,7 +28,7 @@ namespace rush {
          : nullptr;
    }
 
-   std::unique_ptr<ast::statement_block> parser::parse_block_stmt() {
+   std::unique_ptr<ast::statement> parser::parse_block_stmt() {
       assert(peek_with_indent().is(symbols::indent) && "expected indentation at start of block.");
       next_with_indent(); // consume indentation.
 
@@ -43,7 +43,7 @@ namespace rush {
       return ast::stmts::block(std::move(stmts));
    }
 
-   std::unique_ptr<ast::statement_block> parser::parse_block_single_stmt() {
+   std::unique_ptr<ast::statement> parser::parse_block_single_stmt() {
       auto stmt = parse_stmt();
       if (!stmt) return nullptr;
 

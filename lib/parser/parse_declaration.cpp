@@ -69,7 +69,7 @@ namespace rush {
 		return error("expected an identifier before '{}'.", next_skip_indent());
 	}
 
-	std::unique_ptr<ast::constant_declaration> parser::parse_constant_decl() {
+	std::unique_ptr<ast::declaration> parser::parse_constant_decl() {
 		assert(peek_skip_indent().is(keywords::let_) && "expected the 'let' keyword.");
 		next_skip_indent(); // consume let token
 		using function_type = std::unique_ptr<ast::constant_declaration>(*)(
@@ -79,7 +79,7 @@ namespace rush {
 		return _parse_storage_decl("constant", static_cast<function_type>(&decls::constant));
 	}
 
-	std::unique_ptr<ast::variable_declaration> parser::parse_variable_decl() {
+	std::unique_ptr<ast::declaration> parser::parse_variable_decl() {
 		assert(peek_skip_indent().is(keywords::var_) && "expected the 'var' keyword.");
 		next_skip_indent(); // consume var token
 		using function_type = std::unique_ptr<ast::variable_declaration>(*)(
@@ -140,7 +140,7 @@ namespace rush {
 	}
 
 
-	std::unique_ptr<ast::function_declaration> parser::parse_function_decl() {
+	std::unique_ptr<ast::declaration> parser::parse_function_decl() {
 		assert(peek_skip_indent().is(keywords::func_) && "expected the 'func' keyword.");
 		next_skip_indent(); // consume func keyword.
       _scope.push(rush::scope_kind::function);
