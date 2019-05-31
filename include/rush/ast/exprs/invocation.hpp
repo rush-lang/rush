@@ -16,7 +16,7 @@ namespace rush::ast {
 }
 
 namespace rush::ast::exprs {
-   std::unique_ptr<invocation_expression> invocation(
+   std::unique_ptr<invocation_expression> call(
       std::unique_ptr<ast::expression> callable,
       std::unique_ptr<ast::argument_list> args);
 }
@@ -25,7 +25,7 @@ namespace rush::ast {
 	class invocation_expression : public expression {
       struct factory_tag_t {};
 
-      friend std::unique_ptr<invocation_expression> exprs::invocation(
+      friend std::unique_ptr<invocation_expression> exprs::call(
          std::unique_ptr<ast::expression> callable,
          std::unique_ptr<ast::argument_list> args);
 
@@ -56,14 +56,10 @@ namespace rush::ast {
       std::unique_ptr<ast::expression> _callable;
       std::unique_ptr<ast::argument_list> _args;
    };
-
-	namespace exprs {
-		std::unique_ptr<invocation_expression> call(std::string name);
-	}
 }
 
 namespace rush::ast::exprs {
-   inline std::unique_ptr<invocation_expression> invocation(
+   inline std::unique_ptr<invocation_expression> call(
       std::unique_ptr<ast::expression> callable,
       std::unique_ptr<ast::argument_list> args) {
          return std::make_unique<invocation_expression>(

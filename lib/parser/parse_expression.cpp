@@ -294,7 +294,7 @@ namespace rush {
       assert(peek_skip_indent().is(symbols::left_parenthesis) && "expected ternary expression sequence.");
 
       auto args = parse_argument_list();
-		return exprs::invocation(
+		return exprs::call(
          std::move(fn),
          std::move(args));
    }
