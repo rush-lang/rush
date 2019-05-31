@@ -29,11 +29,9 @@ namespace rush {
 		auto expr = parse_primary_expr();
       if (!expr) return nullptr;
 
-      if (is_unary_postfix_op(peek_skip_indent()))
+      auto tok = peek_skip_indent();
+      if (is_unary_postfix_op(tok))
          expr = parse_unary_postfix_expr(std::move(expr));
-
-		if (peek_skip_indent().is(symbols::left_parenthesis))
-			expr = parse_invocation_expr(std::move(expr));
 
 		if (is_binary_op(peek_skip_indent()))
 			expr = parse_binary_expr(std::move(expr));
@@ -148,11 +146,12 @@ namespace rush {
       assert(is_unary_postfix_op(peek_skip_indent()) && "expected unary postfix operator.");
       if (!op) return nullptr;
 
-      auto tok = next_skip_indent();
+      auto tok = peek_skip_indent();
       switch (tok.symbol()) {
       default: return error("unary postfix operator not yet supported.", tok);
-      case symbols::plus_plus: op = exprs::post_increment(std::move(op)); break;
-      case symbols::minus_minus: op = exprs::post_decrement(std::move(op)); break;
+      case symbols::plus_plus: op = exprs::post_increment(std::move(op)); next_skip_indent(); break;
+      case symbols::minus_minus: op = exprs::post_decrement(std::move(op)); next_skip_indent(); break;
+      case symbols::left_parenthesis: op = parse_invocation_expr(std::move(op)); break;
       }
 
       return is_unary_postfix_op(peek_skip_indent())
@@ -267,7 +266,7 @@ namespace rush {
    }
 
    std::unique_ptr<ast::argument_list> parser::parse_argument_list() {
-      assert(peek_skip_indent().is(symbols::left_parenthesis) && "expected ternary expression sequence.");
+      assert(peek_skip_indent().is(symbols::left_parenthesis) && "expected '(' start of argument list.");
 		next_skip_indent(); // consume '(' symbol
 
       if (peek_skip_indent().is(symbols::right_parenthesis)) {

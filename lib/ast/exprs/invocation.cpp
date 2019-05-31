@@ -2,10 +2,8 @@
 #include "rush/ast/types/type.hpp"
 #include "rush/ast/types/builtin.hpp"
 #include "rush/ast/visitor.hpp"
-#include "rush/ast/exprs/identifier.hpp"
-#include "rush/ast/decls/function.hpp"
-#include "rush/ast/decls/constant.hpp"
-#include "rush/ast/decls/variable.hpp"
+#include "rush/ast/expressions.hpp"
+#include "rush/ast/declarations.hpp"
 
 using namespace rush;
 
@@ -18,9 +16,19 @@ public:
       return _result;
    }
 
-   virtual void visit_constant_decl(ast::constant_declaration const& decl) override { _result = decl.type(); }
-   virtual void visit_variable_decl(ast::variable_declaration const& decl) override { _result = decl.type(); }
-   virtual void visit_function_decl(ast::function_declaration const& decl) override { _result = decl.return_type(); }
+   virtual void visit_function_type(ast::function_type const& type) override {
+      // ultimately we're trying to find this.
+      _result = type.return_type();
+   }
+
+   virtual void visit_constant_decl(ast::constant_declaration const& decl) override { decl.type().accept(*this); }
+   virtual void visit_variable_decl(ast::variable_declaration const& decl) override { decl.type().accept(*this); }
+   virtual void visit_function_decl(ast::function_declaration const& decl) override { decl.return_type().accept(*this); }
+
+   virtual void visit_unary_expr(ast::unary_expression const& expr) override { expr.result_type().accept(*this); }
+   virtual void visit_binary_expr(ast::binary_expression const& expr) override { expr.result_type().accept(*this); }
+   virtual void visit_ternary_expr(ast::ternary_expression const& expr) override { expr.result_type().accept(*this); }
+   virtual void visit_invocation_expr(ast::invocation_expression const& expr) override { expr.result_type().accept(*this); }
 
    virtual void visit_identifier_expr(ast::identifier_expression const& expr) override {
       if (!expr.is_unresolved()) { expr.declaration().accept(*this); return; }
