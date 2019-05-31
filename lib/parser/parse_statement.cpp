@@ -35,7 +35,7 @@ namespace rush {
 
       std::vector<std::unique_ptr<ast::statement>> stmts;
       while (peek_with_indent().is_not(symbols::dedent)) {
-         auto stmt = parse_stmt();
+         auto stmt = parse_terminated_stmt();
          if (!stmt) return nullptr;
          stmts.emplace_back(std::move(stmt));
       }
@@ -45,7 +45,7 @@ namespace rush {
    }
 
    std::unique_ptr<ast::statement> parser::parse_block_single_stmt() {
-      auto stmt = parse_stmt();
+      auto stmt = parse_terminated_stmt();
       if (!stmt) return nullptr;
 
       std::vector<std::unique_ptr<ast::statement>> stmts;
@@ -141,35 +141,29 @@ namespace rush {
       assert(peek_skip_indent().is(keywords::return_) && "expected 'return' keyword.");
       next_skip_indent(); // consume 'return' keyword.
 
-      // hack: check for possible empty return statements
-      // by predicting the possibility that the next token
-      // starts an expression.
-      auto tok = peek_with_indent();
-      if (tok.is(symbols::dedent)) {
+      if (peek_skip_indent().is(symbols::semi_colon))
          return ast::stmts::return_();
-      } else if (tok.is_keyword()) {
-         switch (tok.keyword()) {
-         default: return ast::stmts::return_();
-         case keywords::new_:
-         case keywords::nil_:
-         case keywords::this_:
-         case keywords::base_:
-         case keywords::true_:
-         case keywords::false_:
-         case keywords::sizeof_:
-         case keywords::switch_:
-         case keywords::typeof_: break;
-         }
-      }
 
       auto expr = parse_expr();
-      if (!expr) return nullptr;
+      return (expr)
+         ? ast::stmts::return_(std::move(expr))
+         : nullptr;
+   }
 
-      return ast::stmts::return_(std::move(expr));
+   std::unique_ptr<ast::statement> parser::parse_terminated_stmt() {
+      // using a semi-colon cuts an expression short
+      // and helps to dis-ambiguate between statements.
+      auto tok = peek_skip_indent();
+      while (tok.is(symbols::semi_colon)) {
+         next_skip_indent();
+         tok = peek_skip_indent();
+      }
+
+      return terminated(&parser::parse_stmt);
    }
 
    std::unique_ptr<ast::statement> parser::parse_pass_stmt() {
-      assert(peek_skip_indent().is(keywords::pass_) && "expected 'pass' keyword.");
+      assert(peek_skip_indent().is(keywords::pass_) && "expected the 'pass' keyword.");
       next_skip_indent(); // consume 'pass' keyword.
 
       return ast::stmts::pass();
@@ -227,25 +221,28 @@ namespace rush {
    }
 
    std::pair<std::unique_ptr<ast::statement>, bool> parser::parse_simple_stmt(keyword_token_t kw) {
+      std::unique_ptr<ast::statement> stmt;
+
       switch (kw) {
       default: return { nullptr, false };
+      case keywords::pass_: stmt = parse_pass_stmt(); break;
+      case keywords::break_: stmt = parse_break_stmt(); break;
+      case keywords::yield_: stmt = parse_yield_stmt(); break;
+      case keywords::return_: stmt = parse_return_stmt(); break;
+      case keywords::continue_: stmt = parse_continue_stmt(); break;
+      case keywords::throw_: stmt = parse_throw_stmt(); break;
       case keywords::let_: {
          auto decl = parse_constant_decl();
-         if (!decl) return { nullptr, true };
-         return { ast::stmts::decl_stmt(std::move(decl)), true };
+         if (decl) stmt = ast::stmts::decl_stmt(std::move(decl));
+         break;
       }
       case keywords::var_: {
          auto decl = parse_variable_decl();
-         if (!decl) return { nullptr, true };
-         return { ast::stmts::decl_stmt(std::move(decl)), true };
-      }
-      case keywords::pass_: return { parse_pass_stmt(), true };
-      case keywords::break_: return { parse_break_stmt(), true };
-      case keywords::yield_: return { parse_yield_stmt(), true };
-      case keywords::return_: return { parse_return_stmt(), true };
-      case keywords::continue_: return { parse_continue_stmt(), true };
-      case keywords::throw_: return { parse_throw_stmt(), true };
-      }
+         if (decl) stmt = ast::stmts::decl_stmt(std::move(decl));
+         break;
+      }}
+
+      return { std::move(stmt), true };
    }
 
    std::pair<std::unique_ptr<ast::statement>, bool> parser::parse_compound_stmt(keyword_token_t kw) {

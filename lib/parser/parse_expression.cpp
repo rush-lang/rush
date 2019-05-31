@@ -19,19 +19,9 @@ namespace rush {
 			? binary_precedence(lhs) - binary_precedence(rhs) : 0;
 	}
 
-   std::unique_ptr<ast::expression> parser::parse_initializer() {
-      assert(peek_skip_indent().is(symbols::equals) && "expected token to be '='");
-      next_skip_indent(); // consume '=' token.
-		return parse_expr();
-	}
-
 	std::unique_ptr<ast::expression> parser::parse_expr() {
 		auto expr = parse_primary_expr();
       if (!expr) return nullptr;
-
-      auto tok = peek_skip_indent();
-      if (is_unary_postfix_op(tok))
-         expr = parse_unary_postfix_expr(std::move(expr));
 
 		if (is_binary_op(peek_skip_indent()))
 			expr = parse_binary_expr(std::move(expr));
@@ -57,27 +47,39 @@ namespace rush {
 		return error("expected a closing \')\' before \'{}\'", tok);
 	}
 
+   std::unique_ptr<ast::expression> parser::parse_terminated_expr() {
+      return !peek_skip_indent().is(symbols::semi_colon)
+         ? terminated(&parser::parse_expr)
+         : nullptr;
+   }
+
 	std::unique_ptr<ast::expression> parser::parse_primary_expr() {
 		auto tok = peek_skip_indent();
+
+      std::unique_ptr<ast::expression> expr;
 		switch (tok.type()) {
 		default: return error("expected primary expression, but found '{}'", tok);
-		case lexical_token_type::identifier: return parse_identifier_expr();
-		case lexical_token_type::string_literal: return parse_string_expr();
-		case lexical_token_type::integer_literal: return parse_integer_expr();
-		case lexical_token_type::floating_literal: return parse_floating_expr();
+		case lexical_token_type::identifier: expr = parse_identifier_expr(); break;
+		case lexical_token_type::string_literal: expr = parse_string_expr(); break;
+		case lexical_token_type::integer_literal: expr = parse_integer_expr(); break;
+		case lexical_token_type::floating_literal: expr = parse_floating_expr(); break;
 		case lexical_token_type::keyword:
 			switch (tok.keyword()) {
 			default: return error("unexpected keyword '{}' parsing primary expression", tok);
-			case keywords::true_: next_skip_indent(); return exprs::literal(true);
-			case keywords::false_: next_skip_indent(); return exprs::literal(false);
-			}
+			case keywords::true_: next_skip_indent(); expr = exprs::literal(true); break;
+			case keywords::false_: next_skip_indent(); expr = exprs::literal(false); break;
+			} break;
 		case lexical_token_type::symbol:
-         if (is_unary_prefix_op(tok)) return parse_unary_expr();
-			switch (tok.symbol()) {
-			default: return error("unexpected symbol '{}' parsing primary expression", tok);
-			case symbols::left_parenthesis: return parse_paren_expr();
-			}
+         if (is_unary_prefix_op(tok)) expr = parse_unary_expr();
+         else switch (tok.symbol()) {
+         case symbols::left_parenthesis: expr = parse_paren_expr(); break;
+         default: return error("unexpected symbol '{}' parsing primary expression", tok);
+         } break;
 		}
+
+      return is_unary_postfix_op(peek_skip_indent())
+         ? parse_unary_postfix_expr(std::move(expr))
+         : std::move(expr);
 	}
 
 	std::unique_ptr<ast::expression> parser::parse_string_expr() {

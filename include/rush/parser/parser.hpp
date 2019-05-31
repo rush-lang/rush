@@ -37,19 +37,17 @@ namespace rush {
 			initialize(lxa);
 
          std::vector<std::unique_ptr<ast::declaration>> decls;
-         while (peek_with_indent().is_not(symbols::eof)) {
+         while (peek_skip_indent().is_not(symbols::eof)) {
+            // ignore stray semi-colons
+            if (peek_skip_indent().is(symbols::semi_colon)) {
+               next_skip_indent();
+               continue;
+            }
+
 			   auto decl = parse_toplevel_decl();
             if (!decl) return nullptr;
-
-            if (decl == nullptr) {
-               // parse top-level expression.
-			      auto expr = parse_expr();
-               if (!expr) return nullptr;
-
-            } else {
                decls.push_back(std::move(decl));
             }
-         }
 
          return !decls.empty()
             ? ast::decls::block(std::move(decls))
@@ -162,6 +160,7 @@ namespace rush {
 
 		// statements.
       std::unique_ptr<ast::statement> parse_stmt();
+      std::unique_ptr<ast::statement> parse_terminated_stmt();
 
       std::unique_ptr<ast::statement> parse_pass_stmt();
       std::unique_ptr<ast::statement> parse_throw_stmt();
@@ -187,6 +186,7 @@ namespace rush {
 		// expressions.
 		std::unique_ptr<ast::expression> parse_expr();
 		std::unique_ptr<ast::expression> parse_paren_expr();
+      std::unique_ptr<ast::expression> parse_terminated_expr();
 
 		std::unique_ptr<ast::expression> parse_primary_expr();
 
@@ -204,7 +204,18 @@ namespace rush {
       std::unique_ptr<ast::expression> parse_invocation_expr(std::unique_ptr<ast::expression> callable);
       std::unique_ptr<ast::argument_list> parse_argument_list();
 
-		std::unique_ptr<ast::expression> parse_initializer();
+      template <typename TNode>
+      std::unique_ptr<TNode> terminated(std::unique_ptr<TNode>(parser::*parse_fn)()) {
+         auto node = (this->*parse_fn)();
+         auto tok = peek_skip_indent();
+         if (!tok.is(symbols::semi_colon))
+            return error("expected ';'", tok);
+
+         while (peek_with_indent().is(symbols::semi_colon))
+            next_with_indent();
+
+         return std::move(node);
+      }
 	};
 }
 

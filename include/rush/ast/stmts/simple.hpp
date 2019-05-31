@@ -51,25 +51,25 @@ namespace rush::ast::stmts {
 
    inline std::unique_ptr<ast::simple_statement> throw_() {
       return std::make_unique<ast::simple_statement>(
-         ast::statement_kind::pass,
+         ast::statement_kind::throw_,
          ast::simple_statement::factory_tag_t {});
    }
 
    inline std::unique_ptr<ast::simple_statement> break_() {
       return std::make_unique<ast::simple_statement>(
-         ast::statement_kind::pass,
+         ast::statement_kind::break_,
          ast::simple_statement::factory_tag_t {});
    }
 
    inline std::unique_ptr<ast::simple_statement> return_() {
       return std::make_unique<ast::simple_statement>(
-         ast::statement_kind::pass,
+         ast::statement_kind::return_,
          ast::simple_statement::factory_tag_t {});
    }
 
    inline std::unique_ptr<ast::simple_statement> continue_() {
       return std::make_unique<ast::simple_statement>(
-         ast::statement_kind::pass,
+         ast::statement_kind::continue_,
          ast::simple_statement::factory_tag_t {});
    }
 }

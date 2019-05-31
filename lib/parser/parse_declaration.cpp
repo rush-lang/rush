@@ -13,8 +13,8 @@ namespace rush {
 		auto tok = peek_skip_indent();
       if (tok.is_keyword()) {
          switch (tok.keyword()) {
-         case keywords::let_: return parse_constant_decl();
-         case keywords::var_: return parse_variable_decl();
+         case keywords::let_: return terminated(&parser::parse_constant_decl);
+         case keywords::var_: return terminated(&parser::parse_variable_decl);
          case keywords::func_: return parse_function_decl();
          default: return error("unsupported '{}'", tok);
          }
@@ -43,11 +43,11 @@ namespace rush {
             }
 			}
 
-			if (!peek_skip_indent().is(symbols::equals)) {
+			if (!peek_skip_indent().is(symbols::equals))
 				return error("expected initializer for {1} '{2}', before '{0}'.", peek_skip_indent(), storage_type, ident);
-			}
+         next_skip_indent(); // consume '=' token.
 
-			auto init = parse_initializer();
+			auto init = parse_expr();
 			if (!init) return nullptr;
 
 			auto decl = type != std::nullopt
@@ -189,12 +189,22 @@ namespace rush {
 		assert(peek_skip_indent().is(symbols::arrow) && "expected an '=>' symbol.");
       next_skip_indent();
 
-      std::unique_ptr<ast::statement> stmt;
-      if (peek_skip_indent().is(keywords::pass_)) {
-         next_skip_indent();
-         stmt = stmts::pass();
-      } else {
-         auto expr = parse_expr();
+      auto stmt = std::unique_ptr<ast::statement> {};
+
+      auto tok = peek_skip_indent();
+      if (tok.is_keyword()) {
+         switch (tok.keyword()) {
+         default: break;
+         case keywords::pass_:
+         case keywords::throw_:
+            stmt = parse_terminated_stmt();
+            if (!stmt) return nullptr;
+            break;
+         }
+      }
+
+      if (!stmt) {
+         auto expr = parse_terminated_expr();
          if (!expr) return nullptr;
          stmt = stmts::return_(std::move(expr));
       }
