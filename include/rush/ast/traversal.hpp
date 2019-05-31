@@ -43,8 +43,8 @@ namespace rush::ast {
       }
 
       virtual void visit_invocation_expr(ast::invocation_expression const& expr) override {
-         accept(expr.arguments());
          accept(expr.callable());
+         accept(expr.arguments());
       }
 
 #     define RUSH_TRAVERSAL_RESULT_STMT_FUNC_IMPLS
