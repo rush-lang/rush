@@ -23,7 +23,7 @@ namespace rush::ast {
          return resolve_type();
       }
 
-		expression* initializer() const noexcept {
+		ast::expression* initializer() const noexcept {
 			return _init.get();
 		}
 

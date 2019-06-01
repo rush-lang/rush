@@ -50,9 +50,8 @@ namespace rush::ast {
 		inline std::unique_ptr<constant_declaration> constant(
 			std::string name,
 			ast::type_ref type,
-			std::unique_ptr<expression> init
+			std::unique_ptr<expression> init = nullptr
 		) {
-			if (!init) throw std::invalid_argument("constant declaration requires an initializer.");
 			return std::make_unique<constant_declaration>(
 				std::move(name),
 				std::move(type),
@@ -64,6 +63,7 @@ namespace rush::ast {
 			std::string name,
 			std::unique_ptr<expression> init
 		) {
+			if (!init) throw std::invalid_argument("un-typed constant declaration requires an initializer.");
 			return constant(
 				std::move(name),
 				ast::types::undefined,

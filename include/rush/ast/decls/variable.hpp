@@ -49,7 +49,7 @@ namespace rush::ast {
 		inline std::unique_ptr<variable_declaration> variable(
 			std::string name,
 			ast::type_ref type,
-			std::unique_ptr<expression> init
+			std::unique_ptr<expression> init = nullptr
 		) {
 			return std::make_unique<variable_declaration>(
 				std::move(name),

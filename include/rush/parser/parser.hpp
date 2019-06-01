@@ -6,6 +6,7 @@
 #include "fmt/format.h"
 
 #include "rush/core/iterator.hpp"
+#include "rush/core/extras.hpp"
 
 #include "rush/ast/types/type.hpp"
 #include "rush/ast/types/builtin.hpp"
@@ -46,8 +47,8 @@ namespace rush {
 
 			   auto decl = parse_toplevel_decl();
             if (!decl) return nullptr;
-               decls.push_back(std::move(decl));
-            }
+            decls.push_back(std::move(decl));
+         }
 
          return !decls.empty()
             ? ast::decls::block(std::move(decls))
@@ -144,9 +145,8 @@ namespace rush {
 		// declarations.
       std::unique_ptr<ast::declaration> parse_toplevel_decl();
 
-		template <typename DeclT>
-		std::unique_ptr<DeclT> _parse_storage_decl(std::string,
-			std::unique_ptr<DeclT> (*)(std::string, ast::type_ref, std::unique_ptr<ast::expression>));
+		std::unique_ptr<ast::declaration> _parse_storage_decl(std::string,
+			rush::function_ref<std::unique_ptr<ast::declaration>(std::string, ast::type_ref, std::unique_ptr<ast::expression>)>);
 
 		std::unique_ptr<ast::declaration> parse_constant_decl();
 		std::unique_ptr<ast::declaration> parse_variable_decl();

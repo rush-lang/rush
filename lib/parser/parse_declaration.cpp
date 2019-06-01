@@ -23,9 +23,8 @@ namespace rush {
       return error("unsupported '{}'", tok);
    }
 
-	template <typename DeclT>
-	std::unique_ptr<DeclT> parser::_parse_storage_decl(std::string storage_type,
-		std::unique_ptr<DeclT> (*fptr)(std::string, ast::type_ref, std::unique_ptr<ast::expression>)
+	std::unique_ptr<ast::declaration> parser::_parse_storage_decl(std::string storage_type,
+		rush::function_ref<std::unique_ptr<ast::declaration>(std::string, ast::type_ref, std::unique_ptr<ast::expression>)> fn
 	) {
 		if (peek_skip_indent().is(symbols::left_bracket)) {
 			// parse_destructure_pattern.
@@ -34,8 +33,8 @@ namespace rush {
 
 		if (peek_skip_indent().is_identifier()) {
 			auto ident = next_skip_indent();
-			std::optional<ast::type_ref> type;
 
+			auto type = std::optional<ast::type_ref> {};
 			if (peek_skip_indent().is(symbols::colon)) {
 				type = parse_type_annotation();
             if (type == std::nullopt) {
@@ -43,25 +42,21 @@ namespace rush {
             }
 			}
 
-			if (!peek_skip_indent().is(symbols::equals))
-				return error("expected initializer for {1} '{2}', before '{0}'.", peek_skip_indent(), storage_type, ident);
-         next_skip_indent(); // consume '=' token.
+         auto init = std::unique_ptr<ast::expression> {};
+         if (peek_skip_indent().is(symbols::equals)) {
+            next_skip_indent();
+            if (!(init = parse_expr())) return nullptr;
+         } else if (type == std::nullopt) {
+            return error("{1} declaration '{0}' requires either a type-annotation or intializer.", ident, storage_type);
+         }
 
-			auto init = parse_expr();
-			if (!init) return nullptr;
 
-			auto decl = type != std::nullopt
-				? (*fptr)(ident.text(), *type, std::move(init))
-				: (*fptr)(ident.text(), init->result_type(), std::move(init));
+         auto decl = fn(ident.text(), *type, std::move(init));
          if (!decl) return nullptr;
 
          if (!_scope.insert({ *decl })) {
-            auto existing_decl = _scope.current().lookup_local(ident.text());
-            switch (existing_decl.declaration()->kind()) {
-            default: assert("unreachable");
-            case ast::declaration_kind::constant: return error("local constant named '{}' is already defined in this scope.", ident);
-            case ast::declaration_kind::variable: return error("local variable named '{}' is already defined in this scope.", ident);
-            }
+            error("local {1} named '{0}' is already defined in this scope.", ident, storage_type);
+            // return error(std::move(decl), "local {1} named '{0}' is already defined in this scope.", ident, storage);
          }
 
          return std::move(decl);
@@ -73,21 +68,23 @@ namespace rush {
 	std::unique_ptr<ast::declaration> parser::parse_constant_decl() {
 		assert(peek_skip_indent().is(keywords::let_) && "expected the 'let' keyword.");
 		next_skip_indent(); // consume let token
-		using function_type = std::unique_ptr<ast::constant_declaration>(*)(
-			std::string name,
-			ast::type_ref type,
-			std::unique_ptr<ast::expression> init);
-		return _parse_storage_decl("constant", static_cast<function_type>(&decls::constant));
+		return _parse_storage_decl("constant", [](
+         std::string name,
+         ast::type_ref type,
+         std::unique_ptr<ast::expression> init) {
+            return decls::constant(std::move(name), std::move(type), std::move(init));
+         });
 	}
 
 	std::unique_ptr<ast::declaration> parser::parse_variable_decl() {
 		assert(peek_skip_indent().is(keywords::var_) && "expected the 'var' keyword.");
 		next_skip_indent(); // consume var token
-		using function_type = std::unique_ptr<ast::variable_declaration>(*)(
-			std::string name,
-			ast::type_ref type,
-			std::unique_ptr<ast::expression> init);
-		return _parse_storage_decl("variable", static_cast<function_type>(&decls::variable));
+		return _parse_storage_decl("variable", [](
+         std::string name,
+         ast::type_ref type,
+         std::unique_ptr<ast::expression> init) {
+            return decls::variable(std::move(name), std::move(type), std::move(init));
+         });
 	}
 
 	std::unique_ptr<ast::parameter_list> parser::parse_parameter_list() {
