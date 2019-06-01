@@ -144,21 +144,21 @@ namespace rush {
       }
    }
 
-   std::unique_ptr<ast::expression> parser::parse_unary_postfix_expr(std::unique_ptr<ast::expression> op) {
+   std::unique_ptr<ast::expression> parser::parse_unary_postfix_expr(std::unique_ptr<ast::expression> operand) {
       assert(is_unary_postfix_op(peek_skip_indent()) && "expected unary postfix operator.");
-      if (!op) return nullptr;
+      if (!operand) return nullptr;
 
       auto tok = peek_skip_indent();
       switch (tok.symbol()) {
       default: return error("unary postfix operator not yet supported.", tok);
-      case symbols::plus_plus: op = exprs::post_increment(std::move(op)); next_skip_indent(); break;
-      case symbols::minus_minus: op = exprs::post_decrement(std::move(op)); next_skip_indent(); break;
-      case symbols::left_parenthesis: op = parse_invocation_expr(std::move(op)); break;
+      case symbols::plus_plus: operand = exprs::post_increment(std::move(operand)); next_skip_indent(); break;
+      case symbols::minus_minus: operand = exprs::post_decrement(std::move(operand)); next_skip_indent(); break;
+      case symbols::left_parenthesis: operand = parse_invocation_expr(std::move(operand)); break;
       }
 
       return is_unary_postfix_op(peek_skip_indent())
-         ? parse_unary_postfix_expr(std::move(op))
-         : std::move(op);
+         ? parse_unary_postfix_expr(std::move(operand))
+         : std::move(operand);
    }
 
 	std::unique_ptr<ast::expression> parser::parse_binary_expr(std::unique_ptr<ast::expression> lhs) {
@@ -295,12 +295,12 @@ namespace rush {
    }
 
 
-   std::unique_ptr<ast::expression> parser::parse_invocation_expr(std::unique_ptr<ast::expression> fn) {
+   std::unique_ptr<ast::expression> parser::parse_invocation_expr(std::unique_ptr<ast::expression> expr) {
       assert(peek_skip_indent().is(symbols::left_parenthesis) && "expected ternary expression sequence.");
 
       auto args = parse_argument_list();
 		return exprs::call(
-         std::move(fn),
+         std::move(expr),
          std::move(args));
    }
 }

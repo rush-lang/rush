@@ -201,7 +201,7 @@ namespace rush {
 		std::unique_ptr<ast::expression> parse_binary_expr_rhs();
 
       std::unique_ptr<ast::expression> parse_ternary_expr(std::unique_ptr<ast::expression> cond);
-      std::unique_ptr<ast::expression> parse_invocation_expr(std::unique_ptr<ast::expression> callable);
+      std::unique_ptr<ast::expression> parse_invocation_expr(std::unique_ptr<ast::expression> expr);
       std::unique_ptr<ast::argument_list> parse_argument_list();
 
       template <typename TNode>
