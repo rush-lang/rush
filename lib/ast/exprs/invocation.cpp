@@ -23,7 +23,7 @@ public:
 
    virtual void visit_constant_decl(ast::constant_declaration const& decl) override { decl.type().accept(*this); }
    virtual void visit_variable_decl(ast::variable_declaration const& decl) override { decl.type().accept(*this); }
-   virtual void visit_function_decl(ast::function_declaration const& decl) override { decl.return_type().accept(*this); }
+   virtual void visit_function_decl(ast::function_declaration const& decl) override { decl.type().accept(*this); }
 
    virtual void visit_unary_expr(ast::unary_expression const& expr) override { expr.result_type().accept(*this); }
    virtual void visit_binary_expr(ast::binary_expression const& expr) override { expr.result_type().accept(*this); }
