@@ -203,6 +203,9 @@ namespace rush {
       case symbols::double_left_chevron_equals: expr = exprs::compound_left_shift(std::move(lhs), std::move(rhs)); break;
       case symbols::double_right_chevron_equals: expr = exprs::compound_right_shift(std::move(lhs), std::move(rhs)); break;
 
+      // special operators
+      case symbols::ellipses: expr = exprs::range(std::move(lhs), std::move(rhs)); break;
+
       // logical binary operators
 		case symbols::double_pipe: expr = exprs::logical_or(std::move(lhs), std::move(rhs)); break;
 		case symbols::double_ampersand: expr = exprs::logical_and(std::move(lhs), std::move(rhs)); break;
