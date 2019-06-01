@@ -52,7 +52,7 @@ namespace rush::ast {
 			, _current_indent { 0 } {}
 
       virtual void visit_builtin_error_type(ast::builtin_error_type const& type) override {
-         write("<error-type>");
+         write("<error-type: \"{}\">", type.message());
       }
 
       virtual void visit_builtin_void_type(ast::builtin_void_type const& type) override {

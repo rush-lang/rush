@@ -56,10 +56,10 @@ namespace rush {
 	inline std::string to_string(location const& loc) {
 		std::ostringstream oss;
 		if (loc == location::undefined) {
-			oss << "[ln: undefined, col: undefined]";
+			oss << "[line: undefined, col: undefined]";
 		}
 		else {
-			oss << "[ln: " << loc.line()
+			oss << "[line: " << loc.line()
 				<< ", col: " << loc.column() << "]";
 		}
 

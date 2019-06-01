@@ -13,7 +13,7 @@ namespace rush::ast::types {
 	}
 
    std::array<std::unique_ptr<builtin_type>, 20> const _builtin_types = {
-      std::make_unique<builtin_void_type>(),
+      std::make_unique<builtin_error_type>("undefined"),
       std::make_unique<builtin_void_type>(),
       std::make_unique<builtin_bool_type>(),
 	   make_builtin_integral_type(ast::integral_kind::byte, false),
