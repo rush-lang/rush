@@ -50,7 +50,7 @@ namespace rush {
             return error("{1} declaration '{0}' requires either a type-annotation or intializer.", ident, storage_type);
          }
 
-
+         type = (type == std::nullopt) ? ast::types::undefined : type;
          auto decl = fn(ident.text(), *type, std::move(init));
          if (!decl) return nullptr;
 
