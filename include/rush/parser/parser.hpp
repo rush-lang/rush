@@ -160,7 +160,6 @@ namespace rush {
 
 		// statements.
       std::unique_ptr<ast::statement> parse_stmt();
-      std::unique_ptr<ast::statement> parse_terminated_stmt();
 
       std::unique_ptr<ast::statement> parse_pass_stmt();
       std::unique_ptr<ast::statement> parse_throw_stmt();
@@ -186,8 +185,6 @@ namespace rush {
 		// expressions.
 		std::unique_ptr<ast::expression> parse_expr();
 		std::unique_ptr<ast::expression> parse_paren_expr();
-      std::unique_ptr<ast::expression> parse_terminated_expr();
-
 		std::unique_ptr<ast::expression> parse_primary_expr();
 
 		std::unique_ptr<ast::expression> parse_string_expr();
@@ -207,12 +204,14 @@ namespace rush {
       template <typename TNode>
       std::unique_ptr<TNode> terminated(std::unique_ptr<TNode>(parser::*parse_fn)()) {
          auto node = (this->*parse_fn)();
-         auto tok = peek_skip_indent();
-         if (!tok.is(symbols::semi_colon))
+         auto tok = peek_with_indent();
+         if (tok.is_not(symbols::semi_colon))
             return error("expected ';'", tok);
 
-         while (peek_with_indent().is(symbols::semi_colon))
+         while (tok.is(symbols::semi_colon)) {
             next_with_indent();
+            tok = peek_with_indent();
+         }
 
          return std::move(node);
       }

@@ -194,14 +194,14 @@ namespace rush {
          default: break;
          case keywords::pass_:
          case keywords::throw_:
-            stmt = parse_terminated_stmt();
+            stmt = parse_stmt();
             if (!stmt) return nullptr;
             break;
          }
       }
 
       if (!stmt) {
-         auto expr = parse_terminated_expr();
+         auto expr = terminated(&parser::parse_expr);
          if (!expr) return nullptr;
          stmt = stmts::return_(std::move(expr));
       }

@@ -47,12 +47,6 @@ namespace rush {
 		return error("expected a closing \')\' before \'{}\'", tok);
 	}
 
-   std::unique_ptr<ast::expression> parser::parse_terminated_expr() {
-      return !peek_skip_indent().is(symbols::semi_colon)
-         ? terminated(&parser::parse_expr)
-         : nullptr;
-   }
-
 	std::unique_ptr<ast::expression> parser::parse_primary_expr() {
 		auto tok = peek_skip_indent();
 

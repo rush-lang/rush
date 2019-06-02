@@ -23,7 +23,7 @@ namespace rush {
          }
       }
 
-      auto expr = parse_expr();
+      auto expr = terminated(&parser::parse_expr);
       return (expr != nullptr)
          ? ast::stmts::expr_stmt(std::move(expr))
          : nullptr;
@@ -34,8 +34,16 @@ namespace rush {
       next_with_indent(); // consume indentation.
 
       std::vector<std::unique_ptr<ast::statement>> stmts;
-      while (peek_with_indent().is_not(symbols::dedent)) {
-         auto stmt = parse_terminated_stmt();
+      auto tok = peek_with_indent();
+      while ((tok = peek_with_indent()).is_not(symbols::dedent)) {
+         // using a semi-colon cuts an expression short
+         // and helps to dis-ambiguate between statements.
+         if (tok.is(symbols::semi_colon)) {
+            next_with_indent();
+            continue;
+         }
+
+         auto stmt = parse_stmt();
          if (!stmt) return nullptr;
          stmts.emplace_back(std::move(stmt));
       }
@@ -45,11 +53,20 @@ namespace rush {
    }
 
    std::unique_ptr<ast::statement> parser::parse_inline_stmt() {
-      auto stmt = parse_terminated_stmt();
-      if (!stmt) return nullptr;
+      auto stmts = std::vector<std::unique_ptr<ast::statement>> {};
 
-      std::vector<std::unique_ptr<ast::statement>> stmts;
-      stmts.emplace_back(std::move(stmt));
+      // using a semi-colon cuts an expression short
+      // and helps to dis-ambiguate between statements.
+      auto tok = peek_with_indent();
+      if (tok.is_not(symbols::semi_colon)) {
+         auto stmt = parse_stmt();
+         if (!stmt) return nullptr;
+         stmts.emplace_back(std::move(stmt));
+      } else while (tok.is(symbols::semi_colon)) {
+         next_with_indent();
+         tok = peek_with_indent();
+      }
+
       return ast::stmts::block(std::move(stmts));
    }
 
@@ -150,18 +167,6 @@ namespace rush {
          : nullptr;
    }
 
-   std::unique_ptr<ast::statement> parser::parse_terminated_stmt() {
-      // using a semi-colon cuts an expression short
-      // and helps to dis-ambiguate between statements.
-      auto tok = peek_skip_indent();
-      while (tok.is(symbols::semi_colon)) {
-         next_skip_indent();
-         tok = peek_skip_indent();
-      }
-
-      return terminated(&parser::parse_stmt);
-   }
-
    std::unique_ptr<ast::statement> parser::parse_pass_stmt() {
       assert(peek_skip_indent().is(keywords::pass_) && "expected the 'pass' keyword.");
       next_skip_indent(); // consume 'pass' keyword.
@@ -225,19 +230,19 @@ namespace rush {
 
       switch (kw) {
       default: return { nullptr, false };
-      case keywords::pass_: stmt = parse_pass_stmt(); break;
-      case keywords::break_: stmt = parse_break_stmt(); break;
-      case keywords::yield_: stmt = parse_yield_stmt(); break;
-      case keywords::return_: stmt = parse_return_stmt(); break;
-      case keywords::continue_: stmt = parse_continue_stmt(); break;
-      case keywords::throw_: stmt = parse_throw_stmt(); break;
+      case keywords::pass_: stmt = terminated(&parser::parse_pass_stmt); break;
+      case keywords::break_: stmt = terminated(&parser::parse_break_stmt); break;
+      case keywords::yield_: stmt = terminated(&parser::parse_yield_stmt); break;
+      case keywords::return_: stmt = terminated(&parser::parse_return_stmt); break;
+      case keywords::continue_: stmt = terminated(&parser::parse_continue_stmt); break;
+      case keywords::throw_: stmt = terminated(&parser::parse_throw_stmt); break;
       case keywords::let_: {
-         auto decl = parse_constant_decl();
+         auto decl = terminated(&parser::parse_constant_decl);
          if (decl) stmt = ast::stmts::decl_stmt(std::move(decl));
          break;
       }
       case keywords::var_: {
-         auto decl = parse_variable_decl();
+         auto decl = terminated(&parser::parse_variable_decl);
          if (decl) stmt = ast::stmts::decl_stmt(std::move(decl));
          break;
       }}
