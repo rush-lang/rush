@@ -44,7 +44,7 @@ namespace rush {
       return ast::stmts::block(std::move(stmts));
    }
 
-   std::unique_ptr<ast::statement> parser::parse_block_single_stmt() {
+   std::unique_ptr<ast::statement> parser::parse_inline_stmt() {
       auto stmt = parse_terminated_stmt();
       if (!stmt) return nullptr;
 
@@ -67,7 +67,7 @@ namespace rush {
       _scope.push(scope_kind::block);
       auto then = (peek_with_indent().is(symbols::indent))
          ? parse_block_stmt()
-         : parse_block_single_stmt();
+         : parse_inline_stmt();
       _scope.pop();
 
       if (!peek_skip_indent().is(keywords::else_)) {
@@ -99,7 +99,7 @@ namespace rush {
          _scope.push(scope_kind::block);
          auto else_ = (peek_with_indent().is(symbols::indent))
             ? parse_block_stmt()
-            : parse_block_single_stmt();
+            : parse_inline_stmt();
          _scope.pop();
 
          return std::move(else_);
@@ -129,7 +129,7 @@ namespace rush {
       _scope.push(scope_kind::block);
       auto then = (peek_with_indent().is(symbols::indent))
          ? parse_block_stmt()
-         : parse_block_single_stmt();
+         : parse_inline_stmt();
       _scope.pop();
 
       return ast::stmts::while_(
