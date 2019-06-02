@@ -55,6 +55,9 @@ namespace rush::ast {
          v.visit_function_type(*this);
       }
 
+      virtual void attach(ast::node&, ast::context& context) override {}
+      virtual void detach(ast::node&, ast::context& context) override {}
+
    private:
       std::unique_ptr<ast::parameter_list> _params;
       mutable ast::type_ref _return_type;

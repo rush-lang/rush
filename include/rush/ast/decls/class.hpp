@@ -9,6 +9,7 @@ namespace rush::ast {
 
    class class_declaration : public ast::declaration {
    public:
+
    };
 } // rush::ast
 

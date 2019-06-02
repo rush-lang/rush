@@ -32,6 +32,9 @@ namespace rush::ast {
 			return _type;
 		}
 
+      virtual void attach(ast::node&, ast::context& context) override {}
+      virtual void detach(ast::node&, ast::context& context) override {}
+
 	protected:
 		template <typename T>
 		T const& value() const {

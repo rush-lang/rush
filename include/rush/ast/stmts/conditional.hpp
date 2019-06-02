@@ -62,6 +62,16 @@ namespace rush::ast {
          v.visit_conditional_stmt(*this);
       }
 
+      virtual void attach(ast::node&, ast::context& context) override {
+         _cond->attach(*this, context);
+         _body->attach(*this, context);
+      }
+
+      virtual void detach(ast::node&, ast::context& context) override {
+         _cond->detach(*this, context);
+         _body->detach(*this, context);
+      }
+
    private:
       std::unique_ptr<expression> _cond;
 		std::unique_ptr<statement> _body;
@@ -97,6 +107,16 @@ namespace rush::ast {
       using node::accept;
       virtual void accept(ast::visitor& v) const override {
          v.visit_alternating_stmt(*this);
+      }
+
+      virtual void attach(ast::node&, ast::context& context) override {
+         _primary->attach(*this, context);
+         _alternate->attach(*this, context);
+      }
+
+      virtual void detach(ast::node&, ast::context& context) override {
+         _primary->detach(*this, context);
+         _alternate->detach(*this, context);
       }
 
    private:

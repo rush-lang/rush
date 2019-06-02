@@ -40,6 +40,16 @@ namespace rush::ast {
 			v.visit_binary_expr(*this);
 		}
 
+      virtual void attach(ast::node&, ast::context& context) override {
+         _left->attach(*this, context);
+         _right->attach(*this, context);
+      }
+
+      virtual void detach(ast::node&, ast::context& context) override {
+         _left->detach(*this, context);
+         _right->detach(*this, context);
+      }
+
 	private:
 		std::unique_ptr<expression> _left;
 		std::unique_ptr<expression> _right;

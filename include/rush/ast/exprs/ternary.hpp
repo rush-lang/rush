@@ -57,6 +57,18 @@ namespace rush::ast {
          v.visit_ternary_expr(*this);
       }
 
+      virtual void attach(ast::node&, ast::context& context) override {
+         _cond->attach(*this, context);
+         _true->attach(*this, context);
+         _false->attach(*this, context);
+      }
+
+      virtual void detach(ast::node&, ast::context& context) override {
+         _cond->detach(*this, context);
+         _true->detach(*this, context);
+         _false->detach(*this, context);
+      }
+
    private:
       std::unique_ptr<ast::expression> _cond;
       std::unique_ptr<ast::expression> _true;

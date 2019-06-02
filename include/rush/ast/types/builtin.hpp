@@ -48,6 +48,9 @@ namespace rush::ast {
       virtual void accept(ast::visitor& v) const override {
 			v.visit_builtin_error_type(*this);
 		}
+
+      virtual void attach(ast::node&, ast::context& context) override {}
+      virtual void detach(ast::node&, ast::context& context) override {}
    private:
       std::string _msg;
    };
@@ -62,6 +65,9 @@ namespace rush::ast {
       virtual void accept(ast::visitor& v) const override {
 			v.visit_builtin_void_type(*this);
 		}
+
+      virtual void attach(ast::node&, ast::context& context) override {}
+      virtual void detach(ast::node&, ast::context& context) override {}
    };
 
    class builtin_bool_type : public builtin_type {
@@ -74,6 +80,9 @@ namespace rush::ast {
       virtual void accept(ast::visitor& v) const override {
 			v.visit_builtin_bool_type(*this);
 		}
+
+      virtual void attach(ast::node&, ast::context& context) override {}
+      virtual void detach(ast::node&, ast::context& context) override {}
    };
 
    class builtin_integral_type : public builtin_type {
@@ -113,6 +122,9 @@ namespace rush::ast {
 			v.visit_builtin_integral_type(*this);
 		}
 
+      virtual void attach(ast::node&, ast::context& context) override {}
+      virtual void detach(ast::node&, ast::context& context) override {}
+
    private:
       integral_kind _kind;
       bool _signed;
@@ -147,6 +159,9 @@ namespace rush::ast {
       virtual void accept(ast::visitor& v) const override {
 			v.visit_builtin_floating_type(*this);
 		}
+
+      virtual void attach(ast::node&, ast::context& context) override {}
+      virtual void detach(ast::node&, ast::context& context) override {}
 
    private:
       floating_kind _fpkind;

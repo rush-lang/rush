@@ -24,6 +24,14 @@ namespace rush::ast {
 			_decl->accept(v);
 		}
 
+      virtual void attach(ast::node& parent, ast::context& context) override {
+         _decl->attach(parent, context);
+      }
+
+      virtual void detach(ast::node& parent, ast::context& context) override {
+         _decl->detach(parent, context);
+      }
+
 	private:
 		std::unique_ptr<declaration> _decl;
 	};

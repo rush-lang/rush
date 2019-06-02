@@ -5,6 +5,7 @@
 
 namespace rush::ast {
 	class visitor;
+   class context;
 
 	class node {
 	public:
@@ -13,6 +14,9 @@ namespace rush::ast {
 
 		virtual void accept(ast::visitor&) const = 0;
 		virtual void accept(ast::visitor&& v) const { accept(v); }
+
+      virtual void attach(ast::node&, ast::context&) = 0;
+      virtual void detach(ast::node&, ast::context&) = 0;
 	};
 } // rush
 

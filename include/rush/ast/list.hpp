@@ -67,6 +67,16 @@ namespace rush::ast::detail {
          std::for_each(_elems.begin(), _elems.end(), [&v](auto& p) { p->accept(v); });
       }
 
+      virtual void attach(ast::node& parent, ast::context& context) override {
+         std::for_each(_elems.begin(), _elems.end(),
+            [&parent, &context](auto& elem) { elem->attach(parent, context); });
+      }
+
+      virtual void detach(ast::node& parent, ast::context& context) override {
+         std::for_each(_elems.begin(), _elems.end(),
+            [&parent, &context](auto& elem) { elem->detach(parent, context); });
+      }
+
 	private:
 		container_type _elems;
 	};

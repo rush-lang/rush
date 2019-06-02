@@ -71,6 +71,16 @@ namespace rush::ast {
          v.visit_function_decl(*this);
       }
 
+      virtual void attach(ast::node&, ast::context& context) override {
+         _type.attach(*this, context);
+         _body->attach(*this, context);
+      }
+
+      virtual void detach(ast::node&, ast::context& context) override {
+         _type.detach(*this, context);
+         _body->detach(*this, context);
+      }
+
 	private:
       std::string _name;
       ast::function_type _type;

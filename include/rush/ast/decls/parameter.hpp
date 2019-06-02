@@ -33,6 +33,9 @@ namespace rush::ast {
          v.visit_parameter_decl(*this);
       }
 
+      virtual void attach(ast::node&, ast::context& context) override {}
+      virtual void detach(ast::node&, ast::context& context) override {}
+
    private:
       std::string _name;
       ast::type_ref _type;

@@ -52,6 +52,16 @@ namespace rush::ast {
          v.visit_invocation_expr(*this);
       }
 
+      virtual void attach(ast::node&, ast::context& context) override {
+         _callable->attach(*this, context);
+         _args->attach(*this, context);
+      }
+
+      virtual void detach(ast::node&, ast::context& context) override {
+         _callable->detach(*this, context);
+         _args->detach(*this, context);
+      }
+
    private:
       std::unique_ptr<ast::expression> _callable;
       std::unique_ptr<ast::argument_list> _args;

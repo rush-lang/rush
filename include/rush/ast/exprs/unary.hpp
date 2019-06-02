@@ -35,6 +35,14 @@ namespace rush::ast {
 			v.visit_unary_expr(*this);
       }
 
+      virtual void attach(ast::node&, ast::context& context) override {
+         _operand->attach(*this, context);
+      }
+
+      virtual void detach(ast::node&, ast::context& context) override {
+         _operand->detach(*this, context);
+      }
+
 	private:
 		std::unique_ptr<expression> _operand;
 		unary_operator _opkind;

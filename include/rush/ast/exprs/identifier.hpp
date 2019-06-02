@@ -56,6 +56,9 @@ namespace rush::ast {
 			v.visit_identifier_expr(*this);
 		}
 
+      virtual void attach(ast::node&, ast::context& context) override {}
+      virtual void detach(ast::node&, ast::context& context) override {}
+
 	private:
    	ast::identifier _ident;
 	};

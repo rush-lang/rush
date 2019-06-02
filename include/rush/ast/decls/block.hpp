@@ -20,6 +20,16 @@ namespace rush::ast {
             [&v](auto& decl) { decl->accept(v); });
       }
 
+      virtual void attach(ast::node&, ast::context& context) override {
+         std::for_each(_decls.begin(), _decls.end(),
+            [this, &context](auto& decl) { decl->attach(*this, context); });
+      }
+
+      virtual void detach(ast::node&, ast::context& context) override {
+         std::for_each(_decls.begin(), _decls.end(),
+            [this, &context](auto& decl) { decl->detach(*this, context); });
+      }
+
    private:
       std::vector<std::unique_ptr<ast::declaration>> _decls;
    };

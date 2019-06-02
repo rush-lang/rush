@@ -33,7 +33,6 @@ namespace rush::ast::detail {
 
 		operator std::unique_ptr<statement>() && {
 			return std::move(_stmt);
-			// return std::visit(wrap_visitor {}, _var);
 		}
 
 	private:

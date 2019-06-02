@@ -16,6 +16,9 @@ namespace rush::ast {
       virtual void accept(ast::visitor& v) const override {
 
       }
+
+      virtual void attach(ast::node&, ast::context& context) override {}
+      virtual void detach(ast::node&, ast::context& context) override {}
    };
 } // rush::ast
 

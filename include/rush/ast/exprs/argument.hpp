@@ -24,6 +24,14 @@ namespace rush::ast {
          expression().accept(v);
       }
 
+      virtual void attach(ast::node&, ast::context& context) override {
+         _expr->attach(*this, context);
+      }
+
+      virtual void detach(ast::node&, ast::context& context) override {
+         _expr->detach(*this, context);
+      }
+
 	private:
 		std::unique_ptr<ast::expression> _expr;
 	};
