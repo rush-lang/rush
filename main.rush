@@ -1,0 +1,7 @@
+func print(a: int) => pass;
+
+func main():
+   print(add(42, 13));
+   return 0;
+
+func add(a, b: int) => a + b;

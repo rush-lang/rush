@@ -3,6 +3,7 @@ add_executable(parser-test
 	parser_test.cpp
    symbol_test.cpp
    scope_test.cpp
+   result_test.cpp
 )
 
 target_include_directories(parser-test PRIVATE ../../../external/catch2/include)

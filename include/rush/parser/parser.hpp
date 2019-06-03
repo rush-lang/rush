@@ -8,20 +8,18 @@
 #include "rush/core/iterator.hpp"
 #include "rush/core/extras.hpp"
 
-#include "rush/ast/types/type.hpp"
-#include "rush/ast/types/builtin.hpp"
+#include "rush/ast/types.hpp"
 #include "rush/ast/expressions.hpp"
 #include "rush/ast/declarations.hpp"
 #include "rush/ast/statements.hpp"
-#include "rush/ast/stmts/block.hpp"
 
 #include "rush/lexer/token.hpp"
 #include "rush/lexer/analysis.hpp"
 
+#include "rush/parser/result.hpp"
 #include "rush/parser/options.hpp"
 #include "rush/parser/symbol.hpp"
 #include "rush/parser/scope.hpp"
-#include "rush/parser/parse.hpp"
 
 #include <optional>
 
@@ -34,10 +32,10 @@ namespace rush {
 		explicit parser(parser_options const& opts)
 			: _opts(opts) {}
 
-		std::unique_ptr<ast::node> parse(lexical_analysis const& lxa) {
+		rush::parse_result<ast::node> parse(lexical_analysis const& lxa) {
 			initialize(lxa);
 
-         std::vector<std::unique_ptr<ast::declaration>> decls;
+         std::vector<rush::parse_result<ast::declaration>> results;
          while (peek_skip_indent().is_not(symbols::eof)) {
             // ignore stray semi-colons
             if (peek_skip_indent().is(symbols::semi_colon)) {
@@ -45,14 +43,15 @@ namespace rush {
                continue;
             }
 
-			   auto decl = parse_toplevel_decl();
-            if (!decl) return nullptr;
-            decls.push_back(std::move(decl));
+			   auto result = parse_toplevel_decl();
+            if (result.failed()) return std::move(result);
+            results.push_back(std::move(result));
          }
 
-         return !decls.empty()
-            ? ast::decls::block(std::move(decls))
-            : nullptr;
+         if (results.empty()) return nullptr;
+         std::vector<std::unique_ptr<ast::declaration>> decls;
+         std::move(results.begin(), results.end(), std::back_inserter(decls));
+         return ast::decls::block(std::move(decls));
 		}
 
 	private:
@@ -80,16 +79,9 @@ namespace rush {
 		}
 
 		template <typename... Args>
-		std::nullptr_t fatal(std::string msg, Args&&... args) {
-			return nullptr;
-		}
-
-		template <typename... Args>
-		std::nullptr_t error(std::string msg, lexical_token const& tok, Args&&... args) {
-			fmt::print("error {}: {}\n",
-				to_string(tok.location()),
-				fmt::format(msg, to_string(tok), format(std::forward<Args>(args))...));
-			return nullptr;
+		rush::syntax_error error(std::string msg, lexical_token const& tok, Args&&... args) {
+			auto fmtmsg = fmt::format(msg, to_string(tok), format(std::forward<Args>(args))...);
+			return { fmtmsg, tok.location() };
 		}
 
 		template <typename... Args>
@@ -143,67 +135,76 @@ namespace rush {
 		std::optional<ast::type_ref> parse_type_annotation();
 
 		// declarations.
-      std::unique_ptr<ast::declaration> parse_toplevel_decl();
+      rush::parse_result<ast::declaration> parse_toplevel_decl();
 
-		std::unique_ptr<ast::declaration> _parse_storage_decl(std::string,
+		rush::parse_result<ast::declaration> _parse_storage_decl(std::string,
 			rush::function_ref<std::unique_ptr<ast::declaration>(std::string, ast::type_ref, std::unique_ptr<ast::expression>)>);
 
-		std::unique_ptr<ast::declaration> parse_constant_decl();
-		std::unique_ptr<ast::declaration> parse_variable_decl();
-		std::unique_ptr<ast::declaration> parse_function_decl();
+		rush::parse_result<ast::declaration> parse_constant_decl();
+		rush::parse_result<ast::declaration> parse_variable_decl();
+		rush::parse_result<ast::declaration> parse_function_decl();
 
-      std::unique_ptr<ast::statement> parse_function_body();
-      std::unique_ptr<ast::statement> parse_function_expr_body();
-      std::unique_ptr<ast::statement> parse_function_stmt_body();
+      rush::parse_result<ast::statement> parse_function_body();
+      rush::parse_result<ast::statement> parse_function_expr_body();
+      rush::parse_result<ast::statement> parse_function_stmt_body();
 
-      std::unique_ptr<ast::parameter_list> parse_parameter_list();
+      rush::parse_result<ast::parameter_list> parse_parameter_list();
 
 		// statements.
-      std::unique_ptr<ast::statement> parse_stmt();
+      rush::parse_result<ast::statement> parse_stmt();
 
-      std::unique_ptr<ast::statement> parse_pass_stmt();
-      std::unique_ptr<ast::statement> parse_throw_stmt();
-      std::unique_ptr<ast::statement> parse_break_stmt();
-      std::unique_ptr<ast::statement> parse_yield_stmt();
-		std::unique_ptr<ast::statement> parse_return_stmt();
-      std::unique_ptr<ast::statement> parse_continue_stmt();
+      rush::parse_result<ast::statement> parse_pass_stmt();
+      rush::parse_result<ast::statement> parse_throw_stmt();
+      rush::parse_result<ast::statement> parse_break_stmt();
+      rush::parse_result<ast::statement> parse_yield_stmt();
+		rush::parse_result<ast::statement> parse_return_stmt();
+      rush::parse_result<ast::statement> parse_continue_stmt();
 
-		std::unique_ptr<ast::statement> parse_if_stmt();
-		std::unique_ptr<ast::statement> parse_for_stmt();
-      std::unique_ptr<ast::statement> parse_else_stmt();
-		std::unique_ptr<ast::statement> parse_while_stmt();
-      std::unique_ptr<ast::statement> parse_switch_stmt();
-      std::unique_ptr<ast::statement> parse_try_stmt();
-      std::unique_ptr<ast::statement> parse_with_stmt();
+		rush::parse_result<ast::statement> parse_if_stmt();
+		rush::parse_result<ast::statement> parse_for_stmt();
+      rush::parse_result<ast::statement> parse_else_stmt();
+		rush::parse_result<ast::statement> parse_while_stmt();
+      rush::parse_result<ast::statement> parse_switch_stmt();
+      rush::parse_result<ast::statement> parse_try_stmt();
+      rush::parse_result<ast::statement> parse_with_stmt();
 
-		std::unique_ptr<ast::statement> parse_block_stmt();
-      std::unique_ptr<ast::statement> parse_inline_stmt();
+		rush::parse_result<ast::statement> parse_block_stmt();
+      rush::parse_result<ast::statement> parse_inline_stmt();
 
-      std::pair<std::unique_ptr<ast::statement>, bool> parse_simple_stmt(keyword_token_t kw);
-      std::pair<std::unique_ptr<ast::statement>, bool> parse_compound_stmt(keyword_token_t kw);
+      std::pair<rush::parse_result<ast::statement>, bool> parse_simple_stmt(keyword_token_t kw);
+      std::pair<rush::parse_result<ast::statement>, bool> parse_compound_stmt(keyword_token_t kw);
 
 		// expressions.
-		std::unique_ptr<ast::expression> parse_expr();
-		std::unique_ptr<ast::expression> parse_paren_expr();
-		std::unique_ptr<ast::expression> parse_primary_expr();
+		rush::parse_result<ast::expression> parse_expr();
+		rush::parse_result<ast::expression> parse_paren_expr();
+		rush::parse_result<ast::expression> parse_primary_expr();
 
-		std::unique_ptr<ast::expression> parse_string_expr();
-		std::unique_ptr<ast::expression> parse_integer_expr();
-		std::unique_ptr<ast::expression> parse_floating_expr();
-		std::unique_ptr<ast::expression> parse_identifier_expr();
+		rush::parse_result<ast::expression> parse_string_expr();
+		rush::parse_result<ast::expression> parse_integer_expr();
+		rush::parse_result<ast::expression> parse_floating_expr();
+		rush::parse_result<ast::expression> parse_identifier_expr();
 
-		std::unique_ptr<ast::expression> parse_unary_expr();
-		std::unique_ptr<ast::expression> parse_unary_postfix_expr(std::unique_ptr<ast::expression> op);
-		std::unique_ptr<ast::expression> parse_binary_expr(std::unique_ptr<ast::expression> lhs);
-		std::unique_ptr<ast::expression> parse_binary_expr_rhs();
+		rush::parse_result<ast::expression> parse_unary_expr();
+		rush::parse_result<ast::expression> parse_unary_postfix_expr(rush::parse_result<ast::expression> op);
+		rush::parse_result<ast::expression> parse_binary_expr(rush::parse_result<ast::expression> lhs);
+		rush::parse_result<ast::expression> parse_binary_expr_rhs();
 
-      std::unique_ptr<ast::expression> parse_ternary_expr(std::unique_ptr<ast::expression> cond);
-      std::unique_ptr<ast::expression> parse_invocation_expr(std::unique_ptr<ast::expression> expr);
-      std::unique_ptr<ast::argument_list> parse_argument_list();
+      rush::parse_result<ast::expression> parse_ternary_expr(rush::parse_result<ast::expression> cond);
+      rush::parse_result<ast::expression> parse_invocation_expr(rush::parse_result<ast::expression> expr);
+      rush::parse_result<ast::argument_list> parse_argument_list();
 
-      template <typename TNode>
-      std::unique_ptr<TNode> terminated(std::unique_ptr<TNode>(parser::*parse_fn)()) {
-         auto node = (this->*parse_fn)();
+      rush::parse_result<ast::declaration> scope_insert(std::unique_ptr<ast::declaration> decl, rush::lexical_token const& ident) {
+         return (!_scope.insert({ *decl }))
+            ? error("the current context already contains a definition for '{}'.", ident)
+            : rush::parse_result<ast::declaration> { std::move(decl) };
+      }
+
+      template <typename NodeT>
+      rush::parse_result<NodeT> terminated(rush::parse_result<NodeT>(parser::*parse_fn)()) {
+         auto result = (this->*parse_fn)();
+         if (result.failed())
+            return std::move(result);
+
          auto tok = peek_with_indent();
          if (tok.is_not(symbols::semi_colon))
             return error("expected ';'", tok);
@@ -213,7 +214,7 @@ namespace rush {
             tok = peek_with_indent();
          }
 
-         return std::move(node);
+         return std::move(result);
       }
 	};
 }

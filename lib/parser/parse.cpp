@@ -1,6 +1,7 @@
 #include "rush/lexer/lex.hpp"
 #include "rush/parser/options.hpp"
 #include "rush/parser/parser.hpp"
+#include "rush/parser/parse.hpp"
 
 #include <iostream>
 #include <sstream>
@@ -12,10 +13,7 @@ namespace rush {
 	syntax_analysis parse(lexical_analysis const& lxa, parser_options const& opts) {
 		auto p = parser { opts };
 		auto root = p.parse(lxa);
-
-		return root != nullptr
-			? syntax_analysis { std::move(root) }
-			: syntax_analysis {};
+      return { std::move(root) };
 	}
 
 	syntax_analysis parse(std::string input) { return parse(input, {}); }

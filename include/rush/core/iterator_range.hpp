@@ -35,6 +35,8 @@ namespace rush {
 			: _first(first)
 			, _last(last) {}
 
+      bool empty() const noexcept { return _first == _last; }
+
 		const_iterator begin() const { return _first; }
 		const_iterator end() const { return _last; }
 
