@@ -12,8 +12,8 @@ namespace rush {
 	class parser_options;
 	class lexical_analysis;
 
-	class parse_result {
-		friend parse_result parse(
+	class syntax_analysis {
+		friend syntax_analysis parse(
 			lexical_analysis const&,
 			parser_options const&);
 
@@ -29,10 +29,10 @@ namespace rush {
 	private:
 		std::unique_ptr<ast::node> _root;
 
-		parse_result()
+		syntax_analysis()
 			: _root(nullptr) {}
 
-		parse_result(std::unique_ptr<ast::node> ast)
+		syntax_analysis(std::unique_ptr<ast::node> ast)
 			: _root(std::move(ast)) {}
 	};
 

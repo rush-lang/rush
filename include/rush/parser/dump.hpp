@@ -11,11 +11,11 @@ namespace rush::ast {
 }
 
 namespace rush {
-   class parse_result;
+   class syntax_analysis;
    class parser_options;
 
    void dump(ast::node const& input, std::ostream& out = std::cout);
-   void dump(rush::parse_result const& input, std::ostream& out = std::cout);
+   void dump(rush::syntax_analysis const& input, std::ostream& out = std::cout);
    void dump(std::string input, std::ostream& out = std::cout);
    void dump(std::istream& input, std::ostream& out = std::cout);
    void dump(std::string input, parser_options const&, std::ostream& out = std::cout);

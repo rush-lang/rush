@@ -22,7 +22,7 @@ namespace rush {
       dump(parse(input, opts), out);
    }
 
-   void dump(rush::parse_result const& input, std::ostream& out) {
+   void dump(rush::syntax_analysis const& input, std::ostream& out) {
       if (input.ast()) dump(*input.ast(), out);
    }
 
