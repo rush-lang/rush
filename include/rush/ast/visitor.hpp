@@ -3,6 +3,9 @@
 #ifndef RUSH_AST_VISITOR_HPP
 #define RUSH_AST_VISITOR_HPP
 
+#include <type_traits>
+#include <utility>
+
 namespace rush::ast {
 	class type;
    class builtin_error_type;
@@ -114,6 +117,16 @@ namespace rush::ast {
 #		define RUSH_VISITOR_FUNC_PROTOTYPES
 #		include "rush/ast/exprs/_operators.hpp"
 	};
+} // rush::ast
+#include <iostream>
+namespace rush {
+   template <typename NodeT, typename VisitorT>
+   std::enable_if_t<
+      std::is_base_of_v<ast::visitor, std::remove_reference_t<VisitorT>>,
+      VisitorT&&> visit(NodeT const& n, VisitorT&& v) {
+         n.accept(v);
+         return std::forward<VisitorT>(v);
+      }
 } // rush
 
 #endif // RUSH_AST_VISITOR_HPP

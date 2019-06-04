@@ -97,8 +97,7 @@ namespace rush::ast {
       else if (_return_type == types::undefined || _return_type.kind() == type_kind::builtin_error) {
          ++_resolve_iter;
          auto v = function_return_type_resolver { *this };
-         stmt.accept(v);
-         _return_type = v.result();
+         _return_type = rush::visit(stmt, v).result();
          --_resolve_iter;
       }
    }

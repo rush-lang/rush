@@ -44,11 +44,9 @@ const ast::builtin_error_type invocation_result_type_resolver::
    undeclared_identifier_error_type =
    ast::types::error_type("undeclared identifier.");
 
-
 namespace rush::ast {
    ast::type_ref invocation_expression::result_type() const {
       auto v = invocation_result_type_resolver {};
-      this->callable().accept(v);
-      return v.result();
+      return rush::visit(callable(), v).result();
    }
 }
