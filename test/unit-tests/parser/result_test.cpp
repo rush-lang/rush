@@ -21,7 +21,6 @@ TEST_CASE( "rush::parse_result", "[unit][parser]" ) {
 
       THEN( "failed() should be true" ) { REQUIRE( r1.failed() ); }
       THEN( "success() should be false" ) { REQUIRE_FALSE( r1.success() ); }
-      THEN( "node() should be null" ) { REQUIRE( r1.node() == nullptr ); }
       THEN( "errors() should be empty" ) { REQUIRE( r1.errors().empty() ); }
 
       WHEN( "'r1' is assigned an AST node" ) {
@@ -29,7 +28,6 @@ TEST_CASE( "rush::parse_result", "[unit][parser]" ) {
 
          THEN( "failed() should be false" ) { REQUIRE_FALSE( r1.failed() ); }
          THEN( "success() should be true" ) { REQUIRE( r1.success() ); }
-         THEN( "node() should not be null" ) { REQUIRE( r1.node() != nullptr ); }
          THEN( "errors() should be empty" ) { REQUIRE( r1.errors().empty() ); }
 
          AND_WHEN( "'r1' is move-constructed to another parse_result 'r2'" ) {
@@ -37,7 +35,6 @@ TEST_CASE( "rush::parse_result", "[unit][parser]" ) {
 
             THEN( "failed() should be false" ) { REQUIRE_FALSE( r2.failed() ); }
             THEN( "success() should be true" ) { REQUIRE( r2.success() ); }
-            THEN( "node() should not be null" ) { REQUIRE( r2.node() != nullptr ); }
             THEN( "errors() should be empty" ) { REQUIRE( r2.errors().empty() ); }
          }
 
@@ -47,7 +44,6 @@ TEST_CASE( "rush::parse_result", "[unit][parser]" ) {
 
             THEN( "failed() should be false" ) { REQUIRE_FALSE( r2.failed() ); }
             THEN( "success() should be true" ) { REQUIRE( r2.success() ); }
-            THEN( "node() should not be null" ) { REQUIRE( r2.node() != nullptr ); }
             THEN( "errors() should be not empty" ) { REQUIRE_FALSE( r2.errors().empty() ); }
          }
       }
@@ -57,7 +53,6 @@ TEST_CASE( "rush::parse_result", "[unit][parser]" ) {
 
          THEN( "failed() should be true" ) { REQUIRE( r1.failed() ); }
          THEN( "success() should be false" ) { REQUIRE_FALSE( r1.success() ); }
-         THEN( "node() should be null" ) { REQUIRE( r1.node() == nullptr ); }
          THEN( "errors() should be not empty" ) { REQUIRE_FALSE( r1.errors().empty() ); }
 
          AND_WHEN( "'r1' is move-constructed to another parse_result 'r2'" ) {
@@ -65,7 +60,6 @@ TEST_CASE( "rush::parse_result", "[unit][parser]" ) {
 
             THEN( "failed() should be true" ) { REQUIRE( r2.failed() ); }
             THEN( "success() should be false" ) { REQUIRE_FALSE( r2.success() ); }
-            THEN( "node() should be null" ) { REQUIRE( r2.node() == nullptr ); }
             THEN( "errors() should be not empty" ) { REQUIRE_FALSE( r2.errors().empty() ); }
          }
 
@@ -75,7 +69,6 @@ TEST_CASE( "rush::parse_result", "[unit][parser]" ) {
 
             THEN( "failed() should be true" ) { REQUIRE( r2.failed() ); }
             THEN( "success() should be false" ) { REQUIRE_FALSE( r2.success() ); }
-            THEN( "node() should be null" ) { REQUIRE( r2.node() == nullptr ); }
             THEN( "errors() should be not empty" ) { REQUIRE_FALSE( r2.errors().empty() ); }
          }
       }

@@ -27,9 +27,7 @@ namespace rush {
       if (!errs.empty()) {
          for (auto& e : errs)
             out << "error " << e.location() << ": " << e.message() << std::endl;
-      } else if (auto ast = sxa.ast()) {
-         dump(*ast, out);
-      }
+      } else { sxa.accept(ast::printer { out }); }
    }
 
    void dump(rush::ast::node const& input, std::ostream& out) {

@@ -104,18 +104,6 @@ namespace rush {
             return *this;
          }
 
-      error_range_type errors() const noexcept {
-         return _errors;
-      }
-
-      NodeT* node() noexcept {
-         return _node.get();
-      }
-
-      NodeT const* node() const noexcept {
-         return _node.get();
-      }
-
       bool success() const noexcept {
          return !failed();
       }
@@ -126,6 +114,10 @@ namespace rush {
 
       operator std::unique_ptr<NodeT>() && noexcept {
          return std::move(_node);
+      }
+
+      error_range_type errors() const noexcept {
+         return _errors;
       }
 
       template <typename NodeU>
@@ -140,11 +132,11 @@ namespace rush {
       }
 
       void accept(ast::visitor& v) const {
-         _node->accept(v);
+         if (_node) _node->accept(v);
       }
 
       void accept(ast::visitor&& v) const {
-         _node->accept(std::move(v));
+         if (_node) _node->accept(std::move(v));
       }
 
    private:
@@ -160,20 +152,17 @@ namespace rush {
 	public:
       using error_range_type = rush::parse_result<ast::node>::error_range_type;
 
-		ast::node* ast() noexcept {
-			return _result.node();
-		}
-
-		ast::node const* ast() const noexcept {
-			return _result.node();
-		}
 
       error_range_type errors() const noexcept {
          return _result.errors();
       }
 
-      rush::parse_result<ast::node> const& result() {
-         return _result;
+      void accept(ast::visitor& v) const {
+         _result.accept(v);
+      }
+
+      void accept(ast::visitor&& v) const {
+         _result.accept(std::move(v));
       }
 
 	private:
