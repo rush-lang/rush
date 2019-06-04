@@ -8,8 +8,6 @@
 #include <string>
 
 namespace rush {
-	const lexical_token parser::eof = tokens::eof();
-
 	syntax_analysis parse(lexical_analysis const& lxa, parser_options const& opts) {
 		auto p = parser { opts };
 		auto root = p.parse(lxa);

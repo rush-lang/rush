@@ -22,8 +22,14 @@ namespace rush {
       dump(parse(input, opts), out);
    }
 
-   void dump(rush::syntax_analysis const& input, std::ostream& out) {
-      if (input.ast()) dump(*input.ast(), out);
+   void dump(rush::syntax_analysis const& sxa, std::ostream& out) {
+      auto errs = sxa.errors();
+      if (!errs.empty()) {
+         for (auto& e : errs)
+            out << "error " << e.location() << ": " << e.message() << std::endl;
+      } else if (auto ast = sxa.ast()) {
+         dump(*ast, out);
+      }
    }
 
    void dump(rush::ast::node const& input, std::ostream& out) {

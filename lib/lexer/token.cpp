@@ -40,27 +40,24 @@ namespace rush {
 
 	std::string debug_string(lexical_token const& tok) {
 		std::ostringstream oss;
-		oss
-			<< "[ln: " << tok.location().line()
-			<< ", col: " << tok.location().column()
-			<< " : ";
+      oss << "<" << tok.location() << " ";
 
-		if (tok.is_not_any(symbols::indent, symbols::dedent, symbols::eof)) {
-			switch (tok.type()) {
-			case rush::lexical_token_type::error: oss << "error"; break;
-			case rush::lexical_token_type::symbol: oss << "symbol"; break;
-			case rush::lexical_token_type::keyword: oss << "keyword"; break;
-			case rush::lexical_token_type::identifier: oss << "identifier"; break;
-			case rush::lexical_token_type::string_literal: oss << "string"; break;
-			case rush::lexical_token_type::integer_literal: oss << "integer"; break;
-			case rush::lexical_token_type::floating_literal: oss << "floating"; break;
-			}
+		if (tok.is_any(symbols::indent, symbols::dedent, symbols::eof)) {
+         oss << to_string(tok) << ">";
+		   return oss.str();
+      }
 
-			oss << " \"" << to_string(tok) << "\"]";
-			return oss.str();
-		}
+      switch (tok.type()) {
+      case rush::lexical_token_type::error: oss << "error"; break;
+      case rush::lexical_token_type::symbol: oss << "symbol"; break;
+      case rush::lexical_token_type::keyword: oss << "keyword"; break;
+      case rush::lexical_token_type::identifier: oss << "identifier"; break;
+      case rush::lexical_token_type::string_literal: oss << "string"; break;
+      case rush::lexical_token_type::integer_literal: oss << "integer"; break;
+      case rush::lexical_token_type::floating_literal: oss << "floating"; break;
+      }
 
-		oss << to_string(tok) << "]";
-		return oss.str();
+      oss << " \"" << to_string(tok) << "\">";
+      return oss.str();
 	}
 }

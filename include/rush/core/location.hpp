@@ -52,17 +52,16 @@ namespace rush {
 		source_index_t _column;
 	};
 
+   template <typename CharT, typename TraitsT>
+   std::basic_ostream<CharT, TraitsT>& operator << (std::basic_ostream<CharT, TraitsT>& os, location loc) {
+      if (loc == location::undefined) { os << "[line: undefined, col: undefined]"; }
+		else { os << "[line: " << loc.line() << ", col: " << loc.column() << "]"; }
+      return os;
+   }
 
 	inline std::string to_string(location const& loc) {
 		std::ostringstream oss;
-		if (loc == location::undefined) {
-			oss << "[line: undefined, col: undefined]";
-		}
-		else {
-			oss << "[line: " << loc.line()
-				<< ", col: " << loc.column() << "]";
-		}
-
+      oss << loc;
 		return oss.str();
 	}
 

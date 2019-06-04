@@ -25,6 +25,9 @@ namespace rush {
 		lexical_analysis(lexical_analysis&&);
 		void operator = (lexical_analysis&&);
 
+      using reference = typename std::vector<lexical_token>::reference;
+      using const_reference = typename std::vector<lexical_token>::const_reference;
+
 		using iterator = typename std::vector<lexical_token>::iterator;
 		using const_iterator = typename std::vector<lexical_token>::const_iterator;
 
@@ -35,6 +38,22 @@ namespace rush {
 		std::size_t size() const noexcept {
 			return _tokens.size();
 		}
+
+      reference front() noexcept {
+         return _tokens.front();
+      }
+
+      const_reference front() const noexcept {
+         return _tokens.front();
+      }
+
+      reference back() noexcept {
+         return _tokens.back();
+      }
+
+      const_reference back() const noexcept {
+         return _tokens.back();
+      }
 
 		const_iterator begin() const noexcept {
 			return _tokens.begin();

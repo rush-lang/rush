@@ -14,12 +14,12 @@ namespace rush {
    class syntax_analysis;
    class parser_options;
 
-   void dump(ast::node const& input, std::ostream& out = std::cout);
-   void dump(rush::syntax_analysis const& input, std::ostream& out = std::cout);
-   void dump(std::string input, std::ostream& out = std::cout);
-   void dump(std::istream& input, std::ostream& out = std::cout);
-   void dump(std::string input, parser_options const&, std::ostream& out = std::cout);
-   void dump(std::istream& input, parser_options const&, std::ostream& out = std::cout);
+   void dump(ast::node const&, std::ostream& = std::cout);
+   void dump(std::string, std::ostream& = std::cout);
+   void dump(std::istream&, std::ostream& = std::cout);
+   void dump(std::string, parser_options const&, std::ostream& = std::cout);
+   void dump(std::istream&, parser_options const&, std::ostream& = std::cout);
+   void dump(rush::syntax_analysis const&, std::ostream& = std::cout);
 } // rush
 
 #endif // RUSH_PARSER_DUMP_HPP

@@ -30,7 +30,8 @@ namespace rush {
 
 	public:
 		explicit parser(parser_options const& opts)
-			: _opts(opts) {}
+			: _opts(opts)
+         , _eof(tokens::eof()) {}
 
 		rush::parse_result<ast::node> parse(lexical_analysis const& lxa) {
 			initialize(lxa);
@@ -55,7 +56,7 @@ namespace rush {
 		}
 
 	private:
-		static const lexical_token eof;
+		lexical_token _eof;
 
       rush::scope_chain _scope;
 		parser_options _opts;
@@ -64,10 +65,9 @@ namespace rush {
 			lxa_iterator> _range;
 
 		void initialize(lexical_analysis const& lxa) {
-			_range = {
-				lxa.begin(),
-				lxa.end()
-			};
+         auto loc = lxa.back().location();
+         _eof = tokens::eof(loc.next_column(lxa.back().size()));
+			_range = { lxa.begin(), lxa.end() };
 		}
 
 		std::string format(std::string str) {
@@ -92,7 +92,7 @@ namespace rush {
 		lexical_token const& peek_with_indent(lxa_iterator_difference_type offset = 0) {
 			auto temp = _range.first;
 			advance(temp, _range.second, offset);
-			return temp != _range.second ? *temp : eof;
+			return temp != _range.second ? *temp : _eof;
 		}
 
 		lexical_token const& peek_skip_indent(lxa_iterator_difference_type offset = 0) {
@@ -121,7 +121,7 @@ namespace rush {
 		lexical_token const& next_with_indent() {
 			auto temp = _range.first;
 			advance(_range.first, _range.second, 1);
-			return temp != _range.second ? *temp : eof;
+			return temp != _range.second ? *temp : _eof;
 		}
 
 		lexical_token const& next_skip_indent() {
