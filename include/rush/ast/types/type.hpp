@@ -11,7 +11,6 @@
 #include <type_traits>
 
 namespace rush::ast {
-   class named_type;
    class array_type;
    class tuple_type;
    class builtin_type;

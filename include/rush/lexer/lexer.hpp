@@ -17,7 +17,6 @@
 #include <optional>
 
 namespace rush {
-	class parser;
 	class source;
 	class lexer;
 

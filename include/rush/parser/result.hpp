@@ -24,8 +24,6 @@ namespace rush {
 
 
    struct syntax_error {
-      friend class parser;
-
       syntax_error(syntax_error const&) = delete;
       void operator = (syntax_error const&) = delete;
 
@@ -47,8 +45,6 @@ namespace rush {
 
    template <typename NodeT>
    class parse_result {
-      friend class parser;
-
       parse_result(parse_result const&) = delete;
       void operator = (parse_result const&) = delete;
 
@@ -112,12 +108,12 @@ namespace rush {
          return _node == nullptr;
       }
 
-      operator std::unique_ptr<NodeT>() && noexcept {
-         return std::move(_node);
-      }
-
       error_range_type errors() const noexcept {
          return _errors;
+      }
+
+      operator std::unique_ptr<NodeT>() && noexcept {
+         return std::move(_node);
       }
 
       template <typename NodeU>
@@ -151,7 +147,6 @@ namespace rush {
 
 	public:
       using error_range_type = rush::parse_result<ast::node>::error_range_type;
-
 
       error_range_type errors() const noexcept {
          return _result.errors();

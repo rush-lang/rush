@@ -1,3 +1,4 @@
+#include "rush/lexer/lex.hpp"
 #include "rush/parser/parse.hpp"
 #include "rush/parser/dump.hpp"
 #include "rush/ast/ast.hpp"
