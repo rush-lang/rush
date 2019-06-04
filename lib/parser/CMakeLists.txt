@@ -5,6 +5,7 @@ rush_add_library(parser
 	parse_expression.cpp
    parse_declaration.cpp
    parse_statement.cpp
+   parse_module.cpp
    parse_type.cpp
 	parse.cpp
    dump.cpp

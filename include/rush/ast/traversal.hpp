@@ -13,6 +13,15 @@ namespace rush::ast {
     *         methods are overloaded to visit an AST in its entirety. */
    class traversal : public ast::visitor {
    public:
+      virtual void visit_module(ast::module const& mdl) override {
+         std::for_each(mdl.imports().begin(), mdl.imports().end(), [this](auto& decl) { accept(*decl); });
+         std::for_each(mdl.declarations().begin(), mdl.declarations().end(), [this](auto& decl) { accept(*decl); });
+      }
+
+      virtual void visit_module_decl(ast::module_declaration const& exp) override {
+         accept(exp.declaration());
+      }
+
 		// declarations
 		virtual void visit_constant_decl(ast::constant_declaration const& decl) override {
          if (decl.initializer()) accept(*decl.initializer());

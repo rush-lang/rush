@@ -10,6 +10,8 @@
 #include "rush/ast/expressions.hpp"
 #include "rush/ast/traversal.hpp"
 
+#include "rush/core/guard.hpp"
+
 #include "fmt/format.h"
 #include <iostream>
 
@@ -50,6 +52,20 @@ namespace rush::ast {
 			: _ostr { out }
 			, _indent { 0 }
 			, _current_indent { 0 } {}
+
+      virtual void visit_module(ast::module const& mdl) override {
+         writeln("<module: {}>", mdl.name());
+         indent_traverse(mdl);
+      }
+
+      virtual void visit_import_decl(ast::import_declaration const& decl) override {
+         writeln("<import_decl: (name=\"{}\")>", decl.name());
+      }
+
+      virtual void visit_module_decl(ast::module_declaration const& decl) override {
+         auto r = rush::guard(_maccess, decl.access());
+         traverse(decl);
+      }
 
       virtual void visit_builtin_error_type(ast::builtin_error_type const& type) override {
          write("<error-type: \"{}\">", type.message());
@@ -191,7 +207,11 @@ namespace rush::ast {
       virtual void visit_function_decl(ast::function_declaration const& decl) override {
          write("<function_decl: ");
          decl.type().accept(*this);
-         writeln(" (name=\"{}\")>", decl.name());
+         write(" (name=\"{}\"", decl.name());
+         switch (_maccess) {
+         case ast::module_access::internal: writeln(", access=internal)>"); break;
+         case ast::module_access::exported: writeln(", access=exported)>"); break;
+         }
          indent_traverse(decl);
       }
 
@@ -200,10 +220,11 @@ namespace rush::ast {
          indent_traverse(stmt);
       }
 
-	private:
-		std::size_t _indent;
-		std::size_t _current_indent;
-		std::basic_ostream<CharT, Traits>& _ostr;
+   private:
+      std::size_t _indent;
+      std::size_t _current_indent;
+      rush::ast::module_access _maccess;
+      std::basic_ostream<CharT, Traits>& _ostr;
 
       void indent_traverse(ast::node const& ast) {
          indent();

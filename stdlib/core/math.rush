@@ -1,7 +1,33 @@
-module std.math
+export extern func cos(x: float);
+export extern func sin(x: float);
+export extern func tan(x: float);
+
+export extern func cos(x: double);
+export extern func sin(x: double);
+export extern func tan(x: double);
+
+export extern func acos(x: float);
+export extern func asin(x: float);
+export extern func atan(x: float);
+
+export extern func acos(x: double);
+export extern func asin(x: double);
+export extern func atan(x: double);
+
+export extern func pow(b: float, exp: int);
+export extern func pow(b: float, exp: float);
+export extern func pow(b: double, exp: double);
+
+export extern func log(x: float);
+export extern func log(x: double);
+
+export extern func exp(x: float);
+export extern func exp(x: double);
+
+export const pi = acos(-1.0);
 
 func min(a: orderable) => a
 func max(a: orderable) => a
 
-func min(a, b, rest: ...orderable) => min(a < b ? a : b, rest...)
-func max(a, b, rest: ...orderable) => max(a < b ? b : a, rest...)
+export func min(a, b, rest: ...orderable) => min(a < b ? a : b, rest...)
+export func max(a, b, rest: ...orderable) => max(a < b ? b : a, rest...)

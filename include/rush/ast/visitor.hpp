@@ -7,7 +7,7 @@
 #include <utility>
 
 namespace rush::ast {
-	class type;
+   class type;
    class builtin_error_type;
    class builtin_void_type;
    class builtin_bool_type;
@@ -49,8 +49,11 @@ namespace rush::ast {
    class simple_statement;
    class result_statement;
 
-	class declaration;
+   class module;
    class parameter;
+	class declaration;
+   class import_declaration;
+   class module_declaration;
 	class constant_declaration;
 	class variable_declaration;
 	class function_declaration;
@@ -77,6 +80,10 @@ namespace rush::ast {
       virtual void visit_function_type(ast::function_type const&) {};
 
 		// declarations
+      virtual void visit_module(ast::module const&) {};
+      virtual void visit_import_decl(ast::import_declaration const&) {};
+      virtual void visit_module_decl(ast::module_declaration const&) {};
+
       virtual void visit_parameter_decl(ast::parameter const&) {};
 		virtual void visit_constant_decl(ast::constant_declaration const&) {};
 		virtual void visit_variable_decl(ast::variable_declaration const&) {};

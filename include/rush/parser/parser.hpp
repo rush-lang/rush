@@ -35,24 +35,7 @@ namespace rush {
 
 		rush::parse_result<ast::node> parse(lexical_analysis const& lxa) {
 			initialize(lxa);
-
-         std::vector<rush::parse_result<ast::declaration>> results;
-         while (peek_skip_indent().is_not(symbols::eof)) {
-            // ignore stray semi-colons
-            if (peek_skip_indent().is(symbols::semi_colon)) {
-               next_skip_indent();
-               continue;
-            }
-
-			   auto result = parse_toplevel_decl();
-            if (result.failed()) return std::move(result);
-            results.push_back(std::move(result));
-         }
-
-         if (results.empty()) return nullptr;
-         std::vector<std::unique_ptr<ast::declaration>> decls;
-         std::move(results.begin(), results.end(), std::back_inserter(decls));
-         return ast::decls::block(std::move(decls));
+         return parse_module();
 		}
 
 	private:
@@ -130,7 +113,11 @@ namespace rush {
 			return *ptok;
 		}
 
-      // types
+      // modules.
+      rush::parse_result<ast::module> parse_module();
+      rush::parse_result<ast::import_declaration> parse_import_decl();
+
+      // types.
       std::optional<ast::type_ref> parse_type();
 		std::optional<ast::type_ref> parse_type_annotation();
 
