@@ -1,3 +1,4 @@
+
 export extern func cos(x: float);
 export extern func sin(x: float);
 export extern func tan(x: float);

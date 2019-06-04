@@ -1,5 +1,3 @@
-module std.io
-import std.streams
 
 func print(args: ...printable) => writeln(stdout, args...)
 func println(args: ...printable) => writeln(stdout, args...)

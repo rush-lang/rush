@@ -1,4 +1,3 @@
-module std.streams
 
 class ostream:
    pass
