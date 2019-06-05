@@ -1,3 +1,4 @@
+#include "rush/core/source.hpp"
 #include "rush/ast/node.hpp"
 #include "rush/ast/printer.hpp"
 #include "rush/parser/options.hpp"
@@ -10,6 +11,10 @@ namespace rush {
       dump(parse(input), out);
    }
 
+   void dump(rush::source const& input, std::ostream& out) {
+      dump(parse(input), out);
+   }
+
    void dump(std::istream& input, std::ostream& out) {
       dump(parse(input), out);
    }
@@ -19,6 +24,10 @@ namespace rush {
    }
 
    void dump(std::istream& input, parser_options const& opts, std::ostream& out) {
+      dump(parse(input, opts), out);
+   }
+
+   void dump(rush::source const& input, parser_options const& opts, std::ostream& out) {
       dump(parse(input, opts), out);
    }
 
