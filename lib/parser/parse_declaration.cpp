@@ -38,7 +38,7 @@ namespace rush {
       auto type = std::optional<ast::type_ref> {};
       if (peek_skip_indent().is(symbols::colon)) {
          type = parse_type_annotation();
-         if (type == std::nullopt) {
+         if (!type.has_value()) {
             return error("expected type annotation before '{}'", peek_skip_indent());
          }
       }
@@ -48,11 +48,11 @@ namespace rush {
          next_skip_indent();
          if ((init = parse_expr()).failed())
             return std::move(init).as<ast::declaration>();
-      } else if (type == std::nullopt) {
+      } else if (!type.has_value()) {
          return error("{1} declaration '{0}' requires either a type-annotation or intializer.", ident, storage_type);
       }
 
-      type = (type == std::nullopt) ? ast::types::undefined : type;
+      type = type.has_value() ? type : ast::types::undefined;
       auto decl = fn(ident.text(), *type, std::move(init));
       if (!decl) return std::move(decl); // todo: should throw here an error here. only reason this should fail is bad-mem-alloc.
 
@@ -156,7 +156,7 @@ namespace rush {
 		if (plist_result.failed())
          return std::move(plist_result).as<ast::declaration>();
 
-      std::optional<ast::type_ref> type = {};
+      auto type = std::optional<ast::type_ref> {};
       if (peek_skip_indent().is_not(symbols::arrow)
       &&  peek_skip_indent().is_not(symbols::colon))
          type = parse_type();
