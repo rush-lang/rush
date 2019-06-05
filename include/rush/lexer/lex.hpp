@@ -10,12 +10,13 @@
 #include <iostream>
 
 namespace rush {
+   class source;
 	struct lexer_options {
 
 	};
 
-	lexical_analysis lex(char const*, lexer_options const& = {});
 	lexical_analysis lex(std::string const&, lexer_options const& = {});
+   lexical_analysis lex(rush::source const&, lexer_options const& = {});
 	lexical_analysis lex(std::istream&, lexer_options const& = {});
 }
 

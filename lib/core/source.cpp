@@ -3,6 +3,8 @@
 #include "llvm/Support/MemoryBuffer.h"
 
 #include <variant>
+#include <iostream>
+#include <iterator>
 
 namespace rush {
    struct source::impl {
@@ -24,6 +26,12 @@ namespace rush {
          llvm::StringRef { id.begin(), id.size() })) };
    }
 
+   source source::stream(std::istream& input, std::string_view id) {
+      auto eof = std::istreambuf_iterator<char> {};
+      return source::string(std::string {
+         std::istreambuf_iterator<char>(input), eof }, id);
+   }
+
    source::~source() {}
    source::source(std::unique_ptr<source::impl> pimpl)
       : _pimpl { std::move(pimpl) } {}
@@ -38,11 +46,19 @@ namespace rush {
       return { buf.begin(), buf.size() };
    }
 
+   std::size_t source::size() const {
+      return (*_pimpl->buffer)->getBufferSize();
+   }
+
+   std::size_t source::length() const {
+      return (*_pimpl->buffer)->getBufferSize();
+   }
+
    std::string_view::const_iterator source::begin() const {
-      return (*_pimpl->buffer)->getBuffer().begin();
+      return (*_pimpl->buffer)->getBufferStart();
    }
 
    std::string_view::const_iterator source::end() const {
-      return (*_pimpl->buffer)->getBuffer().end();
+      return (*_pimpl->buffer)->getBufferEnd();
    }
 }

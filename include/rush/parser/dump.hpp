@@ -15,9 +15,10 @@ namespace rush {
    class parser_options;
 
    void dump(ast::node const&, std::ostream& = std::cout);
-   void dump(std::string, std::ostream& = std::cout);
+   void dump(std::string const&, std::ostream& = std::cout);
    void dump(std::istream&, std::ostream& = std::cout);
-   void dump(std::string, parser_options const&, std::ostream& = std::cout);
+
+   void dump(std::string const&, parser_options const&, std::ostream& = std::cout);
    void dump(std::istream&, parser_options const&, std::ostream& = std::cout);
    void dump(rush::syntax_analysis const&, std::ostream& = std::cout);
 } // rush

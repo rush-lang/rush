@@ -6,7 +6,7 @@
 
 namespace rush {
 
-   void dump(std::string input, std::ostream& out) {
+   void dump(std::string const& input, std::ostream& out) {
       dump(parse(input), out);
    }
 

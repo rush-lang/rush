@@ -1,3 +1,4 @@
+#include "rush/core/source.hpp"
 #include "rush/lexer/lex.hpp"
 #include "rush/parser/options.hpp"
 #include "rush/parser/parser.hpp"
@@ -14,10 +15,12 @@ namespace rush {
       return { std::move(root) };
 	}
 
-	syntax_analysis parse(std::string input) { return parse(input, {}); }
-	syntax_analysis parse(std::istream& input) { return parse(input, {}); }
+	syntax_analysis parse(std::string const& input, parser_options const& opts) {
+		auto lxa = rush::lex(input);
+		return parse(lxa, opts);
+	}
 
-	syntax_analysis parse(std::string input, parser_options const& opts) {
+   syntax_analysis parse(rush::source const& input, parser_options const& opts) {
 		auto lxa = rush::lex(input);
 		return parse(lxa, opts);
 	}

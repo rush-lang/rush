@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <string_view>
 #include <memory>
+#include <iosfwd>
 
 namespace rush {
    //! \brief Represents source code read from a file or string data.
@@ -15,6 +16,9 @@ namespace rush {
       void operator =(source const&) = delete;
 
    public:
+      using iterator = std::string_view::iterator;
+      using const_iterator = std::string_view::const_iterator;
+
       // explicit implementation of default
       // destructor to support the 'pimpl' idiom.
       ~source();
@@ -25,17 +29,26 @@ namespace rush {
       //! \brief Constructs a source object from a raw string.
       static source string(std::string_view input, std::string_view id = "");
 
+      //! \brief Constructs a source object from an input stream.
+      static source stream(std::istream& input, std::string_view id = "");
+
       //! \brief Returns the identifier of the source; typically the file path.
       std::string_view id() const;
 
       //! \brief Returns a view over the source buffer; typically the contents of a file.
       std::string_view buffer() const;
 
+      //! \brief Returns the length of the source in bytes; typically the size of the file.
+      std::size_t size() const;
+
+      //! \brief Returns the length of the source in bytes; typically the size of the file.
+      std::size_t length() const;
+
       //! \brief Returns an iterator to the beginning source buffer.
-      std::string_view::const_iterator begin() const;
+      const_iterator begin() const;
 
       //! \brief Returns an iterator to one past the end of the source buffer.
-      std::string_view::const_iterator end() const;
+      const_iterator end() const;
 
    private:
       std::unique_ptr<impl> _pimpl;
