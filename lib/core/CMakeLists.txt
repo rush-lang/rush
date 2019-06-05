@@ -1,7 +1,8 @@
 project(core VERSION ${RUSH_VERSION} LANGUAGES CXX)
 
 rush_add_library(core
-	location.cpp
+   location.cpp
+   source.cpp
 	source_manager.cpp
 )
 
