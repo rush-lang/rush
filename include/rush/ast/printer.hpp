@@ -10,7 +10,7 @@
 #include "rush/ast/expressions.hpp"
 #include "rush/ast/traversal.hpp"
 
-#include "rush/core/guard.hpp"
+#include "rush/extra/guard.hpp"
 
 #include "fmt/format.h"
 #include <iostream>

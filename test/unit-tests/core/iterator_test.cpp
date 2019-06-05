@@ -1,5 +1,5 @@
 #include "catch2/catch.hpp"
-#include "rush/core/iterator.hpp"
+#include "rush/extra/iterator.hpp"
 
 #include <array>
 

@@ -1,6 +1,6 @@
 #include "catch2/catch.hpp"
-#include "rush/core/ring.hpp"
-#include "rush/core/iterator.hpp"
+#include "rush/extra/ring.hpp"
+#include "rush/extra/iterator.hpp"
 
 #include <algorithm>
 #include <iostream>

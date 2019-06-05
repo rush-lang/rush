@@ -1,6 +1,6 @@
 #include "rush/core/ascii.hpp"
-#include "rush/core/algorithm.hpp"
-#include "rush/core/iterator.hpp"
+#include "rush/extra/algorithm.hpp"
+#include "rush/extra/iterator.hpp"
 #include "rush/lexer/lexer.hpp"
 #include "rush/lexer/lexer_iterator.hpp"
 

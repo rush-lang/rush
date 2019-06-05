@@ -3,7 +3,7 @@
 #ifndef RUSH_LEXER_LEXER_HPP
 #define RUSH_LEXER_LEXER_HPP
 
-#include "rush/core/extras.hpp"
+#include "rush/extra/function_ref.hpp"
 #include "rush/lexer/token.hpp"
 #include "rush/lexer/lex.hpp"
 #include "rush/lexer/lookahead.hpp"

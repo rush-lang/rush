@@ -5,8 +5,8 @@
 
 #include "fmt/format.h"
 
-#include "rush/core/iterator.hpp"
-#include "rush/core/extras.hpp"
+#include "rush/extra/iterator.hpp"
+#include "rush/extra/function_ref.hpp"
 
 #include "rush/ast/types.hpp"
 #include "rush/ast/expressions.hpp"

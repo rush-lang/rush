@@ -3,10 +3,10 @@
 #ifndef RUSH_LEXER_LOOKAHEAD_HPP
 #define RUSH_LEXER_LOOKAHEAD_HPP
 
-#include "rush/core/ring.hpp"
-#include "rush/core/iterator.hpp"
-#include "rush/core/algorithm.hpp"
-#include "rush/core/iterator_ref.hpp"
+#include "rush/extra/ring.hpp"
+#include "rush/extra/iterator.hpp"
+#include "rush/extra/algorithm.hpp"
+#include "rush/extra/iterator_ref.hpp"
 
 #include <iosfwd>
 #include <iterator>

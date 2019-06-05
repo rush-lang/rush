@@ -8,7 +8,7 @@
 #include "rush/ast/node.hpp"
 #include "rush/ast/visitor.hpp"
 #include "rush/core/location.hpp"
-#include "rush/core/iterator_range.hpp"
+#include "rush/extra/iterator_range.hpp"
 
 #include <memory>
 #include <vector>

@@ -3,7 +3,7 @@
 #ifndef RUSH_CORE_RESET_HPP
 #define RUSH_CORE_RESET_HPP
 
-#include "rush/core/extras.hpp"
+#include "rush/extra/function_ref.hpp"
 
 #include <functional>
 
