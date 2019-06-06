@@ -1,12 +1,11 @@
 project(parser VERSION ${RUSH_VERSION} LANGUAGES CXX)
 
 rush_add_library(parser
-	parse_statement.cpp
-	parse_expression.cpp
-   parse_declaration.cpp
-   parse_statement.cpp
-   parse_module.cpp
-   parse_type.cpp
+   parse/statement.cpp
+	parse/expression.cpp
+   parse/declaration.cpp
+   parse/module.cpp
+   parse/type.cpp
 	parse.cpp
    dump.cpp
    symbol.cpp
