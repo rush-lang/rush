@@ -14,9 +14,9 @@ namespace rush {
          : buffer { std::move(buf) } {}
    };
 
-   source source::file(std::string_view path, bool is_volatile) {
+   source source::file(std::filesystem::path path, bool is_volatile) {
       return { std::make_unique<source::impl>(llvm::MemoryBuffer::getFile(
-         llvm::StringRef { path.begin(), path.size() },
+         llvm::StringRef { path.string() },
          -1L, true, is_volatile)) };
    }
 
@@ -32,9 +32,15 @@ namespace rush {
          std::istreambuf_iterator<char>(input), eof }, id);
    }
 
-   source::~source() {}
+   source::~source() = default;
+   source::source(source&& other) = default;
+   source& source::operator = (source&& other) = default;
    source::source(std::unique_ptr<source::impl> pimpl)
       : _pimpl { std::move(pimpl) } {}
+
+   std::error_code source::error() const {
+      return _pimpl->buffer.getError();
+   }
 
    std::string_view source::id() const {
       auto ident = (*_pimpl->buffer)->getBufferIdentifier();
