@@ -39,7 +39,7 @@ namespace rush::ast {
          return _ident.is_unresolved();
       }
 
-		std::string name() const {
+		std::string_view name() const {
          return _ident.name();
 		}
 

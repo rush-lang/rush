@@ -26,7 +26,7 @@ namespace rush::ast {
          return *_decl;
       }
 
-      virtual std::string name() const override {
+      virtual std::string_view name() const override {
          return _decl->name();
       }
 

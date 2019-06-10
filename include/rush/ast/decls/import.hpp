@@ -14,7 +14,7 @@ namespace rush::ast {
       import_declaration(std::string name)
          : _name { std::move(name) } {}
 
-      virtual std::string name() const override {
+      virtual std::string_view name() const override {
          return _name;
       }
 

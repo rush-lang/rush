@@ -10,7 +10,7 @@
 namespace rush::ast {
 	class parameter : public declaration {
    public:
-      virtual std::string name() const override {
+      virtual std::string_view name() const override {
          return _name;
       }
 

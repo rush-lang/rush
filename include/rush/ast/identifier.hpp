@@ -9,6 +9,7 @@
 #include <variant>
 #include <algorithm>
 #include <vector>
+#include <string_view>
 
 namespace rush::ast {
    class declaration;
@@ -42,7 +43,7 @@ namespace rush::ast {
       bool is_unresolved() const noexcept;
 
       //! \brief Returns the name of the identifier.
-      std::string name() const noexcept;
+      std::string_view name() const noexcept;
 
       //! \brief Returns the type of identifier as specified by the declaration if resolved; otherwise an error type.
       ast::type_ref type() const noexcept;
@@ -91,7 +92,7 @@ namespace rush::ast {
          identifier_resolver(std::string name)
             : _name { std::move(name) } {}
 
-         std::string const& name() const noexcept {
+         std::string_view name() const noexcept {
             return _name;
          }
 

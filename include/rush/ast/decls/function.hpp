@@ -40,7 +40,7 @@ namespace rush::ast {
          , _type { std::move(fntype) }
 			, _body { std::move(body) } {}
 
-      virtual std::string name() const noexcept override {
+      virtual std::string_view name() const noexcept override {
          return _name;
       }
 

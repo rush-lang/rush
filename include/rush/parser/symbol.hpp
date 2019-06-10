@@ -26,7 +26,7 @@ namespace rush {
 
       // rush::scope const& scope() const noexcept;
 
-      std::string name() const noexcept {
+      std::string_view name() const noexcept {
          return !is_undefined()
             ? _decl->name()
             : "<undefined>";

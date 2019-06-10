@@ -7,8 +7,8 @@
 using namespace rush;
 
 struct identifier_name_visitor {
-   std::string operator ()(ast::declaration const* decl) { return decl->name(); }
-   std::string operator ()(ast::identifier::resolver* res) { return res->name(); }
+   std::string_view operator ()(ast::declaration const* decl) { return decl->name(); }
+   std::string_view operator ()(ast::identifier::resolver* res) { return res->name(); }
 };
 
 struct identifier_type_visitor {
@@ -44,7 +44,7 @@ namespace rush::ast {
       return !std::holds_alternative<ast::declaration const*>(_val);
    }
 
-   std::string identifier::name() const noexcept {
+   std::string_view identifier::name() const noexcept {
       return std::visit(identifier_name_visitor {}, _val);
    }
 

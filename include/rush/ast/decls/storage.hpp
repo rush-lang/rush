@@ -10,12 +10,11 @@
 #include "rush/ast/types/type.hpp"
 #include "rush/ast/visitor.hpp"
 
-#include <string>
 
 namespace rush::ast {
 	class storage_declaration : public declaration {
 	public:
-      virtual std::string name() const noexcept override {
+      virtual std::string_view name() const noexcept override {
          return _name;
       };
 

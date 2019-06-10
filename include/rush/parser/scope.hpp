@@ -7,8 +7,9 @@
 
 #include <unordered_map>
 #include <stack>
-#include <optional>
 #include <string>
+#include <string_view>
+#include <optional>
 #include <memory>
 
 namespace rush {
@@ -53,8 +54,8 @@ namespace rush {
 
       using symbol_t = rush::symbol;
       using resolver_t = ast::identifier::resolver;
-      using symbol_table_t = std::unordered_map<std::string, symbol_t>;
-      using resolver_table_t = std::unordered_map<std::string, std::unique_ptr<resolver_t>>;
+      using symbol_table_t = std::unordered_map<std::string_view, symbol_t>;
+      using resolver_table_t = std::unordered_map<std::string_view, std::unique_ptr<resolver_t>>;
 
       //! \brief Gets the kind of this scope.
       scope_kind kind() const noexcept {
@@ -94,7 +95,7 @@ namespace rush {
       //! \brief Gets a resolver for the given name. Later, when the declaration with the given
       //         name is added to the scope, the resolver is called with the declaration
       //         which is used to update identifiers.
-      resolver_t& resolver(std::string const& name);
+      resolver_t& resolver(std::string_view name);
 
       /*! \brief Performs a lookup of the symbol with the specified name.
        *         This is a chained lookup, starting at the scope the method
@@ -102,13 +103,13 @@ namespace rush {
        *         scope recursively until either the root/global scope has been reached
        *         or a symbol entry for the specified name is found.
        */
-      symbol_t lookup(std::string name) const;
+      symbol_t lookup(std::string_view name) const;
 
       /*! \brief Performs a lookup of the symbol with the specified name.
        *         This lookup is performed only within the scope the function is called on.
        *         Symbols in outer scopes will not be searched for.
        */
-      symbol_t lookup_local(std::string name) const;
+      symbol_t lookup_local(std::string_view name) const;
 
    private:
       symbol_table_t _symtab;
@@ -149,7 +150,7 @@ namespace rush {
       //! \brief Gets a resolver for the given name. Later, when the declaration with the given
       //         name is inserted, the resolver is called with the declaration inserted
       //         which is used to update identifiers referencing said declaration.
-      resolver_t& resolver(std::string const& name);
+      resolver_t& resolver(std::string_view name);
 
       /*! \brief Pushes a new scope of scope_kind onto the end of the chain.
        *         The new scope will obtain the current scope as its parent.

@@ -16,7 +16,7 @@ namespace rush {
       return result.second;
    }
 
-   scope::resolver_t& scope::resolver(std::string const& name) {
+   scope::resolver_t& scope::resolver(std::string_view name) {
       scope::resolver_table_t* restab;
       switch (kind()) {
       // in the case of function and block scopes we
@@ -32,26 +32,27 @@ namespace rush {
       default: break;
       case scope_kind::block:
       case scope_kind::function:
-         return parent()->resolver(name);
+         return parent()->resolver(std::move(name));
       }
 
       auto it = _restab.find(name);
       if (it == _restab.end()) {
-         auto result = _restab.insert({ name, std::make_unique<scope::resolver_t>(name) });
+         auto res = std::make_unique<scope::resolver_t>(std::string { name });
+         auto result = _restab.insert({ res->name(), std::move(res) });
          return *result.first->second;
       }
 
       return *it->second;
    }
 
-   scope::symbol_t scope::lookup(std::string name) const {
+   scope::symbol_t scope::lookup(std::string_view name) const {
       auto sym = lookup_local(name);
       return sym.is_undefined() && !is_global()
          ? parent()->lookup(std::move(name))
          : sym;
    }
 
-   scope::symbol_t scope::lookup_local(std::string name) const {
+   scope::symbol_t scope::lookup_local(std::string_view name) const {
       auto it = _symtab.find(std::move(name));
 		if (it != _symtab.end()) return it->second;
 		return symbol::undefined;
@@ -70,7 +71,7 @@ namespace rush {
       return _scopes.top().insert(std::move(sym));
    }
 
-   scope_chain::resolver_t& scope_chain::resolver(std::string const& name) {
+   scope_chain::resolver_t& scope_chain::resolver(std::string_view name) {
       return _scopes.top().resolver(name);
    }
 

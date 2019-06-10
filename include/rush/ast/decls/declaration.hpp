@@ -8,8 +8,9 @@
 #include "rush/ast/types/type.hpp"
 
 #include <string>
-#include <cstdint>
 #include <vector>
+#include <cstdint>
+#include <string_view>
 
 namespace rush::ast {
 	enum class declaration_kind : std::uint8_t {
@@ -34,7 +35,7 @@ namespace rush::ast {
 		void operator = (declaration const&) = delete;
 
 	public:
-      virtual std::string name() const = 0;
+      virtual std::string_view name() const = 0;
 
       virtual ast::type_ref type() const = 0;
 
