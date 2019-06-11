@@ -6,8 +6,8 @@
 #include "rush/lexer/token.hpp"
 #include "rush/lexer/analysis.hpp"
 
-#include <string>
 #include <iostream>
+#include <string_view>
 
 namespace rush {
    class source;
@@ -15,9 +15,11 @@ namespace rush {
 
 	};
 
-	lexical_analysis lex(std::string const&, lexer_options const& = {});
+   lexical_analysis lex(std::istream&, lexer_options const& = {});
+	lexical_analysis lex(std::string_view, lexer_options const& = {});
+	lexical_analysis lex(std::istream&, std::string id, lexer_options const& = {});
+	lexical_analysis lex(std::string_view, std::string id, lexer_options const& = {});
    lexical_analysis lex(rush::source const&, lexer_options const& = {});
-	lexical_analysis lex(std::istream&, lexer_options const& = {});
 }
 
 #endif // RUSH_LEXER_LEX_HPP

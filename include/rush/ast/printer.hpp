@@ -55,7 +55,7 @@ namespace rush::ast {
 			, _current_indent { 0 } {}
 
       virtual void visit_module(ast::module const& mdl) override {
-         writeln("<module: {}>", mdl.name());
+         writeln("<module: \"{}\">", mdl.id());
          indent_traverse(mdl);
       }
 

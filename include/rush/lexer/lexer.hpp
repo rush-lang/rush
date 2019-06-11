@@ -27,9 +27,7 @@ namespace rush {
 
 		lexer(lexer&& other) = default;
 		lexer& operator = (lexer&& other) = default;
-
-      lexical_analysis tokenize(std::istream&);
-		lexical_analysis tokenize(std::string_view);
+		lexical_analysis tokenize(rush::source const&);
 
    private:
       lexer_options _opts;

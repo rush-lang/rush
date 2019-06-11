@@ -4,8 +4,10 @@
 #define RUSH_LEXER_ANALYSIS_HPP
 
 #include "rush/lexer/token.hpp"
+#include "rush/core/source.hpp"
 
 #include <string>
+#include <string_view>
 #include <iosfwd>
 #include <vector>
 
@@ -30,6 +32,10 @@ namespace rush {
 
 		using iterator = typename std::vector<lexical_token>::iterator;
 		using const_iterator = typename std::vector<lexical_token>::const_iterator;
+
+      std::string_view id() const noexcept {
+         return _id;
+      }
 
 		bool empty() const noexcept {
 			return _tokens.empty();
@@ -72,10 +78,18 @@ namespace rush {
 		}
 
 	private:
-		explicit lexical_analysis(std::vector<lexical_token> toks)
-			: _tokens(std::move(toks)) {}
-
+      std::string _id;
 		std::vector<lexical_token> _tokens;
+
+      explicit lexical_analysis(
+         std::vector<lexical_token> toks)
+         : _tokens(std::move(toks)) {}
+
+		explicit lexical_analysis(
+         std::string id,
+         std::vector<lexical_token> toks)
+			: _id { std::move(id) }
+         , _tokens(std::move(toks)) {}
 	};
 } // rush
 

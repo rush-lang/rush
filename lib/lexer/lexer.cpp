@@ -369,32 +369,38 @@ namespace rush {
       }
    };
 
-	lexical_analysis lex(std::string const& input, lexer_options const& opts) {
+   lexical_analysis lex(std::string_view input, lexer_options const& opts) {
+      return lex(input, "", opts);
+	}
+
+	lexical_analysis lex(std::istream& input, lexer_options const& opts) {
+      return lex(input, "", opts);
+	}
+
+   lexical_analysis lex(std::string_view input, std::string id, lexer_options const& opts) {
       auto l = lexer { opts };
-      return l.tokenize(input);
+      auto src = source::from_string(input, id);
+      return l.tokenize(src);
+	}
+
+	lexical_analysis lex(std::istream& input, std::string id, lexer_options const& opts) {
+		auto l = lexer { opts };
+      auto src = source::from_stream(input, id);
+		return l.tokenize(src);
 	}
 
    lexical_analysis lex(rush::source const& input, lexer_options const& opts) {
       auto l = lexer { opts };
-      return l.tokenize(input.buffer());
+      return l.tokenize(input);
 	}
 
-	lexical_analysis lex(std::istream& input, lexer_options const& opts) {
-		auto l = lexer { opts };
-		return l.tokenize(input);
-	}
-
-   lexical_analysis lexer::tokenize(std::istream& istr) {
-		auto first = std::istreambuf_iterator<char> { istr };
-		auto last = std::istreambuf_iterator<char> { };
+   lexical_analysis lexer::tokenize(rush::source const& src) {
+      auto first = src.begin();
+      auto last = src.end();
       auto impl = basic_lexer<decltype(first)> { _opts };
-      return lexical_analysis { impl.tokenize(first, last) };
-   }
-
-   lexical_analysis lexer::tokenize(std::string_view sv) {
-      auto first = sv.begin();
-      auto last = sv.end();
-      auto impl = basic_lexer<decltype(first)> { _opts };
-      return lexical_analysis { impl.tokenize(first, last) };
+      return lexical_analysis {
+         std::string { src.id() },
+         impl.tokenize(first, last)
+      };
    }
 }

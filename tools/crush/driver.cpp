@@ -47,7 +47,7 @@ int main(int argc, char const** argv) {
             continue;
          }
 
-         srcs.push_back(source::file(p));
+         srcs.push_back(source::from_file(p));
       } catch (fs::filesystem_error& e) {
          auto msg = to_lower(e.code().message());
          std::cerr << "error: " << msg << ": '" << path << "'" << std::endl;

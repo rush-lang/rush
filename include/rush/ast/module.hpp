@@ -9,14 +9,11 @@
 namespace rush::ast {
    class module : public ast::node {
    public:
-      module()
-         : module("<unnamed>") {}
+      module(std::string id)
+         : _id { std::move(id) } {}
 
-      module(std::string name)
-         : _name { std::move(name) } {}
-
-      std::string const& name() const noexcept {
-         return _name;
+      std::string const& id() const noexcept {
+         return _id;
       }
 
       void push_back(std::unique_ptr<ast::import_declaration> imp) {
@@ -51,7 +48,7 @@ namespace rush::ast {
    private:
       std::vector<std::unique_ptr<import_declaration>> _imports;
       std::vector<std::unique_ptr<module_declaration>> _decls;
-      std::string _name;
+      std::string _id;
    };
 } // rush::ast
 

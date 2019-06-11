@@ -28,13 +28,13 @@ namespace rush {
       source& operator = (source&&);
 
       //! \brief Constructs a source object from a file.
-      static source file(std::filesystem::path path, bool is_volatile = false);
+      static source from_file(std::filesystem::path path, bool is_volatile = false);
 
       //! \brief Constructs a source object from a raw string.
-      static source string(std::string_view input, std::string_view id = "");
+      static source from_string(std::string_view input, std::string_view id = "");
 
       //! \brief Constructs a source object from an input stream.
-      static source stream(std::istream& input, std::string_view id = "");
+      static source from_stream(std::istream& input, std::string_view id = "");
 
       std::error_code error() const;
 

@@ -36,7 +36,7 @@ namespace rush {
 
 		rush::parse_result<ast::node> parse(lexical_analysis const& lxa) {
 			initialize(lxa);
-         return parse_module();
+         return parse_module(lxa.id());
 		}
 
 	private:
@@ -115,7 +115,7 @@ namespace rush {
 		}
 
       // modules.
-      rush::parse_result<ast::module> parse_module();
+      rush::parse_result<ast::module> parse_module(std::string_view name);
       rush::parse_result<ast::import_declaration> parse_import_decl();
 
       // types.

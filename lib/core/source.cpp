@@ -14,21 +14,21 @@ namespace rush {
          : buffer { std::move(buf) } {}
    };
 
-   source source::file(std::filesystem::path path, bool is_volatile) {
+   source source::from_file(std::filesystem::path path, bool is_volatile) {
       return { std::make_unique<source::impl>(llvm::MemoryBuffer::getFile(
          llvm::StringRef { path.string() },
          -1L, true, is_volatile)) };
    }
 
-   source source::string(std::string_view input, std::string_view id) {
+   source source::from_string(std::string_view input, std::string_view id) {
       return { std::make_unique<source::impl>(llvm::MemoryBuffer::getMemBuffer(
          llvm::StringRef { input.begin(), input.size() },
          llvm::StringRef { id.begin(), id.size() })) };
    }
 
-   source source::stream(std::istream& input, std::string_view id) {
+   source source::from_stream(std::istream& input, std::string_view id) {
       auto eof = std::istreambuf_iterator<char> {};
-      return source::string(std::string {
+      return source::from_string(std::string {
          std::istreambuf_iterator<char>(input), eof }, id);
    }
 
