@@ -4,9 +4,10 @@
 #define RUSH_AST_TRAVERSAL_HPP
 
 #include "rush/ast/visitor.hpp"
-#include "rush/ast/declarations.hpp"
-#include "rush/ast/expressions.hpp"
+#include "rush/ast/module.hpp"
 #include "rush/ast/statements.hpp"
+#include "rush/ast/expressions.hpp"
+#include "rush/ast/declarations.hpp"
 
 namespace rush::ast {
    /*! \brief A traversal derives the AST visitor, in which relevant visitation

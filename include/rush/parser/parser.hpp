@@ -9,6 +9,7 @@
 #include "rush/extra/function_ref.hpp"
 
 #include "rush/ast/types.hpp"
+#include "rush/ast/module.hpp"
 #include "rush/ast/expressions.hpp"
 #include "rush/ast/declarations.hpp"
 #include "rush/ast/statements.hpp"
