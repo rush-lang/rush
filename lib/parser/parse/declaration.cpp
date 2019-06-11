@@ -157,7 +157,7 @@ namespace rush {
          return std::move(plist_result).as<ast::declaration>();
 
       auto type = std::optional<ast::type_ref> {};
-      if (peek_skip_indent().is_not(symbols::arrow)
+      if (peek_skip_indent().is_not(symbols::thick_arrow)
       &&  peek_skip_indent().is_not(symbols::colon))
          type = parse_type();
 
@@ -174,7 +174,7 @@ namespace rush {
 	}
 
    rush::parse_result<ast::statement> parser::parse_function_body() {
-      if (peek_skip_indent().is(symbols::arrow))
+      if (peek_skip_indent().is(symbols::thick_arrow))
          return parse_function_expr_body();
       if (peek_skip_indent().is(symbols::colon))
          return parse_function_stmt_body();
@@ -183,7 +183,7 @@ namespace rush {
    }
 
    rush::parse_result<ast::statement> parser::parse_function_expr_body() {
-		assert(peek_skip_indent().is(symbols::arrow) && "expected an '=>' symbol.");
+		assert(peek_skip_indent().is(symbols::thick_arrow) && "expected an '=>' symbol.");
       next_skip_indent();
 
       auto stmt_result = rush::parse_result<ast::statement> {};

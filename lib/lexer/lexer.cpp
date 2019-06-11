@@ -296,6 +296,7 @@ namespace rush {
             } break;
 
             case symbols::minus: {
+               if (check('>', 1)) { skip(2); return tok::thin_arrow(location()); }
                if (check('-', 1)) { skip(2); return tok::minus_minus(location()); }
                if (check('=', 1)) { skip(2); return tok::minus_equals(location()); }
             } break;
@@ -317,7 +318,7 @@ namespace rush {
             } break;
 
             case symbols::equals: {
-               if (check('>', 1)) { skip(2); return tok::arrow(location()); }
+               if (check('>', 1)) { skip(2); return tok::thick_arrow(location()); }
                if (check('=', 1)) { skip(2); return tok::equals_equals(location()); }
             } break;
 

@@ -26,10 +26,11 @@ rangle_bracket			>
 
 ## operators
 ```
-arrow					=>
+thin_arrow           ->
+thick_arrow				=>
 dot						.
-comma					,
-colon					:
+comma					   ,
+colon					   :
 scolon					;
 placeholder				$
 extension				@
