@@ -157,9 +157,10 @@ namespace rush {
          return std::move(plist_result).as<ast::declaration>();
 
       auto type = std::optional<ast::type_ref> {};
-      if (peek_skip_indent().is_not(symbols::thick_arrow)
-      &&  peek_skip_indent().is_not(symbols::colon))
+      if (peek_skip_indent().is(symbols::thin_arrow)) {
+         next_skip_indent();
          type = parse_type();
+      }
 
 		auto body_result = parse_function_body();
       if (body_result.failed())

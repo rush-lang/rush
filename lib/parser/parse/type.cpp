@@ -31,6 +31,8 @@ namespace rush {
       if (tok.is_identifier()) {
          auto sym = _scope.current().lookup(tok.text());
          if (sym.is_undefined()) {
+            // todo: push error up into parse result.
+            // ast::type_ref not being a derivative of ast::node makes this difficult.
             error("the type or namespace '{}' could not be found", tok);
             return std::nullopt;
          }

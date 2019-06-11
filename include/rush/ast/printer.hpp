@@ -121,7 +121,7 @@ namespace rush::ast {
             write(")");
          }
 
-         write(" => ");
+         write(" -> ");
          type.return_type().accept(*this);
       }
 
