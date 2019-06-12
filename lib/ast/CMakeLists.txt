@@ -12,6 +12,7 @@ rush_add_library(ast
    identifier.cpp
    traversal.cpp
    visitor.cpp
+   context.cpp
 )
 
 target_compile_features(ast PUBLIC cxx_std_17)

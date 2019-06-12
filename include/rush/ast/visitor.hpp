@@ -11,8 +11,10 @@ namespace rush::ast {
    class builtin_error_type;
    class builtin_void_type;
    class builtin_bool_type;
+   class builtin_char_type;
+   class builtin_string_type;
    class builtin_integral_type;
-   class builtin_floating_type;
+   class builtin_floating_point_type;
    class array_type;
    class tuple_type;
    class enum_type;
@@ -68,7 +70,7 @@ namespace rush::ast {
       virtual void visit_builtin_void_type(ast::builtin_void_type const&) {}
       virtual void visit_builtin_bool_type(ast::builtin_bool_type const&) {}
       virtual void visit_builtin_integral_type(ast::builtin_integral_type const&) {}
-      virtual void visit_builtin_floating_type(ast::builtin_floating_type const&) {}
+      virtual void visit_builtin_floating_type(ast::builtin_floating_point_type const&) {}
 
       virtual void visit_array_type(ast::array_type const&) {};
       virtual void visit_tuple_type(ast::tuple_type const&) {};

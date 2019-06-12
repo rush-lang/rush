@@ -15,13 +15,8 @@ namespace rush::ast {
    class array_type_dim {
    public:
       using size_type = std::size_t;
-
-      array_type_dim(size_type sz)
-         : _size { sz } {}
-
-      size_type size() const noexcept {
-         return _size;
-      }
+      array_type_dim(size_type sz) : _size { sz } {}
+      size_type size() const noexcept { return _size; }
 
    private:
       size_type _size;
@@ -63,11 +58,7 @@ namespace rush::ast {
       ast::array_type const& get(ast::type_ref type, std::vector<array_type_dim> dims);
 
    private:
-      // std::unordered_map<ast::type_ref, array_type> _types;
-   };
-
-   class tuple_type_map {
-
+      std::unordered_map<ast::type_ref, array_type> _types;
    };
 } // rush::ast
 

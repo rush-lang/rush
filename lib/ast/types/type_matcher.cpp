@@ -15,7 +15,8 @@ public:
    }
 
    virtual void visit_builtin_integral_type(ast::builtin_integral_type const& second) override {
-      auto first = _type.as<ast::builtin_integral_type>(); if (!first) return;
+      auto first = _type.as<ast::builtin_integral_type>();
+      if (!first) return;
       _result =
          first->unit() == second.unit() &&
          first->size() == second.size() &&

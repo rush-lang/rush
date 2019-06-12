@@ -94,7 +94,7 @@ namespace rush::ast {
       /// via counting the number times this function has been called
       /// without resolving.
       if (_resolve_iter > 0) _return_type = function_return_type_resolver::infinite_recursion_error_type;
-      else if (_return_type == types::undefined || _return_type.kind() == type_kind::builtin_error) {
+      else if (_return_type == types::undefined || _return_type.kind() == type_kind::error) {
          ++_resolve_iter;
          auto v = function_return_type_resolver { *this };
          _return_type = rush::visit(stmt, v).result();

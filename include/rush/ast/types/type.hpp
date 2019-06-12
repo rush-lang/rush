@@ -11,21 +11,14 @@
 #include <type_traits>
 
 namespace rush::ast {
-   class array_type;
-   class tuple_type;
-   class builtin_type;
-   class builtin_void_type;
-   class builtin_bool_type;
-   class builtin_integral_type;
-   class builtin_floating_type;
-   class function_type;
-
    enum class type_kind {
-      builtin_error,
+      error,
       builtin_void,
       builtin_bool,
+      builtin_char,
+      builtin_string,
       builtin_integral,
-      builtin_floating,
+      builtin_floating_point,
       array,
       tuple,
       function
@@ -50,6 +43,10 @@ namespace rush::ast {
 
       std::string to_string() const {
          return _ptr->to_string();
+      }
+
+      ast::type const* get() const noexcept {
+         return _ptr;
       }
 
       template <typename T>
@@ -83,6 +80,16 @@ namespace rush::ast {
 
    private:
       ast::type const* _ptr;
+   };
+}
+
+namespace std {
+   template <>
+   struct hash<rush::ast::type_ref> {
+      size_t operator()(rush::ast::type_ref const& x) const {
+         auto fn = hash<decltype(x.get())>();
+         return fn(x.get());
+      }
    };
 }
 

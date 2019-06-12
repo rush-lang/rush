@@ -19,12 +19,12 @@ namespace rush::ast::exprs {
 		return make_literal_expr<nil_literal_expression>(std::uint64_t(0), type);
 	}
 
-	std::unique_ptr<boolean_literal_expression> literal(bool val) {
-		return make_literal_expr<boolean_literal_expression>(val, ast::types::bool_type);
+	std::unique_ptr<boolean_literal_expression> literal(bool val, ast::type_ref val_type) {
+		return make_literal_expr<boolean_literal_expression>(val, val_type);
 	}
 
-	std::unique_ptr<string_literal_expression> literal(std::string val) {
-		return make_literal_expr<string_literal_expression>(val, ast::types::string_type);
+	std::unique_ptr<string_literal_expression> literal(std::string val, ast::type_ref val_type) {
+		return make_literal_expr<string_literal_expression>(val, val_type);
 	}
 
 	std::unique_ptr<integer_literal_expression> literal(std::int8_t val, ast::type_ref val_type) {

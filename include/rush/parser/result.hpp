@@ -6,6 +6,7 @@
 #include "fmt/format.h"
 
 #include "rush/ast/node.hpp"
+#include "rush/ast/context.hpp"
 #include "rush/ast/visitor.hpp"
 #include "rush/core/location.hpp"
 #include "rush/extra/iterator_range.hpp"
@@ -141,9 +142,7 @@ namespace rush {
    };
 
 	class syntax_analysis {
-		friend syntax_analysis parse(
-			lexical_analysis const&,
-			parser_options const&);
+		friend class parser;
 
 	public:
       using error_range_type = rush::parse_result<ast::node>::error_range_type;
@@ -161,13 +160,16 @@ namespace rush {
       }
 
 	private:
+      std::unique_ptr<ast::context> _context;
 		rush::parse_result<ast::node> _result;
 
-		syntax_analysis()
-			: _result { nullptr } {}
+		syntax_analysis(std::unique_ptr<ast::context> ctx)
+			: _context { std::move(ctx) }
+         , _result { nullptr } {}
 
-		syntax_analysis(rush::parse_result<ast::node> ast)
-			: _result { std::move(ast) } {}
+		syntax_analysis(std::unique_ptr<ast::context> ctx, rush::parse_result<ast::node> ast)
+			: _context { std::move(ctx) }
+			, _result { std::move(ast) } {}
 	};
 } // rush
 

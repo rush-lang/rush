@@ -1,17 +1,16 @@
 #include "rush/parser/parser.hpp"
-#include "rush/ast/decls/module.hpp"
 
 namespace decls = rush::ast::decls;
 
 namespace rush {
    rush::parse_result<ast::module> parser::parse_module(std::string_view name) {
-      auto mod = std::make_unique<ast::module>(std::string { name });
+      _module = std::make_unique<ast::module>(std::string { name });
 
       while (peek_skip_indent().is(keywords::import_)) {
          auto import_result = parse_import_decl();
          if (import_result.failed())
             return std::move(import_result).as<ast::module>();
-         mod->push_back(std::move(import_result));
+         _module->push_back(std::move(import_result));
       }
 
       while (peek_skip_indent().is_not(symbols::eof)) {
@@ -30,10 +29,10 @@ namespace rush {
          auto decl_result = parse_toplevel_decl();
          if (decl_result.failed())
             return std::move(decl_result).as<ast::module>();
-         mod->push_back(std::move(decl_result), acc);
+         _module->push_back(std::move(decl_result), acc);
       }
 
-      return std::move(mod);
+      return std::move(_module);
    }
 
    rush::parse_result<ast::import_declaration> parser::parse_import_decl() {

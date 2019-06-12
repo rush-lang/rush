@@ -1,23 +1,22 @@
-
 #include "rush/parser/parser.hpp"
 
 namespace rush {
-   ast::type_ref builtin_type_from_keyword(keywords::keyword_token_t kw) {
+   ast::type_ref builtin_type_from_keyword(keywords::keyword_token_t kw, ast::context& ctx) {
       switch (kw) {
          case keywords::void_: return ast::types::void_type;
-         case keywords::bool_: return ast::types::bool_type;
-         case keywords::byte_: return ast::types::uint8_type;
-         case keywords::sbyte_: return ast::types::int8_type;
-         case keywords::short_: return ast::types::int16_type;
-         case keywords::ushort_: return ast::types::uint16_type;
-         case keywords::int_: return ast::types::int32_type;
-         case keywords::uint_: return ast::types::uint32_type;
-         case keywords::long_: return ast::types::int64_type;
-         case keywords::ulong_: return ast::types::uint64_type;
-         case keywords::float_: return ast::types::ieee32_type;
-         case keywords::double_: return ast::types::ieee64_type;
-         case keywords::string_: return ast::types::string_type;
-         case keywords::char_: return ast::types::char_type;
+         case keywords::bool_: return ctx.bool_type();
+         case keywords::byte_: return ctx.int8_type();
+         case keywords::sbyte_: return ctx.int8_type();
+         case keywords::short_: return ctx.int16_type();
+         case keywords::ushort_: return ctx.uint16_type();
+         case keywords::int_: return ctx.int32_type();
+         case keywords::uint_: return ctx.uint32_type();
+         case keywords::long_: return ctx.int64_type();
+         case keywords::ulong_: return ctx.uint64_type();
+         case keywords::float_: return ctx.ieee32_type();
+         case keywords::double_: return ctx.ieee64_type();
+         case keywords::string_: return ctx.string_type();
+         case keywords::char_: return ctx.char_type();
          default: return ast::types::undefined;
       }
    }
@@ -26,7 +25,7 @@ namespace rush {
       auto tok = next_skip_indent();
 
       if (tok.is_keyword())
-         return builtin_type_from_keyword(tok.keyword());
+         return builtin_type_from_keyword(tok.keyword(), *_context);
 
       if (tok.is_identifier()) {
          auto sym = _scope.current().lookup(tok.text());

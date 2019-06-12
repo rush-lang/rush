@@ -90,16 +90,16 @@ namespace rush::ast {
          }
       }
 
-      virtual void visit_builtin_floating_type(ast::builtin_floating_type const& type) override {
+      virtual void visit_builtin_floating_type(ast::builtin_floating_point_type const& type) override {
          switch (type.fpkind()) {
-         case ast::floating_kind::ieee16: write("builtin.ieee16"); break;
-         // case ast::floating_kind::ieee32: write("builtin.ieee32"); break;
-         // case ast::floating_kind::ieee64: write("builtin.ieee64"); break;
-         case ast::floating_kind::ieee32: write("float"); break;
-         case ast::floating_kind::ieee64: write("double"); break;
-         case ast::floating_kind::ieee80: write("builtin.ieee80"); break;
-         case ast::floating_kind::ieee128: write("builtin.ieee128"); break;
-         case ast::floating_kind::ppc128: write("builtin.ppc128"); break;
+         case ast::floating_point_kind::ieee16: write("builtin.ieee16"); break;
+         // case ast::floating_point_kind::ieee32: write("builtin.ieee32"); break;
+         // case ast::floating_point_kind::ieee64: write("builtin.ieee64"); break;
+         case ast::floating_point_kind::ieee32: write("float"); break;
+         case ast::floating_point_kind::ieee64: write("double"); break;
+         case ast::floating_point_kind::ieee80: write("builtin.ieee80"); break;
+         case ast::floating_point_kind::ieee128: write("builtin.ieee128"); break;
+         case ast::floating_point_kind::ppc128: write("builtin.ppc128"); break;
          }
       }
 

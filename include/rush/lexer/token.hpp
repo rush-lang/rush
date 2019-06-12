@@ -35,6 +35,7 @@ namespace rush {
 		long_literal = 0x01,
 		float_literal = 0x02,
 		unsigned_literal = 0x04,
+      unsigned_long_literal = 0x08
 	};
 
 

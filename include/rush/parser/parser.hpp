@@ -13,6 +13,7 @@
 #include "rush/ast/expressions.hpp"
 #include "rush/ast/declarations.hpp"
 #include "rush/ast/statements.hpp"
+#include "rush/ast/context.hpp"
 
 #include "rush/lexer/token.hpp"
 #include "rush/lexer/analysis.hpp"
@@ -34,19 +35,23 @@ namespace rush {
 			: _opts(opts)
          , _eof(tokens::eof()) {}
 
-		rush::parse_result<ast::node> parse(lexical_analysis const& lxa) {
+		rush::syntax_analysis parse(lexical_analysis const& lxa) {
 			initialize(lxa);
-         return parse_module(lxa.id());
+         return {
+            std::move(_context),
+            parse_module(lxa.id())
+         };
 		}
 
 	private:
-		lexical_token _eof;
-
       rush::scope_chain _scope;
-		parser_options _opts;
-		std::pair<
-			lxa_iterator,
-			lxa_iterator> _range;
+		rush::lexical_token _eof;
+		rush::parser_options _opts;
+
+      std::unique_ptr<ast::module> _module;
+      std::unique_ptr<ast::context> _context;
+		std::pair<lxa_iterator, lxa_iterator> _range;
+
 
 		void initialize(lexical_analysis const& lxa) {
          auto loc = lxa.back().location();
