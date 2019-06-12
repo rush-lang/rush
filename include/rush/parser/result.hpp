@@ -46,6 +46,8 @@ namespace rush {
 
    template <typename NodeT>
    class parse_result {
+      friend class syntax_analysis;
+
       parse_result(parse_result const&) = delete;
       void operator = (parse_result const&) = delete;
 
@@ -139,6 +141,14 @@ namespace rush {
    private:
       std::unique_ptr<NodeT> _node;
       std::vector<rush::syntax_error> _errors;
+
+      void attach(ast::context& ctx) {
+         if (_node) _node->attach(*_node, ctx);
+      }
+
+      void detach(ast::context& ctx) {
+         if (_node) _node->detach(*_node, ctx);
+      }
    };
 
 	class syntax_analysis {
@@ -160,8 +170,8 @@ namespace rush {
       }
 
 	private:
-      std::unique_ptr<ast::context> _context;
 		rush::parse_result<ast::node> _result;
+      std::unique_ptr<ast::context> _context;
 
 		syntax_analysis(std::unique_ptr<ast::context> ctx)
 			: _context { std::move(ctx) }
@@ -169,7 +179,9 @@ namespace rush {
 
 		syntax_analysis(std::unique_ptr<ast::context> ctx, rush::parse_result<ast::node> ast)
 			: _context { std::move(ctx) }
-			, _result { std::move(ast) } {}
+			, _result { std::move(ast) } {
+            _result.attach(*_context);
+         }
 	};
 } // rush
 

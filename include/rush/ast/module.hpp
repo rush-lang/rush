@@ -5,6 +5,9 @@
 
 #include "rush/ast/decls/import.hpp"
 #include "rush/ast/decls/module.hpp"
+#include "rush/ast/decls/declaration.hpp"
+
+#include <algorithm>
 
 namespace rush::ast {
    class module : public ast::node {
@@ -37,12 +40,14 @@ namespace rush::ast {
          v.visit_module(*this);
       }
 
-      virtual void attach(ast::node&, ast::context&) override {
-
+      virtual void attach(ast::node&, ast::context& ctx) override {
+         std::for_each(_imports.begin(), _imports.end(), [this, &ctx](auto& imp) { imp->attach(*this, ctx); });
+         std::for_each(_decls.begin(), _decls.end(), [this, &ctx](auto& decl) { decl->attach(*this, ctx); });
       }
 
-      virtual void detach(ast::node&, ast::context&) override {
-
+      virtual void detach(ast::node&, ast::context& ctx) override {
+         std::for_each(_imports.begin(), _imports.end(), [this, &ctx](auto& imp) { imp->detach(*this, ctx); });
+         std::for_each(_decls.begin(), _decls.end(), [this, &ctx](auto& decl) { decl->detach(*this, ctx); });
       }
 
    private:
