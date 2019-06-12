@@ -16,6 +16,7 @@
 #include <iterator>
 #include <streambuf>
 #include <optional>
+#include <string_view>
 
 using namespace rush::ascii;
 namespace tok = rush::tokens;
@@ -78,17 +79,38 @@ namespace rush {
          return !eof() && iequal(peek(offset), cp);
       }
 
-      bool check(std::string str, std::size_t offset = 0) {
+      bool check_skip(codepoint_t cp, std::size_t offset = 0) {
+         if (icheck(cp, offset)) { skip(offset + 1); return true; }
+         return false;
+      }
+
+      bool icheck_skip(codepoint_t cp, std::size_t offset = 0) {
+         if (icheck(cp, offset)) { skip(offset + 1); return true; }
+         return false;
+      }
+
+      bool check(std::string_view str, std::size_t offset = 0) {
          for (std::size_t i = 0; i < str.length(); ++i)
             if (!check(str[i], offset + i)) return false;
          return true;
       }
 
-      bool icheck(std::string str, std::size_t offset = 0) {
+      bool icheck(std::string_view str, std::size_t offset = 0) {
          for (std::size_t i = 0; i < str.length(); ++i)
             if (!icheck(str[i], offset + i)) return false;
          return true;
       }
+
+      bool check_skip(std::string_view str, std::size_t offset = 0) {
+         if (check(str, offset)) { skip(offset + str.size()); return true; }
+         return false;
+      }
+
+      bool icheck_skip(std::string_view str, std::size_t offset = 0) {
+         if (icheck(str, offset)) { skip(offset + str.size()); return true; }
+         return false;
+      }
+
 
       auto check_if(function_ref<bool(codepoint_t)> predicate, std::size_t offset = 0)
          -> decltype(predicate(codepoint_t{}), bool{}) {
@@ -213,21 +235,19 @@ namespace rush {
       }
 
       lexical_token_suffix scan_floating_literal_suffix() {
-         if (icheck('f')) { skip(); return lexical_token_suffix::float_literal; }
+         if (!check_if(is_ident_body, 1) && icheck_skip('f'))
+            return lexical_token_suffix::float_literal;
          return lexical_token_suffix::none;
       }
 
       lexical_token_suffix scan_integer_literal_suffix() {
-         if (icheck('u')) { skip(); return lexical_token_suffix::unsigned_literal; }
-         if (icheck('l')) { skip(); return lexical_token_suffix::long_literal; }
+         if (!check_if(is_ident_body, 2) && icheck_skip("ul"))
+            return lexical_token_suffix::unsigned_long_literal;
 
-         // if (icheck("ul")) {
-         // 	skip(2);
-         // 	return
-         // 		lexical_token_suffix::long_literal |
-         // 		lexical_token_suffix::unsigned_literal;
-         // }
-
+         if (!check_if(is_ident_body, 1)) {
+            if (icheck_skip('l')) return lexical_token_suffix::long_literal;
+            if (icheck_skip('u')) return lexical_token_suffix::unsigned_literal;
+         }
          return lexical_token_suffix::none;
       }
 
@@ -281,64 +301,66 @@ namespace rush {
 
          switch (symbol) {
             case symbols::ampersand: {
-               if (check('&', 1)) { skip(2); return tok::double_ampersand(location()); }
-               if (check('=', 1)) { skip(2); return tok::ampersand_equals(location()); }
+               if (check_skip('&', 1)) return tok::double_ampersand(location());
+               if (check_skip('=', 1)) return tok::ampersand_equals(location());
             } break;
 
             case symbols::pipe: {
-               if (check('|', 1)) { skip(2); return tok::double_pipe(location()); }
-               if (check('=', 1)) { skip(2); return tok::pipe_equals(location()); }
+               if (check_skip('|', 1)) return tok::double_pipe(location());
+               if (check_skip('=', 1)) return tok::pipe_equals(location());
             } break;
 
             case symbols::plus: {
-               if (check('+', 1)) { skip(2); return tok::plus_plus(location()); }
-               if (check('=', 1)) { skip(2); return tok::plus_equals(location()); }
+               if (check_skip('+', 1)) return tok::plus_plus(location());
+               if (check_skip('=', 1)) return tok::plus_equals(location());
             } break;
 
             case symbols::minus: {
-               if (check('>', 1)) { skip(2); return tok::thin_arrow(location()); }
-               if (check('-', 1)) { skip(2); return tok::minus_minus(location()); }
-               if (check('=', 1)) { skip(2); return tok::minus_equals(location()); }
+               if (check_skip('>', 1)) return tok::thin_arrow(location());
+               if (check_skip('-', 1)) return tok::minus_minus(location());
+               if (check_skip('=', 1)) return tok::minus_equals(location());
             } break;
 
             case symbols::caret: {
-               if (check('=', 1)) { skip(2); return tok::caret_equals(location()); }
+               if (check_skip('=', 1)) return tok::caret_equals(location());
             } break;
 
             case symbols::asterisk: {
-               if (check('=', 1)) { skip(2); return tok::asterisk_equals(location()); }
+               if (check_skip('=', 1)) return tok::asterisk_equals(location());
             } break;
 
             case symbols::forward_slash: {
-               if (check('=', 1)) { skip(2); return tok::forward_slash_equals(location()); }
+               if (check_skip('=', 1)) return tok::forward_slash_equals(location());
             } break;
 
             case symbols::percent: {
-               if (check('=', 1)) { skip(2); return tok::percent_equals(location()); }
+               if (check_skip('=', 1)) return tok::percent_equals(location());
             } break;
 
             case symbols::equals: {
-               if (check('>', 1)) { skip(2); return tok::thick_arrow(location()); }
-               if (check('=', 1)) { skip(2); return tok::equals_equals(location()); }
+               if (check_skip('>', 1)) return tok::thick_arrow(location());
+               if (check_skip('=', 1)) return tok::equals_equals(location());
             } break;
 
             case symbols::exclamation_mark: {
-               if (check('=', 1)) { skip(2); return tok::exclamation_mark_equals(location()); }
+               if (check_skip('=', 1)) return tok::exclamation_mark_equals(location());
             } break;
 
             case symbols::left_chevron: {
-               if (check('=', 1)) { skip(2); return tok::left_chevron_equals(location()); }
-               if (check('<', 1)) { skip(2);
-                  if (check('=')) { skip(1); return tok::double_left_chevron_equals(location()); }
-                  return tok::double_left_chevron(location());
+               if (check_skip('=', 1)) return tok::left_chevron_equals(location());
+               if (check_skip('<', 1)) {
+                  return check_skip('=')
+                     ? tok::double_left_chevron_equals(location())
+                     : tok::double_left_chevron(location());
                }
             } break;
 
             case symbols::right_chevron: {
-               if (check('=', 1)) { skip(2); return tok::right_chevron_equals(location()); }
-               if (check('>', 1)) { skip(2);
-                  if (check('=')) { skip(1); return tok::double_right_chevron_equals(location()); }
-                  return tok::double_right_chevron(location());
+               if (check_skip('=', 1)) return tok::right_chevron_equals(location());
+               if (check_skip('>', 1)) {
+                  return check_skip('=')
+                     ? tok::double_right_chevron_equals(location())
+                     : tok::double_right_chevron(location());
                }
             } break;
 
@@ -377,13 +399,13 @@ namespace rush {
       return lex(input, "", opts);
 	}
 
-   lexical_analysis lex(std::string_view input, std::string id, lexer_options const& opts) {
+   lexical_analysis lex(std::string_view input, std::string_view id, lexer_options const& opts) {
       auto l = lexer { opts };
       auto src = source::from_string(input, id);
       return l.tokenize(src);
 	}
 
-	lexical_analysis lex(std::istream& input, std::string id, lexer_options const& opts) {
+	lexical_analysis lex(std::istream& input, std::string_view id, lexer_options const& opts) {
 		auto l = lexer { opts };
       auto src = source::from_stream(input, id);
 		return l.tokenize(src);

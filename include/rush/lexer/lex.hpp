@@ -17,8 +17,8 @@ namespace rush {
 
    lexical_analysis lex(std::istream&, lexer_options const& = {});
 	lexical_analysis lex(std::string_view, lexer_options const& = {});
-	lexical_analysis lex(std::istream&, std::string id, lexer_options const& = {});
-	lexical_analysis lex(std::string_view, std::string id, lexer_options const& = {});
+	lexical_analysis lex(std::istream&, std::string_view id, lexer_options const& = {});
+	lexical_analysis lex(std::string_view, std::string_view id, lexer_options const& = {});
    lexical_analysis lex(rush::source const&, lexer_options const& = {});
 }
 

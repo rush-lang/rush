@@ -16,6 +16,7 @@ namespace rush {
 				switch (arg.suffix) {
 				case lexical_token_suffix::long_literal: return str + "l";
 				case lexical_token_suffix::unsigned_literal: return str + "u";
+            case lexical_token_suffix::unsigned_long_literal: return str + "ul";
 				default: return str;
 				}
 			},
