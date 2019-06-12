@@ -201,7 +201,7 @@ namespace rush {
 
          auto tok = peek_with_indent();
          if (tok.is_not(symbols::semi_colon))
-            return error("expected ';'", tok);
+            return error("expected ';' before '{}'", tok);
 
          while (tok.is(symbols::semi_colon)) {
             next_with_indent();

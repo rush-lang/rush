@@ -253,12 +253,16 @@ namespace rush {
       case keywords::throw_: result = terminated(&parser::parse_throw_stmt); break;
       case keywords::let_: {
          auto decl = terminated(&parser::parse_constant_decl);
-         if (decl.success()) result = ast::stmts::decl_stmt(std::move(decl));
+         result = decl.success()
+            ? ast::stmts::decl_stmt(std::move(decl))
+            : std::move(decl).as<ast::statement>();
          break;
       }
       case keywords::var_: {
          auto decl = terminated(&parser::parse_variable_decl);
-         if (decl.success()) result = ast::stmts::decl_stmt(std::move(decl));
+         result = decl.success()
+            ? ast::stmts::decl_stmt(std::move(decl))
+            : std::move(decl).as<ast::statement>();
          break;
       }}
 
