@@ -1,0 +1,74 @@
+export extern func cos(float) -> float as _cos;
+export extern func sin(float) -> float as _sin;
+export extern func tan(float) -> float as _tan;
+export extern func cos(double) -> double as _cos;
+export extern func sin(double) -> double as _sin;
+export extern func tan(double) -> double as _tan;
+
+concept any: pass
+
+concept equatable:
+	func operator ==(a, b: any) -> bool;
+
+concept orderable:
+	func operator <(a, b: any) -> bool;
+
+concept comparable:
+	extends equatable;
+	extends orderable;
+
+concept numeric:
+	func operator +(a, b: comparable) -> numeric;
+	func operator -(a, b: comparable) -> numeric;
+	func operator *(a, b: comparable) -> numeric;
+	func operator /(a, b: comparable) -> numeric;
+
+concept integral:
+	func idiv(a, b: numeric) -> (quot, rem: integral);
+	func operator %(a, b: numeric) -> integral;
+
+concept floating:
+	func sin(x: numeric) -> floating
+	func cos(x: numeric) -> floating
+	func tan(x: numeric) -> floating
+
+concept foo:
+	func bar(self: @baz) -> int
+
+class vector2:
+public:
+	let x, y: float;
+
+	prop length => sqrt(x * x + y * y);
+
+	prop length:
+		get => sqrt(x * x + y * y);
+
+	prop x:
+		get => _x;
+		set => _x = value;
+
+	prop y -> float:
+		get => _y
+		set => _y = value;
+
+	func length -> float:
+		get => sqrt(x * x + y * y);
+
+	static operator +(u, v: vector2) -> vector2:
+		return new vector2(
+			u.x + v.x,
+			u.y + u.y);
+
+	static operator -(u, v: vector2) -> vector2:
+		return new vector2(
+			u.x - v.x,
+			u.y - v.y);
+
+func to_string({x, y}: point) => "$x, $y";
+
+func main(args: string[])
+-> int;
+
+func main(args: string[]) -> int:
+	return 0;
