@@ -1,0 +1,32 @@
+
+class wrapper<T>:
+   virtual T unwrap();
+
+
+class none<T>:
+   @wrapper<T>
+   public override T unwrap() => assert("nil reference");
+
+class some<T>:
+   @wrapper<T>
+   public override T unwrap() => _val;
+   private _val: T
+
+
+/// A type that represents a value or 'nil' (no value).
+///
+///
+export struct optional<T>:
+public:
+   func this():
+      this.value = .none
+
+   func this(val: T):
+      this.value = .some(val);
+
+   func value() -> T:
+      return .value.unwrap()
+
+   func has_value() -> bool:
+      return .value == .none;
+
