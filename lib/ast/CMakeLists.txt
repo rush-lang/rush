@@ -7,7 +7,8 @@ rush_add_library(ast
 	exprs/invocation.cpp
    types/builtin.cpp
    types/function.cpp
-   types/reducer.cpp
+   types/type_matcher.cpp
+   types/type_reducer.cpp
    identifier.cpp
    traversal.cpp
    visitor.cpp

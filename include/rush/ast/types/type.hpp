@@ -53,15 +53,16 @@ namespace rush::ast {
       }
 
       template <typename T>
-      bool is(std::enable_if_t<std::is_base_of_v<ast::type, T>>* = nullptr) const noexcept {
+      bool is() const noexcept {
+         static_assert(std::is_base_of_v<ast::type, T>, "T is not a dervied rush::ast::type");
          // return type_traits<T>::kind() == _ptr->kind();
          return false;
       }
 
       template <typename T>
-      T const& as(std::enable_if_t<std::is_base_of_v<ast::type, T>>* = nullptr) const noexcept {
-         assert(is<T>() && "T is not a derived type.");
-         return *reinterpret_cast<T const*>(_ptr);
+      T const* as() const noexcept {
+         static_assert(std::is_base_of_v<ast::type, T>, "T is not a derived rush::ast::type");
+         return reinterpret_cast<T const*>(_ptr);
       }
 
       void accept(ast::visitor& v) const {

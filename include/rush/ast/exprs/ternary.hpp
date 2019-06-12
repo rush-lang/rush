@@ -4,7 +4,7 @@
 #define RUSH_AST_EXPRS_TERNARY_HPP
 
 #include "rush/ast/exprs/expression.hpp"
-#include "rush/ast/types/utility.hpp"
+#include "rush/ast/types/type_reducer.hpp"
 
 #include <memory>
 

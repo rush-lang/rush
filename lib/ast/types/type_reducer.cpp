@@ -1,9 +1,11 @@
 #include "rush/ast/types/type.hpp"
 #include "rush/ast/types/builtin.hpp"
-#include "rush/ast/types/utility.hpp"
+#include "rush/ast/types/type_matcher.hpp"
+#include "rush/ast/types/type_reducer.hpp"
 #include "rush/ast/visitor.hpp"
 
-using namespace rush;
+namespace ast = rush::ast;
+namespace types = rush::ast::types;
 
 class type_reducer {
 public:
@@ -11,7 +13,7 @@ public:
       : _first { first } {}
 
    ast::type_ref operator ()(ast::type_ref second) const noexcept {
-      if (_first == second)
+      if (types::match(_first, second))
          return _first;
 
       return irreducible_type;

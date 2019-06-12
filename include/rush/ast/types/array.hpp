@@ -63,7 +63,7 @@ namespace rush::ast {
       ast::array_type const& get(ast::type_ref type, std::vector<array_type_dim> dims);
 
    private:
-      std::unordered_map<ast::type_ref, array_type> _types;
+      // std::unordered_map<ast::type_ref, array_type> _types;
    };
 
    class tuple_type_map {
