@@ -60,8 +60,8 @@ namespace rush {
 		case lexical_token_type::keyword:
 			switch (tok.keyword()) {
 			default: return error("unexpected keyword '{}' parsing primary expression", tok);
-			case keywords::true_: next_skip_indent(); result = exprs::literal(true, _context->bool_type()); break;
-			case keywords::false_: next_skip_indent(); result = exprs::literal(false, _context->bool_type()); break;
+			case keywords::true_: next_skip_indent(); result = exprs::literal(true, *_context); break;
+			case keywords::false_: next_skip_indent(); result = exprs::literal(false, *_context); break;
 			} break;
 		case lexical_token_type::symbol:
          if (is_unary_prefix_op(tok)) result = parse_unary_expr();
@@ -80,7 +80,7 @@ namespace rush {
 		assert(peek_skip_indent().is_string_literal() && "expected token to be a string literal.");
 		auto tok = next_skip_indent();
 		auto str = tok.text();
-		return exprs::literal(str, _context->string_type());
+		return exprs::literal(str, *_context);
 	}
 
 	rush::parse_result<ast::expression> parser::parse_integer_expr() {
@@ -88,10 +88,10 @@ namespace rush {
 		auto tok = next_skip_indent();
 		auto val = tok.integer_value();
 		switch (tok.suffix()) {
-		case lexical_token_suffix::none: return exprs::literal(val, _context->int32_type());
-		case lexical_token_suffix::long_literal: return exprs::literal(val, _context->int64_type());
-		case lexical_token_suffix::unsigned_literal: return exprs::literal(val, _context->uint32_type());
-		case lexical_token_suffix::unsigned_long_literal: return exprs::literal(val, _context->uint64_type());
+		case lexical_token_suffix::none: return exprs::literal(static_cast<int>(val), *_context);
+		case lexical_token_suffix::long_literal: return exprs::literal(static_cast<long>(val), *_context);
+		case lexical_token_suffix::unsigned_literal: return exprs::literal(static_cast<unsigned>(val), *_context);
+		case lexical_token_suffix::unsigned_long_literal: return exprs::literal(static_cast<unsigned long>(val), *_context);
 		default: throw;
 		}
 	}
@@ -101,8 +101,8 @@ namespace rush {
 		auto tok = next_skip_indent();
 		auto val = tok.floating_value();
 		switch (tok.suffix()) {
-		case lexical_token_suffix::none: return exprs::literal(val, _context->ieee64_type());
-		case lexical_token_suffix::float_literal: return exprs::literal(val, _context->ieee32_type());
+		case lexical_token_suffix::none: return exprs::literal(static_cast<double>(val), *_context);
+		case lexical_token_suffix::float_literal: return exprs::literal(static_cast<float>(val), *_context);
 		default: throw;
 		}
 	}

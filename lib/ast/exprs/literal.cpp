@@ -1,3 +1,4 @@
+#include "rush/ast/context.hpp"
 #include "rush/ast/exprs/literal.hpp"
 #include "rush/ast/types/builtin.hpp"
 
@@ -19,55 +20,55 @@ namespace rush::ast::exprs {
 		return make_literal_expr<nil_literal_expression>(std::uint64_t(0), type);
 	}
 
-	std::unique_ptr<boolean_literal_expression> literal(bool val, ast::type_ref val_type) {
-		return make_literal_expr<boolean_literal_expression>(val, val_type);
+	std::unique_ptr<boolean_literal_expression> literal(bool val, ast::context& ctx) {
+		return make_literal_expr<boolean_literal_expression>(val, ctx.bool_type());
 	}
 
-	std::unique_ptr<string_literal_expression> literal(std::string val, ast::type_ref val_type) {
-		return make_literal_expr<string_literal_expression>(val, val_type);
+	std::unique_ptr<string_literal_expression> literal(std::string val, ast::context& ctx) {
+		return make_literal_expr<string_literal_expression>(val, ctx.string_type());
 	}
 
-	std::unique_ptr<integer_literal_expression> literal(std::int8_t val, ast::type_ref val_type) {
-		return make_literal_expr<integer_literal_expression>(static_cast<std::uint64_t>(val), val_type);
+	std::unique_ptr<integer_literal_expression> literal(std::int8_t val, ast::context& ctx) {
+		return make_literal_expr<integer_literal_expression>(static_cast<std::uint64_t>(val), ctx.int8_type());
 	}
 
-	std::unique_ptr<integer_literal_expression> literal(std::int16_t val, ast::type_ref val_type) {
-		return make_literal_expr<integer_literal_expression>(static_cast<std::uint64_t>(val), val_type);
+	std::unique_ptr<integer_literal_expression> literal(std::int16_t val, ast::context& ctx) {
+		return make_literal_expr<integer_literal_expression>(static_cast<std::uint64_t>(val), ctx.int16_type());
 	}
 
-	std::unique_ptr<integer_literal_expression> literal(std::int32_t val, ast::type_ref val_type) {
-		return make_literal_expr<integer_literal_expression>(static_cast<std::uint64_t>(val), val_type);
+	std::unique_ptr<integer_literal_expression> literal(std::int32_t val, ast::context& ctx) {
+		return make_literal_expr<integer_literal_expression>(static_cast<std::uint64_t>(val), ctx.int32_type());
 	}
 
-	std::unique_ptr<integer_literal_expression> literal(std::int64_t val, ast::type_ref val_type) {
-		return make_literal_expr<integer_literal_expression>(static_cast<std::uint64_t>(val), val_type);
+	std::unique_ptr<integer_literal_expression> literal(std::int64_t val, ast::context& ctx) {
+		return make_literal_expr<integer_literal_expression>(static_cast<std::uint64_t>(val), ctx.int64_type());
 	}
 
-	std::unique_ptr<integer_literal_expression> literal(std::uint8_t val, ast::type_ref val_type) {
-		return make_literal_expr<integer_literal_expression>(static_cast<std::uint64_t>(val), val_type);
+	std::unique_ptr<integer_literal_expression> literal(std::uint8_t val, ast::context& ctx) {
+		return make_literal_expr<integer_literal_expression>(static_cast<std::uint64_t>(val), ctx.uint8_type());
 	}
 
-	std::unique_ptr<integer_literal_expression> literal(std::uint16_t val, ast::type_ref val_type) {
-		return make_literal_expr<integer_literal_expression>(static_cast<std::uint64_t>(val), val_type);
+	std::unique_ptr<integer_literal_expression> literal(std::uint16_t val, ast::context& ctx) {
+		return make_literal_expr<integer_literal_expression>(static_cast<std::uint64_t>(val), ctx.uint16_type());
 	}
 
-	std::unique_ptr<integer_literal_expression> literal(std::uint32_t val, ast::type_ref val_type) {
-		return make_literal_expr<integer_literal_expression>(static_cast<std::uint64_t>(val), val_type);
+	std::unique_ptr<integer_literal_expression> literal(std::uint32_t val, ast::context& ctx) {
+		return make_literal_expr<integer_literal_expression>(static_cast<std::uint64_t>(val), ctx.uint32_type());
 	}
 
-	std::unique_ptr<integer_literal_expression> literal(std::uint64_t val, ast::type_ref val_type) {
-		return make_literal_expr<integer_literal_expression>(val, val_type);
+	std::unique_ptr<integer_literal_expression> literal(std::uint64_t val, ast::context& ctx) {
+		return make_literal_expr<integer_literal_expression>(val, ctx.uint64_type());
 	}
 
-	std::unique_ptr<floating_literal_expression> literal(float val, ast::type_ref val_type) {
-		return make_literal_expr<floating_literal_expression>(static_cast<double>(val), val_type);
+	std::unique_ptr<floating_literal_expression> literal(float val, ast::context& ctx) {
+		return make_literal_expr<floating_literal_expression>(static_cast<double>(val), ctx.ieee32_type());
 	}
 
-	std::unique_ptr<floating_literal_expression> literal(double val, ast::type_ref val_type) {
-		return make_literal_expr<floating_literal_expression>(static_cast<double>(val), val_type);
+	std::unique_ptr<floating_literal_expression> literal(double val, ast::context& ctx) {
+		return make_literal_expr<floating_literal_expression>(static_cast<double>(val), ctx.ieee64_type());
 	}
 
-	std::unique_ptr<floating_literal_expression> literal(long double val, ast::type_ref val_type) {
-		return make_literal_expr<floating_literal_expression>(static_cast<double>(val), val_type);
+	std::unique_ptr<floating_literal_expression> literal(long double val, ast::context& ctx) {
+		return make_literal_expr<floating_literal_expression>(static_cast<double>(val), ctx.ieee64_type());
 	}
 }
