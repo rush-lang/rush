@@ -80,6 +80,10 @@ namespace rush::ast {
          write("bool");
       }
 
+      virtual void visit_builtin_string_type(ast::builtin_string_type const& type) override {
+         write("string");
+      }
+
       virtual void visit_builtin_integral_type(ast::builtin_integral_type const& type) override {
          // write(type.is_signed() ? "builtin.int{}" : "builtin.uint{}", type.bit_width());
          switch (type.unit()) {
@@ -102,7 +106,6 @@ namespace rush::ast {
          case ast::floating_point_kind::ppc128: write("builtin.ppc128"); break;
          }
       }
-
 
       virtual void visit_function_type(ast::function_type const& type) override {
          if (type.parameters().empty()) {

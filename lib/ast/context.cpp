@@ -8,7 +8,11 @@ namespace rush::ast {
    }
 
    ast::type_ref context::char_type() { return types::undefined; }
-   ast::type_ref context::string_type() { return types::undefined; }
+
+   ast::type_ref context::string_type() {
+      static const builtin_string_type string_type {};
+      return string_type;
+   }
 
    ast::type_ref context::ieee32_type() { return floating_point_type(floating_point_kind::ieee32); }
    ast::type_ref context::ieee64_type() { return floating_point_type(floating_point_kind::ieee64); }

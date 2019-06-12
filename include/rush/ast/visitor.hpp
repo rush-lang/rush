@@ -71,6 +71,7 @@ namespace rush::ast {
       virtual void visit_builtin_bool_type(ast::builtin_bool_type const&) {}
       virtual void visit_builtin_integral_type(ast::builtin_integral_type const&) {}
       virtual void visit_builtin_floating_type(ast::builtin_floating_point_type const&) {}
+      virtual void visit_builtin_string_type(ast::builtin_string_type const&) {}
 
       virtual void visit_array_type(ast::array_type const&) {};
       virtual void visit_tuple_type(ast::tuple_type const&) {};
