@@ -2,6 +2,7 @@ project(diag VERSION ${RUSH_VERSION} LANGUAGES CXX)
 
 rush_add_library(diag
    diagnostic.cpp
+   dump.cpp
 )
 
 target_include_directories(diag PUBLIC
