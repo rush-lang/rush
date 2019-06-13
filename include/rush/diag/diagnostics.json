@@ -1,0 +1,27 @@
+{
+   "warnings": [
+      { "name": "unused_local_variable", "format": "the variable '{}' is declared but never used.", "params": [ "name" ] },
+      { "name": "unused_local_constant", "format": "the constant '{}' is declared but never used.", "params": [ "name" ] },
+      { "name": "unused_global_variable", "format": "the global variable '{}' is declared but never used.", "params": [ "name" ] },
+      { "name": "unused_global_constant", "format": "the global constant '{}' is declared but never used.", "params": [ "name" ] },
+      { "name": "unused_internal_class", "format": "the class '{}' is declared but never used.", "params": [ "name" ] },
+      { "name": "unused_internal_struct", "format": "the struct '{}' is declared but never used.", "params": [ "name" ] },
+      { "name": "unused_internal_concept", "format": "the concept '{}' is declared but never used.", "params": [ "name" ] },
+      { "name": "unused_internal_interface", "format": "the interface '{}' is declared but never used.", "params": [ "name" ] },
+      { "name": "unused_internal_function", "format": "the function '{}' is declared but never used.", "params": [ "name" ] },
+      { "name": "unused_private_field", "format": "the field '{}' in '{}' '{}' is declared but never used.", "params": [ "name", "kind", "type" ] },
+      { "name": "unused_private_method", "format": "the method '{}' in '{}' '{}' is declared but never used.", "params": [ "name", "kind", "type" ] },
+      { "name": "unused_private_property", "format": "the property '{}' in '{}' '{}' is declared but never used.", "params": [ "name", "kind", "type" ] }
+   ],
+
+   "errors": [
+      { "kind": "syntax", "name": "expected", "format": "expected '{}' before '{}'", "params": [ "expected", "actual" ] },
+      { "kind": "semantic", "name": "multiple_definitions", "format": "a definition for '{}' already exists.", "params": [ "name" ] },
+      { "kind": "semantic", "name": "multiple_member_definitions", "format": "the type '{}' already contains a definition for '{}'", "params": [ "type", "name" ] },
+      { "kind": "semantic", "name": "undeclared_identifier", "format": "the name '{}' does not exist in the current context.", "params": [ "name" ]  },
+      { "kind": "semantic", "name": "unresolved_type", "format": "" },
+      { "kind": "semantic", "name": "irreducible_type", "format": "the types '{}' and '{}' do not share a common type." },
+      { "kind": "semantic", "name": "mismatched_type_assignment", "format": "the type '{}' cannot be assigned to an instance of '{}'", "params": [ "first", "second" ] },
+      { "kind": "semantic", "name": "infinitely_recursive_return_type_deduction", "message": "deducing return type is infinitely recursive." }
+   ]
+}
