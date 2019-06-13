@@ -24,9 +24,12 @@ namespace rush::ast {
 
    class array_type : public ast::type {
       friend class array_type_map;
-
    public:
-      virtual ast::type_kind kind() const {
+      array_type(ast::type_ref type, std::vector<array_type_dim> dims)
+         : _dims { std::move(dims) }
+         , _type { std::move(type) } {}
+
+      virtual ast::type_kind kind() const override {
          return ast::type_kind::array;
       }
 
@@ -42,13 +45,17 @@ namespace rush::ast {
          return _type;
       }
 
+      using node::accept;
+      virtual void accept(ast::visitor& v) const override {
+         v.visit_array_type(*this);
+      }
+
+      virtual void attach(ast::node&, ast::context&) override {}
+      virtual void detach(ast::node&, ast::context&) override {}
+
    private:
       ast::type_ref _type;
       std::vector<array_type_dim> _dims;
-
-      array_type(ast::type_ref type, std::vector<array_type_dim> dims)
-         : _dims { std::move(dims) }
-         , _type { std::move(type) } {}
    };
 
    // Container class for storage and retrieval of array types.

@@ -3,9 +3,7 @@
 namespace decls = rush::ast::decls;
 
 namespace rush {
-   rush::parse_result<ast::module> parser::parse_module(std::string_view name) {
-      _module = std::make_unique<ast::module>(std::string { name });
-
+   rush::parse_result<ast::module> parser::parse_module() {
       while (peek_skip_indent().is(keywords::import_)) {
          auto import_result = parse_import_decl();
          if (import_result.failed())

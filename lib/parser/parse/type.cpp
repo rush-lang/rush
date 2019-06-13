@@ -22,6 +22,21 @@ namespace rush {
    }
 
    std::optional<ast::type_ref> parser::parse_type() {
+      auto type = parse_simple_type();
+      if (!type.has_value()) return type;
+
+      auto tok = peek_skip_indent();
+      if (tok.is_symbol()) {
+         switch (tok.symbol()) {
+         default: break; // not a symbol that extends a type.
+         case symbols::left_square_bracket: return parse_array_type(type.value());
+         }
+      }
+
+      return std::move(type);
+   }
+
+   std::optional<ast::type_ref> parser::parse_simple_type() {
       auto tok = next_skip_indent();
 
       if (tok.is_keyword())
@@ -68,5 +83,19 @@ namespace rush {
       next_skip_indent();
 
       return parse_type();
+   }
+
+   std::optional<ast::type_ref> parser::parse_array_type(ast::type_ref elem_type) {
+      assert(peek_skip_indent().is(symbols::left_square_bracket) && "expected array type");
+      next_skip_indent();
+
+      auto tok = peek_skip_indent();
+      while (tok.is_not(symbols::right_square_bracket)) {
+         // grab dimensions etc..
+         next_skip_indent();
+      }
+
+      next_skip_indent(); // skip closing ']'
+      return _context->array_type(elem_type);
    }
 }

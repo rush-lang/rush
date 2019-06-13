@@ -37,7 +37,7 @@ namespace rush {
 
 		rush::syntax_analysis parse(lexical_analysis const& lxa) {
 			initialize(lxa);
-			auto result = parse_module(lxa.id());
+			auto result = parse_module();
          return rush::syntax_analysis {
             std::move(_context),
             std::move(result)
@@ -58,6 +58,8 @@ namespace rush {
          auto loc = lxa.back().location();
          _eof = tokens::eof(loc.next_column(lxa.back().size()));
 			_range = { lxa.begin(), lxa.end() };
+         _context = std::make_unique<ast::context>();
+         _module = std::make_unique<ast::module>(std::string { lxa.id() });
 		}
 
 		std::string format(std::string str) {
@@ -121,12 +123,15 @@ namespace rush {
 		}
 
       // modules.
-      rush::parse_result<ast::module> parse_module(std::string_view name);
+      rush::parse_result<ast::module> parse_module();
       rush::parse_result<ast::import_declaration> parse_import_decl();
 
       // types.
       std::optional<ast::type_ref> parse_type();
+      std::optional<ast::type_ref> parse_simple_type();
 		std::optional<ast::type_ref> parse_type_annotation();
+
+      std::optional<ast::type_ref> parse_array_type(ast::type_ref);
 
 		// declarations.
       rush::parse_result<ast::declaration> parse_toplevel_decl();

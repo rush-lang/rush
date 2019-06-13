@@ -1,7 +1,7 @@
-func print(a: int) => pass;
+import std.io
 
-func main():
-   print(add(42, 13));
+func println(str: string) => pass;
+
+func main(args: string[]):
+   println("hello world!");
    return 0;
-
-func add(a, b: int) => a + b;

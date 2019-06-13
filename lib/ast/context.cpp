@@ -73,8 +73,14 @@ namespace rush::ast {
       }
    }
 
-   ast::type_ref context::array_type(ast::type_ref, size_type) {
-      return types::undefined;
+   ast::type_ref context::array_type(ast::type_ref type, size_type rank) {
+      auto key = detail::array_type_key_t { rank, type };
+      auto it = _array_types.find(key);
+      if (it == _array_types.end()) {
+         auto p = std::make_unique<ast::array_type>(type, std::vector<array_type_dim> {});
+         it = _array_types.insert({ key, std::move(p) }).first;
+      }
+      return *it->second;
    }
 
    ast::type_ref context::tuple_type(iterator_range<ast::type_ref>) {

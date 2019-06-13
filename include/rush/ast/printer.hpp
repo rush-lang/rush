@@ -84,6 +84,11 @@ namespace rush::ast {
          write("string");
       }
 
+      virtual void visit_array_type(ast::array_type const& type) override {
+         type.underlying_type().accept(*this);
+         write("[]");
+      }
+
       virtual void visit_builtin_integral_type(ast::builtin_integral_type const& type) override {
          // write(type.is_signed() ? "builtin.int{}" : "builtin.uint{}", type.bit_width());
          switch (type.unit()) {
