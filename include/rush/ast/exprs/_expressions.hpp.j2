@@ -7,9 +7,11 @@ std::unique_ptr<::rush::ast::unary_expression> {{ operator/name }}(
 	std::unique_ptr<::rush::ast::expression> operand);
 ## endfor
 ## for operator in postfix
+## if not existsIn(operator, "exclude_func")
 
 std::unique_ptr<::rush::ast::unary_expression> {{ operator/name }}(
 	std::unique_ptr<::rush::ast::expression> operand);
+## endif
 ## endfor
 }
 #undef RUSH_UNARY_EXPRESSION_FACTORY_FUNC_DECLS
@@ -41,6 +43,7 @@ std::unique_ptr<::rush::ast::unary_expression>
 }
 ## endfor
 ## for operator in postfix
+## if not existsIn(operator, "exclude_func")
 
 std::unique_ptr<::rush::ast::unary_expression>
 	{{ operator/name }}(
@@ -48,6 +51,7 @@ std::unique_ptr<::rush::ast::unary_expression>
 	return make_unary_expression(std::move(operand),
 		::rush::ast::unary_operator::{{ operator/name }});
 }
+## endif
 ## endfor
 }
 #undef RUSH_UNARY_EXPRESSION_FACTORY_FUNC_DEFNS

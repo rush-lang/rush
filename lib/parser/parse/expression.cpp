@@ -162,7 +162,7 @@ namespace rush {
          break;
 
       case symbols::left_parenthesis:
-         operand_result = parse_invocation_expr(std::move(operand_result));
+         operand_result = parse_invoke_expr(std::move(operand_result));
          if (operand_result.failed()) return std::move(operand_result);
          break;
       }
@@ -315,14 +315,14 @@ namespace rush {
    }
 
 
-   rush::parse_result<ast::expression> parser::parse_invocation_expr(rush::parse_result<ast::expression> expr_result) {
+   rush::parse_result<ast::expression> parser::parse_invoke_expr(rush::parse_result<ast::expression> expr_result) {
       assert(peek_skip_indent().is(symbols::left_parenthesis) && "expected ternary expression sequence.");
 
       auto result = parse_argument_list();
       if (result.failed())
          return std::move(result).as<ast::expression>();
 
-		return exprs::call(
+		return exprs::invoke(
          std::move(expr_result),
          std::move(result));
    }

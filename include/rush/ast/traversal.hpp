@@ -52,7 +52,7 @@ namespace rush::ast {
          accept(expr.false_expr());
       }
 
-      virtual void visit_invocation_expr(ast::invocation_expression const& expr) override {
+      virtual void visit_invoke_expr(ast::invoke_expression const& expr) override {
          accept(expr.callable());
          accept(expr.arguments());
       }

@@ -194,8 +194,8 @@ namespace rush::ast {
 			writeln(" (name=\"{}\")>", expr.name());
 		}
 
-      virtual void visit_invocation_expr(ast::invocation_expression const& expr) override {
-         print_expression("invocation", expr);
+      virtual void visit_invoke_expr(ast::invoke_expression const& expr) override {
+         print_expression("invoke", expr);
          indent_traverse(expr);
       }
 

@@ -189,7 +189,7 @@ namespace rush {
 		rush::parse_result<ast::expression> parse_binary_expr_rhs();
 
       rush::parse_result<ast::expression> parse_ternary_expr(rush::parse_result<ast::expression> cond);
-      rush::parse_result<ast::expression> parse_invocation_expr(rush::parse_result<ast::expression> expr);
+      rush::parse_result<ast::expression> parse_invoke_expr(rush::parse_result<ast::expression> expr);
       rush::parse_result<ast::argument_list> parse_argument_list();
 
       rush::parse_result<ast::declaration> scope_insert(std::unique_ptr<ast::declaration> decl, rush::lexical_token const& ident) {

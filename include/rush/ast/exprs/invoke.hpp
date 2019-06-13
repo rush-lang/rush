@@ -12,25 +12,25 @@
 #include <memory>
 
 namespace rush::ast {
-   class invocation_expression;
+   class invoke_expression;
 }
 
 namespace rush::ast::exprs {
-   std::unique_ptr<invocation_expression> call(
+   std::unique_ptr<invoke_expression> invoke(
       std::unique_ptr<ast::expression> callable,
       std::unique_ptr<ast::argument_list> args);
 }
 
 namespace rush::ast {
-	class invocation_expression : public expression {
+	class invoke_expression : public expression {
       struct factory_tag_t {};
 
-      friend std::unique_ptr<invocation_expression> exprs::call(
+      friend std::unique_ptr<invoke_expression> exprs::invoke(
          std::unique_ptr<ast::expression> callable,
          std::unique_ptr<ast::argument_list> args);
 
    public:
-      invocation_expression(
+      invoke_expression(
          std::unique_ptr<ast::expression> callable,
          std::unique_ptr<ast::argument_list> args,
          factory_tag_t)
@@ -49,7 +49,7 @@ namespace rush::ast {
 
       using node::accept;
       virtual void accept(ast::visitor& v) const override {
-         v.visit_invocation_expr(*this);
+         v.visit_invoke_expr(*this);
       }
 
       virtual void attach(ast::node&, ast::context& context) override {
@@ -69,13 +69,13 @@ namespace rush::ast {
 }
 
 namespace rush::ast::exprs {
-   inline std::unique_ptr<invocation_expression> call(
+   inline std::unique_ptr<invoke_expression> invoke(
       std::unique_ptr<ast::expression> callable,
       std::unique_ptr<ast::argument_list> args) {
-         return std::make_unique<invocation_expression>(
+         return std::make_unique<invoke_expression>(
             std::move(callable),
             std::move(args),
-            invocation_expression::factory_tag_t {});
+            invoke_expression::factory_tag_t {});
       }
 }
 
