@@ -5,6 +5,12 @@
 
 #include "rush/diag/diagnostic.hpp"
 #include "rush/diag/visitor.hpp"
+#include "rush/lexer/token.hpp"
+
+#include "fmt/format.h"
+
+#include <string>
+#include <string_view>
 
 namespace rush::diag {
    class semantic_error : public diagnostic {
@@ -25,10 +31,15 @@ namespace rush::diag {
       };
 
       using diagnostic::accept;
-      virtual void accept(diag::visitor& v) const {
+      virtual void accept(diag::visitor& v) const override {
          v.visit_semantic_error(*this);
       }
    };
+
+   namespace errs {
+#     define RUSH_DIAG_SEMANTIC_ERROR_FUNC_IMPL
+#     include "rush/diag/_diagnostics.hpp"
+   }
 }
 
 #endif // RUSH_DIAG_SEMANTIC_ERROR_HPP

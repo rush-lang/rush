@@ -6,6 +6,19 @@
 #include <string>
 #include <string_view>
 
+using json = inja::json;
+
+template <typename RanIter>
+std::string join(std::string_view delim, RanIter first, RanIter last) {
+   std::string res;
+   for (; first != last; ++first) {
+      res += *first;
+      if (first != last - 1)
+        res += delim;
+   }
+   return res;
+}
+
 
 std::string remove_extension(std::string const& filename) {
 	size_t lastindex = filename.find_last_of(".");
@@ -31,6 +44,35 @@ void render(options::options& opts) {
       auto rhs = args.at(1)->get<inja::json>();
       lhs.insert(lhs.end(), rhs.begin(), rhs.end());
       return lhs;
+   });
+
+   env.add_callback("join", 2, [](inja::Arguments& args) {
+      auto delim = args.at(0)->get<std::string>();
+      auto jval = args.at(1)->get<inja::json>();
+
+      if (!jval.is_array()
+      || std::any_of(jval.begin(), jval.end(), [](auto& x) { return !x.is_string(); }))
+         throw std::invalid_argument("expected an array of strings.");
+
+      return join(delim, jval.begin(), jval.end());
+   });
+
+   env.add_callback("prepend", 2, [](inja::Arguments& args) {
+      auto prep = args.at(0)->get<std::string>();
+      auto jval = args.at(1)->get<inja::json>();
+
+      if (jval.is_string())
+         return json::parse(prep + jval.get<std::string>());
+
+      if (!jval.is_array()
+      || std::any_of(jval.begin(), jval.end(), [](auto& x) { return !x.is_string(); }))
+         throw std::invalid_argument("expected a string or array of strings.");
+
+      auto res = json::array();
+      std::for_each(jval.begin(), jval.end(), [&res, &prep](auto& x) {
+         res.push_back(prep + x.template get<std::string>());
+      });
+      return std::move(res);
    });
 
    env.add_callback("ltrim", 2, [](inja::Arguments& args) {

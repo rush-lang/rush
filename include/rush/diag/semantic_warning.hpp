@@ -25,10 +25,15 @@ namespace rush::diag {
       };
 
       using diagnostic::accept;
-      virtual void accept(diag::visitor& v) const {
+      virtual void accept(diag::visitor& v) const override {
          v.visit_semantic_warning(*this);
       }
    };
+
+   namespace wrns {
+#     define RUSH_DIAG_SEMANTIC_WARNING_FUNC_IMPL
+#     include "rush/diag/_diagnostics.hpp"
+   }
 }
 
 #endif // RUSH_DIAG_SEMANTIC_WARNING_HPP
