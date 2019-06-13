@@ -31,11 +31,11 @@ namespace rush::ast {
       }
 
       virtual void attach(ast::node& parent, ast::context& context) override {
-         _init->attach(*this, context);
+         if (_init) _init->attach(*this, context);
       }
 
       virtual void detach(ast::node& parent, ast::context& context) override {
-         _init->detach(*this, context);
+         if (_init) _init->detach(*this, context);
       }
 
 	protected:
