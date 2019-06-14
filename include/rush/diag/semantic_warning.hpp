@@ -11,7 +11,7 @@ namespace rush::diag {
    public:
       using code_type = diagnostic::code_type;
       semantic_warning(code_type code, std::string msg)
-         : diagnostic { code, std::move(msg) } {}
+         : diagnostic { code, rush::source::none, std::move(msg) } {}
 
       virtual location const& end() const override { return location::undefined; }
       virtual location const& start() const override { return location::undefined; }

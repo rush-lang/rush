@@ -6,9 +6,11 @@
 #include "fmt/format.h"
 
 static void dump_diag(rush::diagnostic const& d, std::string_view type, std::ostream& out) {
-   out << fmt::format("[{}:RS{:04}, source:{}, line:{}, column:{}]: {}",
-      type, d.code(), d.source(), d.start().line(),
-      d.start().column(), d.message());
+   out << fmt::format("[{}:RS{:04}", type, d.code());
+   if (!d.source().id().empty())
+      out << " \'" << d.source().id() << "\', ";
+   out << fmt::format("ln:{}, col:{}]: {}",
+      d.start().line(), d.start().column(), d.message());
 }
 
 namespace rush {

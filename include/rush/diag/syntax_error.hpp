@@ -17,7 +17,7 @@ namespace rush::diag {
    public:
       using code_type = diagnostic::code_type;
       syntax_error(code_type code, std::string msg, rush::lexical_token tok)
-         : diagnostic { code, std::move(msg) }
+         : diagnostic { code, tok.source(), std::move(msg) }
          , _tok { tok }
          , _end { tok.location().next_column(tok.size()) } {}
 
