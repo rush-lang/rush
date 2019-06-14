@@ -244,6 +244,8 @@ namespace rush {
 		syntax_analysis(std::unique_ptr<ast::context> ctx, rush::parse_result<ast::node> ast)
 			: _context { std::move(ctx) }
 			, _result { std::move(ast) } {
+            if (!_context) throw std::invalid_argument(
+               "null argument std::unique_ptr<ast::context> 'ctx'");
             _result.attach(*_context);
          }
 	};
