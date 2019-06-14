@@ -33,9 +33,11 @@ namespace rush {
    }
 
    void dump(rush::syntax_analysis const& sxa, std::ostream& out) {
-      auto errs = sxa.errors();
-      if (!errs.empty()) { for (auto& e : errs) rush::dump(*e, out); }
-      else { sxa.accept(ast::printer { out }); }
+      for (auto& e : sxa.errors())
+         rush::dump(*e, out);
+
+      if (sxa.errors().empty())
+         sxa.accept(ast::printer { out });
    }
 
    void dump(rush::ast::node const& input, std::ostream& out) {

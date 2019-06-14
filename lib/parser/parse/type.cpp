@@ -79,11 +79,14 @@ namespace rush {
       next_skip_indent();
 
       auto tok = peek_skip_indent();
-      while (tok.is_not(symbols::right_square_bracket)) {
-         // grab dimensions etc..
+      while (tok.is(symbols::comma)) {
          next_skip_indent();
+         // grab dimensions etc..
+         tok = peek_skip_indent();
       }
 
+      if (tok.is_not(symbols::right_square_bracket))
+         return errs::expected_closing_square_bracket(tok);
       next_skip_indent(); // skip closing ']'
       return _context->array_type(elem_type);
    }
