@@ -18,10 +18,10 @@ namespace rush {
          if (comp.second) return std::move(comp.first);
       }
 
-      auto expr = terminated(&parser::parse_expr);
-      return (expr.success())
-         ? ast::stmts::expr_stmt(std::move(expr))
-         : nullptr;
+      auto expr_result = terminated(&parser::parse_expr);
+      return (expr_result.success())
+         ? ast::stmts::expr_stmt(std::move(expr_result))
+         : std::move(expr_result).as<ast::statement>();
    }
 
    rush::parse_result<ast::statement> parser::parse_block_stmt() {
