@@ -28,8 +28,9 @@ namespace rush {
       void operator = (basic_lexer const&) = delete;
 
    public:
-      explicit basic_lexer(lexer_options opts = {}) noexcept
-         : _opts(opts) {}
+      explicit basic_lexer(rush::source const& src, lexer_options opts) noexcept
+         : _opts { opts }
+         , _src { &src } {}
 
       basic_lexer(basic_lexer&& other) = default;
       basic_lexer& operator = (basic_lexer&& other) = default;
@@ -58,6 +59,7 @@ namespace rush {
       std::unique_ptr<lookahead_buffer_type> _lab;
       rush::indentation _indent;
       rush::location _loc; // location pinned before every new token.
+      rush::source const* _src;
 
       bool eof() const noexcept {
          return _lab->empty();
@@ -67,7 +69,11 @@ namespace rush {
          return !eof() && _lab->peek().location().column() == 1;
       }
 
-      rush::location location() const noexcept {
+      rush::source const& source() const noexcept {
+         return *_src;
+      }
+
+      rush::location const& location() const noexcept {
          return _loc;
       }
 
@@ -170,7 +176,7 @@ namespace rush {
             if (symbol != symbols::unknown) { return scan_symbol(symbol); }
 
             skip(); // skip unknown token.
-            return tok::make_error_token("unexpected token", location());
+            return tok::make_error_token("unexpected token", location(), source());
          }
 
          return _unwind_indentation();
@@ -188,8 +194,8 @@ namespace rush {
 
                if (!is_newline(peek())) {
                   auto indent = _indent.measure(wspace.begin(), wspace.end());
-                  if (indent < _indent) { _indent.decrement(); return tok::dedent(location()); }
-                  if (indent > _indent) { _indent.increment(); return tok::indent(location()); }
+                  if (indent < _indent) { _indent.decrement(); return tok::dedent(location(), source()); }
+                  if (indent > _indent) { _indent.increment(); return tok::indent(location(), source()); }
                   break;
                }
             } else {
@@ -208,8 +214,8 @@ namespace rush {
          auto ident = scan_while(is_ident_body);
          auto kw_val = keywords::to_value(ident);
          return kw_val != keywords::unknown
-            ? tok::make_keyword_token(kw_val, location())
-            : tok::identifier(ident, location());
+            ? tok::make_keyword_token(kw_val, location(), source())
+            : tok::identifier(ident, location(), source());
       }
 
       lexical_token scan_string_literal() {
@@ -228,10 +234,10 @@ namespace rush {
          });
 
          if (!check_if(is_quote))
-            return tok::make_error_token("expected closing \'\"\'");
+            return tok::make_error_token("expected closing \'\"\'", location(), source());
 
          skip(); // consume end quotation mark.
-         return tok::string_literal(std::move(result), location());
+         return tok::string_literal(std::move(result), location(), source());
       }
 
       lexical_token_suffix scan_floating_literal_suffix() {
@@ -254,7 +260,7 @@ namespace rush {
       lexical_token scan_integer_literal(function_ref<bool(codepoint_t)> predicate, int base) {
          auto value = scan_while(predicate);
          auto suffix = scan_integer_literal_suffix();
-         return tok::suffixed_integer_literal(std::stoll(value, 0, base), suffix, location());
+         return tok::suffixed_integer_literal(std::stoll(value, 0, base), suffix, location(), source());
       }
 
       lexical_token scan_numeric_literal() {
@@ -272,11 +278,11 @@ namespace rush {
                skip(); // consume decimal point.
                auto value = scan_while(is_digit);
                auto suffix = scan_floating_literal_suffix();
-               return tok::suffixed_floating_literal(std::stod("0." + value), suffix, location());
+               return tok::suffixed_floating_literal(std::stod("0." + value), suffix, location(), source());
             }
 
             auto suffix = scan_integer_literal_suffix();
-            return tok::suffixed_integer_literal(0, suffix, location());
+            return tok::suffixed_integer_literal(0, suffix, location(), source());
          }
 
          auto integer_part = scan_while(is_digit);
@@ -286,14 +292,14 @@ namespace rush {
             auto suffix = scan_floating_literal_suffix();
             return tok::suffixed_floating_literal(
                std::stod(integer_part + "." + fractional_part),
-               suffix, location());
+               suffix, location(), source());
          }
 
          assert(!integer_part.empty() && "expected an integer digit");
          auto suffix = scan_integer_literal_suffix();
          return tok::suffixed_integer_literal(
             std::stoll(integer_part),
-            suffix, location());
+            suffix, location(), source());
       }
 
       lexical_token scan_symbol(symbol_token_t symbol) {
@@ -301,71 +307,71 @@ namespace rush {
 
          switch (symbol) {
             case symbols::ampersand: {
-               if (check_skip('&', 1)) return tok::double_ampersand(location());
-               if (check_skip('=', 1)) return tok::ampersand_equals(location());
+               if (check_skip('&', 1)) return tok::double_ampersand(location(), source());
+               if (check_skip('=', 1)) return tok::ampersand_equals(location(), source());
             } break;
 
             case symbols::pipe: {
-               if (check_skip('|', 1)) return tok::double_pipe(location());
-               if (check_skip('=', 1)) return tok::pipe_equals(location());
+               if (check_skip('|', 1)) return tok::double_pipe(location(), source());
+               if (check_skip('=', 1)) return tok::pipe_equals(location(), source());
             } break;
 
             case symbols::plus: {
-               if (check_skip('+', 1)) return tok::plus_plus(location());
-               if (check_skip('=', 1)) return tok::plus_equals(location());
+               if (check_skip('+', 1)) return tok::plus_plus(location(), source());
+               if (check_skip('=', 1)) return tok::plus_equals(location(), source());
             } break;
 
             case symbols::minus: {
-               if (check_skip('>', 1)) return tok::thin_arrow(location());
-               if (check_skip('-', 1)) return tok::minus_minus(location());
-               if (check_skip('=', 1)) return tok::minus_equals(location());
+               if (check_skip('>', 1)) return tok::thin_arrow(location(), source());
+               if (check_skip('-', 1)) return tok::minus_minus(location(), source());
+               if (check_skip('=', 1)) return tok::minus_equals(location(), source());
             } break;
 
             case symbols::caret: {
-               if (check_skip('=', 1)) return tok::caret_equals(location());
+               if (check_skip('=', 1)) return tok::caret_equals(location(), source());
             } break;
 
             case symbols::asterisk: {
-               if (check_skip('=', 1)) return tok::asterisk_equals(location());
+               if (check_skip('=', 1)) return tok::asterisk_equals(location(), source());
             } break;
 
             case symbols::forward_slash: {
-               if (check_skip('=', 1)) return tok::forward_slash_equals(location());
+               if (check_skip('=', 1)) return tok::forward_slash_equals(location(), source());
             } break;
 
             case symbols::percent: {
-               if (check_skip('=', 1)) return tok::percent_equals(location());
+               if (check_skip('=', 1)) return tok::percent_equals(location(), source());
             } break;
 
             case symbols::equals: {
-               if (check_skip('>', 1)) return tok::thick_arrow(location());
-               if (check_skip('=', 1)) return tok::equals_equals(location());
+               if (check_skip('>', 1)) return tok::thick_arrow(location(), source());
+               if (check_skip('=', 1)) return tok::equals_equals(location(), source());
             } break;
 
             case symbols::exclamation_mark: {
-               if (check_skip('=', 1)) return tok::exclamation_mark_equals(location());
+               if (check_skip('=', 1)) return tok::exclamation_mark_equals(location(), source());
             } break;
 
             case symbols::left_chevron: {
-               if (check_skip('=', 1)) return tok::left_chevron_equals(location());
+               if (check_skip('=', 1)) return tok::left_chevron_equals(location(), source());
                if (check_skip('<', 1)) {
                   return check_skip('=')
-                     ? tok::double_left_chevron_equals(location())
-                     : tok::double_left_chevron(location());
+                     ? tok::double_left_chevron_equals(location(), source())
+                     : tok::double_left_chevron(location(), source());
                }
             } break;
 
             case symbols::right_chevron: {
-               if (check_skip('=', 1)) return tok::right_chevron_equals(location());
+               if (check_skip('=', 1)) return tok::right_chevron_equals(location(), source());
                if (check_skip('>', 1)) {
                   return check_skip('=')
-                     ? tok::double_right_chevron_equals(location())
-                     : tok::double_right_chevron(location());
+                     ? tok::double_right_chevron_equals(location(), source())
+                     : tok::double_right_chevron(location(), source());
                }
             } break;
 
             case symbols::period: {
-               if (check("..", 1)) { skip(3); return tok::ellipses(location()); }
+               if (check("..", 1)) { skip(3); return tok::ellipses(location(), source()); }
                if (check_if(is_digit, 1)) return scan_numeric_literal();
             } break;
 
@@ -373,7 +379,7 @@ namespace rush {
          }
 
          skip(); // consume symbol.
-         return tok::make_symbol_token(symbol, location());
+         return tok::make_symbol_token(symbol, location(), source());
       }
 
 
@@ -385,9 +391,9 @@ namespace rush {
             };
 
             _indent.decrement();
-            return tok::dedent(location());
+            return tok::dedent(location(), source());
          }
-         return tok::eof(location());
+         return tok::eof(location(), source());
       }
    };
 
@@ -419,7 +425,7 @@ namespace rush {
    lexical_analysis lexer::tokenize(rush::source const& src) {
       auto first = src.begin();
       auto last = src.end();
-      auto impl = basic_lexer<decltype(first)> { _opts };
+      auto impl = basic_lexer<decltype(first)> { src, _opts };
       return lexical_analysis {
          std::string { src.id() },
          impl.tokenize(first, last)

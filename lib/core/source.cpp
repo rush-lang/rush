@@ -10,9 +10,13 @@ namespace rush {
    struct source::impl {
    public:
       llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>> buffer;
+
+      impl() : buffer { llvm::MemoryBuffer::getMemBuffer("") } {}
       impl(llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>> buf)
          : buffer { std::move(buf) } {}
    };
+
+   source const source::none = source();
 
    source source::from_file(std::filesystem::path path, bool is_volatile) {
       return { std::make_unique<source::impl>(llvm::MemoryBuffer::getFile(
@@ -32,9 +36,14 @@ namespace rush {
          std::istreambuf_iterator<char>(input), eof }, id);
    }
 
+
    source::~source() = default;
    source::source(source&& other) = default;
    source& source::operator = (source&& other) = default;
+
+   source::source()
+      : source(std::make_unique<source::impl>()) {}
+
    source::source(std::unique_ptr<source::impl> pimpl)
       : _pimpl { std::move(pimpl) } {}
 

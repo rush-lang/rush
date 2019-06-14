@@ -6,8 +6,8 @@
 #include "fmt/format.h"
 
 static void dump_diag(rush::diagnostic const& d, std::string_view type, std::ostream& out) {
-   out << fmt::format("[{}:RS{}, source:{}, line:{}, column:{}]: {}",
-      type, d.code(), "unknown", d.start().line(),
+   out << fmt::format("[{}:RS{:04}, source:{}, line:{}, column:{}]: {}",
+      type, d.code(), d.source(), d.start().line(),
       d.start().column(), d.message());
 }
 

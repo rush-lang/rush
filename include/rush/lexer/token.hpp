@@ -7,9 +7,10 @@
 #include <string>
 #include <variant>
 
+#include "rush/core/source.hpp"
+#include "rush/core/location.hpp"
 #include "rush/lexer/_symbols.hpp"
 #include "rush/lexer/_keywords.hpp"
-#include "rush/core/location.hpp"
 
 namespace rush {
 
@@ -40,14 +41,14 @@ namespace rush {
 
 
 	namespace tokens {
-		lexical_token make_error_token(std::string, location const& = location::undefined);
-		lexical_token make_symbol_token(symbol_token_t, location const& = location::undefined);
-		lexical_token make_keyword_token(keyword_token_t, location const& = location::undefined);
+		lexical_token make_error_token(std::string, location const& = location::undefined, rush::source const& = rush::source::none);
+		lexical_token make_symbol_token(symbol_token_t, location const& = location::undefined, rush::source const& = rush::source::none);
+		lexical_token make_keyword_token(keyword_token_t, location const& = location::undefined, rush::source const& = rush::source::none);
 
-		lexical_token identifier(std::string, location const& = location::undefined);
-		lexical_token prefixed_string_literal(std::string, lexical_token_prefix, location const& = location::undefined);
-		lexical_token suffixed_integer_literal(std::uint64_t, lexical_token_suffix, location const& = location::undefined);
-		lexical_token suffixed_floating_literal(double, lexical_token_suffix, location const& = location::undefined);
+		lexical_token identifier(std::string, location const& = location::undefined, rush::source const& = rush::source::none);
+		lexical_token prefixed_string_literal(std::string, lexical_token_prefix, location const& = location::undefined, rush::source const& = rush::source::none);
+		lexical_token suffixed_integer_literal(std::uint64_t, lexical_token_suffix, location const& = location::undefined, rush::source const& = rush::source::none);
+		lexical_token suffixed_floating_literal(double, lexical_token_suffix, location const& = location::undefined, rush::source const& = rush::source::none);
 	}
 
 	class lexical_token final {
@@ -103,18 +104,20 @@ namespace rush {
 			integral_t,    // integer literals.
 			floating_t>;          // floating literals. (todo: guarantee double is 64-bit)
 
-		friend lexical_token tokens::make_error_token(std::string, location const&);
-		friend lexical_token tokens::make_symbol_token(symbol_token_t, location const&);
-		friend lexical_token tokens::make_keyword_token(keyword_token_t, location const&);
+		friend lexical_token tokens::make_error_token(std::string, location const&, rush::source const&);
+		friend lexical_token tokens::make_symbol_token(symbol_token_t, location const&, rush::source const&);
+		friend lexical_token tokens::make_keyword_token(keyword_token_t, location const&, rush::source const&);
 
-		friend lexical_token tokens::identifier(std::string, location const&);
-		friend lexical_token tokens::prefixed_string_literal(std::string, lexical_token_prefix, location const&);
-		friend lexical_token tokens::suffixed_integer_literal(std::uint64_t, lexical_token_suffix, location const&);
-		friend lexical_token tokens::suffixed_floating_literal(double, lexical_token_suffix, location const&);
+		friend lexical_token tokens::identifier(std::string, location const&, rush::source const&);
+		friend lexical_token tokens::prefixed_string_literal(std::string, lexical_token_prefix, location const&, rush::source const&);
+		friend lexical_token tokens::suffixed_integer_literal(std::uint64_t, lexical_token_suffix, location const&, rush::source const&);
+		friend lexical_token tokens::suffixed_floating_literal(double, lexical_token_suffix, location const&, rush::source const&);
 
 
-		lexical_token(variant_type value, location const& loc)
-			: _val(std::move(value)), _loc(loc) {}
+		lexical_token(variant_type value, location const& loc, rush::source const& src)
+			: _val { std::move(value) }
+         , _loc { loc }
+         , _src { &src } {}
 
 		bool is_any() const noexcept { return false; }
 		bool is_not_any() const noexcept { return true; }
@@ -136,6 +139,10 @@ namespace rush {
 		location const& location() const noexcept {
 			return this->_loc;
 		}
+
+      rush::source const& source() const noexcept {
+         return *this->_src;
+      }
 
 
 		std::uint64_t integer_value() const {
@@ -290,7 +297,8 @@ namespace rush {
 
 	private:
 		variant_type _val;
-		struct location _loc;
+		rush::location _loc;
+      rush::source const* _src;
 	};
 
 	inline std::string to_string(lexical_token const& tok) {

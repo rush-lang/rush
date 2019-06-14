@@ -24,8 +24,11 @@ namespace rush {
       // explicit implementation of default
       // destructor to support the 'pimpl' idiom.
       ~source();
+      source();
       source(source&&);
       source& operator = (source&&);
+
+      static source const none;
 
       //! \brief Constructs a source object from a file.
       static source from_file(std::filesystem::path path, bool is_volatile = false);

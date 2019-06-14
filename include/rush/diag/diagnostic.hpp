@@ -3,6 +3,7 @@
 #ifndef RUSH_DIAG_DIAGNOSTIC_HPP
 #define RUSH_DIAG_DIAGNOSTIC_HPP
 
+#include "rush/core/source.hpp"
 #include "rush/core/location.hpp"
 
 #include <cstdlib>
@@ -30,6 +31,8 @@ namespace rush {
 
       code_type code() const noexcept { return _code; }
       std::string const& message() const noexcept { return _msg; }
+      rush::source const& source() const noexcept { return *_src; }
+
 
       virtual location const& end() const = 0;
       virtual location const& start() const = 0;
@@ -41,12 +44,14 @@ namespace rush {
       virtual void accept(diag::visitor&& v) const { accept(v); }
 
    protected:
-      diagnostic(code_type code, std::string msg)
+      diagnostic(code_type code, rush::source const& src, std::string msg)
          : _code { code }
+         , _src { &src }
          , _msg { std::move(msg) } {}
 
    private:
       std::string _msg;
+      rush::source const* _src;
       code_type _code;
    };
 
