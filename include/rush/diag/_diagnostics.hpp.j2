@@ -7,12 +7,12 @@
 ## if not existsIn(err, "params")
 inline std::unique_ptr<::rush::diag::syntax_error> {{ err.name }}(::rush::lexical_token tok) {
    auto msg = fmt::format("{{ err.message }}", tok.text());
-   return std::make_unique<::rush::diag::syntax_error>(1000 + {{ loop.index }}, std::move(msg), std::move(tok));
+   return std::make_unique<::rush::diag::syntax_error>({{ err.code }}, std::move(msg), std::move(tok));
 }
 ## else
 inline std::unique_ptr<::rush::diag::syntax_error> {{ err.name }}(::rush::lexical_token tok, {{ join(", ", prepend("std::string_view ", err.params)) }}) {
    auto msg = fmt::format("{{ err.message }}", tok.text(), {{ join(", ", err.params) }});
-   return std::make_unique<::rush::diag::syntax_error>(1000 + {{ loop.index }}, std::move(msg), std::move(tok));
+   return std::make_unique<::rush::diag::syntax_error>({{ err.code }}, std::move(msg), std::move(tok));
 }
 ## endif
 ## endif
@@ -28,12 +28,12 @@ inline std::unique_ptr<::rush::diag::syntax_error> {{ err.name }}(::rush::lexica
 ## if not existsIn(err, "params")
 inline std::unique_ptr<::rush::diag::semantic_error> {{ err.name }}() {
    std::string msg = "{{ err.message }}";
-   return std::make_unique<::rush::diag::semantic_error>(1000 + {{ loop.index }}, std::move(msg));
+   return std::make_unique<::rush::diag::semantic_error>({{ err.code }}, std::move(msg));
 }
 ## else
 inline std::unique_ptr<::rush::diag::semantic_error> {{ err.name }}({{ join(", ", prepend("std::string_view ", err.params)) }}) {
    auto msg = fmt::format("{{ err.message }}", {{ join(", ", err.params) }});
-   return std::make_unique<::rush::diag::semantic_error>(1000 + {{ loop.index }}, std::move(msg));
+   return std::make_unique<::rush::diag::semantic_error>({{ err.code }}, std::move(msg));
 }
 ## endif
 ## endif
@@ -48,12 +48,12 @@ inline std::unique_ptr<::rush::diag::semantic_error> {{ err.name }}({{ join(", "
 ## if not existsIn(wrn, "params")
 inline std::unique_ptr<::rush::diag::semantic_warning> {{ wrn.name }}() {
    std::string = "{{ wrn.message }}";
-   return std::make_unique<::rush::diag::semantic_warning>({{ loop.index }}, std::move(msg));
+   return std::make_unique<::rush::diag::semantic_warning>({{ wrn.code }}, std::move(msg));
 }
 ## else
 inline std::unique_ptr<::rush::diag::semantic_warning> {{ wrn.name }}({{ join(", ", prepend("std::string_view ", wrn.params)) }}) {
    auto msg = fmt::format("{{ wrn.message }}", {{ join(", ", wrn.params) }});
-   return std::make_unique<::rush::diag::semantic_warning>({{ loop.index }}, std::move(msg));
+   return std::make_unique<::rush::diag::semantic_warning>({{ wrn.code }}, std::move(msg));
 }
 ## endif
 ## endfor
