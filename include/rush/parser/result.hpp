@@ -6,10 +6,13 @@
 #include "fmt/format.h"
 
 #include "rush/ast/node.hpp"
+#include "rush/ast/types/type.hpp"
+#include "rush/ast/types/builtin.hpp"
 #include "rush/ast/context.hpp"
 #include "rush/ast/visitor.hpp"
 #include "rush/core/location.hpp"
 #include "rush/extra/iterator_range.hpp"
+#include "rush/diag/syntax_error.hpp"
 
 #include <memory>
 #include <vector>
@@ -23,26 +26,77 @@ namespace rush {
    template <typename NodeT>
    class parse_result;
 
-
-   struct syntax_error {
-      syntax_error(syntax_error const&) = delete;
-      void operator = (syntax_error const&) = delete;
-
+   class parse_type_result {
    public:
-      syntax_error(std::string msg, rush::location loc)
-         : _msg { std::move(msg) }
-         , _loc { std::move(loc) } {}
+      using error_type = std::unique_ptr<diag::syntax_error>;
+      using error_range_type = std::vector<error_type>;
+      using const_error_range_type = rush::iterator_range<std::vector<error_type>::const_iterator>;
 
-      syntax_error(syntax_error&&) = default;
-      syntax_error& operator = (syntax_error&&) = default;
+      parse_type_result()
+         : _type { ast::types::undefined }
+         , _errors { } {}
 
-      std::string const& message() const noexcept { return _msg; }
-      rush::location const& location() const noexcept { return _loc; }
+      parse_type_result(ast::type_ref type)
+         : _type { type }
+         , _errors { } {}
+
+      parse_type_result(std::unique_ptr<diag::syntax_error> err)
+         : _type { ast::types::undefined }
+         , _errors { } { _errors.push_back(std::move(err)); }
+
+      parse_type_result(parse_type_result&& other)
+         : _type { std::move(other._type) }
+         , _errors { std::move(other._errors) } {}
+
+      parse_type_result& operator = (parse_type_result&& other) {
+         if (&other == this) return *this;
+         _type = std::move(other._type);
+         _errors = std::move(other._errors);
+         return *this;
+      }
+
+      parse_type_result& operator = (ast::type_ref type) {
+         _type = type;
+         _errors.clear();
+         return *this;
+      }
+
+      parse_type_result& operator = (std::unique_ptr<diag::syntax_error> err) {
+         _type = rush::ast::types::undefined;
+         _errors.clear();
+         _errors.push_back(std::move(err));
+         return *this;
+      }
+
+      bool success() const noexcept {
+         return !failed();
+      }
+
+      bool failed() const noexcept {
+         return is_undefined() && !_errors.empty();
+      }
+
+      bool is_undefined() const noexcept {
+         return _type == rush::ast::types::undefined;
+      }
+
+      error_range_type errors() && noexcept {
+         return std::move(_errors);
+      }
+
+      const_error_range_type errors() const & noexcept {
+         return _errors;
+      }
+
+      ast::type_ref type() const noexcept {
+         return _type;
+      }
 
    private:
-      std::string _msg;
-      rush::location _loc;
+      ast::type_ref _type;
+      std::vector<std::unique_ptr<diag::syntax_error>> _errors;
    };
+
 
    template <typename NodeT>
    class parse_result {
@@ -55,8 +109,9 @@ namespace rush {
       friend class parse_result;
 
    public:
-      using error_range_type = rush::iterator_range<
-         std::vector<syntax_error>::const_iterator>;
+      using error_type = std::unique_ptr<diag::syntax_error>;
+      using error_range_type = std::vector<error_type>;
+      using const_error_range_type = rush::iterator_range<error_range_type::const_iterator>;
 
       parse_result()
          : _node { nullptr }
@@ -66,9 +121,13 @@ namespace rush {
          : _node { nullptr }
          , _errors { } {}
 
-      parse_result(rush::syntax_error err)
+      parse_result(error_type err)
          : _node { nullptr }
          , _errors { } { _errors.push_back(std::move(err)); }
+
+      parse_result(error_range_type errs)
+         : _node { nullptr }
+         , _errors { std::move(errs) } {}
 
       template <typename NodeU, typename = std::enable_if_t<std::is_base_of_v<NodeT, NodeU>>>
       parse_result(std::unique_ptr<NodeU>&& node)
@@ -80,7 +139,7 @@ namespace rush {
          : _node { std::move(other._node) }
          , _errors { std::move(other._errors) } {}
 
-      parse_result& operator = (rush::syntax_error err) {
+      parse_result& operator = (std::unique_ptr<diag::syntax_error> err) {
          _node.reset();
          _errors.clear();
          _errors.push_back(std::move(err));
@@ -98,6 +157,7 @@ namespace rush {
       template <typename NodeU>
       std::enable_if_t<std::is_base_of_v<NodeT, NodeU>,
          parse_result&> operator = (parse_result<NodeU>&& other) {
+            if (&other == this) return *this;
             _node = std::move(other._node);
             _errors = std::move(other._errors);
             return *this;
@@ -111,7 +171,11 @@ namespace rush {
          return _node == nullptr;
       }
 
-      error_range_type errors() const noexcept {
+      error_range_type errors() && noexcept {
+         return std::move(_errors);
+      }
+
+      const_error_range_type errors() const & noexcept {
          return _errors;
       }
 
@@ -124,8 +188,8 @@ namespace rush {
          // _node = std::move(other._node);
          auto result = parse_result<NodeU> {};
          std::move(
-            _errors.begin(),
-            _errors.end(),
+            std::make_move_iterator(_errors.begin()),
+            std::make_move_iterator(_errors.end()),
             std::back_inserter(result._errors));
          return std::move(result);
       }
@@ -140,7 +204,7 @@ namespace rush {
 
    private:
       std::unique_ptr<NodeT> _node;
-      std::vector<rush::syntax_error> _errors;
+      std::vector<error_type> _errors;
 
       void attach(ast::context& ctx) {
          if (_node) _node->attach(*_node, ctx);
@@ -155,7 +219,7 @@ namespace rush {
 		friend class parser;
 
 	public:
-      using error_range_type = rush::parse_result<ast::node>::error_range_type;
+      using error_range_type = rush::parse_result<ast::node>::const_error_range_type;
 
       error_range_type errors() const noexcept {
          return _result.errors();

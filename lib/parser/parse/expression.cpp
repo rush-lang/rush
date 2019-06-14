@@ -1,9 +1,10 @@
-#include "rush/ast/expressions.hpp"
-
 #include "rush/parser/parser.hpp"
+#include "rush/ast/expressions.hpp"
+#include "rush/diag/syntax_error.hpp"
 
 namespace ast = rush::ast;
-namespace exprs = ast::exprs;
+namespace errs = rush::diag::errs;
+namespace exprs = rush::ast::exprs;
 
 namespace rush {
 
@@ -44,7 +45,7 @@ namespace rush {
 			return std::move(result);
 		}
 
-		return error("expected a closing \')\' before \'{}\'", tok);
+      return errs::expected_closing_parenthesis(tok);
 	}
 
 	rush::parse_result<ast::expression> parser::parse_primary_expr() {
@@ -52,14 +53,14 @@ namespace rush {
 
       rush::parse_result<ast::expression> result;
 		switch (tok.type()) {
-		default: return error("expected primary expression, but found '{}'", tok);
+		default: return errs::expected_primary_expr(tok);
 		case lexical_token_type::identifier: result = parse_identifier_expr(); break;
 		case lexical_token_type::string_literal: result = parse_string_expr(); break;
 		case lexical_token_type::integer_literal: result = parse_integer_expr(); break;
 		case lexical_token_type::floating_literal: result = parse_floating_expr(); break;
 		case lexical_token_type::keyword:
 			switch (tok.keyword()) {
-			default: return error("unexpected keyword '{}' parsing primary expression", tok);
+			default: return errs::unexpected_keyword_expr(tok);
 			case keywords::true_: next_skip_indent(); result = exprs::literal(true, *_context); break;
 			case keywords::false_: next_skip_indent(); result = exprs::literal(false, *_context); break;
 			} break;
@@ -67,7 +68,7 @@ namespace rush {
          if (is_unary_prefix_op(tok)) result = parse_unary_expr();
          else switch (tok.symbol()) {
          case symbols::left_parenthesis: result = parse_paren_expr(); break;
-         default: return error("unexpected symbol '{}' parsing primary expression", tok);
+         default: return errs::unexpected_symbol_expr(tok);
          } break;
 		}
 
@@ -133,7 +134,7 @@ namespace rush {
       }
 
       switch (tok.symbol()) {
-      default: return error("unary operator '{}' not yet supported", tok);
+      default: return errs::not_supported(tok, fmt::format("unary operator '{}'", tok.text()));
       case symbols::plus: return exprs::positive(std::move(operand_result));
       case symbols::minus: return exprs::negative(std::move(operand_result));
       case symbols::plus_plus: return exprs::pre_increment(std::move(operand_result));
@@ -149,7 +150,7 @@ namespace rush {
 
       auto tok = peek_skip_indent();
       switch (tok.symbol()) {
-      default: return error("unary postfix operator not yet supported.", tok);
+      default: return errs::not_supported(tok, fmt::format("unary postfix operator '{}'", tok.text()));
 
       case symbols::plus_plus:
          operand_result = exprs::post_increment(std::move(operand_result));
@@ -187,7 +188,7 @@ namespace rush {
 
       if (tok.is_symbol()) {
 		switch (tok.symbol()) {
-		default: return error("binary operator '{}' not yet supported", tok);
+      default: return errs::not_supported(tok, fmt::format("binary operator '{}'", tok.text()));
       case symbols::equals: result = exprs::assignment(std::move(lhs), std::move(rhs)); break;
 
       // arithmetic binary operators
@@ -233,7 +234,7 @@ namespace rush {
 		}
       } else {
          switch (tok.keyword()) {
-         default: return error("binary operator '{}' not yet supported", tok);
+         default: return errs::not_supported(tok, fmt::format("binary operator '{}'", tok.text()));
          // case keywords::is_: result = exprs::is(std::move(lhs), std::move(rhs)); break;
          // case keywords::as_: result = exprs::as(std::move(lhs), std::move(rhs)); break;
          }
@@ -264,7 +265,6 @@ namespace rush {
       }
 
       return std::move(rhs_result);
-      // return error("expected right-hand expression of '{1}' before '{0}'", next, prev);
 	}
 
    rush::parse_result<ast::expression> parser::parse_ternary_expr(rush::parse_result<ast::expression> cond_result) {
@@ -275,7 +275,7 @@ namespace rush {
       if (true_result.failed()) return std::move(true_result);
 
       if (peek_skip_indent().is_not(symbols::colon))
-         return error("syntax error, expected ':'", next_skip_indent());
+         return errs::expected(peek_skip_indent(), ":");
       next_skip_indent(); // consume ':' symbol.
 
       auto false_result = parse_expr();
@@ -306,7 +306,7 @@ namespace rush {
       } while (consume_skip_indent(symbols::comma));
 
       if (peek_skip_indent().is_not(symbols::right_parenthesis))
-         return error("expected ')' before '{}'.", next_skip_indent());
+         return errs::expected_closing_parenthesis(peek_skip_indent());
       next_skip_indent();
 
       std::vector<std::unique_ptr<ast::argument>> args;

@@ -1,6 +1,8 @@
-#include "rush/ast/statements.hpp"
-
 #include "rush/parser/parser.hpp"
+#include "rush/ast/statements.hpp"
+#include "rush/diag/syntax_error.hpp"
+
+namespace errs = rush::diag::errs;
 
 namespace rush {
 
@@ -14,14 +16,6 @@ namespace rush {
 
          auto comp = parse_compound_stmt(kw);
          if (comp.second) return std::move(comp.first);
-
-         switch (kw) {
-            default: return error("'{}' is not a valid statement.", tok);
-            // these keywords may form part of a expression statement
-            case keywords::base_:
-            case keywords::this_: break;
-            // case keywords::pass_: return nullptr;
-         }
       }
 
       auto expr = terminated(&parser::parse_expr);
@@ -85,7 +79,7 @@ namespace rush {
          return std::move(cond_result).as<ast::statement>();
 
       if (!peek_skip_indent().is(symbols::colon))
-         return error("expected body of 'if' statement before '{}'", next_skip_indent());
+         return errs::expected_if_stmt_body(peek_skip_indent());
       next_skip_indent(); // consume ':' symbol.
 
       _scope.push(scope_kind::block);
@@ -120,7 +114,7 @@ namespace rush {
       if (tok.is_keyword()) {
          auto result = parse_compound_stmt(tok.keyword());
          if (result.second) return std::move(result.first);
-         return error("expected compound statement before '{}'", tok);
+         return errs::expected_compound_stmt(tok);
       } else if (tok.is(symbols::colon)) {
          next_skip_indent(); // consume ':' symbol.
 
@@ -133,7 +127,7 @@ namespace rush {
          return std::move(result);
       }
 
-      return error("expected a compound statement or block statement before '{}'", tok);
+      return errs::expected(tok, ":");
    }
 
    rush::parse_result<ast::statement> parser::parse_for_stmt() {
@@ -152,7 +146,7 @@ namespace rush {
          return std::move(cond_result).as<ast::statement>();
 
       if (!peek_skip_indent().is(symbols::colon))
-         return error("expected body of 'while' statement before '{}'", next_skip_indent());
+         return errs::expected_while_stmt_body(peek_skip_indent());
       next_skip_indent(); // consume ':' symbol.
 
       _scope.push(scope_kind::block);

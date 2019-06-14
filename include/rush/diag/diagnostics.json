@@ -44,6 +44,13 @@
       { "kind": "syntax", "name": "definition_already_exists", "message": "the current context already contains a definition for '{}'." },
       { "kind": "syntax", "name": "parameter_redefinition", "message": "redefinition of parameter '{}'." },
 
+
+      { "kind": "syntax", "name": "constant_used_like_type", "message": "'{}' is a constant but is used like a type." },
+      { "kind": "syntax", "name": "variable_used_like_type", "message": "'{}' is a variable but is used like a type." },
+      { "kind": "syntax", "name": "function_used_like_type", "message": "'{}' is a function but is used like a type." },
+
+
+      { "kind": "semantic", "name": "type_not_found", "message": "the type '{}' could not be found." },
       { "kind": "semantic", "name": "multiple_definitions", "message": "a definition for '{}' already exists.", "params": [ "name" ] },
       { "kind": "semantic", "name": "multiple_member_definitions", "message": "the type '{}' already contains a definition for '{}'.", "params": [ "type", "name" ] },
       { "kind": "semantic", "name": "undeclared_identifier", "message": "the name '{}' does not exist in the current context.", "params": [ "name" ]  },
@@ -51,5 +58,6 @@
       { "kind": "semantic", "name": "irreducible_type", "message": "the types '{}' and '{}' do not share a common type." },
       { "kind": "semantic", "name": "mismatched_type_assignment", "message": "the type '{}' cannot be assigned to an instance of '{}'.", "params": [ "first", "second" ] },
       { "kind": "semantic", "name": "infinitely_recursive_return_type_deduction", "message": "deducing return type is infinitely recursive." }
+
    ]
 }

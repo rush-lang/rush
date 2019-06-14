@@ -2,11 +2,22 @@
 #include "rush/ast/stmts/simple.hpp"
 #include "rush/ast/stmts/result.hpp"
 
+#include "rush/diag/syntax_error.hpp"
+
 #include "rush/parser/parser.hpp"
 
+namespace decls = rush::ast::decls;
+namespace stmts = rush::ast::stmts;
+
+namespace errs = rush::diag::errs;
+
 namespace rush {
-	namespace decls = ast::decls;
-   namespace stmts = ast::stmts;
+
+   rush::parse_result<ast::declaration> parser::scope_insert(std::unique_ptr<ast::declaration> decl, rush::lexical_token const& ident) {
+      return (!_scope.insert({ *decl }))
+         ? errs::definition_already_exists(ident)
+         : rush::parse_result<ast::declaration> { std::move(decl) };
+   }
 
    rush::parse_result<ast::declaration> parser::parse_toplevel_decl() {
 		auto tok = peek_skip_indent();
@@ -19,7 +30,7 @@ namespace rush {
          }
       }
 
-      return error("expected a type, function, or variable declaration", tok);
+      return errs::expected_toplevel_decl(tok);
    }
 
 	rush::parse_result<ast::declaration> parser::_parse_storage_decl(std::string storage_type,
@@ -27,20 +38,21 @@ namespace rush {
 	) {
 		if (peek_skip_indent().is(symbols::left_bracket)) {
 			// parse_destructure_pattern.
-			return error("destructuring is currently not supported.", peek_skip_indent());
+         return errs::not_supported(peek_skip_indent(), "destructuring");
 		}
 
       auto ident = peek_skip_indent();
 		if (!ident.is_identifier())
-   		return error("expected an identifier before '{}'.", next_skip_indent());
+         return errs::expected_identifier(peek_skip_indent());
       next_skip_indent();
 
-      auto type = std::optional<ast::type_ref> {};
+      auto type_result = rush::parse_type_result {};
       if (peek_skip_indent().is(symbols::colon)) {
-         type = parse_type_annotation();
-         if (!type.has_value()) {
-            return error("expected type annotation before '{}'", peek_skip_indent());
-         }
+         type_result = parse_type_annotation();
+         if (type_result.failed())
+            return std::move(type_result).errors();
+         if (type_result.is_undefined())
+            return errs::expected_type_annotation(peek_skip_indent());
       }
 
       auto init = rush::parse_result<ast::expression> {};
@@ -48,18 +60,21 @@ namespace rush {
          next_skip_indent();
          if ((init = parse_expr()).failed())
             return std::move(init).as<ast::declaration>();
-      } else if (!type.has_value()) {
-         return error("{1} declaration '{0}' requires either a type-annotation or intializer.", ident, storage_type);
+      } else if (type_result.failed()) {
+         return std::move(type_result).errors();
+      } else if (type_result.is_undefined()) {
+         if (storage_type == "constant") return errs::constant_requires_type_annotation(ident);
+         if (storage_type == "variable") return errs::variable_requires_type_annotation(ident);
       }
 
-      type = type.has_value() ? type : ast::types::undefined;
-      auto decl = fn(ident.text(), *type, std::move(init));
+      type_result = type_result.success() ? std::move(type_result) : ast::types::undefined;
+      auto decl = fn(ident.text(), type_result.type(), std::move(init));
       if (!decl) return std::move(decl); // todo: should throw here an error here. only reason this should fail is bad-mem-alloc.
 
       // return scope_insert(std::move(decl), ident);
       if (!_scope.insert({ *decl })) {
-         error("local {1} named '{0}' is already defined in this scope.", ident, storage_type);
-         // return error(std::move(decl), "local {1} named '{0}' is already defined in this scope.", ident, storage);
+         if (storage_type == "constant") return errs::local_constant_name_previously_defined(ident);
+         if (storage_type == "variable") return errs::local_variable_name_previously_defined(ident);
       }
 
       return std::move(decl);
@@ -106,21 +121,21 @@ namespace rush {
          }
 
          if (names.empty())
-            return error("expected parameter identifier before '{}'.", next_skip_indent());
+            return errs::expected_parameter_name(peek_skip_indent());
 
          if (peek_skip_indent().is_not(symbols::colon))
-            return error("expected type annotation for parameters.", next_skip_indent());
+            return errs::expected_type_annotation(peek_skip_indent());
 
-         auto type = parse_type_annotation();
-         if (type == std::nullopt) return nullptr;
+         auto type_result = parse_type_annotation();
+         if (type_result.failed()) return std::move(type_result).errors();
 
          std::transform(
             std::make_move_iterator(names.begin()),
             std::make_move_iterator(names.end()),
-            std::back_inserter(results), [this, &type](auto n) {
-               auto p = decls::param(n.text(), *type);
+            std::back_inserter(results), [this, &type_result](auto n) {
+               auto p = decls::param(n.text(), type_result.type());
                return !_scope.insert({ *p })
-                  ? error("redefinition of parameter '{}'.", n)
+                  ? errs::parameter_redefinition(n)
                   : rush::parse_result<ast::parameter> { std::move(p) };
          });
 
@@ -131,7 +146,7 @@ namespace rush {
          return nullptr; // todo: accumulate parameter errors and return.
 
       if (peek_skip_indent().is_not(symbols::right_parenthesis))
-         return error("expected ')' before '{}'.", next_skip_indent());
+         return errs::expected(peek_skip_indent(), ")");
       next_skip_indent();
 
       auto params = std::vector<std::unique_ptr<ast::parameter>> {};
@@ -146,28 +161,28 @@ namespace rush {
       _scope.push(rush::scope_kind::function);
 
 		if (!peek_skip_indent().is_identifier())
-			return error("expected an identifier for the function name before '{}'.", next_skip_indent());
+         return errs::expected_function_name(peek_skip_indent());
 		auto ident = next_skip_indent();
 
 		if (peek_skip_indent().is_not(symbols::left_parenthesis))
-		 	return error("expected '(' before '{}'.", next_skip_indent());
+         return errs::expected(peek_skip_indent(), "(");
 
 		auto plist_result = parse_parameter_list();
 		if (plist_result.failed())
          return std::move(plist_result).as<ast::declaration>();
 
-      auto type = std::optional<ast::type_ref> {};
+      auto type_result = rush::parse_type_result {};
       if (peek_skip_indent().is(symbols::thin_arrow)) {
          next_skip_indent();
-         type = parse_type();
+         type_result = parse_type();
       }
 
 		auto body_result = parse_function_body();
       if (body_result.failed())
          return std::move(body_result).as<ast::declaration>();
 
-		auto decl = std::nullopt != type
-         ? decls::function(ident.text(), *type, std::move(plist_result), std::move(body_result))
+		auto decl = type_result.success()
+         ? decls::function(ident.text(), type_result.type(), std::move(plist_result), std::move(body_result))
          : decls::function(ident.text(), std::move(plist_result), std::move(body_result));
 
       _scope.pop();
@@ -216,9 +231,8 @@ namespace rush {
 		assert(peek_skip_indent().is(symbols::colon) && "expected a ':' symbol.");
       next_skip_indent();
 
-      if (peek_with_indent().is_not(symbols::indent)) {
-         return error("expected start of function body '<indent>' before '{}'", next_with_indent());
-      }
+      if (peek_with_indent().is_not(symbols::indent))
+         return errs::expected_function_stmt_body(peek_with_indent());
 
       return parse_block_stmt();
    }

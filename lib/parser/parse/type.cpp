@@ -1,4 +1,7 @@
 #include "rush/parser/parser.hpp"
+#include "rush/diag/syntax_error.hpp"
+
+namespace errs = rush::diag::errs;
 
 namespace rush {
    ast::type_ref builtin_type_from_keyword(keywords::keyword_token_t kw, ast::context& ctx) {
@@ -21,22 +24,22 @@ namespace rush {
       }
    }
 
-   std::optional<ast::type_ref> parser::parse_type() {
-      auto type = parse_simple_type();
-      if (!type.has_value()) return type;
+    rush::parse_type_result parser::parse_type() {
+      auto result = parse_simple_type();
+      if (result.failed()) return result;
 
       auto tok = peek_skip_indent();
       if (tok.is_symbol()) {
          switch (tok.symbol()) {
-         default: break; // not a symbol that extends a type.
-         case symbols::left_square_bracket: return parse_array_type(type.value());
+         default: break; // not a symbol that extends a result.
+         case symbols::left_square_bracket: return parse_array_type(result.type());
          }
       }
 
-      return std::move(type);
+      return std::move(result);
    }
 
-   std::optional<ast::type_ref> parser::parse_simple_type() {
+   rush::parse_type_result parser::parse_simple_type() {
       auto tok = next_skip_indent();
 
       if (tok.is_keyword())
@@ -44,12 +47,7 @@ namespace rush {
 
       if (tok.is_identifier()) {
          auto sym = _scope.current().lookup(tok.text());
-         if (sym.is_undefined()) {
-            // todo: push error up into parse result.
-            // ast::type_ref not being a derivative of ast::node makes this difficult.
-            error("the type or namespace '{}' could not be found", tok);
-            return std::nullopt;
-         }
+         if (sym.is_undefined()) return ast::types::undefined;
 
          auto& decl = *sym.declaration();
          switch (decl.kind()) {
@@ -59,33 +57,24 @@ namespace rush {
             case ast::declaration_kind::struct_:
             case ast::declaration_kind::concept:
             case ast::declaration_kind::interface: return decl.type();
-            case ast::declaration_kind::constant:
-               error("'{}' is a constant but is used like a type.", tok);
-               return std::nullopt;
-            case ast::declaration_kind::variable:
-               error("'{}' is a variable but is used like a type.", tok);
-               return std::nullopt;
-            case ast::declaration_kind::function:
-               error("'{}' is a function but is used like a type.", tok);
-               return std::nullopt;
-            case ast::declaration_kind::extension:
-            default:
-               error("parse_type unexpected!", tok);
-               return std::nullopt;
+            case ast::declaration_kind::constant: return errs::constant_used_like_type(tok);
+            case ast::declaration_kind::variable: return errs::variable_used_like_type(tok);
+            case ast::declaration_kind::function: return errs::function_used_like_type(tok);
+            default: return errs::not_supported(tok, "parsed type");
          }
       }; // todo: implement.
 
-      return std::nullopt;
+      return ast::types::undefined;
    }
 
-   std::optional<ast::type_ref> parser::parse_type_annotation() {
+   rush::parse_type_result parser::parse_type_annotation() {
       assert(peek_skip_indent().is(symbols::colon) && "expected a type annotation symbol ':'");
       next_skip_indent();
 
       return parse_type();
    }
 
-   std::optional<ast::type_ref> parser::parse_array_type(ast::type_ref elem_type) {
+   rush::parse_type_result parser::parse_array_type(ast::type_ref elem_type) {
       assert(peek_skip_indent().is(symbols::left_square_bracket) && "expected array type");
       next_skip_indent();
 

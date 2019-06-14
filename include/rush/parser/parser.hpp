@@ -23,6 +23,8 @@
 #include "rush/parser/symbol.hpp"
 #include "rush/parser/scope.hpp"
 
+#include "rush/diag/syntax_error.hpp"
+
 #include <optional>
 
 namespace rush {
@@ -60,25 +62,6 @@ namespace rush {
 			_range = { lxa.begin(), lxa.end() };
          _context = std::make_unique<ast::context>();
          _module = std::make_unique<ast::module>(std::string { lxa.id() });
-		}
-
-		std::string format(std::string str) {
-			return std::move(str);
-		}
-
-		std::string format(lexical_token const& tok) {
-			return to_string(tok);
-		}
-
-		template <typename... Args>
-		rush::syntax_error error(std::string msg, lexical_token const& tok, Args&&... args) {
-			auto fmtmsg = fmt::format(msg, to_string(tok), format(std::forward<Args>(args))...);
-			return { fmtmsg, tok.location() };
-		}
-
-		template <typename... Args>
-		std::nullptr_t warn(std::string msg, Args&&... args) {
-			return nullptr;
 		}
 
 		lexical_token const& peek_with_indent(lxa_iterator_difference_type offset = 0) {
@@ -127,11 +110,11 @@ namespace rush {
       rush::parse_result<ast::import_declaration> parse_import_decl();
 
       // types.
-      std::optional<ast::type_ref> parse_type();
-      std::optional<ast::type_ref> parse_simple_type();
-		std::optional<ast::type_ref> parse_type_annotation();
+      rush::parse_type_result parse_type();
+      rush::parse_type_result parse_simple_type();
+		rush::parse_type_result parse_type_annotation();
 
-      std::optional<ast::type_ref> parse_array_type(ast::type_ref);
+      rush::parse_type_result parse_array_type(ast::type_ref);
 
 		// declarations.
       rush::parse_result<ast::declaration> parse_toplevel_decl();
@@ -192,11 +175,7 @@ namespace rush {
       rush::parse_result<ast::expression> parse_invoke_expr(rush::parse_result<ast::expression> expr);
       rush::parse_result<ast::argument_list> parse_argument_list();
 
-      rush::parse_result<ast::declaration> scope_insert(std::unique_ptr<ast::declaration> decl, rush::lexical_token const& ident) {
-         return (!_scope.insert({ *decl }))
-            ? error("the current context already contains a definition for '{}'.", ident)
-            : rush::parse_result<ast::declaration> { std::move(decl) };
-      }
+      rush::parse_result<ast::declaration> scope_insert(std::unique_ptr<ast::declaration> decl, rush::lexical_token const& ident);
 
       template <typename NodeT>
       rush::parse_result<NodeT> terminated(rush::parse_result<NodeT>(parser::*parse_fn)()) {
@@ -206,7 +185,7 @@ namespace rush {
 
          auto tok = peek_with_indent();
          if (tok.is_not(symbols::semi_colon))
-            return error("expected ';' before '{}'", tok);
+            return diag::errs::expected(tok, ";");
 
          while (tok.is(symbols::semi_colon)) {
             next_with_indent();

@@ -1,6 +1,8 @@
 #include "rush/parser/parser.hpp"
+#include "rush/diag/syntax_error.hpp"
 
 namespace decls = rush::ast::decls;
+namespace errs = rush::diag::errs;
 
 namespace rush {
    rush::parse_result<ast::module> parser::parse_module() {
@@ -40,7 +42,7 @@ namespace rush {
       // parse_qualified_name();
       auto tok = peek_skip_indent();
       if (!tok.is_identifier())
-         return error("expected a name after import declaration and before '{}'", tok);
+         return errs::expected_module_name(tok);
 
       std::string name = tok.text();
       next_skip_indent();
@@ -49,7 +51,7 @@ namespace rush {
          next_skip_indent();
          tok = peek_skip_indent();
          if (!tok.is_identifier())
-            return error("expected a qualified-name after import declaration and before '{}'", tok);
+            return errs::expected_qualified_name(tok);
 
          name += ".";
          name += tok.text();
