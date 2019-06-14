@@ -185,13 +185,13 @@ namespace rush {
 
       template <typename NodeU>
       parse_result<NodeU> as() && {
-         // _node = std::move(other._node);
-         auto result = parse_result<NodeU> {};
-         std::move(
-            std::make_move_iterator(_errors.begin()),
-            std::make_move_iterator(_errors.end()),
-            std::back_inserter(result._errors));
-         return std::move(result);
+         if constexpr (!std::is_base_of_v<NodeU, NodeT>) {
+            return std::move(_errors);
+         } else {
+            return success()
+               ? parse_result<NodeU> { std::move(_node) }
+               : parse_result<NodeU> { std::move(_errors) };
+         }
       }
 
       void accept(ast::visitor& v) const {
