@@ -22,12 +22,16 @@ namespace rush {
 
 	rush::parse_result<ast::expression> parser::parse_expr() {
 		auto result = parse_primary_expr();
-      if (result.failed()) return std::move(result);
+      if (result.success() && peek_skip_indent().is(symbols::period))
+         result = parse_member_access_expr(std::move(result));
 
-		if (is_binary_op(peek_skip_indent()))
+      if (result.success() && is_unary_postfix_op(peek_skip_indent()))
+         result = parse_unary_postfix_expr(std::move(result));
+
+		if (result.success() && is_binary_op(peek_skip_indent()))
 			result = parse_binary_expr(std::move(result));
 
-      if (peek_skip_indent().is(symbols::question_mark))
+      if (result.success() && peek_skip_indent().is(symbols::question_mark))
          result = parse_ternary_expr(std::move(result));
 
 		return std::move(result);
@@ -72,9 +76,7 @@ namespace rush {
          } break;
 		}
 
-      return is_unary_postfix_op(peek_skip_indent())
-         ? parse_unary_postfix_expr(std::move(result))
-         : std::move(result);
+      return std::move(result);
 	}
 
 	rush::parse_result<ast::expression> parser::parse_string_expr() {
@@ -119,6 +121,22 @@ namespace rush {
          : exprs::identifier(_scope.resolver(tok.text()));
 	}
 
+   rush::parse_result<ast::expression> parser::parse_member_access_expr(rush::parse_result<ast::expression> expr) {
+      assert(peek_skip_indent().is(symbols::period) && "expected token to be a '.'.");
+      next_skip_indent(); // consume period.
+
+      if (!peek_skip_indent().is_identifier())
+         return errs::expected_identifier(peek_skip_indent());
+
+      auto ident_result = parse_identifier_expr();
+      auto ma_expr = exprs::member_access(
+         std::move(expr),
+         std::move(ident_result));
+
+      return peek_skip_indent().is(symbols::period)
+         ? parse_member_access_expr(std::move(ma_expr))
+         : rush::parse_result<ast::expression> { std::move(ma_expr) };
+	}
 
    rush::parse_result<ast::expression> parser::parse_unary_expr() {
       assert(is_unary_prefix_op(peek_skip_indent()) && "expected unary operator.");

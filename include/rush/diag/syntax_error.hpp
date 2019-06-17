@@ -22,11 +22,11 @@ namespace rush::diag {
          , _end { tok.location().next_column(tok.size()) } {}
 
       virtual location const& end() const override {
-         return _tok.location();
+         return _end;
       }
 
       virtual location const& start() const override {
-         return _end;
+         return _tok.location();
       }
 
       virtual diagnostic_kind kind() const override {

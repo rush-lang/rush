@@ -194,6 +194,11 @@ namespace rush::ast {
 			writeln(" (name=\"{}\")>", expr.name());
 		}
 
+      virtual void visit_member_access_expr(ast::member_access_expression const& expr) override {
+         print_expression("member_access", expr);
+         indent_traverse(expr);
+      }
+
       virtual void visit_invoke_expr(ast::invoke_expression const& expr) override {
          print_expression("invoke", expr);
          indent_traverse(expr);

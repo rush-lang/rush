@@ -9,6 +9,7 @@
 #include "rush/ast/exprs/literal.hpp"
 #include "rush/ast/exprs/argument.hpp"
 #include "rush/ast/exprs/identifier.hpp"
+#include "rush/ast/exprs/member.hpp"
 #include "rush/ast/exprs/invoke.hpp"
 
 #endif // RUSH_AST_EXPRESSION_HPP

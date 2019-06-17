@@ -27,11 +27,16 @@ public:
 
    virtual void visit_unary_expr(ast::unary_expression const& expr) override { expr.result_type().accept(*this); }
    virtual void visit_binary_expr(ast::binary_expression const& expr) override { expr.result_type().accept(*this); }
-   virtual void visit_ternary_expr(ast::ternary_expression const& expr) override { expr.result_type().accept(*this); }
    virtual void visit_invoke_expr(ast::invoke_expression const& expr) override { expr.result_type().accept(*this); }
+   virtual void visit_ternary_expr(ast::ternary_expression const& expr) override { expr.result_type().accept(*this); }
 
    virtual void visit_identifier_expr(ast::identifier_expression const& expr) override {
       if (!expr.is_unresolved()) { expr.declaration().accept(*this); return; }
+      _result = undeclared_identifier_error_type;
+   }
+
+   virtual void visit_member_access_expr(ast::member_access_expression const& expr) override {
+      if (!expr.is_unresolved()) { expr.result_type().accept(*this); return; }
       _result = undeclared_identifier_error_type;
    }
 

@@ -165,14 +165,15 @@ namespace rush {
 		rush::parse_result<ast::expression> parse_integer_expr();
 		rush::parse_result<ast::expression> parse_floating_expr();
 		rush::parse_result<ast::expression> parse_identifier_expr();
+      rush::parse_result<ast::expression> parse_member_access_expr(rush::parse_result<ast::expression>);
 
 		rush::parse_result<ast::expression> parse_unary_expr();
-		rush::parse_result<ast::expression> parse_unary_postfix_expr(rush::parse_result<ast::expression> op);
-		rush::parse_result<ast::expression> parse_binary_expr(rush::parse_result<ast::expression> lhs);
+		rush::parse_result<ast::expression> parse_unary_postfix_expr(rush::parse_result<ast::expression>);
+		rush::parse_result<ast::expression> parse_binary_expr(rush::parse_result<ast::expression>);
 		rush::parse_result<ast::expression> parse_binary_expr_rhs();
 
-      rush::parse_result<ast::expression> parse_ternary_expr(rush::parse_result<ast::expression> cond);
-      rush::parse_result<ast::expression> parse_invoke_expr(rush::parse_result<ast::expression> expr);
+      rush::parse_result<ast::expression> parse_ternary_expr(rush::parse_result<ast::expression>);
+      rush::parse_result<ast::expression> parse_invoke_expr(rush::parse_result<ast::expression>);
       rush::parse_result<ast::argument_list> parse_argument_list();
 
       rush::parse_result<ast::declaration> scope_insert(std::unique_ptr<ast::declaration> decl, rush::lexical_token const& ident);
