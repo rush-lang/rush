@@ -201,7 +201,11 @@ namespace rush::ast {
 
       virtual void visit_invoke_expr(ast::invoke_expression const& expr) override {
          print_expression("invoke", expr);
-         indent_traverse(expr);
+         indent();
+         expr.callable().accept(*this);
+         writeln("<arguments>");
+         indent_accept(expr.arguments());
+         dedent();
       }
 
 		virtual void visit_constant_decl(ast::constant_declaration const& decl) override {
@@ -239,6 +243,12 @@ namespace rush::ast {
       std::size_t _current_indent;
       rush::ast::module_access _maccess;
       std::basic_ostream<CharT, Traits>& _ostr;
+
+      void indent_accept(ast::node const& ast) {
+         indent();
+         ast.accept(*this);
+         dedent();
+      }
 
       void indent_traverse(ast::node const& ast) {
          indent();
