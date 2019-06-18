@@ -62,6 +62,11 @@ namespace rush::ast {
          accept(expr.arguments());
       }
 
+      virtual void visit_lambda_expr(ast::lambda_expression const& expr) override {
+         accept(expr.parameters());
+         accept(expr.body());
+      }
+
 #     define RUSH_TRAVERSAL_RESULT_STMT_FUNC_IMPLS
 #     define RUSH_TRAVERSAL_ITERATION_STMT_FUNC_IMPLS
 #     define RUSH_TRAVERSAL_CONDITIONAL_STMT_FUNC_IMPLS

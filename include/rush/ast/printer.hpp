@@ -208,6 +208,11 @@ namespace rush::ast {
          dedent();
       }
 
+      virtual void visit_lambda_expr(ast::lambda_expression const& expr) override {
+         print_expression("lambda", expr);
+         indent_traverse(expr);
+      }
+
 		virtual void visit_constant_decl(ast::constant_declaration const& decl) override {
 			print_storage_decl("constant", decl);
 		}

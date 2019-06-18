@@ -11,5 +11,6 @@
 #include "rush/ast/exprs/identifier.hpp"
 #include "rush/ast/exprs/member.hpp"
 #include "rush/ast/exprs/invoke.hpp"
+#include "rush/ast/exprs/lambda.hpp"
 
 #endif // RUSH_AST_EXPRESSION_HPP
