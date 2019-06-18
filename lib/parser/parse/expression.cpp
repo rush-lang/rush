@@ -44,6 +44,10 @@ namespace rush {
 		if (result.failed()) return std::move(result);
 
 		auto tok = peek_skip_indent();
+      if (tok.is(symbols::comma))
+         return parse_tuple_expr(std::move(result));
+
+      tok = peek_skip_indent();
 		if (tok.is(symbols::right_parenthesis)) {
 			next_skip_indent(); // consume ')'
 			return std::move(result);
@@ -51,6 +55,12 @@ namespace rush {
 
       return errs::expected_closing_parenthesis(tok);
 	}
+
+   rush::parse_result<ast::expression> parser::parse_tuple_expr(rush::parse_result<ast::expression> result) {
+      assert(peek_skip_indent().is(symbols::comma) && "expected comma to start tuple expression.");
+      auto alist = parse_argument_list(std::move(result));
+      return exprs::tuple(std::move(alist));
+   }
 
 	rush::parse_result<ast::expression> parser::parse_primary_expr() {
 		auto tok = peek_skip_indent();
@@ -314,7 +324,19 @@ namespace rush {
          return exprs::arg_list();
 		}
 
+      auto first = parse_expr();
+      return first.failed()
+         ? std::move(first).as<ast::argument_list>()
+         : parse_argument_list(std::move(first));
+   }
+
+   rush::parse_result<ast::argument_list> parser::parse_argument_list(rush::parse_result<ast::expression> first) {
+      assert(peek_skip_indent().is(symbols::comma) && "expected comma to start tuple expression.");
+      next_skip_indent(); // consume ','
+
       std::vector<rush::parse_result<ast::argument>> results;
+      results.push_back(exprs::arg(std::move(first)));
+
       do {
          auto expr_result = parse_expr();
          if (expr_result.failed())

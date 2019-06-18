@@ -100,6 +100,11 @@ namespace rush::ast {
          write(")");
       }
 
+      virtual void visit_tuple_expr(ast::tuple_expression const& expr) override {
+         print_expression("tuple", expr);
+         indent_traverse(expr);
+      }
+
       virtual void visit_builtin_integral_type(ast::builtin_integral_type const& type) override {
          // write(type.is_signed() ? "builtin.int{}" : "builtin.uint{}", type.bit_width());
          switch (type.unit()) {
@@ -215,8 +220,10 @@ namespace rush::ast {
          print_expression("invoke", expr);
          indent();
          expr.callable().accept(*this);
-         writeln("<arguments>");
-         indent_accept(expr.arguments());
+         if (!expr.arguments().empty()) {
+            writeln("<arguments>");
+            indent_accept(expr.arguments());
+         }
          dedent();
       }
 

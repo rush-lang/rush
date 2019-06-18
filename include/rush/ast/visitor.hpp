@@ -32,6 +32,7 @@ namespace rush::ast {
    class member_access_expression;
    class invoke_expression;
    class lambda_expression;
+   class tuple_expression;
 
 	class literal_expression;
 	class nil_literal_expression;
@@ -121,6 +122,7 @@ namespace rush::ast {
       virtual void visit_member_access_expr(member_access_expression const&) {};
       virtual void visit_invoke_expr(invoke_expression const&) {};
       virtual void visit_lambda_expr(lambda_expression const&) {};
+      virtual void visit_tuple_expr(tuple_expression const&) {};
 
 		virtual void visit_literal_expr(nil_literal_expression const&) {};
 		virtual void visit_literal_expr(string_literal_expression const&) {};

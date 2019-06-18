@@ -161,6 +161,7 @@ namespace rush {
 		rush::parse_result<ast::expression> parse_expr();
 		rush::parse_result<ast::expression> parse_paren_expr();
 		rush::parse_result<ast::expression> parse_primary_expr();
+      rush::parse_result<ast::expression> parse_tuple_expr(rush::parse_result<ast::expression>);
 
 		rush::parse_result<ast::expression> parse_string_expr();
 		rush::parse_result<ast::expression> parse_integer_expr();
@@ -176,6 +177,8 @@ namespace rush {
       rush::parse_result<ast::expression> parse_ternary_expr(rush::parse_result<ast::expression>);
       rush::parse_result<ast::expression> parse_invoke_expr(rush::parse_result<ast::expression>);
       rush::parse_result<ast::argument_list> parse_argument_list();
+      rush::parse_result<ast::argument_list> parse_argument_list(rush::parse_result<ast::expression>);
+
 
       rush::parse_result<ast::declaration> scope_insert(std::unique_ptr<ast::declaration> decl, rush::lexical_token const& ident);
 

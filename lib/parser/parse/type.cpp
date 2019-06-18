@@ -29,7 +29,7 @@ namespace rush {
       auto result = rush::parse_type_result {};
 
       switch (tok.type()) {
-      default: return errs::expected(tok, "type"); // todo: add proper error.
+      default: return errs::expected_type_annotation(tok); // todo: add proper error.
       case lexical_token_type::keyword:
       case lexical_token_type::identifier:
          result = parse_simple_type();
@@ -39,7 +39,7 @@ namespace rush {
          case symbols::left_parenthesis:
             result = parse_tuple_type();
             break;
-         default: return errs::expected(tok, "type");
+         default: return errs::expected_type_annotation(tok);
          }
       }
 
@@ -116,7 +116,9 @@ namespace rush {
       std::vector<ast::type_ref> types;
       do {
          auto result = parse_type();
-         if (result.failed()) return result;
+         if (result.failed())
+            return std::move(result);
+
          types.push_back(result.type());
          consume_skip_indent(symbols::comma);
       } while (peek_skip_indent().is_not(symbols::right_parenthesis));

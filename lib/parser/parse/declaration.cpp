@@ -175,6 +175,8 @@ namespace rush {
       if (peek_skip_indent().is(symbols::thin_arrow)) {
          next_skip_indent();
          type_result = parse_type();
+         if (type_result.failed())
+            return std::move(type_result).errors();
       }
 
 		auto body_result = parse_function_body();

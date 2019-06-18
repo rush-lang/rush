@@ -35,7 +35,7 @@
       { "kind": "syntax", "code": 1115, "name": "expected_compound_stmt", "message": "expected compound statement before '{}'." },
       { "kind": "syntax", "code": 1116, "name": "expected_if_stmt_body", "message": "expected body of 'if' statement before '{}'." },
       { "kind": "syntax", "code": 1117, "name": "expected_while_stmt_body", "message": "expected body of 'while' statement before '{}'." },
-      { "kind": "syntax", "code": 1118, "name": "expected_type_annotation", "message": "expected type annotation before '{}'." },
+      { "kind": "syntax", "code": 1118, "name": "expected_type_annotation", "message": "expected type name or annotation before '{}'." },
       { "kind": "syntax", "code": 1119, "name": "expected_toplevel_decl", "message": "expected a type, function, or variable declaration." },
       { "kind": "syntax", "code": 1120, "name": "expected_parameter_name", "message": "expected parameter identifier before '{}'." },
       { "kind": "syntax", "code": 1121, "name": "constant_requires_type_annotation", "message": "constant declaration '{}' requires either a type-annotation or intializer." },

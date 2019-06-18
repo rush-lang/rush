@@ -67,6 +67,11 @@ namespace rush::ast {
          accept(expr.body());
       }
 
+      virtual void visit_tuple_expr(tuple_expression const& expr) override {
+         accept(expr.arguments());
+      }
+
+
 #     define RUSH_TRAVERSAL_RESULT_STMT_FUNC_IMPLS
 #     define RUSH_TRAVERSAL_ITERATION_STMT_FUNC_IMPLS
 #     define RUSH_TRAVERSAL_CONDITIONAL_STMT_FUNC_IMPLS

@@ -12,5 +12,6 @@
 #include "rush/ast/exprs/member.hpp"
 #include "rush/ast/exprs/invoke.hpp"
 #include "rush/ast/exprs/lambda.hpp"
+#include "rush/ast/exprs/tuple.hpp"
 
 #endif // RUSH_AST_EXPRESSION_HPP
