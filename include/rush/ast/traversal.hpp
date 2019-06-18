@@ -46,6 +46,16 @@ namespace rush::ast {
          // todo: implement when switch statements are implemented.
       }
 
+
+      virtual void visit_argument(argument const& arg) override {
+         accept(arg.expression());
+      }
+
+      virtual void visit_named_argument(named_argument const& arg) override {
+         accept(arg.expression());
+      }
+
+
       virtual void visit_ternary_expr(ast::ternary_expression const& expr) override {
          accept(expr.condition());
          accept(expr.true_expr());

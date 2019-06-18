@@ -5,8 +5,6 @@
 
 #include "rush/ast/node.hpp"
 #include "rush/ast/visitor.hpp"
-#include "rush/ast/exprs/argument.hpp"
-#include "rush/ast/decls/parameter.hpp"
 
 #include <cstddef>
 #include <vector>
@@ -84,32 +82,5 @@ namespace rush::ast::detail {
 		container_type _elems;
 	};
 } // rush::ast::detail
-
-namespace rush::ast {
-	using argument_list = detail::basic_list<argument>;
-	using parameter_list = detail::basic_list<parameter>;
-} // rush::ast
-
-namespace rush::ast::exprs {
-
-   inline std::unique_ptr<ast::argument_list> arg_list() {
-      return std::make_unique<argument_list>();
-   }
-
-   inline std::unique_ptr<argument_list> arg_list(std::vector<std::unique_ptr<argument>> args) {
-      return std::make_unique<argument_list>(std::move(args));
-   }
-} // rush::ast::exprs
-
-namespace rush::ast::decls {
-
-   inline std::unique_ptr<parameter_list> param_list() {
-      return std::make_unique<parameter_list>();
-   }
-
-	inline std::unique_ptr<parameter_list> param_list(std::vector<std::unique_ptr<ast::parameter>> params) {
-      return std::make_unique<parameter_list>(std::move(params));
-   }
-} // rush::ast::decls
 
 #endif // RUSH_AST_LIST_HPP

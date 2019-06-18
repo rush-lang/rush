@@ -6,7 +6,7 @@
 #include "rush/ast/decls/parameter.hpp"
 #include "rush/ast/stmts/statement.hpp"
 #include "rush/ast/types/builtin.hpp"
-#include "rush/ast/list.hpp"
+
 #include <memory>
 
 namespace rush::ast {

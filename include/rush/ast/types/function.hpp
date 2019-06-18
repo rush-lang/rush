@@ -5,7 +5,6 @@
 
 #include "rush/ast/types/type.hpp"
 #include "rush/ast/decls/parameter.hpp"
-#include "rush/ast/list.hpp"
 
 #include <vector>
 #include <memory>

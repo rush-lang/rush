@@ -10,7 +10,6 @@
 #include "rush/ast/decls/declaration.hpp"
 #include "rush/ast/decls/parameter.hpp"
 #include "rush/ast/exprs/identifier.hpp"
-#include "rush/ast/list.hpp"
 
 namespace rush::ast::decls {
    std::unique_ptr<function_declaration> function(

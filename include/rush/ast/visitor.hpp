@@ -25,6 +25,8 @@ namespace rush::ast {
    class function_type;
 
 	class expression;
+   class argument;
+   class named_argument;
 	class unary_expression;
 	class binary_expression;
    class ternary_expression;
@@ -115,6 +117,9 @@ namespace rush::ast {
       virtual void visit_result_stmt(result_statement const& stmt);
 
 		// expressions
+      virtual void visit_argument(argument const&) {};
+      virtual void visit_named_argument(named_argument const&) {};
+
 		virtual void visit_unary_expr(unary_expression const&);
 		virtual void visit_binary_expr(binary_expression const&);
       virtual void visit_ternary_expr(ternary_expression const&) {};

@@ -3,10 +3,9 @@
 #ifndef RUSH_AST_EXPRS_TUPLE_HPP
 #define RUSH_AST_EXPRS_TUPLE_HPP
 
-#include "rush/ast/exprs/expression.hpp"
 #include "rush/ast/types/builtin.hpp"
+#include "rush/ast/exprs/expression.hpp"
 #include "rush/ast/exprs/argument.hpp"
-#include "rush/ast/list.hpp"
 
 #include <algorithm>
 
