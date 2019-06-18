@@ -83,11 +83,21 @@ namespace rush::ast {
       return *it->second;
    }
 
-   ast::type_ref context::tuple_type(iterator_range<ast::type_ref>) {
-      return types::undefined;
+   ast::type_ref context::
+   tuple_type(rush::iterator_range<std::vector<ast::type_ref>::const_iterator> types) {
+      auto key = detail::tuple_type_key_t { types };
+      auto it = _tuple_types.find(key);
+      if (it == _tuple_types.end()) {
+         std::vector<ast::type_ref> vtypes { types.begin(), types.end() };
+         key.types = vtypes;
+
+         auto p = std::make_unique<ast::tuple_type>(std::move(vtypes));
+         it = _tuple_types.insert({ key, std::move(p) }).first;
+      }
+      return *it->second;
    }
 
-   ast::type_ref context::function_type(ast::type_ref ret, iterator_range<ast::type_ref> params) {
+   ast::type_ref context::function_type(ast::type_ref ret, iterator_range<std::vector<ast::type_ref>::const_iterator> params) {
       return types::undefined;
    }
 }

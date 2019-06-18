@@ -5,6 +5,7 @@
 
 #include "rush/ast/types/type.hpp"
 #include "rush/ast/types/array.hpp"
+#include "rush/ast/types/tuple.hpp"
 #include "rush/ast/types/string.hpp"
 #include "rush/ast/types/builtin.hpp"
 #include "rush/ast/types/integral.hpp"

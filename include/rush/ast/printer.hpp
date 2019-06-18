@@ -89,6 +89,17 @@ namespace rush::ast {
          write("[]");
       }
 
+      virtual void visit_tuple_type(ast::tuple_type const& type) override {
+         write("(");
+         auto it = type.types().begin();
+         for (; it != type.types().end(); ++it) {
+            it->accept(*this);
+            if (it != type.types().end() - 1)
+               write(", ");
+         }
+         write(")");
+      }
+
       virtual void visit_builtin_integral_type(ast::builtin_integral_type const& type) override {
          // write(type.is_signed() ? "builtin.int{}" : "builtin.uint{}", type.bit_width());
          switch (type.unit()) {
@@ -113,18 +124,19 @@ namespace rush::ast {
       }
 
       virtual void visit_function_type(ast::function_type const& type) override {
-         if (type.parameters().empty()) {
+         auto& params = type.parameters();
+         if (params.empty()) {
             write("()");
-         } else if (type.parameters().count() == 1) {
-            type.parameters()
-               .first()->type()
-               .accept(*this);
+         } else if (params.count() == 1
+            && !params.front()->type().is<ast::array_type>()
+            && !params.front()->type().is<ast::tuple_type>()) {
+            type.parameters().first()->type().accept(*this);
          } else {
             write("(");
             std::for_each(type.parameters().begin(), type.parameters().end(),
-               [this, &type](auto& p) {
+               [this, &type, &params](auto& p) {
                   p->type().accept(*this);
-                  if (p != type.parameters().last()) write(", ");
+                  if (p != params.last()) write(", ");
                });
             write(")");
          }

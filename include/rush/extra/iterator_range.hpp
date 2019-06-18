@@ -4,6 +4,7 @@
 #define RUSH_CORE_ITERATOR_RANGE_HPP
 
 #include <utility>
+#include <iterator>
 
 namespace rush {
 	namespace detail {
@@ -26,8 +27,14 @@ namespace rush {
 		using iterator = IterT;
 		using const_iterator = IterT;
 
-		template <typename Container>
-		iterator_range(Container&& cont)
+		using value_type = typename std::iterator_traits<IterT>::value_type;
+		using reference = typename std::iterator_traits<IterT>::reference;
+		using pointer = typename std::iterator_traits<IterT>::pointer;
+		using difference_type = typename std::iterator_traits<IterT>::difference_type;
+		using iterator_category = typename std::iterator_traits<IterT>::iterator_category;
+
+		template <typename ContainerT>
+		iterator_range(ContainerT&& cont)
 			: _first(detail::adl_begin(cont))
 			, _last(detail::adl_end(cont)) {}
 
@@ -35,7 +42,22 @@ namespace rush {
 			: _first(first)
 			, _last(last) {}
 
+		template <typename ContainerT>
+		iterator_range& operator = (ContainerT& cont) {
+			_first = detail::adl_begin(cont);
+			_last = detail::adl_end(cont);
+			return *this;
+		}
+
+		iterator_range& operator = (iterator_range const& other) {
+			_first = other.begin();
+			_last = other.end();
+			return *this;
+		}
+
+
       bool empty() const noexcept { return _first == _last; }
+		bool size() const noexcept { return 0; }
 
 		const_iterator begin() const { return _first; }
 		const_iterator end() const { return _last; }

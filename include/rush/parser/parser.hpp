@@ -111,6 +111,7 @@ namespace rush {
 
       // types.
       rush::parse_type_result parse_type();
+      rush::parse_type_result parse_tuple_type();
       rush::parse_type_result parse_simple_type();
 		rush::parse_type_result parse_type_annotation();
 

@@ -25,14 +25,32 @@ namespace rush {
    }
 
     rush::parse_type_result parser::parse_type() {
-      auto result = parse_simple_type();
-      if (result.failed()) return result;
-
       auto tok = peek_skip_indent();
+      auto result = rush::parse_type_result {};
+
+      switch (tok.type()) {
+      default: return errs::expected(tok, "type"); // todo: add proper error.
+      case lexical_token_type::keyword:
+      case lexical_token_type::identifier:
+         result = parse_simple_type();
+         break;
+      case lexical_token_type::symbol:
+         switch (tok.symbol()) {
+         case symbols::left_parenthesis:
+            result = parse_tuple_type();
+            break;
+         default: return errs::expected(tok, "type");
+         }
+      }
+
+      if (result.failed())
+      return std::move(result);
+
+      tok = peek_skip_indent();
       if (tok.is_symbol()) {
          switch (tok.symbol()) {
-         default: break; // not a symbol that extends a result.
          case symbols::left_square_bracket: return parse_array_type(result.type());
+         default: return std::move(result);
          }
       }
 
@@ -75,7 +93,7 @@ namespace rush {
    }
 
    rush::parse_type_result parser::parse_array_type(ast::type_ref elem_type) {
-      assert(peek_skip_indent().is(symbols::left_square_bracket) && "expected array type");
+      assert(peek_skip_indent().is(symbols::left_square_bracket) && "expected array type symbol '['.");
       next_skip_indent();
 
       auto tok = peek_skip_indent();
@@ -89,5 +107,23 @@ namespace rush {
          return errs::expected_closing_square_bracket(tok);
       next_skip_indent(); // skip closing ']'
       return _context->array_type(elem_type);
+   }
+
+   rush::parse_type_result parser::parse_tuple_type() {
+      assert(peek_skip_indent().is(symbols::left_parenthesis) && "expected start of tuple type '('.");
+      next_skip_indent(); // consume '(' symbol.
+
+      std::vector<ast::type_ref> types;
+      do {
+         auto result = parse_type();
+         if (result.failed()) return result;
+         types.push_back(result.type());
+         consume_skip_indent(symbols::comma);
+      } while (peek_skip_indent().is_not(symbols::right_parenthesis));
+
+      next_skip_indent();
+      return types.size() == 1
+         ? types.front()
+         : _context->tuple_type(types);
    }
 }

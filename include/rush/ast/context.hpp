@@ -7,8 +7,11 @@
 #include "rush/extra/hash_combine.hpp"
 #include "rush/ast/types.hpp"
 
+#include <vector>
+#include <numeric>
 #include <functional>
 #include <unordered_map>
+#include <algorithm>
 
 namespace rush::ast::detail {
    struct array_type_key_t {
@@ -21,7 +24,12 @@ namespace rush::ast::detail {
    };
 
    struct tuple_type_key_t {
-      iterator_range<ast::type_ref> types;
+      rush::iterator_range<std::vector<ast::type_ref>::const_iterator> types;
+      bool operator ==(tuple_type_key_t const& other) const {
+         return std::equal(
+            this->types.begin(), this->types.end(),
+            other.types.begin(), other.types.end());
+      }
    };
 
    struct function_type_key_t {
@@ -38,6 +46,19 @@ namespace std {
          rush::hash_combine(result, key.rank);
          rush::hash_combine(result, key.type);
          return result;
+      }
+   };
+
+   template <>
+   struct hash<rush::ast::detail::tuple_type_key_t> {
+      std::size_t operator()(rush::ast::detail::tuple_type_key_t const& key) const {
+         std::hash<rush::ast::type_ref> hasher;
+         return std::accumulate(
+            key.types.begin(),
+            key.types.end(), 0,
+            [&hasher](auto& result, auto& type) {
+               return result ^ hasher(type) + 0x9e3779b9 + (result<<6) + (result>>2);
+            });
       }
    };
 }
@@ -74,13 +95,12 @@ namespace rush::ast {
       ast::type_ref floating_point_type(floating_point_kind);
 
       ast::type_ref array_type(ast::type_ref, size_type = 1);
-      ast::type_ref tuple_type(iterator_range<ast::type_ref>);
-      ast::type_ref function_type(ast::type_ref ret, iterator_range<ast::type_ref> params);
+      ast::type_ref tuple_type(rush::iterator_range<std::vector<ast::type_ref>::const_iterator>);
+      ast::type_ref function_type(ast::type_ref ret, iterator_range<std::vector<ast::type_ref>::const_iterator> params);
 
    private:
       std::unordered_map<detail::array_type_key_t, std::unique_ptr<ast::array_type>> _array_types;
-      // std::unordered_map<detail::tuple_type_key_t, ast::tuple_type> _tuple_types;
-      // std::unordered_map<detail::function_type_key_t, ast::function_type> _function_types;
+      std::unordered_map<detail::tuple_type_key_t, std::unique_ptr<ast::tuple_type>> _tuple_types;
    };
 }
 

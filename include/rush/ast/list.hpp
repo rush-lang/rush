@@ -38,6 +38,9 @@ namespace rush::ast::detail {
          return _elems.size();
       }
 
+      const_reference front() const noexcept { return _elems.front(); }
+      const_reference back() const noexcept { return _elems.back(); }
+
       const_reference first() const noexcept {
          return _elems.front();
       }

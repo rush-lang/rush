@@ -24,6 +24,9 @@ namespace rush::ast {
       function
    };
 
+   template <typename TypeT>
+   struct type_traits {};
+
    class type : public node {
    public:
       virtual ast::type_kind kind() const = 0;
@@ -52,8 +55,7 @@ namespace rush::ast {
       template <typename T>
       bool is() const noexcept {
          static_assert(std::is_base_of_v<ast::type, T>, "T is not a dervied rush::ast::type");
-         // return type_traits<T>::kind() == _ptr->kind();
-         return false;
+         return type_traits<T>::kind() == _ptr->kind();
       }
 
       template <typename T>

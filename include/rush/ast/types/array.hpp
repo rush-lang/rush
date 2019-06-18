@@ -10,7 +10,15 @@
 #include <unordered_set>
 
 namespace rush::ast {
+   class array_type;
    class array_type_map;
+
+   template <>
+   struct type_traits<array_type> {
+      static constexpr ast::type_kind kind() noexcept {
+         return ast::type_kind::array;
+      }
+   };
 
    class array_type_dim {
    public:
@@ -30,7 +38,7 @@ namespace rush::ast {
          , _type { std::move(type) } {}
 
       virtual ast::type_kind kind() const override {
-         return ast::type_kind::array;
+         return type_traits<array_type>::kind();
       }
 
       std::size_t rank() const noexcept {
