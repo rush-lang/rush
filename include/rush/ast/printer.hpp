@@ -180,6 +180,12 @@ namespace rush::ast {
          indent_traverse(stmt);
       }
 
+
+      virtual void visit_named_argument(ast::named_argument const& arg) override {
+         writeln("<named_binding: (name=\"{}\")>", arg.name());
+         indent_traverse(arg);
+      }
+
       virtual void visit_ternary_expr(ast::ternary_expression const& expr) override {
          print_expression("ternary", expr);
          indent_traverse(expr);
