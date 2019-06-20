@@ -22,11 +22,6 @@ namespace rush {
 
 	rush::parse_result<ast::expression> parser::parse_expr() {
 		auto result = parse_primary_expr();
-      if (result.success() && peek_skip_indent().is(symbols::period))
-         result = parse_member_access_expr(std::move(result));
-
-      if (result.success() && is_unary_postfix_op(peek_skip_indent()))
-         result = parse_unary_postfix_expr(std::move(result));
 
 		if (result.success() && is_binary_op(peek_skip_indent()))
 			result = parse_binary_expr(std::move(result));
@@ -129,6 +124,12 @@ namespace rush {
          default: return errs::unexpected_symbol_expr(tok);
          } break;
 		}
+
+      if (result.success() && peek_skip_indent().is(symbols::period))
+         result = parse_member_access_expr(std::move(result));
+
+      if (result.success() && is_unary_postfix_op(peek_skip_indent()))
+         result = parse_unary_postfix_expr(std::move(result));
 
       return std::move(result);
 	}
@@ -389,13 +390,23 @@ namespace rush {
 		}
 
       auto arg_result = parse_argument();
-      return arg_result.failed()
-         ? std::move(arg_result).as<ast::argument_list>()
-         : parse_argument_list(std::move(arg_result));
+      if (arg_result.failed())
+         return std::move(arg_result).as<ast::argument_list>();
+
+      if (peek_skip_indent().is(symbols::comma))
+         return parse_argument_list(std::move(arg_result));
+
+      if (peek_skip_indent().is_not(symbols::right_parenthesis))
+         return errs::expected_closing_parenthesis(peek_skip_indent());
+      next_skip_indent();
+
+      std::vector<std::unique_ptr<ast::argument>> args;
+      args.push_back(std::move(arg_result));
+      return exprs::arg_list(std::move(args));
    }
 
    rush::parse_result<ast::argument_list> parser::parse_argument_list(rush::parse_result<ast::argument> first) {
-      assert(peek_skip_indent().is(symbols::comma) && "expected comma to start tuple expression.");
+      assert(peek_skip_indent().is(symbols::comma) && "expected comma to start argument list.");
       next_skip_indent(); // consume ','
 
       std::vector<std::unique_ptr<ast::argument>> results;
