@@ -25,7 +25,7 @@
 
 #include "rush/diag/syntax_error.hpp"
 
-#include <optional>
+#include <stack>
 
 namespace rush {
 	class parser {
@@ -34,8 +34,9 @@ namespace rush {
 
 	public:
 		explicit parser(parser_options const& opts)
-			: _opts(opts)
-         , _eof(tokens::eof()) {}
+			: _opts { opts }
+         , _eof { tokens::eof() }
+         , _indent_stack { } {}
 
 		rush::syntax_analysis parse(lexical_analysis const& lxa) {
 			initialize(lxa);
@@ -51,6 +52,11 @@ namespace rush {
 		rush::lexical_token _eof;
 		rush::parser_options _opts;
 
+      // tracks the current level of indentation along with whether not it was skipped.
+      // false = unskipped indentation.
+      // true =  skipped indentation.
+      std::stack<bool> _indent_stack;
+
       std::unique_ptr<ast::module> _module;
       std::unique_ptr<ast::context> _context;
 		std::pair<lxa_iterator, lxa_iterator> _range;
@@ -64,17 +70,65 @@ namespace rush {
          _module = std::make_unique<ast::module>(std::string { lxa.id() });
 		}
 
-		lexical_token const& peek_with_indent(lxa_iterator_difference_type offset = 0) {
-			auto temp = _range.first;
-			advance(temp, _range.second, offset);
-			return temp != _range.second ? *temp : _eof;
+      bool is_indent_skipped() {
+         return !_indent_stack.empty()
+             && _indent_stack.top();
+      }
+
+      bool is_indent_skipped(lexical_token const& tok) {
+         return tok.is(symbols::dedent)
+             && is_indent_skipped();
+      }
+
+      lexical_token const& peek_with_indent(lxa_iterator_difference_type offset = 0) {
+         auto temp = _range.first;
+         auto& last = _range.second;
+         for (; temp != last && (is_indent_skipped(*temp) || offset-- > 0); ++temp) ;
+         return temp != last ? *temp : _eof;
 		}
 
 		lexical_token const& peek_skip_indent(lxa_iterator_difference_type offset = 0) {
-			auto i = offset;
-			auto* ptok = &peek_with_indent(offset);
-			for (; ptok->is_any(symbols::indent, symbols::dedent); ptok = &peek_with_indent(i + offset), ++i);
-			return *ptok;
+         auto temp = _range.first;
+         auto& last = _range.second;
+         for (; temp != last && (temp->is_any(symbols::indent, symbols::dedent) || offset-- > 0); ++temp) ;
+         return temp != last ? *temp : _eof;
+      }
+
+      lexical_token const& next_with_indent() {
+         auto temp = _range.first;
+         auto& first = _range.first;
+         auto& last = _range.second;
+
+         if (first != last && first->is(symbols::indent)) {
+            _indent_stack.push(false);
+         }
+
+         if (first != last && first->is(symbols::dedent)) {
+            if (is_indent_skipped()) { temp = ++first; }
+            _indent_stack.pop();
+         }
+
+         if (first != last) ++first;
+         return temp != last ? *temp : _eof;
+		}
+
+		lexical_token const& next_skip_indent() {
+         auto temp = _range.first;
+         auto& first = _range.first;
+         auto& last = _range.second;
+
+         if (first != last && first->is(symbols::indent)) {
+            _indent_stack.push(true);
+            temp = ++first;
+         }
+
+         if (first != last && first->is(symbols::dedent)) {
+            if (is_indent_skipped()) { temp = ++first; }
+            _indent_stack.pop();
+         }
+
+         if (first != last) ++first;
+         return temp != last ? *temp : _eof;
 		}
 
       bool consume_skip_indent(symbol_token_t sym) {
@@ -92,18 +146,6 @@ namespace rush {
          }
          return false;
       }
-
-		lexical_token const& next_with_indent() {
-			auto temp = _range.first;
-			advance(_range.first, _range.second, 1);
-			return temp != _range.second ? *temp : _eof;
-		}
-
-		lexical_token const& next_skip_indent() {
-			auto* ptok = &next_with_indent();
-			for (; ptok->is_any(symbols::indent, symbols::dedent); ptok = &next_with_indent());
-			return *ptok;
-		}
 
       // modules.
       rush::parse_result<ast::module> parse_module();

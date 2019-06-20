@@ -231,7 +231,7 @@ namespace rush {
 
    rush::parse_result<ast::statement> parser::parse_function_stmt_body() {
 		assert(peek_skip_indent().is(symbols::colon) && "expected a ':' symbol.");
-      next_skip_indent();
+      next_skip_indent(); // consume ':'
 
       if (peek_with_indent().is_not(symbols::indent))
          return errs::expected_function_stmt_body(peek_with_indent());
