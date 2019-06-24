@@ -25,7 +25,7 @@
 
 #include "rush/diag/syntax_error.hpp"
 
-#include <stack>
+#include <vector>
 
 namespace rush {
 	class parser {
@@ -55,7 +55,7 @@ namespace rush {
       // tracks the current level of indentation along with whether not it was skipped.
       // false = unskipped indentation.
       // true =  skipped indentation.
-      std::stack<bool> _indent_stack;
+      std::vector<bool> _indent_stack;
 
       std::unique_ptr<ast::module> _module;
       std::unique_ptr<ast::context> _context;
@@ -70,27 +70,29 @@ namespace rush {
          _module = std::make_unique<ast::module>(std::string { lxa.id() });
 		}
 
-      bool is_indent_skipped() {
+      bool is_indent_skipped(std::size_t offset = 0) {
          return !_indent_stack.empty()
-             && _indent_stack.top();
-      }
-
-      bool is_indent_skipped(lexical_token const& tok) {
-         return tok.is(symbols::dedent)
-             && is_indent_skipped();
+             && _indent_stack[_indent_stack.size() - offset - 1];
       }
 
       lexical_token const& peek_with_indent(lxa_iterator_difference_type offset = 0) {
          auto temp = _range.first;
          auto& last = _range.second;
-         for (; temp != last && (is_indent_skipped(*temp) || offset-- > 0); ++temp) ;
+         std::size_t indent_offset = 0;
+         for (; temp != last &&
+            ((temp->is(symbols::dedent) && is_indent_skipped(indent_offset++)) ||
+            offset-- > 0); ++temp) ;
          return temp != last ? *temp : _eof;
 		}
 
 		lexical_token const& peek_skip_indent(lxa_iterator_difference_type offset = 0) {
          auto temp = _range.first;
          auto& last = _range.second;
-         for (; temp != last && (temp->is_any(symbols::indent, symbols::dedent) || offset-- > 0); ++temp) ;
+         std::size_t indent_offset = 0;
+         for (; temp != last &&
+            (temp->is(symbols::indent) ||
+            (temp->is(symbols::dedent) && is_indent_skipped(indent_offset++))
+            || offset-- > 0); ++temp) ;
          return temp != last ? *temp : _eof;
       }
 
@@ -100,12 +102,12 @@ namespace rush {
          auto& last = _range.second;
 
          if (first != last && first->is(symbols::indent)) {
-            _indent_stack.push(false);
+            _indent_stack.push_back(false);
          }
 
          if (first != last && first->is(symbols::dedent)) {
             if (is_indent_skipped()) { temp = ++first; }
-            _indent_stack.pop();
+            _indent_stack.pop_back();
          }
 
          if (first != last) ++first;
@@ -117,14 +119,15 @@ namespace rush {
          auto& first = _range.first;
          auto& last = _range.second;
 
-         if (first != last && first->is(symbols::indent)) {
-            _indent_stack.push(true);
+         while (first != last && first->is(symbols::indent)) {
+            _indent_stack.push_back(true);
             temp = ++first;
          }
 
-         if (first != last && first->is(symbols::dedent)) {
-            if (is_indent_skipped()) { temp = ++first; }
-            _indent_stack.pop();
+         while (first != last && first->is(symbols::dedent)) {
+            if (!is_indent_skipped()) break;
+            _indent_stack.pop_back();
+            temp = ++first;
          }
 
          if (first != last) ++first;
