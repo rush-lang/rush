@@ -133,7 +133,6 @@ namespace rush::ast {
          if (params.empty()) {
             write("()");
          } else if (params.count() == 1
-            && !params.front()->type().is<ast::array_type>()
             && !params.front()->type().is<ast::tuple_type>()) {
             type.parameters().first()->type().accept(*this);
          } else {
