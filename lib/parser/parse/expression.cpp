@@ -56,7 +56,7 @@ namespace rush {
             switch (tok.symbol()) {
             default: return errs::expected_closing_parenthesis_or_tuple(tok);
             case symbols::comma: // tuple expression
-               return parse_tuple_expr(exprs::arg(
+               return parse_tuple_literal_expr(exprs::arg(
                   ident.text(),
                   std::move(expr_result)));
             case symbols::right_parenthesis: // assignment expression
@@ -79,7 +79,7 @@ namespace rush {
 
       auto tok = peek_skip_indent();
       if (tok.is(symbols::comma)) {
-         result = parse_tuple_expr(exprs::arg(std::move(result)));
+         result = parse_tuple_literal_expr(exprs::arg(std::move(result)));
       } else {
          tok = peek_skip_indent();
          if (tok.is_not(symbols::right_parenthesis))
@@ -95,10 +95,20 @@ namespace rush {
       return std::move(result);
 	}
 
-   rush::parse_result<ast::expression> parser::parse_tuple_expr(rush::parse_result<ast::argument> result) {
+   rush::parse_result<ast::expression> parser::parse_array_literal_expr() {
+      assert(peek_skip_indent().is(symbols::left_square_bracket) && "expected left square bracket to start array expression.");
+      auto elist = parse_element_list();
+      return elist.failed()
+         ? std::move(elist).as<ast::expression>()
+         : exprs::array(std::move(elist));
+   }
+
+   rush::parse_result<ast::expression> parser::parse_tuple_literal_expr(rush::parse_result<ast::argument> result) {
       assert(peek_skip_indent().is(symbols::comma) && "expected comma to start tuple expression.");
       auto alist = parse_argument_list(std::move(result));
-      return exprs::tuple(std::move(alist));
+      return alist.failed()
+         ? std::move(alist).as<ast::expression>()
+         : exprs::tuple(std::move(alist));
    }
 
 	rush::parse_result<ast::expression> parser::parse_primary_expr() {
@@ -121,6 +131,7 @@ namespace rush {
          if (is_unary_prefix_op(tok)) result = parse_unary_expr();
          else switch (tok.symbol()) {
          case symbols::left_parenthesis: result = parse_paren_expr(); break;
+         case symbols::left_square_bracket: result = parse_array_literal_expr(); break;
          default: return errs::unexpected_symbol_expr(tok);
          } break;
 		}
@@ -378,6 +389,34 @@ namespace rush {
 
          return exprs::arg(std::move(expr_result));
       }
+   }
+
+   rush::parse_result<ast::element_list> parser::parse_element_list() {
+      assert(peek_skip_indent().is(symbols::left_square_bracket) && "expected '[' start of element list.");
+      next_skip_indent(); // consume '[' symbol
+
+      if (peek_skip_indent().is(symbols::right_square_bracket)) {
+         next_skip_indent();
+         return exprs::elem_list();
+      }
+
+      std::vector<std::unique_ptr<ast::expression>> results;
+      do {
+         auto arg_result = parse_expr();
+         if (arg_result.failed())
+            // return std::move(arg_result).as<ast::element_list>().error();
+            return errs::expected_closing_square_bracket(peek_skip_indent());
+
+         results.push_back(std::move(arg_result));
+      } while (
+         consume_skip_indent(symbols::comma) &&
+         peek_skip_indent().is_not(symbols::right_square_bracket));
+
+      if (peek_skip_indent().is_not(symbols::right_square_bracket))
+         return errs::expected_closing_square_bracket(peek_skip_indent());
+      next_skip_indent();
+
+      return exprs::elem_list(std::move(results));
    }
 
    rush::parse_result<ast::argument_list> parser::parse_argument_list() {

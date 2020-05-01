@@ -39,8 +39,8 @@ namespace rush {
          , _indent_stack { } {}
 
 		rush::syntax_analysis parse(lexical_analysis const& lxa) {
-			initialize(lxa);
-			auto result = parse_module();
+         initialize(lxa);
+         auto result = parse_module();
          return rush::syntax_analysis {
             std::move(_context),
             std::move(result)
@@ -63,9 +63,12 @@ namespace rush {
 
 
 		void initialize(lexical_analysis const& lxa) {
-         auto loc = lxa.back().location();
-         _eof = tokens::eof(loc.next_column(lxa.back().size()));
-			_range = { lxa.begin(), lxa.end() };
+         if (!lxa.empty()) {
+            auto loc = lxa.back().location();
+            _eof = tokens::eof(loc.next_column(lxa.back().size()), lxa.source());
+            _range = { lxa.begin(), lxa.end() };
+         }
+
          _context = std::make_unique<ast::context>();
          _module = std::make_unique<ast::module>(std::string { lxa.id() });
 		}
@@ -206,7 +209,8 @@ namespace rush {
 		rush::parse_result<ast::expression> parse_expr();
 		rush::parse_result<ast::expression> parse_paren_expr();
 		rush::parse_result<ast::expression> parse_primary_expr();
-      rush::parse_result<ast::expression> parse_tuple_expr(rush::parse_result<ast::argument>);
+      rush::parse_result<ast::expression> parse_array_literal_expr();
+      rush::parse_result<ast::expression> parse_tuple_literal_expr(rush::parse_result<ast::argument>);
 
 		rush::parse_result<ast::expression> parse_string_expr();
 		rush::parse_result<ast::expression> parse_integer_expr();
@@ -223,6 +227,7 @@ namespace rush {
       rush::parse_result<ast::expression> parse_invoke_expr(rush::parse_result<ast::expression>);
 
       rush::parse_result<ast::argument> parse_argument();
+      rush::parse_result<ast::element_list> parse_element_list();
       rush::parse_result<ast::argument_list> parse_argument_list();
       rush::parse_result<ast::argument_list> parse_argument_list(rush::parse_result<ast::argument>);
 

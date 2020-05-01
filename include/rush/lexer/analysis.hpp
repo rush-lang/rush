@@ -41,6 +41,10 @@ namespace rush {
 			return _tokens.empty();
 		}
 
+      rush::source const& source() const noexcept {
+         return _tokens.front().source();
+      }
+
 		std::size_t size() const noexcept {
 			return _tokens.size();
 		}

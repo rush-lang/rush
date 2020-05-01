@@ -77,7 +77,11 @@ namespace rush::ast {
          accept(expr.body());
       }
 
-      virtual void visit_tuple_expr(tuple_expression const& expr) override {
+      virtual void visit_literal_expr(ast::array_literal_expression const& expr) override {
+         accept(expr.elements());
+      }
+
+      virtual void visit_literal_expr(ast::tuple_literal_expression const& expr) override {
          accept(expr.arguments());
       }
 

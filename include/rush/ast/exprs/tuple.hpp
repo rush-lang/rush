@@ -10,21 +10,21 @@
 #include <algorithm>
 
 namespace rush::ast {
-	class tuple_expression;
+	class tuple_literal_expression;
 
 	namespace exprs {
-		std::unique_ptr<ast::tuple_expression> tuple(
+		std::unique_ptr<ast::tuple_literal_expression> tuple(
 			std::unique_ptr<ast::argument_list> args);
 	}
 
-	class tuple_expression : public ast::expression {
+	class tuple_literal_expression : public ast::expression {
 		struct factory_tag_t {};
 
-		friend std::unique_ptr<ast::tuple_expression> exprs::tuple(
+		friend std::unique_ptr<ast::tuple_literal_expression> exprs::tuple(
 			std::unique_ptr<ast::argument_list> args);
 
 	public:
-		tuple_expression(
+		tuple_literal_expression(
 			std::unique_ptr<ast::argument_list> args,
 			factory_tag_t)
 			: _type { ast::types::undefined }
@@ -40,7 +40,7 @@ namespace rush::ast {
 
 		using node::accept;
 		virtual void accept(ast::visitor& v) const override {
-			v.visit_tuple_expr(*this);
+			v.visit_literal_expr(*this);
 		}
 
       virtual void attach(ast::node&, ast::context& ctx) override {
@@ -62,11 +62,11 @@ namespace rush::ast {
 	};
 
 	namespace exprs {
-		inline std::unique_ptr<ast::tuple_expression> tuple(
+		inline std::unique_ptr<ast::tuple_literal_expression> tuple(
 			std::unique_ptr<ast::argument_list> args) {
-				return std::make_unique<ast::tuple_expression>(
+				return std::make_unique<ast::tuple_literal_expression>(
 					std::move(args),
-					tuple_expression::factory_tag_t {});
+					tuple_literal_expression::factory_tag_t {});
 			}
 	}
 }

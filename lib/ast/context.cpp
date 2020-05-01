@@ -73,7 +73,8 @@ namespace rush::ast {
       }
    }
 
-   ast::type_ref context::array_type(ast::type_ref type, size_type rank) {
+   ast::type_ref context::
+   array_type(ast::type_ref type, size_type rank) {
       auto key = detail::array_type_key_t { rank, type };
       auto it = _array_types.find(key);
       if (it == _array_types.end()) {
@@ -97,7 +98,8 @@ namespace rush::ast {
       return *it->second;
    }
 
-   ast::type_ref context::function_type(ast::type_ref ret, iterator_range<std::vector<ast::type_ref>::const_iterator> params) {
+   ast::type_ref context::
+   function_type(ast::type_ref ret, iterator_range<std::vector<ast::type_ref>::const_iterator> params) {
       return types::undefined;
    }
 }

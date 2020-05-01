@@ -100,11 +100,6 @@ namespace rush::ast {
          write(")");
       }
 
-      virtual void visit_tuple_expr(ast::tuple_expression const& expr) override {
-         print_expression("tuple", expr);
-         indent_traverse(expr);
-      }
-
       virtual void visit_builtin_integral_type(ast::builtin_integral_type const& type) override {
          // write(type.is_signed() ? "builtin.int{}" : "builtin.uint{}", type.bit_width());
          switch (type.unit()) {
@@ -209,6 +204,16 @@ namespace rush::ast {
 		virtual void visit_literal_expr(ast::floating_literal_expression const& expr) override {
 			print_literal_expr(fmt::to_string(expr.value()), expr);
 		}
+
+      virtual void visit_literal_expr(ast::array_literal_expression const& expr) override {
+         print_expression("array_literal", expr);
+         indent_traverse(expr);
+      }
+
+      virtual void visit_literal_expr(ast::tuple_literal_expression const& expr) override {
+         print_expression("tuple_literal", expr);
+         indent_traverse(expr);
+      }
 
 		virtual void visit_identifier_expr(ast::identifier_expression const& expr) override {
 			write("<identifier_expr: ");

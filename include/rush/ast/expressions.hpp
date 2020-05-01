@@ -13,5 +13,6 @@
 #include "rush/ast/exprs/invoke.hpp"
 #include "rush/ast/exprs/lambda.hpp"
 #include "rush/ast/exprs/tuple.hpp"
+#include "rush/ast/exprs/array.hpp"
 
 #endif // RUSH_AST_EXPRESSION_HPP
