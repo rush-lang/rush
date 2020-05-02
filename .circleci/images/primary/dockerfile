@@ -1,0 +1,10 @@
+FROM rushlang/env:latest
+
+## BUILD & INSTALL RUSH
+# COPY . /home/src/rush
+# WORKDIR /home/src/rush/build
+# RUN cmake ../ \
+#     -DCMAKE_C_COMPILER=clang \
+#     -DCMAKE_CXX_COMPILER=clang++ \
+#     -DCMAKE_PREFIX_PATH=/usr/lib/llvm-10 \
+#  && cmake --build . -j 8
