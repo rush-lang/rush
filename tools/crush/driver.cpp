@@ -1,3 +1,4 @@
+#include "rush/version.hpp"
 #include "rush/core/source.hpp"
 #include "commands/help.hpp"
 #include "commands/dump.hpp"
@@ -8,6 +9,7 @@
 #include <algorithm>
 #include <filesystem>
 
+#define COMPILER_TITLE(VERSION) "Rush Compiler " VERSION
 
 namespace fs = std::filesystem;
 namespace cmds = crush::commands;
@@ -20,18 +22,25 @@ std::string to_lower(std::string s) {
 }
 
 int main(int argc, char const** argv) {
-   auto opts = cxxopts::Options { "crush", "Rush Compiler" };
+   auto opts = cxxopts::Options { "crush", COMPILER_TITLE(RUSH_VERSION) };
    opts.add_options()
-      ("h,help", "Print usage information and exit.")
-      ("dump-parse", "Display the results of syntax analysis as a hierachical AST structure.")
+      ("h,help", "Print usage information.")
+      ("dump-lex", "Display the results of lexical analysis as a list of tokens.")
       ("dump-llvm-ir", "Display the results of generating LLVM IR.", cxxopts::value<bool>())
-      ("paths", "Paths to the source to be compiled.", cxxopts::value<std::vector<std::string>>());
+      ("dump-parse", "Display the results of syntax analysis as a hierachical AST structure.")
+      ("paths", "Paths to the source to be compiled.", cxxopts::value<std::vector<std::string>>())
+      ("version", "Print version information.");
    opts.parse_positional({ "paths" });
-   opts.positional_help("\"paths..\"");
+   opts.positional_help("\"files...\"");
 
    auto results = opts.parse(argc, argv);
    if (results["help"].count() > 0) {
       cmds::help(opts.help());
+      return 0;
+   }
+
+   if (results["version"].count() > 0) {
+      cmds::version();
       return 0;
    }
 
@@ -59,10 +68,10 @@ int main(int argc, char const** argv) {
       return 1;
    }
 
-   if (results["dump-parse"].count() > 0) { cmds::dump_parse(srcs); return 0; }
-   if (results["dump-llvm-ir"].count() > 0) { cmds::dump_llvm_ir(srcs); return 0; }
-
-   // default behavior.
-   crush::commands::dump_llvm_ir(srcs);
+   bool run_default = false;
+   if (results["dump-lex"].count() > 0) { cmds::dump_lex(srcs); run_default = true; }
+   if (results["dump-parse"].count() > 0) { cmds::dump_parse(srcs); run_default = true; }
+   if (results["dump-llvm-ir"].count() > 0) { cmds::dump_llvm_ir(srcs); run_default = true; }
+   if (!run_default) crush::commands::dump_llvm_ir(srcs); // default behavior.
    return 0;
 }
