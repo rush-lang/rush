@@ -123,17 +123,34 @@ namespace rush {
          if (names.empty())
             return errs::expected_parameter_name(peek_skip_indent());
 
-         if (peek_skip_indent().is_not(symbols::colon))
-            return errs::expected_type_annotation(peek_skip_indent());
+         // if (peek_skip_indent().is_not(symbols::colon))
+         //    return errs::expected_type_annotation(peek_skip_indent());
 
-         auto type_result = parse_type_annotation();
-         if (type_result.failed()) return std::move(type_result).errors();
+         // auto type_result = parse_type_annotation();
+         // if (type_result.failed()) return std::move(type_result).errors();
+
+         // std::transform(
+         //    std::make_move_iterator(names.begin()),
+         //    std::make_move_iterator(names.end()),
+         //    std::back_inserter(results), [this, &type_result](auto n) {
+         //       auto p = decls::param(n.text(), type_result.type());
+         //       return !_scope.insert({ *p })
+         //          ? errs::parameter_redefinition(n)
+         //          : rush::parse_result<ast::parameter> { std::move(p) };
+         // });
+
+         auto type = ast::types::undefined;
+         if (peek_skip_indent().is(symbols::colon)) {
+            auto type_result = parse_type_annotation();
+            if (type_result.failed()) return std::move(type_result).errors();
+            type = type_result.type();
+         }
 
          std::transform(
             std::make_move_iterator(names.begin()),
             std::make_move_iterator(names.end()),
-            std::back_inserter(results), [this, &type_result](auto n) {
-               auto p = decls::param(n.text(), type_result.type());
+            std::back_inserter(results), [this, &type](auto n) {
+               auto p = decls::param(n.text(), type);
                return !_scope.insert({ *p })
                   ? errs::parameter_redefinition(n)
                   : rush::parse_result<ast::parameter> { std::move(p) };
@@ -193,7 +210,7 @@ namespace rush {
 
    rush::parse_result<ast::statement> parser::parse_function_body() {
       if (peek_skip_indent().is(symbols::thick_arrow))
-         return parse_function_expr_body();
+         return terminated(&parser::parse_function_expr_body);
       if (peek_skip_indent().is(symbols::colon))
          return parse_function_stmt_body();
 
@@ -208,18 +225,19 @@ namespace rush {
 
       auto tok = peek_skip_indent();
       if (tok.is_keyword()) {
-         switch (tok.keyword()) {
+         auto kw = tok.keyword();
+         switch (kw) {
          default: break;
          case keywords::pass_:
          case keywords::throw_:
-            stmt_result = parse_stmt();
+            stmt_result = parse_simple_stmt(kw).first;
             if (stmt_result.failed()) return std::move(stmt_result);
             break;
          }
       }
 
       if (stmt_result.failed()) {
-         auto expr = terminated(&parser::parse_expr);
+         auto expr = parser::parse_expr();
          if (expr.failed()) return std::move(expr).as<ast::statement>();
          stmt_result = stmts::return_(std::move(expr));
       }

@@ -26,6 +26,11 @@ public:
    virtual void visit_unary_expr(ast::unary_expression const& expr) override { /*ignore*/ }
    virtual void visit_binary_expr(ast::binary_expression const& expr) override { /*ignore*/ }
 
+   virtual void visit_lambda_expr(ast::lambda_expression const& expr) override { /*ignore*/ }
+
+   virtual void visit_literal_expr(ast::array_literal_expression const& expr) override { /*ignore*/ }
+   virtual void visit_literal_expr(ast::tuple_literal_expression const& expr) override { /*ignore*/ }
+
    virtual void visit_conditional_stmt(ast::conditional_statement const& stmt) override {
       // ignore statement condition as it cannot result in a return statement.
       stmt.body().accept(*this);

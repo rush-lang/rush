@@ -11,8 +11,16 @@ namespace rush {
       if (tok.is_keyword()) {
          auto kw = tok.keyword();
 
-         auto simp = parse_simple_stmt(kw);
-         if (simp.second) return std::move(simp.first);
+         auto simp = parser::parse_simple_stmt(kw);
+         if (simp.second) {
+            if (simp.first.failed())
+               return std::move(simp.first);
+
+            auto terminator_result = parse_terminator();
+            return terminator_result != nullptr
+               ? std::move(terminator_result)
+               : std::move(simp.first);
+         }
 
          auto comp = parse_compound_stmt(kw);
          if (comp.second) return std::move(comp.first);
@@ -239,21 +247,21 @@ namespace rush {
 
       switch (kw) {
       default: return { nullptr, false };
-      case keywords::pass_: result = terminated(&parser::parse_pass_stmt); break;
-      case keywords::break_: result = terminated(&parser::parse_break_stmt); break;
-      case keywords::yield_: result = terminated(&parser::parse_yield_stmt); break;
-      case keywords::return_: result = terminated(&parser::parse_return_stmt); break;
-      case keywords::continue_: result = terminated(&parser::parse_continue_stmt); break;
-      case keywords::throw_: result = terminated(&parser::parse_throw_stmt); break;
+      case keywords::pass_: result = parse_pass_stmt(); break;
+      case keywords::break_: result = parse_break_stmt(); break;
+      case keywords::yield_: result = parse_yield_stmt(); break;
+      case keywords::return_: result = parse_return_stmt(); break;
+      case keywords::continue_: result = parse_continue_stmt(); break;
+      case keywords::throw_: result = parse_throw_stmt(); break;
       case keywords::let_: {
-         auto decl = terminated(&parser::parse_constant_decl);
+         auto decl = parse_constant_decl();
          result = decl.success()
             ? ast::stmts::decl_stmt(std::move(decl))
             : std::move(decl).as<ast::statement>();
          break;
       }
       case keywords::var_: {
-         auto decl = terminated(&parser::parse_variable_decl);
+         auto decl = parse_variable_decl();
          result = decl.success()
             ? ast::stmts::decl_stmt(std::move(decl))
             : std::move(decl).as<ast::statement>();

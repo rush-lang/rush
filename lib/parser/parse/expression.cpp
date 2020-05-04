@@ -1,5 +1,6 @@
 #include "rush/parser/parser.hpp"
 #include "rush/ast/expressions.hpp"
+#include "rush/ast/declarations.hpp"
 #include "rush/diag/syntax_error.hpp"
 
 namespace ast = rush::ast;
@@ -34,10 +35,8 @@ namespace rush {
 
    rush::parse_result<ast::expression> parser::parse_paren_expr() {
       assert(peek_skip_indent().is(symbols::left_parenthesis) && "expected token to be \'(\'");
-      next_skip_indent(); // consume '('
-
-      if (peek_skip_indent().is_identifier()) {
-         auto next = peek_skip_indent(1);
+      if (peek_skip_indent(1).is_identifier()) {
+         auto next = peek_skip_indent(2);
          if (next.is_symbol()) {
             switch (next.symbol()) {
             default: break;
@@ -45,6 +44,9 @@ namespace rush {
             case symbols::colon:
             case symbols::equals:
                return parse_complex_paren_expr();
+            case symbols::right_parenthesis:
+               if (peek_skip_indent(3).is_any(symbols::thick_arrow, symbols::thin_arrow))
+                  return parse_lambda_expr();
             }
          }
       }
@@ -53,6 +55,11 @@ namespace rush {
    }
 
    rush::parse_result<ast::expression> parser::parse_simple_paren_expr() {
+      assert(peek_skip_indent().is(symbols::left_parenthesis) && "expected token to be \'(\'");
+      if (peek_skip_indent(1).is(symbols::right_parenthesis))
+         return parse_lambda_expr();
+
+      next_skip_indent(); // consume '('
       auto result = parse_expr();
       if (result.failed()) return std::move(result);
 
@@ -69,11 +76,14 @@ namespace rush {
    }
 
    rush::parse_result<ast::expression> parser::parse_complex_paren_expr() {
-      auto ident = peek_skip_indent();
-      auto next = peek_skip_indent(1);
+      assert(peek_skip_indent().is(symbols::left_parenthesis) && "expected token to be \'(\'");
+
+      auto ident = peek_skip_indent(1);
+      auto next = peek_skip_indent(2);
 
       // named tuple or equals expression edge-case.
       if (next.is(symbols::equals)) {
+         next_skip_indent(); // consume '('
          next_skip_indent(); // consume ident.
          next_skip_indent(); // consume '='
          auto expr_result = parse_expr();
@@ -118,6 +128,9 @@ namespace rush {
    }
 
    rush::parse_result<ast::expression> parser::parse_tuple_literal_expr() {
+      assert(peek_skip_indent().is(symbols::left_parenthesis) && "expected token to be \'(\'");
+      next_skip_indent(); // consume '('
+
       return parse_tuple_literal_expr(parse_argument());
    }
 
@@ -130,7 +143,30 @@ namespace rush {
    }
 
    rush::parse_result<ast::expression> parser::parse_lambda_expr() {
-      return errs::not_supported(peek_skip_indent(), "lambda expression");
+      _scope.push(rush::scope_kind::function);
+      auto params = std::unique_ptr<ast::parameter_list> {};
+      if (peek_skip_indent().is_identifier()) {
+         auto paramsv = std::vector<std::unique_ptr<ast::parameter>> { };
+         paramsv.push_back(ast::decls::param(next_skip_indent().text(), ast::types::undefined));
+         params = ast::decls::param_list(std::move(paramsv));
+      } else {
+         auto params_result = parse_parameter_list();
+         if (params_result.failed())
+            return std::move(params_result).as<ast::expression>();
+         params = std::move(params_result);
+      }
+
+      if (!peek_skip_indent().is(symbols::thick_arrow))
+         return errs::expected_function_expr_body(peek_skip_indent());
+
+      auto body_result = parse_function_expr_body();
+      if (body_result.failed())
+         return std::move(body_result).as<ast::expression>();
+
+      auto decl = exprs::lambda(std::move(params), std::move(body_result));
+
+      _scope.pop();
+      return std::move(decl);
    }
 
 	rush::parse_result<ast::expression> parser::parse_primary_expr() {

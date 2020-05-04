@@ -263,12 +263,8 @@ namespace rush {
 
       rush::parse_result<ast::declaration> scope_insert(std::unique_ptr<ast::declaration> decl, rush::lexical_token const& ident);
 
-      template <typename NodeT>
-      rush::parse_result<NodeT> terminated(rush::parse_result<NodeT>(parser::*parse_fn)()) {
-         auto result = (this->*parse_fn)();
-         if (result.failed())
-            return std::move(result);
 
+      std::unique_ptr<diag::syntax_error> parse_terminator() {
          auto tok = peek_with_indent();
          if (tok.is_not(symbols::semi_colon))
             return diag::errs::expected(tok, ";");
@@ -278,7 +274,20 @@ namespace rush {
             tok = peek_with_indent();
          }
 
-         return std::move(result);
+         return nullptr;
+      }
+
+      template <typename NodeT>
+      rush::parse_result<NodeT> terminated(rush::parse_result<NodeT>(parser::*parse_fn)()) {
+         auto parse_result = (this->*parse_fn)();
+         if (parse_result.failed())
+            return std::move(parse_result);
+
+         auto term_result = parse_terminator();
+         if (term_result != nullptr)
+            return std::move(term_result);
+
+         return std::move(parse_result);
       }
 	};
 }

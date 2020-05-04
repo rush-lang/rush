@@ -18,12 +18,23 @@ namespace rush::ast::decls {
       std::unique_ptr<statement>);
 }
 
+namespace rush::ast::exprs {
+   std::unique_ptr<lambda_expression> lambda(
+      std::unique_ptr<ast::parameter_list>,
+      std::unique_ptr<ast::statement>);
+}
+
 namespace rush::ast {
    class function_declaration;
 
    class function_type : public ast::type {
+      friend class lambda_expression;
       friend class function_declaration;
       struct factory_tag_t {};
+
+      friend std::unique_ptr<lambda_expression> exprs::lambda(
+			std::unique_ptr<ast::parameter_list>,
+			std::unique_ptr<ast::statement>);
 
       friend std::unique_ptr<function_declaration> decls::function(
          std::string,
