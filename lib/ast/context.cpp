@@ -1,5 +1,149 @@
+#include "rush/ast/traversal.hpp"
 #include "rush/ast/context.hpp"
 #include "rush/ast/types.hpp"
+
+#include "rush/ast/exprs/array.hpp"
+#include "rush/ast/exprs/tuple.hpp"
+#include "rush/ast/exprs/lambda.hpp"
+#include "rush/ast/decls/function.hpp"
+
+const rush::ast::builtin_error_type infinite_recursion_error_type =
+      rush::ast::types::error_type("deducing return type is infinitely recursive.");
+
+
+class return_type_resolver : public rush::ast::visitor {
+public:
+   return_type_resolver(rush::ast::node const& node, rush::ast::context& context)
+      : _return_type { rush::ast::types::undefined }
+      , _node_resolving { &node }
+      , _context { &context } {}
+
+   rush::ast::type_ref result() const noexcept {
+      return _return_type;
+   }
+
+   virtual void visit_lambda_expr(rush::ast::lambda_expression const& expr) override {
+      _return_type = expr.return_type();
+      resolve_return_type(expr.body());
+   }
+
+   virtual void visit_function_decl(rush::ast::function_declaration const& decl) override {
+      _return_type = decl.return_type();
+      resolve_return_type(decl.body());
+   }
+
+private:
+   rush::ast::type_ref _return_type;
+   rush::ast::node const* _node_resolving;
+   rush::ast::context* _context;
+
+   void resolve_return_type(rush::ast::node const& node) {
+      if (_return_type.kind() == rush::ast::type_kind::error) {
+         auto v = function_body_traversal { *this };
+         _return_type = rush::visit(node, v).result();
+         _node_resolving = nullptr;
+      }
+   }
+
+   class function_body_traversal : public rush::ast::traversal {
+   public:
+      function_body_traversal(return_type_resolver& resolver)
+         : _resolver { resolver } {}
+
+      rush::ast::type_ref result() const noexcept {
+         return _results.empty()
+            ? rush::ast::types::void_type
+            : _results.size() == 1
+            ? _results.front()
+            : std::accumulate(
+               std::next(_results.begin()),
+               _results.end(),
+               _results.front(),
+               rush::ast::types::reduce);
+      }
+
+      virtual void visit_constant_decl(rush::ast::constant_declaration const&) override { /*ignore*/ }
+      virtual void visit_variable_decl(rush::ast::variable_declaration const&) override { /*ignore*/ }
+      virtual void visit_unary_expr(rush::ast::unary_expression const& expr) override { /*ignore*/ }
+      virtual void visit_binary_expr(rush::ast::binary_expression const& expr) override { /*ignore*/ }
+      virtual void visit_lambda_expr(rush::ast::lambda_expression const& expr) override { /*ignore !important*/ }
+      virtual void visit_literal_expr(rush::ast::array_literal_expression const& expr) override { /*ignore*/ }
+      virtual void visit_literal_expr(rush::ast::tuple_literal_expression const& expr) override { /*ignore*/ }
+
+      virtual void visit_conditional_stmt(rush::ast::conditional_statement const& stmt) override {
+         // ignore statement condition as it cannot result in a return statement.
+         stmt.body().accept(*this);
+      }
+
+      virtual void visit_for_stmt(rush::ast::iteration_statement const& stmt) override {
+         // ignore parts of the for statement
+         // todo: implement when for statement is implemented
+      }
+
+      virtual void visit_switch_stmt(rush::ast::switch_statement const& stmt) override {
+         // ignore parts of the switch statement
+         // todo: implement when switch statement is implemented
+      }
+
+      virtual void visit_result_stmt(rush::ast::result_statement const& stmt) override {
+         auto type = stmt.result_type();
+         if (type.kind() == rush::ast::type_kind::error) {
+            type = rush::visit(stmt.expression(), return_statement_traversal { _resolver }).result();
+            if (type == infinite_recursion_error_type) _results.clear();
+         }
+
+         _results.push_back(type);
+      }
+
+   private:
+      return_type_resolver& _resolver;
+      std::vector<rush::ast::type_ref> _results;
+
+      class return_statement_traversal : public rush::ast::traversal {
+      public:
+         return_statement_traversal(return_type_resolver& resolver)
+            : _resolver { resolver } {}
+
+         rush::ast::type_ref result() const noexcept {
+            return _results.empty()
+               ? rush::ast::types::void_type
+               : _results.size() == 1
+               ? _results.front()
+               : std::accumulate(
+                  std::next(_results.begin()),
+                  _results.end(),
+                  _results.front(),
+                  rush::ast::types::reduce);
+         }
+
+         virtual void visit_invoke_expr(rush::ast::invoke_expression const& expr) override {
+            rush::visit(expr.callable(), *this);
+         }
+
+         virtual void visit_identifier_expr(rush::ast::identifier_expression const& expr) override {
+            if (!expr.is_unresolved()) {
+               if (_resolver._node_resolving == &expr.declaration()) {
+                  _results.clear();
+                  _results.push_back(infinite_recursion_error_type);
+                  return;
+               } else if (expr.declaration().kind() == rush::ast::declaration_kind::function) {
+                  auto inner = rush::visit(expr.declaration(), _resolver).result();
+                  if (inner == infinite_recursion_error_type) _results.clear();
+                  _results.push_back(inner);
+                  return;
+               }
+            }
+
+            _results.push_back(expr.result_type());
+         }
+
+      private:
+         return_type_resolver& _resolver;
+         std::vector<rush::ast::type_ref> _results;
+      };
+   };
+};
+
 
 namespace rush::ast {
    ast::type_ref context::bool_type() {
@@ -73,8 +217,7 @@ namespace rush::ast {
       }
    }
 
-   ast::type_ref context::
-   array_type(ast::type_ref type, size_type rank) {
+   ast::type_ref context::array_type(ast::type_ref type, size_type rank) {
       auto key = detail::array_type_key_t { rank, type };
       auto it = _array_types.find(key);
       if (it == _array_types.end()) {
@@ -84,8 +227,12 @@ namespace rush::ast {
       return *it->second;
    }
 
-   ast::type_ref context::
-   tuple_type(rush::iterator_range<std::vector<ast::type_ref>::const_iterator> types) {
+   ast::type_ref context::tuple_type(ast::type_ref single) {
+      auto types = std::vector<ast::type_ref> { single };
+      return tuple_type(std::move(types));
+   }
+
+   ast::type_ref context::tuple_type(rush::iterator_range<std::vector<ast::type_ref>::const_iterator> types) {
       auto key = detail::tuple_type_key_t { types };
       auto it = _tuple_types.find(key);
       if (it == _tuple_types.end()) {
@@ -98,14 +245,42 @@ namespace rush::ast {
       return *it->second;
    }
 
-   ast::type_ref context::
-   function_type(ast::type_ref ret, ast::type_ref params) {
-      // auto key = detail::function_type_key_t { ret, params };
-      // auto it = _function_types.find(key);
-      // if (it == _function_types.end()) {:
-      //    ast::function_type()
-      //    auto p = std::make_unique<ast::function_type>(ret, params.to_parameter_list())
-      // }
-      return types::undefined;
+   ast::type_ref context::function_type(ast::type_ref ret, ast::type_ref params) {
+      auto key = detail::function_type_key_t { ret, params };
+      auto it = _function_types.find(key);
+      if (it == _function_types.end()) {
+         auto p = std::make_unique<ast::function_type>(ret, params);
+         it = _function_types.insert({ key, std::move(p) }).first;
+      }
+      return *it->second;
+   }
+
+   ast::type_ref context::array_type(ast::array_literal_expression& expr) {
+      auto types = expr.elements().result_types();
+      return types.empty()
+           ? array_type(types::undefined)
+           : types.size() == 1
+           ? array_type(types.front())
+           : array_type(std::accumulate(
+               std::next(types.begin()),
+               types.end(),
+               types.front(),
+               ast::types::reduce));
+   }
+
+   ast::type_ref context::tuple_type(ast::tuple_literal_expression& expr) {
+      return tuple_type(expr.arguments().result_types());
+   }
+
+   ast::type_ref context::function_type(ast::lambda_expression const& expr) {
+      auto tutype = tuple_type(expr.parameters().types());
+      auto fntype = function_type(rush::visit(expr, return_type_resolver { expr, *this }).result(), tutype);
+      return fntype;
+   }
+
+   ast::type_ref context::function_type(ast::function_declaration const& decl) {
+      auto tutype = tuple_type(decl.parameters().types());
+      auto fntype = function_type(rush::visit(decl, return_type_resolver { decl, *this }).result(), tutype);
+      return fntype;
    }
 }

@@ -11,6 +11,8 @@
 #include "rush/ast/decls/parameter.hpp"
 #include "rush/ast/exprs/identifier.hpp"
 
+#include "rush/ast/context.hpp"
+
 namespace rush::ast::decls {
    std::unique_ptr<function_declaration> function(
       std::string,
@@ -32,11 +34,14 @@ namespace rush::ast {
 	public:
 		function_declaration(
 			std::string name,
-         ast::function_type fntype,
+         ast::type_ref return_type,
+         std::unique_ptr<ast::parameter_list> params,
 			std::unique_ptr<ast::statement> body,
 			factory_tag_t)
          : _name { std::move(name) }
-         , _type { std::move(fntype) }
+         , _type { types::undefined }
+         , _return_type { std::move(return_type) }
+         , _params { std::move(params) }
 			, _body { std::move(body) } {}
 
       virtual std::string_view name() const noexcept override {
@@ -44,8 +49,7 @@ namespace rush::ast {
       }
 
       virtual ast::type_ref type() const noexcept override {
-         _type.resolve_return_type(body());
-         return { _type };
+         return _type;
       }
 
 		virtual declaration_kind kind() const noexcept override {
@@ -53,12 +57,11 @@ namespace rush::ast {
 		}
 
       ast::type_ref return_type() const noexcept {
-         _type.resolve_return_type(body());
-         return _type.return_type();
-		}
+         return resolve_return_type();
+      }
 
-		ast::parameter_list const& parameters() const {
-         return _type.parameters();
+		ast::parameter_list const& parameters() const noexcept {
+         return *_params;
 		}
 
 		ast::statement const& body() const noexcept {
@@ -71,19 +74,43 @@ namespace rush::ast {
       }
 
       virtual void attach(ast::node&, ast::context& context) override {
-         _type.attach(*this, context);
+         _params->attach(*this, context);
          _body->attach(*this, context);
+
+         // use contextual function type.
+         _type = context.function_type(*this);
       }
 
       virtual void detach(ast::node&, ast::context& context) override {
-         _type.detach(*this, context);
+         _params->detach(*this, context);
          _body->detach(*this, context);
+
+         // use non-contextual function type.
+         _type = context.function_type(
+            context.tuple_type(_params->types()),
+            _return_type);
       }
 
 	private:
       std::string _name;
-      ast::function_type _type;
+      ast::type_ref _type;
+      ast::type_ref _return_type;
 		std::unique_ptr<ast::statement> _body;
+      std::unique_ptr<ast::parameter_list> _params;
+
+      struct return_type_visitor : ast::visitor {
+         ast::type_ref result;
+         return_type_visitor() : result { types::undefined } {}
+         virtual void visit_function_type(ast::function_type const& type) override {
+            result = type.return_type();
+         }
+      };
+
+      ast::type_ref resolve_return_type() const {
+         return _return_type == types::undefined
+              ? rush::visit(_type, return_type_visitor {}).result
+              : _return_type;
+      }
 	};
 
 	namespace decls {
@@ -126,10 +153,8 @@ namespace rush::ast {
 			std::unique_ptr<statement> body) {
             return std::make_unique<function_declaration>(
                std::move(name),
-               ast::function_type {
-                  std::move(return_type),
-                  std::move(params),
-                  function_type::factory_tag_t {} },
+               std::move(return_type),
+               std::move(params),
                std::move(body),
                function_declaration::factory_tag_t {});
 			}

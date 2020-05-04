@@ -4,6 +4,7 @@
 #define RUSH_AST_TYPES_FUNCTION_HPP
 
 #include "rush/ast/types/type.hpp"
+#include "rush/ast/types/builtin.hpp"
 #include "rush/ast/decls/parameter.hpp"
 
 #include <vector>
@@ -28,8 +29,6 @@ namespace rush::ast {
    class function_declaration;
 
    class function_type : public ast::type {
-      friend class lambda_expression;
-      friend class function_declaration;
       struct factory_tag_t {};
 
       friend std::unique_ptr<lambda_expression> exprs::lambda(
@@ -43,10 +42,9 @@ namespace rush::ast {
          std::unique_ptr<statement>);
 
    public:
-      function_type(ast::type_ref return_type, std::unique_ptr<ast::parameter_list> params, factory_tag_t)
-         : _params { std::move(params) }
-         , _return_type { std::move(return_type) }
-         , _resolve_iter { 0 } {}
+      function_type(ast::type_ref return_type, ast::type_ref param_types)
+         : _param_types { std::move(param_types) }
+         , _return_type { std::move(return_type) } {}
 
       virtual ast::type_kind kind() const noexcept override {
          return ast::type_kind::function;
@@ -56,8 +54,8 @@ namespace rush::ast {
          return _return_type;
       }
 
-      ast::parameter_list const& parameters() const noexcept {
-         return *_params;
+      ast::type_ref const& parameter_types() const noexcept {
+         return _param_types;
       }
 
       using node::accept;
@@ -65,15 +63,9 @@ namespace rush::ast {
          v.visit_function_type(*this);
       }
 
-      virtual void attach(ast::node&, ast::context& context) override {}
-      virtual void detach(ast::node&, ast::context& context) override {}
-
    private:
-      std::unique_ptr<ast::parameter_list> _params;
-      mutable ast::type_ref _return_type;
-      mutable int _resolve_iter;
-
-      void resolve_return_type(ast::statement const&) const;
+      ast::type_ref _param_types;
+      ast::type_ref _return_type;
    };
 }
 

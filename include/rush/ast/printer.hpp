@@ -90,14 +90,19 @@ namespace rush::ast {
       }
 
       virtual void visit_tuple_type(ast::tuple_type const& type) override {
-         write("(");
-         auto it = type.types().begin();
-         for (; it != type.types().end(); ++it) {
-            it->accept(*this);
-            if (it != type.types().end() - 1)
-               write(", ");
+         if (type.types().size() == 1 &&
+            !type.types().front().is<ast::tuple_type>()) {
+               type.types().front().accept(*this);
+         } else {
+            write("(");
+            auto it = type.types().begin();
+            for (; it != type.types().end(); ++it) {
+               it->accept(*this);
+               if (it != type.types().end() - 1)
+                  write(", ");
+            }
+            write(")");
          }
-         write(")");
       }
 
       virtual void visit_builtin_integral_type(ast::builtin_integral_type const& type) override {
@@ -124,22 +129,7 @@ namespace rush::ast {
       }
 
       virtual void visit_function_type(ast::function_type const& type) override {
-         auto& params = type.parameters();
-         if (params.empty()) {
-            write("()");
-         } else if (params.count() == 1
-            && !params.front()->type().is<ast::tuple_type>()) {
-            type.parameters().first()->type().accept(*this);
-         } else {
-            write("(");
-            std::for_each(type.parameters().begin(), type.parameters().end(),
-               [this, &type, &params](auto& p) {
-                  p->type().accept(*this);
-                  if (p != params.last()) write(", ");
-               });
-            write(")");
-         }
-
+         type.parameter_types().accept(*this);
          write(" -> ");
          type.return_type().accept(*this);
       }

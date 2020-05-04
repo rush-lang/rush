@@ -28,10 +28,14 @@ namespace rush::ast {
    struct type_traits {};
 
    class type : public node {
+      friend class type_ref;
    public:
       virtual ast::type_kind kind() const = 0;
 
       std::string to_string() const;
+
+      virtual void attach(ast::node&, ast::context&) override {};
+      virtual void detach(ast::node&, ast::context&) override {};
    };
 
    //! Value object that references an actual instance of rush::ast::type.

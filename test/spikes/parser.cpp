@@ -4,8 +4,13 @@
 #include "rush/ast/ast.hpp"
 #include <iostream>
 
-char const* src1 = R"(let x = 2 + y * 3)";
-char const* src2 = R"(var msg = "hello world")";
+char const* src = R"(
+import std.io;
+
+func main(args: string[]):
+   println("hello world!");
+   return 0;
+)";
 
 namespace ast = rush::ast;
 namespace exprs = rush::ast::exprs;
@@ -14,17 +19,7 @@ namespace stmts = rush::ast::stmts;
 namespace types = rush::ast::types;
 
 int main() {
-	std::cout << src1 << std::endl;
+	std::cout << src << std::endl;
 	std::cout << "--------------------" << std::endl;
-	rush::dump(src1);
-
-	std::cout << std::endl << std::endl;
-	std::cout << src2 << std::endl;
-	std::cout << "--------------------" << std::endl;
-	rush::dump(src2);
-
-	std::cout << std::endl << std::endl;
-	std::cout << "msg" << std::endl;
-	std::cout << "--------------------" << std::endl;
-	rush::dump("msg");
+	rush::dump(src);
 }

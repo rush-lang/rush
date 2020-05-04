@@ -6,8 +6,12 @@
 #include "rush/ast/node.hpp"
 #include "rush/ast/visitor.hpp"
 
+#include "rush/ast/decls/declaration.hpp"
+#include "rush/ast/exprs/expression.hpp"
+
 #include <cstddef>
 #include <vector>
+#include <type_traits>
 
 namespace rush::ast::detail {
 	template <typename T>
@@ -61,6 +65,20 @@ namespace rush::ast::detail {
 
 		const_iterator cend() const noexcept {
          return _elems.cend();
+      }
+
+      std::vector<ast::type_ref> result_types() const {
+         auto types = std::vector<ast::type_ref> {};
+         std::transform(this->begin(), this->end(),
+            std::back_inserter(types), [](auto& x) { return x->result_type(); });
+         return std::move(types);
+      }
+
+      std::vector<ast::type_ref> types() const {
+         auto types = std::vector<ast::type_ref> {};
+         std::transform(this->begin(), this->end(),
+            std::back_inserter(types), [](auto& x) { return x->type(); });
+         return std::move(types);
       }
 
 		using node::accept;

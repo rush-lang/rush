@@ -109,8 +109,15 @@ namespace rush::ast {
       ast::type_ref floating_point_type(floating_point_kind);
 
       ast::type_ref array_type(ast::type_ref, size_type = 1);
+      ast::type_ref array_type(ast::array_literal_expression&);
+
+      ast::type_ref tuple_type(ast::type_ref single);
       ast::type_ref tuple_type(rush::iterator_range<std::vector<ast::type_ref>::const_iterator>);
+      ast::type_ref tuple_type(ast::tuple_literal_expression&);
+
       ast::type_ref function_type(ast::type_ref ret, ast::type_ref params);
+      ast::type_ref function_type(ast::lambda_expression const&);
+      ast::type_ref function_type(ast::function_declaration const&);
 
    private:
       std::unordered_map<detail::array_type_key_t, std::unique_ptr<ast::array_type>> _array_types;

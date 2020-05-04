@@ -27,6 +27,7 @@ namespace rush {
     rush::parse_type_result parser::parse_type() {
       auto tok = peek_skip_indent();
       auto result = rush::parse_type_result {};
+      bool istuple = false;
 
       switch (tok.type()) {
       default: return errs::expected_type_annotation(tok); // todo: add proper error.
@@ -38,6 +39,7 @@ namespace rush {
          switch (tok.symbol()) {
          case symbols::left_parenthesis:
             result = parse_tuple_type();
+            istuple = true;
             break;
          default: return errs::expected_type_annotation(tok);
          }
@@ -49,7 +51,8 @@ namespace rush {
       tok = peek_skip_indent();
       if (tok.is_symbol()) {
          switch (tok.symbol()) {
-         case symbols::thin_arrow: return parse_function_type(result.type());
+         case symbols::thin_arrow: return parse_function_type(istuple
+            ? result.type() : _context->tuple_type(result.type()));
          case symbols::left_square_bracket: return parse_array_type(result.type());
          default: return std::move(result);
          }
@@ -95,7 +98,7 @@ namespace rush {
 
    rush::parse_type_result parser::parse_function_type(ast::type_ref params_type) {
       assert(peek_skip_indent().is(symbols::thin_arrow) && "expected thin arrow symbol '->'.");
-      next_skip_indent();
+      next_skip_indent(); // consume '->'
       auto ret_type_result = parse_type();
       return _context->function_type(ret_type_result.type(), params_type);
    }

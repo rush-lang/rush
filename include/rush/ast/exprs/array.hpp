@@ -44,17 +44,16 @@ namespace rush::ast {
 			v.visit_literal_expr(*this);
 		}
 
-      virtual void attach(ast::node&, ast::context& ctx) override {
-         if (!_elems->empty())
-			   _type = ctx.array_type(_elems->front()->result_type());
+      virtual void attach(ast::node&, ast::context& context) override {
 			std::for_each(_elems->begin(), _elems->end(),
-				[this, &ctx](auto& a) { a->attach(*this, ctx); });
+				[this, &context](auto& a) { a->attach(*this, context); });
+         _type = context.array_type(*this);
 		}
 
-      virtual void detach(ast::node&, ast::context& ctx) override {
-			_type = ast::types::undefined;
+      virtual void detach(ast::node&, ast::context& context) override {
 			std::for_each(_elems->begin(), _elems->end(),
-				[this, &ctx](auto& a) { a->detach(*this, ctx); });
+				[this, &context](auto& a) { a->detach(*this, context); });
+			_type = ast::types::undefined;
 		}
 
 	private:

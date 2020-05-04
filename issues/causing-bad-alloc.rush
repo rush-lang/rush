@@ -1,0 +1,7 @@
+import std.io
+
+func map() -> int[] => [];
+
+func main(args: string[]):
+   let xs = map(1...10, x => x * 3);
+   return 0;

@@ -8,6 +8,8 @@
 #include "rush/ast/types/builtin.hpp"
 #include "rush/ast/types/function.hpp"
 
+#include "rush/ast/context.hpp"
+
 #include <memory>
 
 namespace rush::ast {
@@ -15,52 +17,73 @@ namespace rush::ast {
 	class lambda_expression : public ast::expression {
 	public:
 		lambda_expression(
-         ast::function_type fntype,
+         std::unique_ptr<ast::parameter_list> params,
 			std::unique_ptr<ast::statement> body)
-			: _type { std::move(fntype) }
+			: _params { std::move(params) }
+         , _type { ast::types::undefined }
+         , _rettype { ast::types::undefined }
 			, _body { std::move(body) } {}
 
 		ast::parameter_list const& parameters() const noexcept {
-			return _type.parameters();
+			return *_params;
 		}
 
 		ast::statement const& body() const noexcept {
 			return *_body;
 		}
 
+      ast::type_ref return_type() const noexcept {
+         return _rettype == types::undefined
+            ? resolve_return_type()
+            : _rettype;
+      }
+
       virtual ast::type_ref result_type() const override {
-         _type.resolve_return_type(body());
-         return { _type };
+         return _type;
 		}
 
 		virtual void accept(ast::visitor& v) const override {
 			v.visit_lambda_expr(*this);
 		}
 
-      virtual void attach(ast::node&, ast::context& ctx) override {
-			_type.attach(*this, ctx);
-			_body->attach(*this, ctx);
+      virtual void attach(ast::node&, ast::context& context) override {
+         _params->attach(*this, context);
+			_body->attach(*this, context);
+         _type = context.function_type(*this);
 		}
 
-      virtual void detach(ast::node&, ast::context& ctx) override {
-			_type.detach(*this, ctx);
-			_body->detach(*this, ctx);
+      virtual void detach(ast::node&, ast::context& context) override {
+         _params->detach(*this, context);
+			_body->detach(*this, context);
+         _type = types::undefined;
 		}
 
 	private:
+		std::unique_ptr<ast::parameter_list> _params;
 		std::unique_ptr<ast::statement> _body;
-      ast::function_type _type;
+      mutable ast::type_ref _rettype;
+      mutable ast::type_ref _type;
+
+      struct lambda_expression_return_type_resolver : ast::visitor {
+         ast::type_ref result = ast::types::undefined;
+         virtual void visit_function_type(ast::function_type const& type) override {
+            result = type.return_type();
+         }
+      };
+
+      ast::type_ref resolve_return_type() const noexcept {
+         return _rettype = (_rettype == ast::types::undefined
+            ? rush::visit(_type, lambda_expression_return_type_resolver {}).result
+            : _rettype);
+      }
 	};
 
 	namespace exprs {
 		inline std::unique_ptr<lambda_expression> lambda(
 			std::unique_ptr<ast::parameter_list> params,
 			std::unique_ptr<ast::statement> body) {
-				return std::make_unique<ast::lambda_expression>(
-					ast::function_type {
-                  ast::types::undefined,
-                  std::move(params),
-                  function_type::factory_tag_t {} },
+            return std::make_unique<ast::lambda_expression>(
+               std::move(params),
 					std::move(body));
 			}
 

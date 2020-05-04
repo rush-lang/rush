@@ -1,7 +1,5 @@
 import std.io
 
-func array(a, b, c: int) => [a, b, c];
-
 func main(args: string[]):
-   let xs = array(1, 2, 3);
+   let xs = map([1...10], x => pow(x, 2));
    return 0;

@@ -56,7 +56,7 @@
       { "kind": "semantic", "code": 1135, "name": "multiple_member_definitions", "message": "the type '{}' already contains a definition for '{}'.", "params": [ "type", "name" ] },
       { "kind": "semantic", "code": 1136, "name": "undeclared_identifier", "message": "the name '{}' does not exist in the current context.", "params": [ "name" ]  },
       { "kind": "semantic", "code": 1137, "name": "unresolved_type", "message": "" },
-      { "kind": "semantic", "code": 1138, "name": "irreducible_type", "message": "the types '{}' and '{}' do not share a common type." },
+      { "kind": "semantic", "code": 1138, "name": "irreducible_type", "message": "the types '{}' and '{}' do not share a common type.", "params": [ "first", "second" ] },
       { "kind": "semantic", "code": 1139, "name": "mismatched_type_assignment", "message": "the type '{}' cannot be assigned to an instance of '{}'.", "params": [ "first", "second" ] },
       { "kind": "semantic", "code": 1140, "name": "infinitely_recursive_return_type_deduction", "message": "deducing return type is infinitely recursive." }
 

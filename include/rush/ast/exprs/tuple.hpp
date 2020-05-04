@@ -44,16 +44,15 @@ namespace rush::ast {
 		}
 
       virtual void attach(ast::node&, ast::context& ctx) override {
-			// auto types = ast::type_list(_args)
-			// _type = ctx.tuple_type(types);
 			std::for_each(_args->begin(), _args->end(),
 				[this, &ctx](auto& a) { a->attach(*this, ctx); });
+         _type = ctx.tuple_type(*this);
 		}
 
       virtual void detach(ast::node&, ast::context& ctx) override {
-			// _type = ast::types::undefined;
 			std::for_each(_args->begin(), _args->end(),
 				[this, &ctx](auto& a) { a->detach(*this, ctx); });
+         _type = types::undefined;
 		}
 
 	private:
