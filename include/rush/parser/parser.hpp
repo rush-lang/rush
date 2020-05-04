@@ -117,6 +117,29 @@ namespace rush {
          return temp != last ? *temp : _eof;
 		}
 
+      bool is_lambda_expr_ahead() {
+         auto temp = _range.first;
+         auto& last = _range.second;
+
+         ++temp; // skip opening '('
+         auto parens = 1;
+
+         // skip all tokens until last closing parenthesis.
+         // (it may be less error-prone and more efficient to
+         // try and parse the tokens than simply skipping
+         // all tokens until the last closing parens is found).
+         while (temp != last && parens >= 1) {
+            if (temp->is(symbols::left_parenthesis)) { ++parens; }
+            else if (temp->is(symbols::right_parenthesis)) { --parens; }
+            ++temp;
+         }
+
+         // we have a lambda expression if the last closing
+         // parenthesis is immediatley followed by a thin or thick arrow.
+         return temp->is(symbols::thick_arrow)
+             || temp->is(symbols::thin_arrow);
+      }
+
 		lexical_token const& next_skip_indent() {
          auto temp = _range.first;
          auto& first = _range.first;
@@ -164,6 +187,7 @@ namespace rush {
 		rush::parse_type_result parse_type_annotation();
 
       rush::parse_type_result parse_array_type(ast::type_ref);
+      rush::parse_type_result parse_function_type(ast::type_ref);
 
 		// declarations.
       rush::parse_result<ast::declaration> parse_toplevel_decl();
@@ -209,8 +233,12 @@ namespace rush {
 		rush::parse_result<ast::expression> parse_expr();
 		rush::parse_result<ast::expression> parse_paren_expr();
 		rush::parse_result<ast::expression> parse_primary_expr();
+      rush::parse_result<ast::expression> parse_simple_paren_expr();
+      rush::parse_result<ast::expression> parse_complex_paren_expr();
       rush::parse_result<ast::expression> parse_array_literal_expr();
+      rush::parse_result<ast::expression> parse_tuple_literal_expr();
       rush::parse_result<ast::expression> parse_tuple_literal_expr(rush::parse_result<ast::argument>);
+      rush::parse_result<ast::expression> parse_lambda_expr();
 
 		rush::parse_result<ast::expression> parse_string_expr();
 		rush::parse_result<ast::expression> parse_integer_expr();
@@ -227,6 +255,7 @@ namespace rush {
       rush::parse_result<ast::expression> parse_invoke_expr(rush::parse_result<ast::expression>);
 
       rush::parse_result<ast::argument> parse_argument();
+   // rush::parse_result<ast::binding_list> parse_binding_list();
       rush::parse_result<ast::element_list> parse_element_list();
       rush::parse_result<ast::argument_list> parse_argument_list();
       rush::parse_result<ast::argument_list> parse_argument_list(rush::parse_result<ast::argument>);

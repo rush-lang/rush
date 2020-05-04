@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <string>
 #include <variant>
+#include <cassert>
 
 #include "rush/core/source.hpp"
 #include "rush/core/location.hpp"

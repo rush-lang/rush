@@ -32,68 +32,82 @@ namespace rush {
 		return std::move(result);
 	}
 
-	rush::parse_result<ast::expression> parser::parse_paren_expr() {
-		assert(peek_skip_indent().is(symbols::left_parenthesis) && "expected token to be \'(\'");
+   rush::parse_result<ast::expression> parser::parse_paren_expr() {
+      assert(peek_skip_indent().is(symbols::left_parenthesis) && "expected token to be \'(\'");
+      next_skip_indent(); // consume '('
 
-      // handle edge case for tuple expressions.
-      // (y = 10);             assignment expression.
-      // (y = 20, ...<expr>);  tuple expression.
-      if (peek_skip_indent(1).is_identifier()) {
-         auto next_tok = peek_skip_indent(2);
-         if (next_tok.is(symbols::equals)) {
-            next_skip_indent(); // consume '('
-            auto ident = next_skip_indent();
-            next_skip_indent(); // consume '='
-
-            auto expr_result = parse_expr();
-            if (expr_result.failed())
-               return std::move(expr_result);
-
-            auto tok = peek_skip_indent();
-            if (!tok.is_symbol())
-               return errs::expected_closing_parenthesis_or_tuple(tok);
-
-            switch (tok.symbol()) {
-            default: return errs::expected_closing_parenthesis_or_tuple(tok);
-            case symbols::comma: // tuple expression
-               return parse_tuple_literal_expr(exprs::arg(
-                  ident.text(),
-                  std::move(expr_result)));
-            case symbols::right_parenthesis: // assignment expression
-               next_skip_indent(); // consume ')'
-               auto sym = _scope.current().lookup(ident.text());
-               auto ident_expr = !sym.is_undefined()
-                  ? exprs::identifier(sym.declaration()->identifier())
-                  : exprs::identifier(_scope.resolver(ident.text()));
-
-               return exprs::assignment(
-                  std::move(ident_expr),
-                  std::move(expr_result));
+      if (peek_skip_indent().is_identifier()) {
+         auto next = peek_skip_indent(1);
+         if (next.is_symbol()) {
+            switch (next.symbol()) {
+            default: break;
+            case symbols::comma:
+            case symbols::colon:
+            case symbols::equals:
+               return parse_complex_paren_expr();
             }
          }
       }
 
-		next_skip_indent(); // consume '('
-		auto result = parse_expr();
-		if (result.failed()) return std::move(result);
+      return parse_simple_paren_expr();
+   }
 
-      auto tok = peek_skip_indent();
-      if (tok.is(symbols::comma)) {
+   rush::parse_result<ast::expression> parser::parse_simple_paren_expr() {
+      auto result = parse_expr();
+      if (result.failed()) return std::move(result);
+
+      auto next = peek_skip_indent();
+      if (next.is(symbols::comma)) {
          result = parse_tuple_literal_expr(exprs::arg(std::move(result)));
       } else {
-         tok = peek_skip_indent();
-         if (tok.is_not(symbols::right_parenthesis))
-            return errs::expected_closing_parenthesis(tok);
+         if (next.is_not(symbols::right_parenthesis))
+            return errs::expected_closing_parenthesis(next);
          next_skip_indent(); // consume ')'
       }
 
-      tok = peek_skip_indent();
-      if (tok.is_any(symbols::thin_arrow, symbols::thick_arrow)) {
-         // result = parse_lambda_expr(std::move(result));
+      return std::move(result);
+   }
+
+   rush::parse_result<ast::expression> parser::parse_complex_paren_expr() {
+      auto ident = peek_skip_indent();
+      auto next = peek_skip_indent(1);
+
+      // named tuple or equals expression edge-case.
+      if (next.is(symbols::equals)) {
+         next_skip_indent(); // consume ident.
+         next_skip_indent(); // consume '='
+         auto expr_result = parse_expr();
+
+         if (expr_result.failed())
+            return std::move(expr_result);
+
+         auto tok = peek_skip_indent();
+         if (!tok.is_symbol())
+            return errs::expected_closing_parenthesis_or_tuple(tok);
+
+         switch (tok.symbol()) {
+         default: return errs::expected_closing_parenthesis_or_tuple(tok);
+         case symbols::comma: // tuple expression
+            return parse_tuple_literal_expr(exprs::arg(
+               ident.text(),
+               std::move(expr_result)));
+         case symbols::right_parenthesis: // assignment expression
+            next_skip_indent(); // consume ')'
+            auto sym = _scope.current().lookup(ident.text());
+            auto ident_expr = !sym.is_undefined()
+               ? exprs::identifier(sym.declaration()->identifier())
+               : exprs::identifier(_scope.resolver(ident.text()));
+
+            return exprs::assignment(
+               std::move(ident_expr),
+               std::move(expr_result));
+         }
       }
 
-      return std::move(result);
-	}
+      return is_lambda_expr_ahead()
+         ? parse_lambda_expr()
+         : parse_tuple_literal_expr();
+   }
 
    rush::parse_result<ast::expression> parser::parse_array_literal_expr() {
       assert(peek_skip_indent().is(symbols::left_square_bracket) && "expected left square bracket to start array expression.");
@@ -101,6 +115,10 @@ namespace rush {
       return elist.failed()
          ? std::move(elist).as<ast::expression>()
          : exprs::array(std::move(elist));
+   }
+
+   rush::parse_result<ast::expression> parser::parse_tuple_literal_expr() {
+      return parse_tuple_literal_expr(parse_argument());
    }
 
    rush::parse_result<ast::expression> parser::parse_tuple_literal_expr(rush::parse_result<ast::argument> result) {
@@ -111,16 +129,24 @@ namespace rush {
          : exprs::tuple(std::move(alist));
    }
 
+   rush::parse_result<ast::expression> parser::parse_lambda_expr() {
+      return errs::not_supported(peek_skip_indent(), "lambda expression");
+   }
+
 	rush::parse_result<ast::expression> parser::parse_primary_expr() {
 		auto tok = peek_skip_indent();
 
       rush::parse_result<ast::expression> result;
 		switch (tok.type()) {
 		default: return errs::expected_primary_expr(tok);
-		case lexical_token_type::identifier: result = parse_identifier_expr(); break;
 		case lexical_token_type::string_literal: result = parse_string_expr(); break;
 		case lexical_token_type::integer_literal: result = parse_integer_expr(); break;
 		case lexical_token_type::floating_literal: result = parse_floating_expr(); break;
+		case lexical_token_type::identifier:
+         result = peek_skip_indent(1).is(symbols::thick_arrow)
+            ? parse_lambda_expr()
+            : parse_identifier_expr();
+         break;
 		case lexical_token_type::keyword:
 			switch (tok.keyword()) {
 			default: return errs::unexpected_keyword_expr(tok);
@@ -404,8 +430,7 @@ namespace rush {
       do {
          auto arg_result = parse_expr();
          if (arg_result.failed())
-            // return std::move(arg_result).as<ast::element_list>().error();
-            return errs::expected_closing_square_bracket(peek_skip_indent());
+            return std::move(arg_result).as<ast::element_list>();
 
          results.push_back(std::move(arg_result));
       } while (
@@ -413,7 +438,7 @@ namespace rush {
          peek_skip_indent().is_not(symbols::right_square_bracket));
 
       if (peek_skip_indent().is_not(symbols::right_square_bracket))
-         return errs::expected_closing_square_bracket(peek_skip_indent());
+         return errs::expected_closing_square_bracket_or_comma(peek_skip_indent());
       next_skip_indent();
 
       return exprs::elem_list(std::move(results));

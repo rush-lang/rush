@@ -34,7 +34,11 @@ namespace rush::ast::detail {
 
    struct function_type_key_t {
       ast::type_ref ret_type;
-      tuple_type_key_t params;
+      ast::type_ref params_type;
+      bool operator ==(function_type_key_t const& other) const {
+         return this->ret_type == other.ret_type
+             && this->params_type == other.params_type;
+      }
    };
 }
 
@@ -59,6 +63,16 @@ namespace std {
             [&hasher](auto& result, auto& type) {
                return result ^ hasher(type) + 0x9e3779b9 + (result<<6) + (result>>2);
             });
+      }
+   };
+
+   template <>
+   struct hash<rush::ast::detail::function_type_key_t> {
+      std::size_t operator()(rush::ast::detail::function_type_key_t const& key) const {
+         std::size_t result = 0;
+         rush::hash_combine(result, key.ret_type);
+         rush::hash_combine(result, key.params_type);
+         return result;
       }
    };
 }
@@ -96,11 +110,12 @@ namespace rush::ast {
 
       ast::type_ref array_type(ast::type_ref, size_type = 1);
       ast::type_ref tuple_type(rush::iterator_range<std::vector<ast::type_ref>::const_iterator>);
-      ast::type_ref function_type(ast::type_ref ret, iterator_range<std::vector<ast::type_ref>::const_iterator> params);
+      ast::type_ref function_type(ast::type_ref ret, ast::type_ref params);
 
    private:
       std::unordered_map<detail::array_type_key_t, std::unique_ptr<ast::array_type>> _array_types;
       std::unordered_map<detail::tuple_type_key_t, std::unique_ptr<ast::tuple_type>> _tuple_types;
+      std::unordered_map<detail::function_type_key_t, std::unique_ptr<ast::function_type>> _function_types;
    };
 }
 

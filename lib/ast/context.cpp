@@ -99,7 +99,13 @@ namespace rush::ast {
    }
 
    ast::type_ref context::
-   function_type(ast::type_ref ret, iterator_range<std::vector<ast::type_ref>::const_iterator> params) {
+   function_type(ast::type_ref ret, ast::type_ref params) {
+      // auto key = detail::function_type_key_t { ret, params };
+      // auto it = _function_types.find(key);
+      // if (it == _function_types.end()) {:
+      //    ast::function_type()
+      //    auto p = std::make_unique<ast::function_type>(ret, params.to_parameter_list())
+      // }
       return types::undefined;
    }
 }

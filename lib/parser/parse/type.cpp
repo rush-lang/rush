@@ -49,6 +49,7 @@ namespace rush {
       tok = peek_skip_indent();
       if (tok.is_symbol()) {
          switch (tok.symbol()) {
+         case symbols::thin_arrow: return parse_function_type(result.type());
          case symbols::left_square_bracket: return parse_array_type(result.type());
          default: return std::move(result);
          }
@@ -90,6 +91,13 @@ namespace rush {
       next_skip_indent();
 
       return parse_type();
+   }
+
+   rush::parse_type_result parser::parse_function_type(ast::type_ref params_type) {
+      assert(peek_skip_indent().is(symbols::thin_arrow) && "expected thin arrow symbol '->'.");
+      next_skip_indent();
+      auto ret_type_result = parse_type();
+      return _context->function_type(ret_type_result.type(), params_type);
    }
 
    rush::parse_type_result parser::parse_array_type(ast::type_ref elem_type) {
