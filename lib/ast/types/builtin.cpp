@@ -11,10 +11,12 @@ namespace rush::ast::types {
       return ast::builtin_error_type { std::move(msg) };
    }
 
-   ast::builtin_error_type const undefined_inst = error_type("undefined");
    ast::builtin_void_type const void_type_inst = {};
+   ast::builtin_error_type const undefined_inst = error_type("undefined");
+   ast::builtin_error_type const circular_ref_inst = error_type("circular reference");
 
    // sentinals
-	ast::type_ref const undefined = { undefined_inst };
 	ast::type_ref const void_type = { void_type_inst };
+	ast::type_ref const undefined = { undefined_inst };
+   ast::type_ref const circular_ref = { circular_ref_inst };
 }

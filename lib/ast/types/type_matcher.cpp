@@ -8,7 +8,8 @@ namespace types = rush::ast::types;
 class type_matcher : public ast::visitor {
 public:
    type_matcher(ast::type_ref type)
-      : _type { std::move(type) } {}
+      : _type { std::move(type) }
+      , _result { false } {}
 
    bool result() const noexcept {
       return _result;
@@ -31,8 +32,6 @@ private:
 
 namespace rush::ast::types {
    bool match(ast::type_ref lhs, ast::type_ref rhs) {
-      return (lhs != rhs)
-         ? rush::visit(rhs, type_matcher { lhs }).result()
-         : true;
+      return (lhs == rhs) || rush::visit(lhs, type_matcher { rhs }).result();
    }
 }

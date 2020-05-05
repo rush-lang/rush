@@ -51,11 +51,21 @@ namespace rush::ast {
       std::string _name;
       mutable ast::type_ref _type;
 		std::unique_ptr<expression> _init;
+      mutable bool _resolving_type = false;
 
       ast::type_ref resolve_type() const {
-         return (_type == ast::types::undefined && initializer())
-            ? _type = initializer()->result_type()
+         if (_resolving_type)
+            return _type = ast::types::circular_ref;
+
+         _resolving_type = true;
+         auto result_type = (_type == ast::types::undefined && initializer())
+            ? initializer()->result_type()
             : _type;
+         _resolving_type = false;
+
+         return _type = (_type != ast::types::circular_ref)
+               ? result_type
+               : _type;
       }
 	};
 } // rush::ast
