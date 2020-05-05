@@ -163,10 +163,10 @@ namespace rush {
       if (body_result.failed())
          return std::move(body_result).as<ast::expression>();
 
-      auto decl = exprs::lambda(std::move(params), std::move(body_result));
-
       _scope.pop();
-      return std::move(decl);
+      return exprs::lambda(
+         std::move(params),
+         std::move(body_result));
    }
 
 	rush::parse_result<ast::expression> parser::parse_primary_expr() {

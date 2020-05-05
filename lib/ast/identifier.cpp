@@ -57,7 +57,7 @@ namespace rush::ast {
    }
 
    ast::declaration const& identifier::declaration() const noexcept {
-      assert("attempting to access the declaration of an unresolved identifier.");
+      assert(!is_unresolved() && "attempting to access the declaration of an unresolved identifier.");
       return *std::get<ast::declaration const*>(_val);
    }
 } // rush::ast

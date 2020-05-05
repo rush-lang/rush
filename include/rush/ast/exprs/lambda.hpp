@@ -33,9 +33,7 @@ namespace rush::ast {
 		}
 
       ast::type_ref return_type() const noexcept {
-         return _rettype == types::undefined
-            ? resolve_return_type()
-            : _rettype;
+         return resolve_return_type();
       }
 
       virtual ast::type_ref result_type() const override {
@@ -49,6 +47,11 @@ namespace rush::ast {
       virtual void attach(ast::node&, ast::context& context) override {
          _params->attach(*this, context);
 			_body->attach(*this, context);
+         // use contextual function type.
+         // IMPORTANT: In the case of deducing the functions return type,
+         //            it must be performed after attaching the child
+         //            nodes of the function to the context, so that
+         //            ordinary non function types are properly established.
          _type = context.function_type(*this);
 		}
 

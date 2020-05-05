@@ -78,6 +78,10 @@ namespace rush::ast {
          _body->attach(*this, context);
 
          // use contextual function type.
+         // IMPORTANT: In the case of deducing the functions return type,
+         //            it must be performed after attaching the child
+         //            nodes of the function to the context, so that
+         //            ordinary non function types are properly established.
          _type = context.function_type(*this);
       }
 

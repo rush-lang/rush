@@ -10,13 +10,22 @@
 const rush::ast::builtin_error_type infinite_recursion_error_type =
       rush::ast::types::error_type("deducing return type is infinitely recursive.");
 
+rush::ast::type_ref resolve_function_type(
+   rush::ast::lambda_expression const& expr,
+   rush::ast::node const& resolving,
+   rush::ast::context& context);
+
+rush::ast::type_ref resolve_function_type(
+   rush::ast::function_declaration const& decl,
+   rush::ast::node const& resolving,
+   rush::ast::context& context);
 
 class return_type_resolver : public rush::ast::visitor {
 public:
    return_type_resolver(rush::ast::node const& node, rush::ast::context& context)
       : _return_type { rush::ast::types::undefined }
       , _node_resolving { &node }
-      , _context { &context } {}
+      , _context { context } {}
 
    rush::ast::type_ref result() const noexcept {
       return _return_type;
@@ -33,22 +42,22 @@ public:
    }
 
 private:
+   rush::ast::context& _context;
    rush::ast::type_ref _return_type;
    rush::ast::node const* _node_resolving;
-   rush::ast::context* _context;
 
    void resolve_return_type(rush::ast::node const& node) {
       if (_return_type.kind() == rush::ast::type_kind::error) {
          auto v = function_body_traversal { *this };
          _return_type = rush::visit(node, v).result();
-         _node_resolving = nullptr;
       }
    }
 
    class function_body_traversal : public rush::ast::traversal {
    public:
-      function_body_traversal(return_type_resolver& resolver)
-         : _resolver { resolver } {}
+      function_body_traversal(
+         return_type_resolver& resolver)
+         : _resolver { resolver }{}
 
       rush::ast::type_ref result() const noexcept {
          return _results.empty()
@@ -101,7 +110,8 @@ private:
 
       class return_statement_traversal : public rush::ast::traversal {
       public:
-         return_statement_traversal(return_type_resolver& resolver)
+         return_statement_traversal(
+            return_type_resolver& resolver)
             : _resolver { resolver } {}
 
          rush::ast::type_ref result() const noexcept {
@@ -116,23 +126,36 @@ private:
                   rush::ast::types::reduce);
          }
 
-         virtual void visit_invoke_expr(rush::ast::invoke_expression const& expr) override {
-            rush::visit(expr.callable(), *this);
+         virtual void visit_function_decl(rush::ast::function_declaration const& decl) override {
+            if (_resolver._node_resolving == &decl) {
+               _results.clear();
+               _results.push_back(infinite_recursion_error_type);
+            } else {
+               auto result = resolve_function_type(
+                  decl, *_resolver._node_resolving, _resolver._context);
+               if (result == infinite_recursion_error_type) _results.clear();
+               _results.push_back(result);
+            }
+         }
+
+         virtual void visit_lambda_expr(rush::ast::lambda_expression const& expr) override {
+            if (_resolver._node_resolving == &expr) {
+               _results.clear();
+               _results.push_back(infinite_recursion_error_type);
+            } else {
+               auto result = resolve_function_type(
+                  expr, *_resolver._node_resolving, _resolver._context);
+               if (result == infinite_recursion_error_type) _results.clear();
+               _results.push_back(result);
+            }
          }
 
          virtual void visit_identifier_expr(rush::ast::identifier_expression const& expr) override {
-            if (!expr.is_unresolved()) {
-               if (_resolver._node_resolving == &expr.declaration()) {
-                  _results.clear();
-                  _results.push_back(infinite_recursion_error_type);
-                  return;
-               } else if (expr.declaration().kind() == rush::ast::declaration_kind::function) {
-                  auto inner = rush::visit(expr.declaration(), _resolver).result();
-                  if (inner == infinite_recursion_error_type) _results.clear();
-                  _results.push_back(inner);
-                  return;
-               }
-            }
+            if (!expr.is_unresolved() && expr
+                     .declaration().kind() == rush::ast::declaration_kind::function) {
+                        rush::visit(expr.declaration(), *this);
+                        return;
+                     }
 
             _results.push_back(expr.result_type());
          }
@@ -273,14 +296,28 @@ namespace rush::ast {
    }
 
    ast::type_ref context::function_type(ast::lambda_expression const& expr) {
-      auto tutype = tuple_type(expr.parameters().types());
-      auto fntype = function_type(rush::visit(expr, return_type_resolver { expr, *this }).result(), tutype);
-      return fntype;
+      return resolve_function_type(expr, expr, *this);
    }
 
    ast::type_ref context::function_type(ast::function_declaration const& decl) {
-      auto tutype = tuple_type(decl.parameters().types());
-      auto fntype = function_type(rush::visit(decl, return_type_resolver { decl, *this }).result(), tutype);
-      return fntype;
+      return resolve_function_type(decl, decl, *this);
    }
 }
+
+rush::ast::type_ref resolve_function_type(
+   rush::ast::lambda_expression const& expr,
+   rush::ast::node const& resolving,
+   rush::ast::context& context) {
+      auto tutype = context.tuple_type(expr.parameters().types());
+      auto fntype = context.function_type(rush::visit(expr, return_type_resolver { resolving, context }).result(), tutype);
+      return fntype;
+   }
+
+rush::ast::type_ref resolve_function_type(
+   rush::ast::function_declaration const& decl,
+   rush::ast::node const& resolving,
+   rush::ast::context& context) {
+      auto tutype = context.tuple_type(decl.parameters().types());
+      auto fntype = context.function_type(rush::visit(decl, return_type_resolver { resolving, context }).result(), tutype);
+      return fntype;
+   }
