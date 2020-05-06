@@ -14,4 +14,6 @@
 #include "rush/ast/types/type_matcher.hpp"
 #include "rush/ast/types/type_reducer.hpp"
 
+#include "rush/ast/types/type_ref.hpp"
+
 #endif // RUSH_AST_TYPES_HPP

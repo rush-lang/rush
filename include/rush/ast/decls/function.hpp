@@ -40,7 +40,7 @@ namespace rush::ast {
 			factory_tag_t)
          : _name { std::move(name) }
          , _type { types::undefined }
-         , _return_type { std::move(return_type) }
+         , _explicit_return_type { std::move(return_type) }
          , _params { std::move(params) }
 			, _body { std::move(body) } {}
 
@@ -48,16 +48,16 @@ namespace rush::ast {
          return _name;
       }
 
-      virtual ast::type_ref type() const noexcept override {
-         return _type;
-      }
-
 		virtual declaration_kind kind() const noexcept override {
 			return declaration_kind::function;
 		}
 
+      virtual ast::type_ref type() const noexcept override {
+         return resolve_type();
+      }
+
       ast::type_ref return_type() const noexcept {
-         return resolve_return_type();
+         return resolve_explicit_return_type();
       }
 
 		ast::parameter_list const& parameters() const noexcept {
@@ -74,45 +74,45 @@ namespace rush::ast {
       }
 
       virtual void attach(ast::node&, ast::context& context) override {
+         _type = context.function_type(*this);
+
          _params->attach(*this, context);
          _body->attach(*this, context);
-
-         // use contextual function type.
-         // IMPORTANT: In the case of deducing the functions return type,
-         //            it must be performed after attaching the child
-         //            nodes of the function to the context, so that
-         //            ordinary non function types are properly established.
-         _type = context.function_type(*this);
       }
 
       virtual void detach(ast::node&, ast::context& context) override {
+         _type = types::undefined;
+
          _params->detach(*this, context);
          _body->detach(*this, context);
-
-         // use non-contextual function type.
-         _type = context.function_type(
-            context.tuple_type(_params->types()),
-            _return_type);
       }
 
 	private:
       std::string _name;
-      ast::type_ref _type;
-      ast::type_ref _return_type;
+      mutable std::variant<
+         ast::type_ref,
+         ast::type_resolver*> _type;
+      ast::type_ref _explicit_return_type;
 		std::unique_ptr<ast::statement> _body;
       std::unique_ptr<ast::parameter_list> _params;
 
-      struct return_type_visitor : ast::visitor {
-         ast::type_ref result_type = ast::types::undefined;
-         virtual void visit_function_type(ast::function_type const& type) override {
-            result_type = type.return_type();
-         }
-      };
+      ast::type_ref resolve_type() const {
+         struct type_visitor {
+            std::variant<ast::type_ref, ast::type_resolver*>& _v;
+            ast::type_ref operator ()(ast::type_ref type) { return type; }
+            ast::type_ref operator ()(ast::type_resolver* r) { return std::get<ast::type_ref>(_v = r->resolve()); } };
+         return std::visit(type_visitor { _type }, _type);
+      }
 
-      ast::type_ref resolve_return_type() const {
-         return _return_type == types::undefined
-              ? rush::visit(_type, return_type_visitor {}).result_type
-              : _return_type;
+      ast::type_ref resolve_explicit_return_type() const {
+         struct return_type_visitor : ast::visitor {
+            ast::type_ref result_type = ast::types::undefined;
+            virtual void visit_function_type(ast::function_type const& type) override
+            { result_type = type.return_type(); } };
+
+         return _explicit_return_type == types::undefined
+              ? rush::visit(type(), return_type_visitor {}).result_type
+              : _explicit_return_type;
       }
 	};
 

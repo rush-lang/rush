@@ -112,17 +112,22 @@ namespace rush::ast {
       ast::type_ref array_type(ast::array_literal_expression&);
 
       ast::type_ref tuple_type(ast::type_ref single);
-      ast::type_ref tuple_type(rush::iterator_range<std::vector<ast::type_ref>::const_iterator>);
       ast::type_ref tuple_type(ast::tuple_literal_expression&);
+      ast::type_ref tuple_type(rush::iterator_range<std::vector<ast::type_ref>::const_iterator>);
 
       ast::type_ref function_type(ast::type_ref ret, ast::type_ref params);
-      ast::type_ref function_type(ast::lambda_expression const&);
-      ast::type_ref function_type(ast::function_declaration const&);
+      std::variant<ast::type_ref, ast::type_resolver*> function_type(ast::lambda_expression const&);
+      std::variant<ast::type_ref, ast::type_resolver*> function_type(ast::function_declaration const&);
 
    private:
+      std::unordered_map<ast::node const*, std::unique_ptr<ast::type_resolver>> _type_resolvers;
       std::unordered_map<detail::array_type_key_t, std::unique_ptr<ast::array_type>> _array_types;
       std::unordered_map<detail::tuple_type_key_t, std::unique_ptr<ast::tuple_type>> _tuple_types;
       std::unordered_map<detail::function_type_key_t, std::unique_ptr<ast::function_type>> _function_types;
+
+      std::variant<ast::type_ref, ast::type_resolver*> function_type_impl(ast::node const* node, ast::type_ref ret, ast::type_ref params);
+
+      class function_type_resolver_callback;
    };
 }
 

@@ -5,7 +5,7 @@
 
 #include "rush/ast/node.hpp"
 #include "rush/ast/identifier.hpp"
-#include "rush/ast/types/type.hpp"
+#include "rush/ast/types/type_ref.hpp"
 
 #include <string>
 #include <vector>

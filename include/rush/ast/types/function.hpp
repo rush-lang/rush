@@ -4,12 +4,13 @@
 #define RUSH_AST_TYPES_FUNCTION_HPP
 
 #include "rush/ast/types/type.hpp"
+#include "rush/ast/types/type_ref.hpp"
+#include "rush/ast/types/type_resolver.hpp"
 #include "rush/ast/types/builtin.hpp"
 #include "rush/ast/decls/parameter.hpp"
 
-#include <vector>
 #include <memory>
-#include <optional>
+
 
 namespace rush::ast::decls {
    std::unique_ptr<function_declaration> function(
@@ -59,7 +60,7 @@ namespace rush::ast {
       }
 
       ast::type_ref return_type() const noexcept {
-         return _return_type;
+			return _return_type;
       }
 
       ast::type_ref const& parameter_types() const noexcept {

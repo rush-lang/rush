@@ -7,7 +7,7 @@
 #include "rush/ast/exprs/expression.hpp"
 #include "rush/ast/exprs/identifier.hpp"
 #include "rush/ast/decls/declaration.hpp"
-#include "rush/ast/types/type.hpp"
+#include "rush/ast/types/type_ref.hpp"
 #include "rush/ast/visitor.hpp"
 
 

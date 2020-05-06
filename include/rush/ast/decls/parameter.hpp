@@ -5,7 +5,7 @@
 
 #include "rush/ast/list.hpp"
 #include "rush/ast/identifier.hpp"
-#include "rush/ast/types/type.hpp"
+#include "rush/ast/types/type_ref.hpp"
 #include "rush/ast/decls/declaration.hpp"
 
 namespace rush::ast {

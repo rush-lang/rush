@@ -3,7 +3,7 @@
 #ifndef RUSH_AST_DECLS_CONSTANT_HPP
 #define RUSH_AST_DECLS_CONSTANT_HPP
 
-#include "rush/ast/types/type.hpp"
+#include "rush/ast/types/type_ref.hpp"
 #include "rush/ast/types/builtin.hpp"
 #include "rush/ast/decls/storage.hpp"
 

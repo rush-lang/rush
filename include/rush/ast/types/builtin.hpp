@@ -5,6 +5,7 @@
 
 #include "rush/ast/visitor.hpp"
 #include "rush/ast/types/type.hpp"
+#include "rush/ast/types/type_ref.hpp"
 
 #include <string>
 #include <memory>

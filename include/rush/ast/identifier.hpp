@@ -4,6 +4,7 @@
 #define RUSH_AST_IDENTIFIER_HPP
 
 #include "rush/ast/types/type.hpp"
+#include "rush/ast/types/type_ref.hpp"
 
 #include <string>
 #include <variant>

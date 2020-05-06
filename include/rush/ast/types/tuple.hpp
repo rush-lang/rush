@@ -5,6 +5,7 @@
 
 #include "rush/extra/iterator_range.hpp"
 #include "rush/ast/types/type.hpp"
+#include "rush/ast/types/type_ref.hpp"
 
 #include <vector>
 

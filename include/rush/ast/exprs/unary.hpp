@@ -3,7 +3,7 @@
 #ifndef RUSH_AST_EXPRS_UNARY_HPP
 #define RUSH_AST_EXPRS_UNARY_HPP
 
-#include "rush/ast/types/type.hpp"
+#include "rush/ast/types/type_ref.hpp"
 #include "rush/ast/exprs/expression.hpp"
 #include "rush/ast/visitor.hpp"
 
