@@ -63,9 +63,11 @@ namespace rush::ast {
             : _type;
          _resolving_type = false;
 
-         return _type = (_type != ast::types::circular_ref)
-               ? result_type
-               : _type;
+         return _type = (result_type.kind() == type_kind::error)
+              ? (_type != ast::types::circular_ref)
+              ? ast::types::inference_fail
+              : _type
+              : result_type;
       }
 	};
 } // rush::ast

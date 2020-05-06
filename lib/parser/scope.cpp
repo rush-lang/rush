@@ -2,7 +2,6 @@
 #include "rush/parser/scope.hpp"
 
 #include <iostream>
-#include <cassert>
 
 namespace rush {
 

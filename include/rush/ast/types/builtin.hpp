@@ -75,6 +75,9 @@ namespace rush::ast {
       extern ast::type_ref const undefined;
       extern ast::type_ref const undeclared;
       extern ast::type_ref const circular_ref;
+      extern ast::type_ref const recursive_ref;
+      extern ast::type_ref const inference_fail;
+      extern ast::type_ref const irreducible;
 
       ast::builtin_error_type error_type();
       ast::builtin_error_type error_type(std::string msg);

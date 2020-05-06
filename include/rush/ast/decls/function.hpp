@@ -103,16 +103,15 @@ namespace rush::ast {
       std::unique_ptr<ast::parameter_list> _params;
 
       struct return_type_visitor : ast::visitor {
-         ast::type_ref result;
-         return_type_visitor() : result { types::undefined } {}
+         ast::type_ref result_type = ast::types::undefined;
          virtual void visit_function_type(ast::function_type const& type) override {
-            result = type.return_type();
+            result_type = type.return_type();
          }
       };
 
       ast::type_ref resolve_return_type() const {
          return _return_type == types::undefined
-              ? rush::visit(_type, return_type_visitor {}).result
+              ? rush::visit(_type, return_type_visitor {}).result_type
               : _return_type;
       }
 	};

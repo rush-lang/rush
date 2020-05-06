@@ -68,15 +68,15 @@ namespace rush::ast {
       mutable ast::type_ref _type;
 
       struct lambda_expression_return_type_resolver : ast::visitor {
-         ast::type_ref result = ast::types::undefined;
+         ast::type_ref result_type = ast::types::undefined;
          virtual void visit_function_type(ast::function_type const& type) override {
-            result = type.return_type();
+            result_type = type.return_type();
          }
       };
 
       ast::type_ref resolve_return_type() const noexcept {
          return _rettype = (_rettype == ast::types::undefined
-            ? rush::visit(_type, lambda_expression_return_type_resolver {}).result
+            ? rush::visit(_type, lambda_expression_return_type_resolver {}).result_type
             : _rettype);
       }
 	};

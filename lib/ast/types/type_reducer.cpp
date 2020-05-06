@@ -7,19 +7,20 @@
 namespace ast = rush::ast;
 namespace types = rush::ast::types;
 
-const ast::builtin_error_type irreducible_type =
-   ast::types::error_type("could not reduce types.");
-
 class type_reducer {
 public:
    type_reducer(ast::type_ref first)
       : _first { first } {}
 
    ast::type_ref operator ()(ast::type_ref second) const noexcept {
+      if (_first.kind() == ast::type_kind::error
+       || second.kind() == ast::type_kind::error)
+         return ast::types::irreducible;
+
       if (types::match(_first, second))
          return _first;
 
-      return irreducible_type;
+      return ast::types::irreducible;
    }
 
 private:

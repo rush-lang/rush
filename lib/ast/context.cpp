@@ -7,9 +7,6 @@
 #include "rush/ast/exprs/lambda.hpp"
 #include "rush/ast/decls/function.hpp"
 
-const rush::ast::builtin_error_type infinite_recursion_error_type =
-      rush::ast::types::error_type("deducing return type is infinitely recursive.");
-
 rush::ast::type_ref resolve_function_type(
    rush::ast::lambda_expression const& expr,
    rush::ast::node const& resolving,
@@ -28,7 +25,10 @@ public:
       , _context { context } {}
 
    rush::ast::type_ref result() const noexcept {
-      return _return_type;
+      return _return_type.kind() == rush::ast::type_kind::error
+          && _return_type != rush::ast::types::recursive_ref
+           ? rush::ast::types::inference_fail
+           : _return_type;
    }
 
    virtual void visit_lambda_expr(rush::ast::lambda_expression const& expr) override {
@@ -98,7 +98,7 @@ private:
          auto type = stmt.result_type();
          if (type.kind() == rush::ast::type_kind::error) {
             type = rush::visit(stmt.expression(), return_statement_traversal { _resolver }).result();
-            if (type == infinite_recursion_error_type) _results.clear();
+            if (type == rush::ast::types::recursive_ref) _results.clear();
          }
 
          _results.push_back(type);
@@ -129,11 +129,11 @@ private:
          virtual void visit_function_decl(rush::ast::function_declaration const& decl) override {
             if (_resolver._node_resolving == &decl) {
                _results.clear();
-               _results.push_back(infinite_recursion_error_type);
+               _results.push_back(rush::ast::types::recursive_ref);
             } else {
                auto result = resolve_function_type(
                   decl, *_resolver._node_resolving, _resolver._context);
-               if (result == infinite_recursion_error_type) _results.clear();
+               if (result == rush::ast::types::recursive_ref) _results.clear();
                _results.push_back(result);
             }
          }
@@ -141,11 +141,11 @@ private:
          virtual void visit_lambda_expr(rush::ast::lambda_expression const& expr) override {
             if (_resolver._node_resolving == &expr) {
                _results.clear();
-               _results.push_back(infinite_recursion_error_type);
+               _results.push_back(rush::ast::types::recursive_ref);
             } else {
                auto result = resolve_function_type(
                   expr, *_resolver._node_resolving, _resolver._context);
-               if (result == infinite_recursion_error_type) _results.clear();
+               if (result == rush::ast::types::recursive_ref) _results.clear();
                _results.push_back(result);
             }
          }
