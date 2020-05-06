@@ -7,166 +7,216 @@
 #include "rush/ast/exprs/lambda.hpp"
 #include "rush/ast/decls/function.hpp"
 
+using namespace rush;
+
 rush::ast::type_ref resolve_function_type(
    rush::ast::lambda_expression const& expr,
-   rush::ast::node const& resolving,
+   std::vector<rush::ast::node const*> resolving,
    rush::ast::context& context);
 
 rush::ast::type_ref resolve_function_type(
    rush::ast::function_declaration const& decl,
-   rush::ast::node const& resolving,
+   std::vector<rush::ast::node const*> resolving,
    rush::ast::context& context);
 
-class return_type_resolver : public rush::ast::visitor {
-public:
-   return_type_resolver(rush::ast::node const& node, rush::ast::context& context)
-      : _return_type { rush::ast::types::undefined }
-      , _node_resolving { &node }
-      , _context { context } {}
+bool is_infinitely_recursive_type(ast::type_ref type) {
+   struct infinite_recursion_type_checker : ast::visitor {
+      bool result = false;
+      void visit_builtin_error_type(ast::builtin_error_type const& errtype) override
+      { result = (errtype == ast::types::recursive_ref); }
+      void visit_function_type(ast::function_type const& fntype) override
+      { fntype.return_type().accept(*this); }
+   };
 
-   rush::ast::type_ref result() const noexcept {
-      return _return_type.kind() == rush::ast::type_kind::error
-          && _return_type != rush::ast::types::recursive_ref
-           ? rush::ast::types::inference_fail
-           : _return_type;
+   return rush::visit(type, infinite_recursion_type_checker {}).result;
+}
+
+ast::type_ref reduce_expression_types(ast::type_ref lt, ast::type_ref rt) {
+   return is_infinitely_recursive_type(lt)
+        ? is_infinitely_recursive_type(rt)
+        ? lt : rt
+        : is_infinitely_recursive_type(rt)
+        ? lt : ast::types::reduce(lt, rt);
+}
+
+ast::type_ref reduce_return_types(ast::type_ref lt, ast::type_ref rt) {
+   return lt.kind() == ast::type_kind::error
+        ? rt.kind() == ast::type_kind::error
+        ? lt : rt
+        : rt.kind() == ast::type_kind::error
+        ? lt : reduce_expression_types(lt, rt);
+}
+
+class return_type_resolver : public ast::visitor {
+public:
+   return_type_resolver(ast::context& context, std::vector<ast::node const*> resolving)
+      : _resolving { std::move(resolving) }
+      , _context { &context }
+      , _result { ast::types::undefined } {}
+
+   ast::type_ref result() const noexcept {
+       return _result.kind() == ast::type_kind::error
+           && _result != ast::types::recursive_ref
+            ? ast::types::inference_fail
+            : _result;
    }
 
-   virtual void visit_lambda_expr(rush::ast::lambda_expression const& expr) override {
-      _return_type = expr.return_type();
+   void visit_lambda_expr(ast::lambda_expression const& expr) override {
+      _result = expr.return_type();
       resolve_return_type(expr.body());
    }
 
-   virtual void visit_function_decl(rush::ast::function_declaration const& decl) override {
-      _return_type = decl.return_type();
+   void visit_function_decl(ast::function_declaration const& decl) override {
+      _result = decl.return_type();
       resolve_return_type(decl.body());
    }
 
 private:
-   rush::ast::context& _context;
-   rush::ast::type_ref _return_type;
-   rush::ast::node const* _node_resolving;
+   std::vector<ast::node const*> _resolving;
+   ast::context* _context;
+   ast::type_ref _result;
 
-   void resolve_return_type(rush::ast::node const& node) {
-      if (_return_type.kind() == rush::ast::type_kind::error) {
-         auto v = function_body_traversal { *this };
-         _return_type = rush::visit(node, v).result();
+   bool is_resolving(ast::node const* node) const noexcept {
+      return std::find(
+         _resolving.begin(),
+         _resolving.end(),
+         node) != _resolving.end();
+   }
+
+   void resolve_return_type(ast::node const& node) {
+      if (is_resolving(&node)) {
+         _result = ast::types::recursive_ref;
+      } else {
+         _resolving.push_back(&node);
+         if (_result.kind() == rush::ast::type_kind::error)
+            _result = rush::visit(node, function_body_traversal { *this }).result();
+         _resolving.pop_back();
       }
    }
 
-   class function_body_traversal : public rush::ast::traversal {
+   class function_body_traversal;
+   class result_statement_traversal;
+
+   //! \brief Traverses the body of a function or lambda while collecting
+   //         the result types of every result statement. The result of
+   //         this traversal is the reduction of all discovered types.
+   class function_body_traversal : public ast::traversal {
    public:
-      function_body_traversal(
-         return_type_resolver& resolver)
-         : _resolver { resolver }{}
+      function_body_traversal(return_type_resolver const& resolver)
+         : _resolver { &resolver } {}
 
-      rush::ast::type_ref result() const noexcept {
+      ast::type_ref result() const noexcept {
          return _results.empty()
-            ? rush::ast::types::void_type
-            : _results.size() == 1
-            ? _results.front()
-            : std::accumulate(
-               std::next(_results.begin()),
-               _results.end(),
-               _results.front(),
-               rush::ast::types::reduce);
+              ? ast::types::void_type
+              : std::accumulate(
+                 std::next(_results.begin()),
+                 _results.end(),
+                 _results.front(),
+                 reduce_return_types);
       }
 
-      virtual void visit_constant_decl(rush::ast::constant_declaration const&) override { /*ignore*/ }
-      virtual void visit_variable_decl(rush::ast::variable_declaration const&) override { /*ignore*/ }
-      virtual void visit_unary_expr(rush::ast::unary_expression const& expr) override { /*ignore*/ }
-      virtual void visit_binary_expr(rush::ast::binary_expression const& expr) override { /*ignore*/ }
-      virtual void visit_lambda_expr(rush::ast::lambda_expression const& expr) override { /*ignore !important*/ }
-      virtual void visit_literal_expr(rush::ast::array_literal_expression const& expr) override { /*ignore*/ }
-      virtual void visit_literal_expr(rush::ast::tuple_literal_expression const& expr) override { /*ignore*/ }
+      void visit_constant_decl(ast::constant_declaration const& decl) override { /* can safely ignore */ }
+      void visit_variable_decl(ast::variable_declaration const& decl) override { /* can safely ignore */ }
 
-      virtual void visit_conditional_stmt(rush::ast::conditional_statement const& stmt) override {
-         // ignore statement condition as it cannot result in a return statement.
-         stmt.body().accept(*this);
-      }
+      void visit_unary_expr(ast::unary_expression const& expr) override { /* can safely ignore */ }
+      void visit_binary_expr(ast::binary_expression const& expr) override { /* can safely ignore */ }
+      void visit_lambda_expr(ast::lambda_expression const& expr) override { /* can safely ignore */ }
+      void visit_invoke_expr(ast::invoke_expression const& expr) override { /* can safely ignore */ }
 
-      virtual void visit_for_stmt(rush::ast::iteration_statement const& stmt) override {
-         // ignore parts of the for statement
-         // todo: implement when for statement is implemented
-      }
+      void visit_conditional_stmt(ast::conditional_statement const& stmt) override { stmt.body().accept(*this); }
+      void visit_iteration_stmt(ast::iteration_statement const& stmt) override { /*stmt.body().accept(*this);*/ }
+      void visit_switch_stmt(ast::switch_statement const& stmt) override { /*stmt.body().accept(*this);*/ }
 
-      virtual void visit_switch_stmt(rush::ast::switch_statement const& stmt) override {
-         // ignore parts of the switch statement
-         // todo: implement when switch statement is implemented
-      }
+      void visit_result_stmt(ast::result_statement const& stmt) override {
+         auto result_type = stmt.result_type().kind() == ast::type_kind::error
+            ? rush::visit(stmt.expression(), result_statement_traversal { stmt.result_type(), *_resolver }).result()
+            : stmt.result_type();
 
-      virtual void visit_result_stmt(rush::ast::result_statement const& stmt) override {
-         auto type = stmt.result_type();
-         if (type.kind() == rush::ast::type_kind::error) {
-            type = rush::visit(stmt.expression(), return_statement_traversal { _resolver }).result();
-            if (type == rush::ast::types::recursive_ref) _results.clear();
-         }
-
-         _results.push_back(type);
+         _results.push_back(result_type);
       }
 
    private:
-      return_type_resolver& _resolver;
-      std::vector<rush::ast::type_ref> _results;
+      std::vector<ast::type_ref> _results;
+      return_type_resolver const* _resolver;
+   };
 
-      class return_statement_traversal : public rush::ast::traversal {
-      public:
-         return_statement_traversal(
-            return_type_resolver& resolver)
-            : _resolver { resolver } {}
+   class result_statement_traversal : public ast::traversal {
+   public:
+      result_statement_traversal(ast::type_ref initial, return_type_resolver const& resolver)
+         : _resolver { &resolver }
+         , _initial { initial } {}
 
-         rush::ast::type_ref result() const noexcept {
-            return _results.empty()
-               ? rush::ast::types::void_type
-               : _results.size() == 1
-               ? _results.front()
-               : std::accumulate(
-                  std::next(_results.begin()),
-                  _results.end(),
-                  _results.front(),
-                  rush::ast::types::reduce);
-         }
+      ast::type_ref result() const noexcept {
+         return !_results.empty()
+              ? std::accumulate(
+                 std::next(_results.begin()),
+                 _results.end(),
+                 _results.front(),
+                  reduce_expression_types)
+              : _initial;
+      }
 
-         virtual void visit_function_decl(rush::ast::function_declaration const& decl) override {
-            if (_resolver._node_resolving == &decl) {
-               _results.clear();
-               _results.push_back(rush::ast::types::recursive_ref);
-            } else {
-               auto result = resolve_function_type(
-                  decl, *_resolver._node_resolving, _resolver._context);
-               if (result == rush::ast::types::recursive_ref) _results.clear();
-               _results.push_back(result);
+      void visit_identifier_expr(ast::identifier_expression const& expr) override {
+         if (!expr.is_unresolved() && expr
+                  .declaration().kind() == rush::ast::declaration_kind::function) {
+                     rush::visit(expr.declaration(), *this);
+                     return;
+                  }
+         _results.push_back(expr.result_type());
+      }
+
+      // traverse the callable and unwrap the result type.
+      void visit_invoke_expr(ast::invoke_expression const& expr) override {
+         struct unwrap_function_type : ast::visitor {
+            ast::type_ref result;
+            unwrap_function_type(ast::type_ref start) : result { start } {}
+            void visit_function_type(ast::function_type const& type) {
+               result = type.return_type();
             }
-         }
+         };
 
-         virtual void visit_lambda_expr(rush::ast::lambda_expression const& expr) override {
-            if (_resolver._node_resolving == &expr) {
-               _results.clear();
-               _results.push_back(rush::ast::types::recursive_ref);
-            } else {
-               auto result = resolve_function_type(
-                  expr, *_resolver._node_resolving, _resolver._context);
-               if (result == rush::ast::types::recursive_ref) _results.clear();
-               _results.push_back(result);
-            }
-         }
+         auto result = rush::visit(expr.callable(), *this).result();
+         result = rush::visit(result, unwrap_function_type { result }).result;
 
-         virtual void visit_identifier_expr(rush::ast::identifier_expression const& expr) override {
-            if (!expr.is_unresolved() && expr
-                     .declaration().kind() == rush::ast::declaration_kind::function) {
-                        rush::visit(expr.declaration(), *this);
-                        return;
-                     }
+         _results.pop_back();
+         _results.push_back(result);
+      }
 
-            _results.push_back(expr.result_type());
-         }
+      // treat ternary expressions as if they were two individual return statements.
+      void visit_ternary_expr(ast::ternary_expression const& expr) override {
+         std::vector<ast::type_ref> results;
 
-      private:
-         return_type_resolver& _resolver;
-         std::vector<rush::ast::type_ref> _results;
-      };
+         results.push_back(expr.true_expr().result_type().kind() == rush::ast::type_kind::error
+                         ? rush::visit(expr.true_expr(), result_statement_traversal {
+                           expr.true_expr().result_type(), *_resolver }).result()
+                         : expr.true_expr().result_type());
+
+         results.push_back(expr.false_expr().result_type().kind() == rush::ast::type_kind::error
+                         ? rush::visit(expr.false_expr(), result_statement_traversal {
+                           expr.false_expr().result_type(), *_resolver }).result()
+                         : expr.false_expr().result_type());
+
+         _results.push_back(std::accumulate(
+                 std::next(results.begin()),
+                 results.end(),
+                 results.front(),
+                 reduce_return_types));
+      }
+
+      void visit_lambda_expr(ast::lambda_expression const& expr) override {
+         _results.push_back(resolve_function_type(expr, _resolver->_resolving, *_resolver->_context));
+      }
+
+      void visit_function_decl(ast::function_declaration const& decl) override {
+         _results.push_back(resolve_function_type(decl, _resolver->_resolving, *_resolver->_context));
+      }
+
+   private:
+      std::vector<ast::type_ref> _results;
+      return_type_resolver const* _resolver;
+      ast::type_ref _initial;
    };
 };
-
 
 namespace rush::ast {
    ast::type_ref context::bool_type() {
@@ -296,28 +346,28 @@ namespace rush::ast {
    }
 
    ast::type_ref context::function_type(ast::lambda_expression const& expr) {
-      return resolve_function_type(expr, expr, *this);
+      return resolve_function_type(expr, { &expr }, *this);
    }
 
    ast::type_ref context::function_type(ast::function_declaration const& decl) {
-      return resolve_function_type(decl, decl, *this);
+      return resolve_function_type(decl, { &decl }, *this);
    }
 }
 
 rush::ast::type_ref resolve_function_type(
    rush::ast::lambda_expression const& expr,
-   rush::ast::node const& resolving,
+   std::vector<rush::ast::node const*> resolving,
    rush::ast::context& context) {
       auto tutype = context.tuple_type(expr.parameters().types());
-      auto fntype = context.function_type(rush::visit(expr, return_type_resolver { resolving, context }).result(), tutype);
+      auto fntype = context.function_type(rush::visit(expr, return_type_resolver { context, std::move(resolving) }).result(), tutype);
       return fntype;
    }
 
 rush::ast::type_ref resolve_function_type(
    rush::ast::function_declaration const& decl,
-   rush::ast::node const& resolving,
+   std::vector<rush::ast::node const*> resolving,
    rush::ast::context& context) {
       auto tutype = context.tuple_type(decl.parameters().types());
-      auto fntype = context.function_type(rush::visit(decl, return_type_resolver { resolving, context }).result(), tutype);
+      auto fntype = context.function_type(rush::visit(decl, return_type_resolver { context, std::move(resolving) }).result(), tutype);
       return fntype;
    }
