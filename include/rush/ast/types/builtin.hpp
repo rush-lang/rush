@@ -71,8 +71,9 @@ namespace rush::ast {
 
    namespace types {
       // sentinal types
-      extern ast::type_ref const undefined;
       extern ast::type_ref const void_type;
+      extern ast::type_ref const undefined;
+      extern ast::type_ref const undeclared;
       extern ast::type_ref const circular_ref;
 
       ast::builtin_error_type error_type();

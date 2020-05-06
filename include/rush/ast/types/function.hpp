@@ -26,7 +26,15 @@ namespace rush::ast::exprs {
 }
 
 namespace rush::ast {
+   class function_type;
    class function_declaration;
+
+   template <>
+	struct type_traits<function_type> {
+		static constexpr ast::type_kind kind() noexcept {
+			return ast::type_kind::function;
+		}
+	};
 
    class function_type : public ast::type {
       struct factory_tag_t {};

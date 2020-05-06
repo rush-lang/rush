@@ -91,7 +91,8 @@ namespace rush::ast {
 
       virtual void visit_tuple_type(ast::tuple_type const& type) override {
          if (type.types().size() == 1 &&
-            !type.types().front().is<ast::tuple_type>()) {
+            !type.types().front().is<ast::tuple_type>() &&
+            !type.types().front().is<ast::function_type>()) {
                type.types().front().accept(*this);
          } else {
             write("(");

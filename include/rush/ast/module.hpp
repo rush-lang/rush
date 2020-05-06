@@ -6,7 +6,9 @@
 #include "rush/ast/decls/import.hpp"
 #include "rush/ast/decls/module.hpp"
 #include "rush/ast/decls/declaration.hpp"
+#include "rush/ast/decls/undeclared.hpp"
 
+#include <vector>
 #include <algorithm>
 
 namespace rush::ast {
@@ -33,6 +35,11 @@ namespace rush::ast {
 
       std::vector<std::unique_ptr<module_declaration>> const& declarations() const noexcept {
          return _decls;
+      }
+
+      ast::declaration const* undeclared_identifier(std::string name) {
+         push_back(std::make_unique<ast::undeclared_identifier>(std::move(name)), ast::module_access::internal);
+         return _decls.back().get();
       }
 
       using node::accept;

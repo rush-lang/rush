@@ -2,6 +2,7 @@
 #include "rush/parser/scope.hpp"
 
 #include <iostream>
+#include <cassert>
 
 namespace rush {
 
@@ -9,8 +10,10 @@ namespace rush {
       auto result = _symtab.insert({ sym.name(), sym });
       if (result.second) {
          auto it = _restab.find(sym.name());
-         if (it != _restab.end())
+         if (it != _restab.end()) {
             it->second->resolve(sym.declaration());
+            _restab.erase(it);
+         }
       };
 
       return result.second;
@@ -45,6 +48,14 @@ namespace rush {
       return *it->second;
    }
 
+   std::vector<scope::resolver_t*> scope::resolvers() {
+      std::vector<scope::resolver_t*> results;
+      std::transform(_restab.begin(), _restab.end(),
+         std::back_inserter(results), [](auto& kv) { return kv.second.get(); });
+
+      return std::move(results);
+   }
+
    scope::symbol_t scope::lookup(std::string_view name) const {
       auto sym = lookup_local(name);
       return sym.is_undefined() && !is_global()
@@ -60,11 +71,21 @@ namespace rush {
 
 
    void scope::hoist_resolvers() {
-      // todo: move resolvers up the chain of scopes.
+      if (parent() != nullptr) {
+         auto& restab = parent()->_restab;
+         std::move(
+            _restab.begin(),
+            _restab.end(),
+            std::inserter(restab, restab.begin()));
+      }
    }
 
    scope_chain::scope_chain() {
       _scopes.push({ scope_kind::global, nullptr });
+   }
+
+   std::vector<scope_chain::resolver_t*> scope_chain::resolvers() {
+      return _scopes.top().resolvers();
    }
 
    bool scope_chain::insert(scope_chain::symbol_t sym) {
@@ -76,7 +97,6 @@ namespace rush {
    }
 
    void scope_chain::push(scope_kind kind) {
-      // assert(!_scopes.empty() && "scope chain always contain a global scope")
       _scopes.push({ kind, &_scopes.top() });
    }
 

@@ -97,6 +97,10 @@ namespace rush {
       //         which is used to update identifiers.
       resolver_t& resolver(std::string_view name);
 
+      //! \brief Gets all resolvers currently in play within the scope.
+      std::vector<resolver_t*> resolvers();
+
+
       /*! \brief Performs a lookup of the symbol with the specified name.
        *         This is a chained lookup, starting at the scope the method
        *         is invoked on and then performing lookup against its the parent
@@ -146,6 +150,9 @@ namespace rush {
 
       //! \brief Inserts a symbol within the current scope's symbol table.
       bool insert(symbol_t);
+
+      //! \brief Gets all resolvers currently in play within the scope.
+      std::vector<resolver_t*> resolvers();
 
       //! \brief Gets a resolver for the given name. Later, when the declaration with the given
       //         name is inserted, the resolver is called with the declaration inserted
