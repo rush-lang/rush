@@ -16,19 +16,35 @@ namespace rush {
 #define RUSH_ASSOCIATIVITY_FUNC
 #include "rush/ast/exprs/_operators.hpp"
 
-	int compare_binary_op_precedence(lexical_token const& lhs, lexical_token const& rhs) {
-		return is_binary_op(lhs) && is_binary_op(rhs)
-			? binary_precedence(lhs) - binary_precedence(rhs) : 0;
+   bool is_precedence_operator(lexical_token const& op) {
+      return is_binary_op(op)
+          || op.is(symbols::question_mark);
+   }
+
+   int operator_associativity(lexical_token const& op) {
+      if (!op.is_symbol()) return 0;
+      switch (op.symbol()) {
+         case symbols::question_mark: return binary_associativity(tokens::equals());
+         default: return binary_associativity(op);
+      }
+   }
+   int operator_precedence(lexical_token const& op) {
+      if (!op.is_symbol()) return 0;
+      switch (op.symbol()) {
+      case symbols::question_mark: return binary_precedence(tokens::equals());
+      default: return binary_precedence(op);
+      }
+   }
+
+	int compare_operator_precedence(lexical_token const& lhs, lexical_token const& rhs) {
+		return is_precedence_operator(lhs) && is_precedence_operator(rhs)
+           ? operator_precedence(lhs) - operator_precedence(rhs) : 0;
 	}
 
 	rush::parse_result<ast::expression> parser::parse_expr() {
 		auto result = parse_primary_expr();
-
-		if (result.success() && is_binary_op(peek_skip_indent()))
+		if (result.success() && is_precedence_operator(peek_skip_indent()))
 			result = parse_binary_expr(std::move(result));
-
-      if (result.success() && peek_skip_indent().is(symbols::question_mark))
-         result = parse_ternary_expr(std::move(result));
 
 		return std::move(result);
 	}
@@ -320,9 +336,12 @@ namespace rush {
    }
 
 	rush::parse_result<ast::expression> parser::parse_binary_expr(rush::parse_result<ast::expression> lhs) {
-		assert(is_binary_op(peek_skip_indent()) && "expected binary operator.");
+		assert(is_precedence_operator(peek_skip_indent()) && "expected binary operator.");
 
 		auto tok = peek_skip_indent();
+      if (tok.is(symbols::question_mark))
+         return parse_ternary_expr(std::move(lhs));
+
 		auto rhs = parse_binary_expr_rhs();
 
       if (lhs.failed() || rhs.failed()) {
@@ -330,13 +349,12 @@ namespace rush {
          return std::move(lhs);
       }
 
-		rush::parse_result<ast::binary_expression> result;
+		rush::parse_result<ast::expression> result;
 
       if (tok.is_symbol()) {
 		switch (tok.symbol()) {
       default: return errs::not_supported(tok, fmt::format("binary operator '{}'", tok.text()));
       case symbols::equals: result = exprs::assignment(std::move(lhs), std::move(rhs)); break;
-
       // arithmetic binary operators
 		case symbols::plus: result = exprs::addition(std::move(lhs), std::move(rhs)); break;
 		case symbols::minus: result = exprs::subtraction(std::move(lhs), std::move(rhs)); break;
@@ -386,28 +404,25 @@ namespace rush {
          }
       }
 
-		return is_binary_op(peek_skip_indent())
+		return is_precedence_operator(peek_skip_indent())
 			? parse_binary_expr(std::move(result))
-			: std::move(result);
+         : std::move(result);
 	}
 
-	rush::parse_result<ast::expression> parser::parse_binary_expr_rhs() {
-		assert(is_binary_op(peek_skip_indent()) && "expected binary operator.");
+   rush::parse_result<ast::expression> parser::parse_binary_expr_rhs() {
+		assert(is_precedence_operator(peek_skip_indent()) && "expected binary operator.");
 
 		auto prev = next_skip_indent(); // consume binary operator symbol.
-      auto next = peek_skip_indent(); // store the next token.
 
       auto rhs_result = parse_primary_expr();
 		if (rhs_result.success()) {
-         next = peek_skip_indent(); // look-ahead for possible binary operator.
+         auto next = peek_skip_indent(); // look-ahead for possible binary operator.
 
-         if (is_binary_op(next)) {
-            auto opcmp = compare_binary_op_precedence(next, prev);
-            if (opcmp < 0 || (opcmp == 0 && binary_associativity(next) > 0))
+         if (is_precedence_operator(next)) {
+            auto opcmp = compare_operator_precedence(next, prev);
+            if (opcmp < 0 || (opcmp == 0 && operator_associativity(next) > 0))
                rhs_result = parse_binary_expr(std::move(rhs_result));
          }
-
-         return std::move(rhs_result);
       }
 
       return std::move(rhs_result);
