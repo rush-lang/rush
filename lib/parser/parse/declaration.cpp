@@ -181,10 +181,16 @@ namespace rush {
          return errs::expected_function_name(peek_skip_indent());
 		auto ident = next_skip_indent();
 
-		if (peek_skip_indent().is_not(symbols::left_parenthesis))
-         return errs::expected(peek_skip_indent(), "(");
+      auto plist_result = parse_result<ast::parameter_list>();
+      if (peek_skip_indent().is_not(symbols::left_parenthesis)) {
+         plist_result = (peek_skip_indent().is_any(
+                           symbols::colon,
+                           symbols::thin_arrow,
+                           symbols::thick_arrow))
+                      ? parse_result<ast::parameter_list> { decls::param_list() }
+                      : parse_result<ast::parameter_list> { errs::expected_signature_or_body(peek_skip_indent()) };
+      } else { plist_result = parse_parameter_list(); }
 
-		auto plist_result = parse_parameter_list();
 		if (plist_result.failed())
          return std::move(plist_result).as<ast::declaration>();
 
