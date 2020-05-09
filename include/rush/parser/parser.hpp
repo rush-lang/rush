@@ -266,12 +266,11 @@ namespace rush {
 
       std::unique_ptr<diag::syntax_error> parse_terminator() {
          auto tok = peek_with_indent();
-         if (tok.is_not(symbols::semi_colon))
-            return diag::errs::expected(tok, ";");
-
+         if (tok.is(symbols::semi_colon)) {
          while (tok.is(symbols::semi_colon)) {
             next_with_indent();
             tok = peek_with_indent();
+         }
          }
 
          return nullptr;

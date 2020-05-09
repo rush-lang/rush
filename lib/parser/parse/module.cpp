@@ -8,7 +8,7 @@ namespace rush {
    rush::parse_result<ast::module> parser::parse_module() {
       _scope.push(rush::scope_kind::module);
       while (peek_skip_indent().is(keywords::import_)) {
-         auto import_result = parse_import_decl();
+         auto import_result = terminated(&parser::parse_import_decl);
          if (import_result.failed())
             return std::move(import_result).as<ast::module>();
          _module->push_back(std::move(import_result));
