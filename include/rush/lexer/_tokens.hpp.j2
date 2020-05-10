@@ -16,6 +16,11 @@ namespace rush {
 			return lexical_token { lexical_token::error_t { val }, loc, src };
 		}
 
+      // \brief Returns an instance of rush::lexical_token representing a comment.
+      inline lexical_token make_comment_token(std::string val, location const& loc, rush::source const& src) {
+         return lexical_token { lexical_token::comment_t { std::move(val) }, loc, src };
+      }
+
 		// \brief Returns an instance of rush::lexical_token representing the specified symbol.
 		inline lexical_token make_symbol_token(symbol_token_t val, location const& loc, rush::source const& src) {
 			return lexical_token { val, loc, src };
@@ -28,7 +33,7 @@ namespace rush {
 
 		// \brief Returns an instance of rush::lexical_token representing a string literal with the specified prefix.
 		inline lexical_token prefixed_string_literal(std::string val, lexical_token_prefix prefix, location const& loc, rush::source const& src) {
-			return lexical_token { val, loc, src };
+			return lexical_token { std::move(val), loc, src };
 		}
 
 		// \brief Returns an instance of rush::lexical_token representing a string literal.
@@ -58,7 +63,7 @@ namespace rush {
 
 		// \brief Returns an instance of rush::lexical_token representing an identifier.
 		inline lexical_token identifier(std::string val, location const& loc, rush::source const& src) {
-			return lexical_token { lexical_token::identifier_t { val }, loc, src };
+			return lexical_token { lexical_token::identifier_t { std::move(val) }, loc, src };
 		}
 ## for symbol in symbols
 

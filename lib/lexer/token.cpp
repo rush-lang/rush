@@ -9,6 +9,7 @@ namespace rush {
 		return std::visit(overloaded {
 			[](auto& arg) { return to_string(arg); },
 			[](error_t const& arg) { return arg.msg; },
+			[](comment_t const& arg) { return arg.comm; },
 			[](identifier_t const& arg) { return arg.text; },
 			[](std::string arg) { return std::move(arg); },
 			[](integral_t const& arg) -> std::string {
@@ -50,6 +51,7 @@ namespace rush {
 
       switch (tok.type()) {
       case rush::lexical_token_type::error: oss << "error"; break;
+      case rush::lexical_token_type::comment: oss << "comment"; break;
       case rush::lexical_token_type::symbol: oss << "symbol"; break;
       case rush::lexical_token_type::keyword: oss << "keyword"; break;
       case rush::lexical_token_type::identifier: oss << "identifier"; break;

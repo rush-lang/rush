@@ -16,6 +16,7 @@
 #include <iterator>
 #include <streambuf>
 #include <optional>
+#include <functional>
 #include <string_view>
 
 using namespace rush::ascii;
@@ -167,6 +168,7 @@ namespace rush {
             _loc = _lab->peek().location(); // pin the location
             auto cp = peek();
 
+            if (is_comment_head(cp)) return scan_comment();
             if (is_newline(cp)) return next_token();
             if (is_quote(cp)) return scan_string_literal();
             if (is_digit(cp)) return scan_numeric_literal();
@@ -190,7 +192,7 @@ namespace rush {
             if (is_line_start()) {
                _loc = _lab->peek().location(); // pin the location
                auto wspace = scan_while(is_hspace);
-               if (eof()) break;
+               if (eof() || is_comment_head(peek())) break;
 
                if (!is_newline(peek())) {
                   auto indent = _indent.measure(wspace.begin(), wspace.end());
@@ -205,6 +207,13 @@ namespace rush {
             }
          }
          return std::nullopt;
+      }
+
+      lexical_token scan_comment() {
+         assert(!eof() && "unexpected end of source.");
+         assert(is_comment_head(peek()) && "expected the leading comment character while attempting to scan a comment.");
+         auto comm = scan_while(std::not_fn(is_newline));
+         return tok::make_comment_token(comm, location(), source());
       }
 
       lexical_token scan_identifier() {

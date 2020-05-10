@@ -69,6 +69,10 @@ namespace rush {
 			return is_hspace(cp) || is_vspace(cp);
 		}
 
+      constexpr bool is_comment_head(codepoint_t cp) {
+         return cp == '#';
+      }
+
 		constexpr bool is_ident_head(codepoint_t cp) {
 			return (is_ascii(cp) && is_letter(cp)) || cp == '_';
 		}

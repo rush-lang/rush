@@ -83,6 +83,7 @@ namespace rush {
          auto& last = _range.second;
          std::size_t indent_offset = 0;
          for (; temp != last &&
+            (temp->is_comment()) ||
             ((temp->is(symbols::dedent) && is_indent_skipped(indent_offset++)) ||
             offset-- > 0); ++temp) ;
          return temp != last ? *temp : _eof;
@@ -93,6 +94,7 @@ namespace rush {
          auto& last = _range.second;
          std::size_t indent_offset = 0;
          for (; temp != last &&
+            (temp->is_comment()) ||
             (temp->is(symbols::indent) ||
             (temp->is(symbols::dedent) && is_indent_skipped(indent_offset++))
             || offset-- > 0); ++temp) ;
@@ -103,6 +105,10 @@ namespace rush {
          auto temp = _range.first;
          auto& first = _range.first;
          auto& last = _range.second;
+
+         while (first != last && first->is_comment()) {
+            temp = ++first;
+         }
 
          if (first != last && first->is(symbols::indent)) {
             _indent_stack.push_back(false);
@@ -117,33 +123,14 @@ namespace rush {
          return temp != last ? *temp : _eof;
 		}
 
-      bool is_lambda_expr_ahead() {
-         auto temp = _range.first;
-         auto& last = _range.second;
-
-         ++temp; // skip opening '('
-         auto parens = 1;
-
-         // skip all tokens until last closing parenthesis.
-         // (it may be less error-prone and more efficient to
-         // try and parse the tokens than simply skipping
-         // all tokens until the last closing parens is found).
-         while (temp != last && parens >= 1) {
-            if (temp->is(symbols::left_parenthesis)) { ++parens; }
-            else if (temp->is(symbols::right_parenthesis)) { --parens; }
-            ++temp;
-         }
-
-         // we have a lambda expression if the last closing
-         // parenthesis is immediatley followed by a thin or thick arrow.
-         return temp->is(symbols::thick_arrow)
-             || temp->is(symbols::thin_arrow);
-      }
-
-		lexical_token const& next_skip_indent() {
+      lexical_token const& next_skip_indent() {
          auto temp = _range.first;
          auto& first = _range.first;
          auto& last = _range.second;
+
+         while (first != last && first->is_comment()) {
+            temp = ++first;
+         }
 
          while (first != last && first->is(symbols::indent)) {
             _indent_stack.push_back(true);
@@ -174,6 +161,29 @@ namespace rush {
             return true;
          }
          return false;
+      }
+
+      bool is_lambda_expr_ahead() {
+         auto temp = _range.first;
+         auto& last = _range.second;
+
+         ++temp; // skip opening '('
+         auto parens = 1;
+
+         // skip all tokens until last closing parenthesis.
+         // (it may be less error-prone and more efficient to
+         // try and parse the tokens than simply skipping
+         // all tokens until the last closing parens is found).
+         while (temp != last && parens >= 1) {
+            if (temp->is(symbols::left_parenthesis)) { ++parens; }
+            else if (temp->is(symbols::right_parenthesis)) { --parens; }
+            ++temp;
+         }
+
+         // we have a lambda expression if the last closing
+         // parenthesis is immediatley followed by a thin or thick arrow.
+         return temp->is(symbols::thick_arrow)
+             || temp->is(symbols::thin_arrow);
       }
 
       // modules.
