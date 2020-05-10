@@ -125,7 +125,7 @@ namespace rush {
          }
 
       codepoint_t peek(std::size_t offset = 0) {
-         assert(!eof() && "unexpected end of source.");
+         // assert(!eof() && "unexpected end of source.");
          return offset < _lab->size()
             ? _lab->peek(offset).elem()
             : npos;
@@ -145,11 +145,11 @@ namespace rush {
          return std::move(result);
       }
 
-      codepoint_t skip_while(function_ref<bool(codepoint_t)> pred) {
+      rush::location skip_while(function_ref<bool(codepoint_t)> pred) {
          // assert(!eof() && "unexpected end of source.");
          auto cp = npos;
          while (!eof() && pred(cp = _lab->peek().elem())) _lab->skip();
-         return cp;
+         return location();
       }
 
       std::string scan_while(function_ref<bool(codepoint_t)> pred) {
@@ -269,7 +269,9 @@ namespace rush {
       lexical_token scan_integer_literal(function_ref<bool(codepoint_t)> predicate, int base) {
          auto value = scan_while(predicate);
          auto suffix = scan_integer_literal_suffix();
-         return tok::suffixed_integer_literal(std::stoll(value, 0, base), suffix, location(), source());
+         return is_ident_body(peek())
+              ? tok::make_error_token("invalid number", skip_while(is_ident_body), source())
+              : tok::suffixed_integer_literal(std::stoll(value, 0, base), suffix, location(), source());
       }
 
       lexical_token scan_numeric_literal() {
@@ -287,11 +289,15 @@ namespace rush {
                skip(); // consume decimal point.
                auto value = scan_while(is_digit);
                auto suffix = scan_floating_literal_suffix();
-               return tok::suffixed_floating_literal(std::stod("0." + value), suffix, location(), source());
+               return is_ident_body(peek())
+                    ? tok::make_error_token("invalid number", skip_while(is_ident_body), source())
+                    : tok::suffixed_floating_literal(std::stod("0." + value), suffix, location(), source());
             }
 
             auto suffix = scan_integer_literal_suffix();
-            return tok::suffixed_integer_literal(0, suffix, location(), source());
+            return is_ident_body(peek())
+                 ? tok::make_error_token("invalid number", skip_while(is_ident_body), source())
+                 : tok::suffixed_integer_literal(0, suffix, location(), source());
          }
 
          auto integer_part = scan_while(is_digit);
@@ -299,16 +305,20 @@ namespace rush {
             skip(); // consume decimal point.
             auto fractional_part = scan_while(is_digit);
             auto suffix = scan_floating_literal_suffix();
-            return tok::suffixed_floating_literal(
-               std::stod(integer_part + "." + fractional_part),
-               suffix, location(), source());
+            return is_ident_body(peek())
+                 ? tok::make_error_token("invalid number", skip_while(is_ident_body), source())
+                 : tok::suffixed_floating_literal(
+                      std::stod(integer_part + "." + fractional_part),
+                      suffix, location(), source());
          }
 
          assert(!integer_part.empty() && "expected an integer digit");
          auto suffix = scan_integer_literal_suffix();
-         return tok::suffixed_integer_literal(
-            std::stoll(integer_part),
-            suffix, location(), source());
+         return is_ident_body(peek())
+              ? tok::make_error_token("invalid number", skip_while(is_ident_body), source())
+              : tok::suffixed_integer_literal(
+                   std::stoll(integer_part),
+                   suffix, location(), source());
       }
 
       lexical_token scan_symbol(symbol_token_t symbol) {

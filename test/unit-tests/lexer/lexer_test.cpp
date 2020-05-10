@@ -260,18 +260,16 @@ TEST_CASE( "rush::lex (integer literals)", "[unit][lexer]" ) {
 	CHECK_FALSE( valid_lex("123u", { tok::suffixed_integer_literal(123, lexical_token_suffix::long_literal, { 1, 1 }) }) );
 	CHECK_FALSE( valid_lex("123l", { tok::suffixed_integer_literal(123, lexical_token_suffix::unsigned_literal, { 1, 1 }) }) );
 
-	// any leading-zero or non-digit should stop the scan,
-	// and proceed to scan the next character as a seperate token.
-	CHECK( valid_lex("01", { tok::integer_literal(0, { 1, 1 }), tok::integer_literal(1, { 1, 2 }) }) );
-	CHECK( valid_lex("09", { tok::integer_literal(0, { 1, 1 }), tok::integer_literal(9, { 1, 2 }) }) );
-	CHECK( valid_lex("0123456789", { tok::integer_literal(0, { 1, 1 }), tok::integer_literal(123456789LL, { 1, 2 }) }) );
-	CHECK( valid_lex("0987654321", { tok::integer_literal(0, { 1, 1 }), tok::integer_literal(987654321LL, { 1, 2 }) }) );
-	CHECK( valid_lex("0_", { tok::integer_literal(0, { 1, 1 }), tok::identifier("_", { 1, 2 }) }) );
-	CHECK( valid_lex("1a", { tok::integer_literal(1, { 1, 1 }), tok::identifier("a", { 1, 2 }) }) );
-	CHECK( valid_lex("123_", { tok::integer_literal(123, { 1, 1 }), tok::identifier("_", { 1, 4 }) }) );
-	CHECK( valid_lex("123a", { tok::integer_literal(123, { 1, 1 }), tok::identifier("a", { 1, 4 }) }) );
-	CHECK( valid_lex("1.0", { tok::floating_literal(1.0, { 1, 1 }) }) );
-	CHECK( valid_lex("123.9", { tok::floating_literal(123.9, { 1, 1 }) }) );
+   // any numeric literal immediately followed by an alpha-numeric
+   // character is invalid and should produce an error token.
+	CHECK( valid_lex("01", { tok::make_error_token("invalid number", { 1, 1 }) }) );
+	CHECK( valid_lex("09", { tok::make_error_token("invalid number", { 1, 1 }) }) );
+	CHECK( valid_lex("0123456789", { tok::make_error_token("invalid number", { 1, 1 }) }) );
+	CHECK( valid_lex("0987654321", { tok::make_error_token("invalid number", { 1, 1 }) }) );
+	CHECK( valid_lex("0_", { tok::make_error_token("invalid number", { 1, 1 }) }) );
+	CHECK( valid_lex("1a", { tok::make_error_token("invalid number", { 1, 1 }) }) );
+	CHECK( valid_lex("123_", { tok::make_error_token("invalid number", { 1, 1 }) }) );
+	CHECK( valid_lex("123a", { tok::make_error_token("invalid number", { 1, 1 }) }) );
 
 	// non-digit characters directly preceding a
 	// digit should generate seperate tokens.

@@ -31,6 +31,10 @@ namespace rush {
 			return '0' <= cp && cp <= '9';
 		}
 
+      constexpr bool is_alnum(codepoint_t cp) {
+         return is_digit(cp) || is_letter(cp);
+      }
+
 		constexpr bool is_hex_digit(codepoint_t cp) {
 			return is_digit(cp)
 				|| ('a' <= cp && cp <= 'f')
