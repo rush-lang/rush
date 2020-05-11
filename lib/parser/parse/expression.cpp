@@ -43,7 +43,7 @@ namespace rush {
 
 	rush::parse_result<ast::expression> parser::parse_expr() {
 		auto result = parse_primary_expr();
-		if (result.success() && is_precedence_operator(peek_skip_indent()))
+		while (result.success() && is_precedence_operator(peek_skip_indent()))
 			result = parse_binary_expr(std::move(result));
 
 		return std::move(result);
@@ -404,9 +404,7 @@ namespace rush {
          }
       }
 
-		return is_precedence_operator(peek_skip_indent())
-			? parse_binary_expr(std::move(result))
-         : std::move(result);
+      return std::move(result);
 	}
 
    rush::parse_result<ast::expression> parser::parse_binary_expr_rhs() {
@@ -418,10 +416,12 @@ namespace rush {
 		if (rhs_result.success()) {
          auto next = peek_skip_indent(); // look-ahead for possible binary operator.
 
-         if (is_precedence_operator(next)) {
+         while (is_precedence_operator(next)) {
             auto opcmp = compare_operator_precedence(next, prev);
-            if (opcmp < 0 || (opcmp == 0 && operator_associativity(next) > 0))
+            if (opcmp < 0 || (opcmp == 0 && operator_associativity(next) > 0)) {
                rhs_result = parse_binary_expr(std::move(rhs_result));
+               next = peek_skip_indent();
+            } else break;
          }
       }
 
