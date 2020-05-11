@@ -217,6 +217,13 @@ namespace rush::ast {
          indent_traverse(expr);
       }
 
+      virtual void visit_string_template_expr(string_template_expression const& expr) override {
+         write("<template_expr: ");
+			expr.result_type().accept(*this);
+			writeln(" (original=\"{}\")>", expr.original());
+         indent_traverse(expr);
+      }
+
       virtual void visit_invoke_expr(ast::invoke_expression const& expr) override {
          print_expression("invoke", expr);
          indent();

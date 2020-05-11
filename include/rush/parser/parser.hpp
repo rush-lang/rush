@@ -28,7 +28,10 @@
 #include <vector>
 
 namespace rush {
+   class string_parser;
+
 	class parser {
+      friend class string_parser;
 		using lxa_iterator = lexical_analysis::const_iterator;
 		using lxa_iterator_difference_type = std::iterator_traits<lxa_iterator>::difference_type;
 

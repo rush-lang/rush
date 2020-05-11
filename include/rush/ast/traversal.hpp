@@ -67,6 +67,10 @@ namespace rush::ast {
          accept(expr.member());
       }
 
+      virtual void visit_string_template_expr(string_template_expression const& expr) override {
+         for (auto& p : expr.parts()) accept(*p);
+      }
+
       virtual void visit_invoke_expr(ast::invoke_expression const& expr) override {
          accept(expr.callable());
          accept(expr.arguments());
