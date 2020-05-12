@@ -8,3 +8,7 @@ indent_size = 3
 indent_style = space
 insert_final_newline = true
 trim_trailing_whitespace = true
+
+# YAML file configuration
+[*.{yml,yaml}]
+indent_size = 2
