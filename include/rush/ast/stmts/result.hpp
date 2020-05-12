@@ -63,14 +63,14 @@ namespace rush::ast::stmts {
    inline std::unique_ptr<ast::result_statement> throw_(std::unique_ptr<ast::expression> expr) {
       assert(expr && "throw must have an expression.");
       return std::make_unique<ast::result_statement>(
-         ast::statement_kind::return_, std::move(expr),
+         ast::statement_kind::throw_, std::move(expr),
          ast::result_statement::factory_tag_t {});
    }
 
    inline std::unique_ptr<ast::result_statement> yield_(std::unique_ptr<ast::expression> expr) {
       assert(expr && "yield must have an expression.");
       return std::make_unique<ast::result_statement>(
-         ast::statement_kind::return_, std::move(expr),
+         ast::statement_kind::yield_, std::move(expr),
          ast::result_statement::factory_tag_t {});
    }
 
