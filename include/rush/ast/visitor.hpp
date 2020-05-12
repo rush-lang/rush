@@ -64,6 +64,8 @@ namespace rush::ast {
 	class constant_declaration;
 	class variable_declaration;
 	class function_declaration;
+   class member_declaration;
+   class class_declaration;
 
 	class visitor {
 	public:
@@ -96,6 +98,8 @@ namespace rush::ast {
 		virtual void visit_constant_decl(ast::constant_declaration const&) {};
 		virtual void visit_variable_decl(ast::variable_declaration const&) {};
 		virtual void visit_function_decl(ast::function_declaration const&) {};
+      virtual void visit_member_decl(ast::member_declaration const&) {};
+      virtual void visit_class_decl(ast::class_declaration const&) {}
 
 		// statements
 		virtual void visit_block_stmt(statement_block const&) {};

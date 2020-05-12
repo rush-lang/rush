@@ -69,16 +69,16 @@ namespace rush {
 
       if (tok.is_identifier()) {
          auto sym = _scope.current().lookup(tok.text());
-         if (sym.is_undefined()) return ast::types::undefined;
+         if (sym.is_undefined()) return ast::types::undefined; // type_resolver
 
-         auto& decl = *sym.declaration();
-         switch (decl.kind()) {
+         auto decl = sym.declaration();
+         switch (decl->kind()) {
             case ast::declaration_kind::alias:
             case ast::declaration_kind::enum_:
             case ast::declaration_kind::class_:
             case ast::declaration_kind::struct_:
             case ast::declaration_kind::concept:
-            case ast::declaration_kind::interface: return decl.type();
+            case ast::declaration_kind::interface: return decl->type();
             case ast::declaration_kind::constant: return errs::constant_used_like_type(tok);
             case ast::declaration_kind::variable: return errs::variable_used_like_type(tok);
             case ast::declaration_kind::function: return errs::function_used_like_type(tok);

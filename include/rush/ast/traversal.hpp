@@ -37,6 +37,14 @@ namespace rush::ast {
          accept(decl.body());
       }
 
+      virtual void visit_member_decl(ast::member_declaration const& decl) override {
+         accept(decl.declaration());
+      }
+
+      virtual void visit_class_decl(ast::class_declaration const& decl) override {
+         for (auto& m : decl.members()) accept(*m);
+      }
+
 		// statements
 		virtual void visit_block_stmt(ast::statement_block const& stmt) override {
          for (auto& s : stmt) accept(*s);

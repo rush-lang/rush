@@ -26,6 +26,7 @@ namespace rush {
          case keywords::let_: return terminated(&parser::parse_constant_decl);
          case keywords::var_: return terminated(&parser::parse_variable_decl);
          case keywords::func_: return parse_function_decl();
+         case keywords::class_: return parse_class_declaration();
          default: break;
          }
       }
@@ -123,22 +124,6 @@ namespace rush {
          if (names.empty())
             return errs::expected_parameter_name(peek_skip_indent());
 
-         // if (peek_skip_indent().is_not(symbols::colon))
-         //    return errs::expected_type_annotation(peek_skip_indent());
-
-         // auto type_result = parse_type_annotation();
-         // if (type_result.failed()) return std::move(type_result).errors();
-
-         // std::transform(
-         //    std::make_move_iterator(names.begin()),
-         //    std::make_move_iterator(names.end()),
-         //    std::back_inserter(results), [this, &type_result](auto n) {
-         //       auto p = decls::param(n.text(), type_result.type());
-         //       return !_scope.insert({ *p })
-         //          ? errs::parameter_redefinition(n)
-         //          : rush::parse_result<ast::parameter> { std::move(p) };
-         // });
-
          auto type = ast::types::undefined;
          if (peek_skip_indent().is(symbols::colon)) {
             auto type_result = parse_type_annotation();
@@ -191,7 +176,7 @@ namespace rush {
                       : parse_result<ast::parameter_list> { errs::expected_signature_or_body(peek_skip_indent()) };
       } else { plist_result = parse_parameter_list(); }
 
-		if (plist_result.failed())
+      if (plist_result.failed())
          return std::move(plist_result).as<ast::declaration>();
 
       auto type_result = rush::parse_type_result {};
@@ -202,11 +187,11 @@ namespace rush {
             return std::move(type_result).errors();
       }
 
-		auto body_result = parse_function_body();
+      auto body_result = parse_function_body();
       if (body_result.failed())
          return std::move(body_result).as<ast::declaration>();
 
-		auto decl = type_result.success()
+      auto decl = type_result.success()
          ? decls::function(ident.text(), type_result.type(), std::move(plist_result), std::move(body_result))
          : decls::function(ident.text(), std::move(plist_result), std::move(body_result));
 
@@ -262,4 +247,64 @@ namespace rush {
 
       return parse_block_stmt();
    }
+
+   rush::parse_result<ast::declaration> parser::parse_class_declaration() {
+      assert(peek_skip_indent().is(keywords::class_) && "expected the 'class' keyword.");
+      next_skip_indent(); // consume 'class'
+
+		if (!peek_skip_indent().is_identifier())
+         return errs::expected_class_name(peek_skip_indent());
+		auto ident = next_skip_indent();
+
+      if (peek_skip_indent().is_not(symbols::colon))
+         return errs::expected(peek_skip_indent(), ":");
+      next_skip_indent(); // consume ':'
+
+      std::vector<std::unique_ptr<ast::declaration>> sections;
+      parse_result<ast::declaration> body;
+
+      auto tok = peek_with_indent();
+      if (tok.is(symbols::indent)) {
+         body = parse_class_decl_body_section(access_modifier::private_);
+         if (body.failed()) return std::move(body);
+         sections.push_back(std::move(body));
+      }
+
+      while (peek_with_indent().is_not(symbols::dedent)) {
+         if (tok.is_keyword()) {
+            switch (tok.keyword()) {
+            default: break;
+            case keywords::protected_:
+               body = parse_class_decl_body_section(access_modifier::protected_);
+               continue;
+            case keywords::private_:
+               body = parse_class_decl_body_section(access_modifier::private_);
+               continue;
+            case keywords::public_:
+               body = parse_class_decl_body_section(access_modifier::public_);
+               continue;
+            }
+         }
+
+         break;
+      }
+
+
+      // _scope.push(rush::scope_kind::class_);
+      // // auto body = parse_class_decl_body();
+      // // if (body.failed()) return std::move(body);
+      // _scope.pop();
+
+      auto result = decls::class_(ident.text());
+      return scope_insert(std::move(result), ident);
+   }
+
+   rush::parse_result<ast::declaration> parser::parse_class_decl_body() {
+      return errs::not_supported(peek_skip_indent(), "class body");
+   }
+
+   rush::parse_result<ast::declaration> parser::parse_class_decl_body_section(access_modifier) {
+      return errs::not_supported(peek_skip_indent(), "class body section");
+   }
+
 }

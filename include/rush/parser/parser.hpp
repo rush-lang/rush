@@ -215,8 +215,11 @@ namespace rush {
       rush::parse_result<ast::statement> parse_function_body();
       rush::parse_result<ast::statement> parse_function_expr_body();
       rush::parse_result<ast::statement> parse_function_stmt_body();
-
       rush::parse_result<ast::parameter_list> parse_parameter_list();
+
+      rush::parse_result<ast::declaration> parse_class_declaration();
+      rush::parse_result<ast::declaration> parse_class_decl_body();
+      rush::parse_result<ast::declaration> parse_class_decl_body_section(access_modifier);
 
 		// statements.
       rush::parse_result<ast::statement> parse_stmt();
@@ -279,11 +282,9 @@ namespace rush {
 
       std::unique_ptr<diag::syntax_error> parse_terminator() {
          auto tok = peek_with_indent();
-         if (tok.is(symbols::semi_colon)) {
          while (tok.is(symbols::semi_colon)) {
             next_with_indent();
             tok = peek_with_indent();
-         }
          }
 
          return nullptr;

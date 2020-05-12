@@ -11,7 +11,7 @@ namespace rush::ast {
       exported
    };
 
-   enum class type_access : std::uint8_t {
+   enum class member_access : std::uint8_t {
       public_,
       private_,
       protected_,

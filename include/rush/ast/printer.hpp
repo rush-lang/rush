@@ -265,6 +265,15 @@ namespace rush::ast {
          indent_traverse(decl);
       }
 
+      virtual void visit_class_decl(ast::class_declaration const& decl) override {
+         write("<class_decl: {}", decl.name());
+         switch (_maccess) {
+         case ast::module_access::internal: writeln(" (access=internal)>"); break;
+         case ast::module_access::exported: writeln(" (access=exported)>"); break;
+         }
+         indent_traverse(decl);
+      }
+
       virtual void visit_block_stmt(ast::statement_block const& stmt) override {
          writeln("<block_stmt>");
          indent_traverse(stmt);
