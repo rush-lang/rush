@@ -142,7 +142,14 @@ namespace rush {
       assert(peek_skip_indent().is(keywords::for_) && "expected 'for' keyword.");
       next_skip_indent(); // consume 'for' keyword.
 
-      return nullptr;
+      // auto pat = parse_identifier_pattern_expr();
+      _scope.push(scope_kind::block);
+      if (auto next = next_skip_indent(); next.is_not(keywords::in_))
+         return errs::expected(next, "in");
+
+
+
+      return errs::not_supported(_eof, "for loop iteration");
    }
 
    rush::parse_result<ast::statement> parser::parse_while_stmt() {
@@ -153,9 +160,9 @@ namespace rush {
       if (cond_result.failed())
          return std::move(cond_result).as<ast::statement>();
 
-      if (!peek_skip_indent().is(symbols::colon))
-         return errs::expected_while_stmt_body(peek_skip_indent());
-      next_skip_indent(); // consume ':' symbol.
+      // consume ':' symbol.
+      if (auto next = next_skip_indent(); !next.is(symbols::colon))
+         return errs::expected_while_stmt_body(next);
 
       _scope.push(scope_kind::block);
       auto then_result = (peek_with_indent().is(symbols::indent))

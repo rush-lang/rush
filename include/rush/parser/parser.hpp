@@ -212,6 +212,7 @@ namespace rush {
 
 		rush::parse_result<ast::declaration> parse_constant_decl();
 		rush::parse_result<ast::declaration> parse_variable_decl();
+      rush::parse_result<ast::declaration> parse_iteration_decl();
 		rush::parse_result<ast::declaration> parse_function_decl();
 
       rush::parse_result<ast::statement> parse_function_body();

@@ -24,6 +24,24 @@ namespace rush::ast {
 
 
 namespace rush::ast::stmts {
+   // inline std::unique_ptr<iteration_statement> for_(
+   //    std::unique_ptr<expression> collection,
+   //    std::unique_ptr<statement> do) {
+   //       return std::make_unique<iteration_statement>(
+   //          statement_kind::if_,
+   //          std::move(cond),
+   //          std::move(then),
+   //          iteration_statement::factory_tag_t {});
+   //    }
+
+   // inline std::unique_ptr<iteration_statement> for_(
+   //    std::unique_ptr<expression> ident,
+   //    std::unique_ptr<expression> then,
+   //    std::unique_ptr<statement> do) {
+   //       return std::make_unique<iteration_statement>(
+   //          state
+   //       )
+   //    }
 } // rush::ast::stmts
 
 #endif // RUSH_AST_STMTS_LOOP_HPP
