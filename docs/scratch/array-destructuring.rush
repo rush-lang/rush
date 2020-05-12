@@ -1,0 +1,13 @@
+import std.io
+
+func head<T>([a, ...]: iterable<T>) => a
+func last<T>([..., a]: iterable<T>) => a
+
+func array(a, b, c: int):
+   return [a, b, c];
+
+func main(args: string[]):
+   let [a, ...tail] = array(1, 2, 3);
+   let [...init, b] = array(4, 5, 6);
+
+   return 0;
