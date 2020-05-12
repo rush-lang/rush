@@ -312,12 +312,18 @@ namespace rush::ast {
 		void print_storage_decl(std::string name, ast::storage_declaration const& decl) {
 			write("<{}_decl: ", name);
 			decl.type().accept(*this);
-			writeln(" (name=\"{}\")>", decl.name());
 
+			write(" (name=\"{}\"", decl.name());
+         if (_current_indent == 1) {
+            switch (_maccess) {
+            case ast::module_access::internal: write(", access=internal"); break;
+            case ast::module_access::exported: write(", access=exported"); break;
+            }
+         }
+
+         writeln(")>");
 			if (decl.initializer() != nullptr) {
-			   indent();
-				decl.initializer()->accept(*this);
-			   dedent();
+            indent_traverse(decl);
          }
 		}
 	};
