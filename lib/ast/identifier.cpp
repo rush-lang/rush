@@ -41,7 +41,8 @@ namespace rush::ast {
    }
 
    bool identifier::is_unresolved() const noexcept {
-      return std::holds_alternative<ast::identifier::resolver*>(_val);
+      return std::holds_alternative<ast::identifier::resolver*>(_val)
+          || std::get<ast::declaration const*>(_val)->kind() == declaration_kind::undeclared;
    }
 
    std::string_view identifier::name() const noexcept {
