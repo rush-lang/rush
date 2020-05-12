@@ -174,7 +174,11 @@ namespace rush {
       assert(peek_skip_indent().is(keywords::return_) && "expected 'return' keyword.");
       next_skip_indent(); // consume 'return' keyword.
 
-      if (peek_skip_indent().is(symbols::semi_colon))
+      // return statements must only appear
+      // at the end of a statement block in
+      if (peek_skip_indent().is_any(
+         symbols::semi_colon,
+         symbols::dedent))
          return ast::stmts::return_();
 
       auto result = parse_expr();
