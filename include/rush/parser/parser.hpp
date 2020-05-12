@@ -43,7 +43,9 @@ namespace rush {
 
 		rush::syntax_analysis parse(lexical_analysis const& lxa) {
          initialize(lxa);
-         auto result = parse_module();
+         parse_result<ast::module> result;
+         try { result = parse_module(); }
+         catch (...) { result = diag::errs::internal_parse_error(_eof); }
          return rush::syntax_analysis {
             std::move(_context),
             std::move(result)
