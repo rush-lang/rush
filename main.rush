@@ -1,5 +1,0 @@
-import std.io
-
-func main(args: string[]):
-   let xs = map([1...10], x => pow(x, 2));
-   return 0;
