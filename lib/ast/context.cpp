@@ -73,7 +73,7 @@ private:
    void resolve_return_type(ast::node const& node) {
       auto v = function_body_traversal {};
       _result = rush::visit(node, v).result();
-      }
+   }
 
    class function_body_traversal : public ast::traversal {
    public:
@@ -93,9 +93,8 @@ private:
 
       void visit_result_stmt(ast::result_statement const& stmt) override {
          auto type = stmt.result_type().kind() == ast::type_kind::error
-                   ? rush::visit(stmt.expression(), result_statement_traversal {
-                     stmt.result_type() }).result()
-            : stmt.result_type();
+                   ? rush::visit(stmt.expression(), result_statement_traversal { stmt.result_type() }).result()
+                   : stmt.result_type();
 
          _results.push_back(type);
       }
@@ -132,10 +131,10 @@ private:
 
       void visit_identifier_expr(ast::identifier_expression const& expr) override {
          if (!expr.is_unresolved()
-           && expr.declaration().kind() == rush::ast::declaration_kind::function) {
-         { _results.push_back(expr.declaration().type()); }
-         } else { _results.push_back(expr.result_type()); }
-                  }
+           && expr.declaration().kind() == rush::ast::declaration_kind::function)
+            { _results.push_back(expr.declaration().type()); } else
+            { _results.push_back(expr.result_type()); }
+      }
 
       // traverse the callable and unwrap the result type.
       void visit_invoke_expr(ast::invoke_expression const& expr) override {
@@ -157,12 +156,12 @@ private:
       void visit_ternary_expr(ast::ternary_expression const& expr) override {
       // treat ternary expressions as if they were two individual return statements.
          auto tt = expr.true_expr().result_type().kind() == rush::ast::type_kind::error
-                         ? rush::visit(expr.true_expr(), result_statement_traversal {
+                 ? rush::visit(expr.true_expr(), result_statement_traversal {
                    expr.true_expr().result_type() }).result()
                  : expr.true_expr().result_type();
 
          auto ft = expr.false_expr().result_type().kind() == rush::ast::type_kind::error
-                         ? rush::visit(expr.false_expr(), result_statement_traversal {
+                 ? rush::visit(expr.false_expr(), result_statement_traversal {
                    expr.false_expr().result_type() }).result()
                  : expr.false_expr().result_type();
 
@@ -326,10 +325,9 @@ namespace rush::ast {
       auto it = _function_types.find(key);
       if (it == _function_types.end()) {
          if (ret != ast::types::undefined) {
-         auto p = std::make_unique<ast::function_type>(ret, params);
-         it = _function_types.insert({ key, std::move(p) }).first;
-      }
-         else {
+            auto p = std::make_unique<ast::function_type>(ret, params);
+            it = _function_types.insert({ key, std::move(p) }).first;
+         } else {
             assert(node != nullptr);
             auto it2 = _type_resolvers.find(node);
             if (it2 == _type_resolvers.end()) {
