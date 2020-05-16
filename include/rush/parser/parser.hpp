@@ -94,8 +94,28 @@ namespace rush {
 		}
 
       bool is_indent_skipped(std::size_t offset = 0) {
-         return !_indent_stack.empty()
-             && _indent_stack[_indent_stack.size() - offset - 1];
+         return is_indent_skipped(
+            _indent_stack,
+            offset);
+      }
+
+      lexical_token const& peek_skip_indent(lxa_iterator_difference_type offset = 0) {
+         return peek_skip_indent(
+            _range.first,
+            _range.second,
+            offset);
+      }
+
+      lexical_token const& next_skip_indent() {
+         return next_skip_indent(
+            _range.first,
+            _range.second,
+            _indent_stack);
+		}
+
+      bool is_indent_skipped(std::vector<bool>& indent_stack, std::size_t offset = 0) {
+         return !indent_stack.empty()
+             && indent_stack[indent_stack.size() - offset - 1];
       }
 
       lexical_token const& peek_with_indent(lxa_iterator_difference_type offset = 0) {
@@ -109,9 +129,8 @@ namespace rush {
          return temp != last ? *temp : _eof;
 		}
 
-		lexical_token const& peek_skip_indent(lxa_iterator_difference_type offset = 0) {
-         auto temp = _range.first;
-         auto& last = _range.second;
+      lexical_token const& peek_skip_indent(lxa_iterator& first, lxa_iterator const& last, lxa_iterator_difference_type offset = 0) {
+         auto temp = first;
          std::size_t indent_offset = 0;
          for (; temp != last &&
             (temp->is_comment()) ||
@@ -143,29 +162,27 @@ namespace rush {
          return temp != last ? *temp : _eof;
 		}
 
-      lexical_token const& next_skip_indent() {
-         auto temp = _range.first;
-         auto& first = _range.first;
-         auto& last = _range.second;
+      lexical_token const& next_skip_indent(lxa_iterator& first, lxa_iterator const& last, std::vector<bool>& indent_stack) {
+         auto temp = first;
 
          while (first != last && first->is_comment()) {
             temp = ++first;
          }
 
          while (first != last && first->is(symbols::indent)) {
-            _indent_stack.push_back(true);
+            indent_stack.push_back(true);
             temp = ++first;
          }
 
          while (first != last && first->is(symbols::dedent)) {
-            if (!is_indent_skipped()) break;
-            _indent_stack.pop_back();
+            if (!is_indent_skipped(indent_stack)) break;
+            indent_stack.pop_back();
             temp = ++first;
          }
 
          if (first != last) ++first;
          return temp != last ? *temp : _eof;
-		}
+      }
 
       bool consume_skip_indent(symbol_token_t sym) {
          if (peek_skip_indent().is(sym)) {
@@ -186,8 +203,10 @@ namespace rush {
       bool is_lambda_expr_ahead() {
          auto temp = _range.first;
          auto& last = _range.second;
+         auto indent_stack = _indent_stack;
 
-         ++temp; // skip opening '('
+         // skip opening '('
+         next_skip_indent(temp, last, indent_stack);
          auto parens = 1;
 
          // skip all tokens until last closing parenthesis.
@@ -197,13 +216,13 @@ namespace rush {
          while (temp != last && parens >= 1) {
             if (temp->is(symbols::left_parenthesis)) { ++parens; }
             else if (temp->is(symbols::right_parenthesis)) { --parens; }
-            ++temp;
+            next_skip_indent(temp, last, indent_stack);
          }
 
          // we have a lambda expression if the last closing
          // parenthesis is immediatley followed by a thin or thick arrow.
-         return temp->is(symbols::thick_arrow)
-             || temp->is(symbols::thin_arrow);
+         return peek_skip_indent(temp, last).is(symbols::thick_arrow)
+             || peek_skip_indent(temp, last).is(symbols::thin_arrow);
       }
 
       // modules.
