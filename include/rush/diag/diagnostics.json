@@ -1,67 +1,89 @@
 {
    "warnings": [
-      { "code": 0, "name": "unused_local_variable", "message": "the variable '{}' is declared but never used.", "params": [ "name" ] },
-      { "code": 1, "name": "unused_local_constant", "message": "the constant '{}' is declared but never used.", "params": [ "name" ] },
-      { "code": 2, "name": "unused_global_variable", "message": "the global variable '{}' is declared but never used.", "params": [ "name" ] },
-      { "code": 3, "name": "unused_global_constant", "message": "the global constant '{}' is declared but never used.", "params": [ "name" ] },
-      { "code": 4, "name": "unused_internal_class", "message": "the class '{}' is declared but never used.", "params": [ "name" ] },
-      { "code": 5, "name": "unused_internal_struct", "message": "the struct '{}' is declared but never used.", "params": [ "name" ] },
-      { "code": 6, "name": "unused_internal_concept", "message": "the concept '{}' is declared but never used.", "params": [ "name" ] },
-      { "code": 7, "name": "unused_internal_interface", "message": "the interface '{}' is declared but never used.", "params": [ "name" ] },
-      { "code": 8, "name": "unused_internal_function", "message": "the function '{}' is declared but never used.", "params": [ "name" ] },
-      { "code": 9, "name": "unused_private_field", "message": "the field '{}' in '{}' '{}' is declared but never used.", "params": [ "name", "kind", "type" ] },
-      { "code": 10, "name": "unused_private_method", "message": "the method '{}' in '{}' '{}' is declared but never used.", "params": [ "name", "kind", "type" ] },
-      { "code": 11, "name": "unused_private_property", "message": "the property '{}' in '{}' '{}' is declared but never used.", "params": [ "name", "kind", "type" ] }
+      {
+         "kind": "syntax",
+         "bracket": { "start": 1000, "end": 1099 },
+         "messages": [
+            { "name": "missing_semicolon", "text": "missing semi-colon after '{}'." }
+         ]
+      },
+      {
+         "kind": "semantic",
+         "bracket": { "start": 1100, "end": 1199 },
+         "messages": [
+            { "name": "unused_local_variable", "text": "the variable '{}' is declared but never used.", "params": [ "name" ] },
+            { "name": "unused_local_constant", "text": "the constant '{}' is declared but never used.", "params": [ "name" ] },
+            { "name": "unused_global_variable", "text": "the global variable '{}' is declared but never used.", "params": [ "name" ] },
+            { "name": "unused_global_constant", "text": "the global constant '{}' is declared but never used.", "params": [ "name" ] },
+            { "name": "unused_internal_class", "text": "the class '{}' is declared but never used.", "params": [ "name" ] },
+            { "name": "unused_internal_struct", "text": "the struct '{}' is declared but never used.", "params": [ "name" ] },
+            { "name": "unused_internal_concept", "text": "the concept '{}' is declared but never used.", "params": [ "name" ] },
+            { "name": "unused_internal_interface", "text": "the interface '{}' is declared but never used.", "params": [ "name" ] },
+            { "name": "unused_internal_function", "text": "the function '{}' is declared but never used.", "params": [ "name" ] },
+            { "name": "unused_private_field", "text": "the field '{}' in '{}' '{}' is declared but never used.", "params": [ "name", "kind", "type" ] },
+            { "name": "unused_private_method", "text": "the method '{}' in '{}' '{}' is declared but never used.", "params": [ "name", "kind", "type" ] },
+            { "name": "unused_private_property", "text": "the property '{}' in '{}' '{}' is declared but never used.", "params": [ "name", "kind", "type" ] }
+         ]
+      }
    ],
-
    "errors": [
-      { "kind": "syntax", "code": 1100, "name": "internal_parse_error", "message": "internal error." },
-      { "kind": "syntax", "code": 1101, "name": "not_supported", "message": "{1} is not supported.", "params": [ "feature" ] },
-      { "kind": "syntax", "code": 1102, "name": "expected", "message": "expected '{1}' before '{0}'.", "params": [ "expected" ] },
-      { "kind": "syntax", "code": 1103, "name": "expected_stmt", "message": "expet '{1}' before '{0}'.", "params": [ "expected" ] },
-      { "kind": "syntax", "code": 1104, "name": "expected_identifier", "message": "expected an identifier before '{}'." },
-      { "kind": "syntax", "code": 1105, "name": "expected_primary_expr", "message": "expected primary expression, but found '{}'." },
-      { "kind": "syntax", "code": 1106, "name": "expected_function_name", "message": "expected function name before '{}'." },
-      { "kind": "syntax", "code": 1107, "name": "expected_signature_or_body", "message": "expected function signature, or ':', or '=>' and subsequent body." },
-      { "kind": "syntax", "code": 1108, "name": "expected_function_stmt_body", "message": "expected function statement body before '{}'." },
-      { "kind": "syntax", "code": 1109, "name": "expected_function_expr_body", "message": "expected function expression body before '{}'." },
-      { "kind": "syntax", "code": 1110, "name": "expected_class_name", "message": "exepected class name before '{}'." },
-      { "kind": "syntax", "code": 1121, "name": "unexpected_symbol_expr", "message": "unexpected symbol '{}' parsing primary expression." },
-      { "kind": "syntax", "code": 1122, "name": "unexpected_keyword_expr", "message": "unexpected keyword '{}' parsing primary expression." },
-      { "kind": "syntax", "code": 1123, "name": "expected_closing_bracket", "message": "expected a closing '}' before '{}'." },
-      { "kind": "syntax", "code": 1124, "name": "expected_closing_parenthesis", "message": "expected a closing ')' before '{}'." },
-      { "kind": "syntax", "code": 1125, "name": "expected_closing_parenthesis_or_tuple", "message": "expected a closing ')' or ',' before '{}'." },
-      { "kind": "syntax", "code": 1126, "name": "expected_closing_square_bracket", "message": "expected a closing ']' before '{}'." },
-      { "kind": "syntax", "code": 1127, "name": "expected_closing_square_bracket_or_comma", "message": "expected a ',' or closing ']' before '{}'." },
-      { "kind": "syntax", "code": 1128, "name": "expected_module_name", "message": "expected module name after import." },
-      { "kind": "syntax", "code": 1129, "name": "expected_qualified_name", "message": "expected qualified name." },
+      {
+         "kind": "syntax",
+         "bracket": { "start": 1000, "end": 1199 },
+         "messages": [
+            { "name": "internal_parse_error", "text": "internal error." },
+            { "name": "not_supported", "text": "{1} is not supported.", "params": [ "feature" ] },
+            { "name": "expected", "text": "expected '{1}' before '{0}'.", "params": [ "expected" ] },
+            { "name": "expected_stmt", "text": "expected '{1}' before '{0}'.", "params": [ "expected" ] },
+            { "name": "expected_identifier", "text": "expected an identifier before '{}'." },
+            { "name": "expected_primary_expr", "text": "expected primary expression, but found '{}'." },
+            { "name": "expected_function_name", "text": "expected function name before '{}'." },
+            { "name": "expected_signature_or_body", "text": "expected function signature, or ':', or '=>' and subsequent body." },
+            { "name": "expected_function_stmt_body", "text": "expected function statement body before '{}'." },
+            { "name": "expected_function_expr_body", "text": "expected function expression body before '{}'." },
+            { "name": "expected_class_name", "text": "exepected class name before '{}'." },
+            { "name": "unexpected_symbol_expr", "text": "unexpected symbol '{}' parsing primary expression." },
+            { "name": "unexpected_keyword_expr", "text": "unexpected keyword '{}' parsing primary expression." },
+            { "name": "expected_closing_bracket", "text": "expected a closing '}' before '{}'." },
+            { "name": "expected_closing_parenthesis", "text": "expected a closing ')' before '{}'." },
+            { "name": "expected_closing_parenthesis_or_tuple", "text": "expected a closing ')' or ',' before '{}'." },
+            { "name": "expected_closing_square_bracket", "text": "expected a closing ']' before '{}'." },
+            { "name": "expected_closing_square_bracket_or_comma", "text": "expected a ',' or closing ']' before '{}'." },
+            { "name": "expected_module_name", "text": "expected module name after import." },
+            { "name": "expected_qualified_name", "text": "expected qualified name." },
 
-      { "kind": "syntax", "code": 1130, "name": "expected_compound_stmt", "message": "expected compound statement before '{}'." },
-      { "kind": "syntax", "code": 1131, "name": "expected_if_stmt_body", "message": "expected ':', and subsequent body of 'if' statement before '{}'." },
-      { "kind": "syntax", "code": 1132, "name": "expected_for_stmt_body", "message": "expected ':', and subsequent body of 'for' statement before '{}'." },
-      { "kind": "syntax", "code": 1132, "name": "expected_while_stmt_body", "message": "expected ':', and subsequent body of 'while' statement before '{}'." },
-      { "kind": "syntax", "code": 1133, "name": "expected_type_annotation", "message": "expected type name or annotation before '{}'." },
-      { "kind": "syntax", "code": 1134, "name": "expected_toplevel_decl", "message": "expected a type, function, or variable declaration." },
-      { "kind": "syntax", "code": 1135, "name": "expected_parameter_name", "message": "expected parameter identifier before '{}'." },
-      { "kind": "syntax", "code": 1136, "name": "constant_requires_type_annotation", "message": "constant declaration '{}' requires either a type-annotation or intializer." },
-      { "kind": "syntax", "code": 1137, "name": "variable_requires_type_annotation", "message": "variable declaration '{}' requires either a type-annotation or intializer." },
-      { "kind": "syntax", "code": 1138, "name": "local_constant_name_previously_defined", "message": "local constant named '{}' is already defined in this scope." },
-      { "kind": "syntax", "code": 1139, "name": "local_variable_name_previously_defined", "message": "local variable named '{}' is already defined in this scope." },
-      { "kind": "syntax", "code": 1140, "name": "definition_already_exists", "message": "the current context already contains a definition for '{}'." },
-      { "kind": "syntax", "code": 1141, "name": "parameter_redefinition", "message": "redefinition of parameter '{}'." },
+            { "name": "expected_compound_stmt", "text": "expected compound statement before '{}'." },
+            { "name": "expected_if_stmt_body", "text": "expected ':', and subsequent body of 'if' statement before '{}'." },
+            { "name": "expected_for_stmt_body", "text": "expected ':', and subsequent body of 'for' statement before '{}'." },
+            { "name": "expected_while_stmt_body", "text": "expected ':', and subsequent body of 'while' statement before '{}'." },
+            { "name": "expected_type_annotation", "text": "expected type name or annotation before '{}'." },
+            { "name": "expected_toplevel_decl", "text": "expected a type, function, or variable declaration." },
+            { "name": "expected_parameter_name", "text": "expected parameter identifier before '{}'." },
+            { "name": "constant_requires_type_annotation", "text": "constant declaration '{}' requires either a type-annotation or intializer." },
+            { "name": "variable_requires_type_annotation", "text": "variable declaration '{}' requires either a type-annotation or intializer." },
+            { "name": "local_constant_name_previously_defined", "text": "local constant named '{}' is already defined in this scope." },
+            { "name": "local_variable_name_previously_defined", "text": "local variable named '{}' is already defined in this scope." },
+            { "name": "definition_already_exists", "text": "the current context already contains a definition for '{}'." },
+            { "name": "parameter_redefinition", "text": "redefinition of parameter '{}'." },
 
-      { "kind": "syntax", "code": 1142, "name": "constant_used_like_type", "message": "'{}' is a constant but is used like a type." },
-      { "kind": "syntax", "code": 1143, "name": "variable_used_like_type", "message": "'{}' is a variable but is used like a type." },
-      { "kind": "syntax", "code": 1144, "name": "function_used_like_type", "message": "'{}' is a function but is used like a type." },
-
-      { "kind": "semantic", "code": 1145, "name": "type_not_found", "message": "the type '{}' could not be found." },
-      { "kind": "semantic", "code": 1146, "name": "multiple_definitions", "message": "a definition for '{}' already exists.", "params": [ "name" ] },
-      { "kind": "semantic", "code": 1147, "name": "multiple_member_definitions", "message": "the type '{}' already contains a definition for '{}'.", "params": [ "type", "name" ] },
-      { "kind": "semantic", "code": 1148, "name": "undeclared_identifier", "message": "the name '{}' does not exist in the current context.", "params": [ "name" ]  },
-      { "kind": "semantic", "code": 1149, "name": "unresolved_type", "message": "" },
-      { "kind": "semantic", "code": 1150, "name": "irreducible_type", "message": "the types '{}' and '{}' do not share a common type.", "params": [ "first", "second" ] },
-      { "kind": "semantic", "code": 1151, "name": "mismatched_type_assignment", "message": "the type '{}' cannot be assigned to an instance of '{}'.", "params": [ "first", "second" ] },
-      { "kind": "semantic", "code": 1152, "name": "infinitely_recursive_return_type_deduction", "message": "deducing return type is infinitely recursive." }
-
+            { "name": "constant_used_like_type", "text": "'{}' is a constant but is used like a type." },
+            { "name": "variable_used_like_type", "text": "'{}' is a variable but is used like a type." },
+            { "name": "function_used_like_type", "text": "'{}' is a function but is used like a type." }
+         ]
+      },
+      {
+         "kind": "semantic",
+         "bracket": { "start": 1200, "end": 1499 },
+         "messages": [
+            { "name": "type_not_found", "text": "the type '{}' could not be found." },
+            { "name": "multiple_definitions", "text": "a definition for '{}' already exists.", "params": [ "name" ] },
+            { "name": "multiple_member_definitions", "text": "the type '{}' already contains a definition for '{}'.", "params": [ "type", "name" ] },
+            { "name": "undeclared_identifier", "text": "the name '{}' does not exist in the current context.", "params": [ "name" ]  },
+            { "name": "unresolved_type", "text": "" },
+            { "name": "irreducible_type", "text": "the types '{}' and '{}' do not share a common type.", "params": [ "first", "second" ] },
+            { "name": "mismatched_type_assignment", "text": "the type '{}' cannot be assigned to an instance of '{}'.", "params": [ "first", "second" ] },
+            { "name": "infinitely_recursive_return_type_deduction", "text": "deducing return type is infinitely recursive." }
+         ]
+      }
    ]
 }

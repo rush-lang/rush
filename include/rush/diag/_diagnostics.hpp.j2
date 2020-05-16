@@ -13,23 +13,23 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *************************************************************************/
-
-
 #ifdef RUSH_DIAG_SYNTAX_ERROR_FUNC_IMPL
 ## for err in errors
 ## if err.kind == "syntax"
+## for msg in err.messages
 
-## if not existsIn(err, "params")
-inline std::unique_ptr<::rush::diag::syntax_error> {{ err.name }}(::rush::lexical_token tok) {
-   auto msg = fmt::format("{{ err.message }}", tok.text());
-   return std::make_unique<::rush::diag::syntax_error>({{ err.code }}, std::move(msg), std::move(tok));
+## if not existsIn(msg, "params")
+inline std::unique_ptr<::rush::diag::syntax_error> {{ msg.name }}(::rush::lexical_token tok) {
+   auto msg = fmt::format("{{ msg.text }}", tok.text());
+   return std::make_unique<::rush::diag::syntax_error>({{ iadd(loop.index, err.bracket.start) }}, std::move(msg), std::move(tok));
 }
 ## else
-inline std::unique_ptr<::rush::diag::syntax_error> {{ err.name }}(::rush::lexical_token tok, {{ join(", ", prepend("std::string_view ", err.params)) }}) {
-   auto msg = fmt::format("{{ err.message }}", tok.text(), {{ join(", ", err.params) }});
-   return std::make_unique<::rush::diag::syntax_error>({{ err.code }}, std::move(msg), std::move(tok));
+inline std::unique_ptr<::rush::diag::syntax_error> {{ msg.name }}(::rush::lexical_token tok, {{ join(", ", prepend("std::string_view ", msg.params)) }}) {
+   auto msg = fmt::format("{{ msg.text }}", tok.text(), {{ join(", ", msg.params) }});
+   return std::make_unique<::rush::diag::syntax_error>({{ iadd(loop.index, err.bracket.start) }}, std::move(msg), std::move(tok));
 }
 ## endif
+## endfor
 ## endif
 ## endfor
 #undef RUSH_DIAG_SYNTAX_ERROR_FUNC_IMPL
@@ -39,18 +39,20 @@ inline std::unique_ptr<::rush::diag::syntax_error> {{ err.name }}(::rush::lexica
 #ifdef RUSH_DIAG_SEMANTIC_ERROR_FUNC_IMPL
 ## for err in errors
 ## if err.kind == "semantic"
+## for msg in err.messages
 
-## if not existsIn(err, "params")
-inline std::unique_ptr<::rush::diag::semantic_error> {{ err.name }}() {
-   std::string msg = "{{ err.message }}";
-   return std::make_unique<::rush::diag::semantic_error>({{ err.code }}, std::move(msg));
+## if not existsIn(msg, "params")
+inline std::unique_ptr<::rush::diag::semantic_error> {{ msg.name }}() {
+   std::string msg = "{{ msg.text }}";
+   return std::make_unique<::rush::diag::semantic_error>({{ iadd(loop.index, err.bracket.start) }}, std::move(msg));
 }
 ## else
-inline std::unique_ptr<::rush::diag::semantic_error> {{ err.name }}({{ join(", ", prepend("std::string_view ", err.params)) }}) {
-   auto msg = fmt::format("{{ err.message }}", {{ join(", ", err.params) }});
-   return std::make_unique<::rush::diag::semantic_error>({{ err.code }}, std::move(msg));
+inline std::unique_ptr<::rush::diag::semantic_error> {{ msg.name }}({{ join(", ", prepend("std::string_view ", msg.params)) }}) {
+   auto msg = fmt::format("{{ msg.text }}", {{ join(", ", msg.params) }});
+   return std::make_unique<::rush::diag::semantic_error>({{ iadd(loop.index, err.bracket.start) }}, std::move(msg));
 }
 ## endif
+## endfor
 ## endif
 ## endfor
 #undef RUSH_DIAG_SEMANTIC_ERROR_FUNC_IMPL
@@ -59,17 +61,21 @@ inline std::unique_ptr<::rush::diag::semantic_error> {{ err.name }}({{ join(", "
 
 #ifdef RUSH_DIAG_SEMANTIC_WARNING_FUNC_IMPL
 ## for wrn in warnings
+## if wrn.kind == "semantic"
+## for msg in wrn.messages
 
-## if not existsIn(wrn, "params")
-inline std::unique_ptr<::rush::diag::semantic_warning> {{ wrn.name }}() {
-   std::string = "{{ wrn.message }}";
-   return std::make_unique<::rush::diag::semantic_warning>({{ wrn.code }}, std::move(msg));
+## if not existsIn(msg, "params")
+inline std::unique_ptr<::rush::diag::semantic_warning> {{ msg.name }}() {
+   std::string = "{{ msg.text }}";
+   return std::make_unique<::rush::diag::semantic_warning>({{ iadd(loop.index, wrn.bracket.start) }}, std::move(msg));
 }
 ## else
-inline std::unique_ptr<::rush::diag::semantic_warning> {{ wrn.name }}({{ join(", ", prepend("std::string_view ", wrn.params)) }}) {
-   auto msg = fmt::format("{{ wrn.message }}", {{ join(", ", wrn.params) }});
-   return std::make_unique<::rush::diag::semantic_warning>({{ wrn.code }}, std::move(msg));
+inline std::unique_ptr<::rush::diag::semantic_warning> {{ msg.name }}({{ join(", ", prepend("std::string_view ", msg.params)) }}) {
+   auto msg = fmt::format("{{ msg.text }}", {{ join(", ", msg.params) }});
+   return std::make_unique<::rush::diag::semantic_warning>({{ iadd(loop.index, wrn.bracket.start) }}, std::move(msg));
 }
+## endif
+## endfor
 ## endif
 ## endfor
 #undef RUSH_DIAG_SEMANTIC_WARNING_FUNC_IMPL

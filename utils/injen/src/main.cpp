@@ -114,9 +114,11 @@ void render(options::options& opts) {
       return s;
    });
 
-   // env.add_callback("not", [](inja::Arguments& args) {
-   //    return !args.at(0)->get<bool>();
-   // });
+   env.add_callback("iadd", 2, [](inja::Arguments& args) {
+      int lhs = args.at(0)->get<std::uint64_t>();
+      int rhs = args.at(1)->get<std::uint64_t>();
+	   return lhs + rhs;
+   });
 
    env.add_callback("contains", 2, [](inja::Arguments& args) {
       auto jval = args.at(0)->get<inja::json>();
