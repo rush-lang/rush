@@ -31,34 +31,14 @@ namespace rush {
 #define RUSH_ASSOCIATIVITY_FUNC
 #include "rush/ast/exprs/_operators.hpp"
 
-   bool is_precedence_operator(lexical_token const& op) {
-      return is_binary_op(op)
-          || op.is(symbols::question_mark);
-   }
-
-   int operator_associativity(lexical_token const& op) {
-      if (!op.is_symbol()) return 0;
-      switch (op.symbol()) {
-         case symbols::question_mark: return binary_associativity(tokens::equals());
-         default: return binary_associativity(op);
-      }
-   }
-   int operator_precedence(lexical_token const& op) {
-      if (!op.is_symbol()) return 0;
-      switch (op.symbol()) {
-      case symbols::question_mark: return binary_precedence(tokens::equals());
-      default: return binary_precedence(op);
-      }
-   }
-
 	int compare_operator_precedence(lexical_token const& lhs, lexical_token const& rhs) {
-		return is_precedence_operator(lhs) && is_precedence_operator(rhs)
-           ? operator_precedence(lhs) - operator_precedence(rhs) : 0;
+		return is_binary_operator(lhs) && is_binary_operator(rhs)
+           ? binary_precedence(lhs) - binary_precedence(rhs) : 0;
 	}
 
 	rush::parse_result<ast::expression> parser::parse_expr() {
 		auto result = parse_primary_expr();
-		while (result.success() && is_precedence_operator(peek_skip_indent()))
+		while (result.success() && is_binary_operator(peek_skip_indent()))
 			result = parse_binary_expr(std::move(result));
 
 		return std::move(result);
@@ -221,7 +201,7 @@ namespace rush {
 			case keywords::false_: next_skip_indent(); result = exprs::literal(false, *_context); break;
 			} break;
 		case lexical_token_type::symbol:
-         if (is_unary_prefix_op(tok)) result = parse_unary_expr();
+         if (is_unary_prefix_operator(tok)) result = parse_unary_expr();
          else switch (tok.symbol()) {
          case symbols::left_parenthesis: result = parse_paren_expr(); break;
          case symbols::left_square_bracket: result = parse_array_literal_expr(); break;
@@ -232,7 +212,7 @@ namespace rush {
       if (result.success() && peek_skip_indent().is(symbols::period))
          result = parse_member_access_expr(std::move(result));
 
-      if (result.success() && is_unary_postfix_op(peek_skip_indent()))
+      if (result.success() && is_unary_postfix_operator(peek_skip_indent()))
          result = parse_unary_postfix_expr(std::move(result));
 
       return std::move(result);
@@ -298,14 +278,14 @@ namespace rush {
 	}
 
    rush::parse_result<ast::expression> parser::parse_unary_expr() {
-      assert(is_unary_prefix_op(peek_skip_indent()) && "expected unary operator.");
+      assert(is_unary_prefix_operator(peek_skip_indent()) && "expected unary operator.");
 
       auto tok = next_skip_indent(); // consume unary operator token.
       auto operand_result = parse_primary_expr();
       if (operand_result.failed())
          return std::move(operand_result);
 
-      if (is_unary_postfix_op(peek_skip_indent())) {
+      if (is_unary_postfix_operator(peek_skip_indent())) {
          operand_result = parse_unary_postfix_expr(std::move(operand_result));
          if (operand_result.failed()) return std::move(operand_result);
       }
@@ -322,7 +302,7 @@ namespace rush {
    }
 
    rush::parse_result<ast::expression> parser::parse_unary_postfix_expr(rush::parse_result<ast::expression> operand_result) {
-      assert(is_unary_postfix_op(peek_skip_indent()) && "expected unary postfix operator.");
+      assert(is_unary_postfix_operator(peek_skip_indent()) && "expected unary postfix operator.");
       if (operand_result.failed()) return nullptr;
 
       auto tok = peek_skip_indent();
@@ -345,13 +325,13 @@ namespace rush {
          break;
       }
 
-      return is_unary_postfix_op(peek_skip_indent())
+      return is_unary_postfix_operator(peek_skip_indent())
          ? parse_unary_postfix_expr(std::move(operand_result))
          : std::move(operand_result);
    }
 
 	rush::parse_result<ast::expression> parser::parse_binary_expr(rush::parse_result<ast::expression> lhs) {
-		assert(is_precedence_operator(peek_skip_indent()) && "expected binary operator.");
+		assert(is_binary_operator(peek_skip_indent()) && "expected binary operator.");
 
 		auto tok = peek_skip_indent();
       if (tok.is(symbols::question_mark))
@@ -423,7 +403,7 @@ namespace rush {
 	}
 
    rush::parse_result<ast::expression> parser::parse_binary_expr_rhs() {
-		assert(is_precedence_operator(peek_skip_indent()) && "expected binary operator.");
+		assert(is_binary_operator(peek_skip_indent()) && "expected binary operator.");
 
 		auto prev = next_skip_indent(); // consume binary operator symbol.
 
@@ -431,9 +411,9 @@ namespace rush {
 		if (rhs_result.success()) {
          auto next = peek_skip_indent(); // look-ahead for possible binary operator.
 
-         while (is_precedence_operator(next)) {
+         while (is_binary_operator(next)) {
             auto opcmp = compare_operator_precedence(next, prev);
-            if (opcmp < 0 || (opcmp == 0 && operator_associativity(next) > 0)) {
+            if (opcmp < 0 || (opcmp == 0 && binary_associativity(next) > 0)) {
                rhs_result = parse_binary_expr(std::move(rhs_result));
                next = peek_skip_indent();
             } else break;

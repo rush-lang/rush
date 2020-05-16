@@ -13,6 +13,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *************************************************************************/
+
 #ifdef RUSH_UNARY_OPERATOR_ENUM
 namespace rush::ast {
 	enum class unary_operator : std::uint8_t {
@@ -27,15 +28,15 @@ namespace rush::ast {
 #ifdef RUSH_BINARY_OPERATORS_ENUM
 namespace rush::ast {
 	enum class binary_operator : std::uint8_t {
-   {% for operator in binary %}   {{ operator/name }},
-   {% endfor %}};
+   {% for operator in binary %}{% if default(operator/binary_expression, true) %}   {{ operator/name }},
+   {% endif %}{% endfor %}};
 }
 #undef RUSH_BINARY_OPERATORS_ENUM
 #endif
 
 
 #ifdef RUSH_IS_UNARY_PREFIX_OP_FUNC
-bool is_unary_prefix_op(lexical_token const& tok) {
+bool is_unary_prefix_operator(lexical_token const& tok) {
 	if (!tok.is_symbol()) return false;
 	switch (tok.symbol()) {
 	default: return false;
@@ -51,7 +52,7 @@ bool is_unary_prefix_op(lexical_token const& tok) {
 #endif
 
 #ifdef RUSH_IS_UNARY_POSTFIX_OP_FUNC
-bool is_unary_postfix_op(lexical_token const& tok) {
+bool is_unary_postfix_operator(lexical_token const& tok) {
    if (!tok.is_symbol()) return false;
    switch (tok.symbol()) {
    default: return false;
@@ -67,7 +68,7 @@ bool is_unary_postfix_op(lexical_token const& tok) {
 #endif
 
 #ifdef RUSH_IS_BINARY_OP_FUNC
-bool is_binary_op(lexical_token const& tok) {
+bool is_binary_operator(lexical_token const& tok) {
 	if (!tok.is_symbol()) return false;
 	switch (tok.symbol()) {
 	default: return false;
@@ -84,6 +85,7 @@ bool is_binary_op(lexical_token const& tok) {
 
 #ifdef RUSH_PRECEDENCE_FUNC
 int unary_precedence(lexical_token const& tok) {
+   assert((is_unary_postfix_operator(tok) || is_unary_prefix_operator(tok)) && "expected unary operator token.");
 	switch (tok.symbol()) {
 	default: return 0;
 ## for operator in prefix
@@ -93,6 +95,7 @@ int unary_precedence(lexical_token const& tok) {
 }
 
 int binary_precedence(lexical_token const& tok) {
+   assert(is_binary_operator(tok) && "expected binary operator token.");
 	switch (tok.symbol()) {
 	default: return 0;
 ## for operator in binary
@@ -106,6 +109,7 @@ int binary_precedence(lexical_token const& tok) {
 #ifdef RUSH_ASSOCIATIVITY_FUNC
 
 int binary_associativity(lexical_token const& tok) {
+   assert(is_binary_operator(tok) && "expected binary operator token.");
    switch (tok.symbol()) {
    default: return 0;
 ## for operator in binary
@@ -125,7 +129,9 @@ virtual void visit_{{ operator/name }}_expr(unary_expression const&) {}
 virtual void visit_{{ operator/name }}_expr(unary_expression const&) {}
 ## endfor
 ## for operator in binary
+## if default(operator/binary_expression, true)
 virtual void visit_{{ operator/name }}_expr(binary_expression const&) {}
+## endif
 ## endfor
 #undef RUSH_VISITOR_FUNC_PROTOTYPES
 #endif
@@ -152,8 +158,8 @@ default: assert("unreachable");
 #ifdef RUSH_BINARY_EXPRESSION_PRINT_VISIT_SWITCH
 switch (expr.opkind()) {
 default: assert("unreachable");
-{% for operator in binary %}case ast::binary_operator::{{ operator/name }}: print_expression("{{ operator/name }}", expr); break;
-{% endfor %}
+{% for operator in binary %}{% if default(operator/binary_expression, true) %}case ast::binary_operator::{{ operator/name }}: print_expression("{{ operator/name }}", expr); break;
+{% endif %}{% endfor %}
 }
 #undef RUSH_BINARY_EXPRESSION_PRINT_VISIT_SWITCH
 #endif
@@ -161,7 +167,9 @@ default: assert("unreachable");
 #ifdef RUSH_BINARY_EXPRESSION_VISIT_SWITCH
 switch (expr.opkind()) {
 ## for operator in binary
+## if default(operator/binary_expression, true)
 case binary_operator::{{ operator/name }}: visit_{{ operator/name }}_expr(expr); break;
+## endif
 ## endfor
 }
 #undef RUSH_BINARY_EXPRESSION_VISIT_SWITCH
@@ -177,7 +185,9 @@ virtual void visit_{{ operator/name }}_expr(rush::ast::unary_expression const& e
 
 #ifdef RUSH_TRAVERSAL_BINARY_EXPR_FUNC_IMPLS
 ## for operator in binary
+## if default(operator/binary_expression, true)
 virtual void visit_{{ operator/name }}_expr(rush::ast::binary_expression const& expr) override { traverse_binary_expr(expr); }
+## endif
 ## endfor
 #undef RUSH_TRAVERSAL_BINARY_EXPR_FUNC_IMPLS
 #endif

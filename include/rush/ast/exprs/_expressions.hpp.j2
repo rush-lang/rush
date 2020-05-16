@@ -75,6 +75,7 @@ std::unique_ptr<::rush::ast::unary_expression>
 #ifdef RUSH_BINARY_EXPRESSION_FACTORY_FUNC_DEFNS
 namespace rush::ast::exprs {
 ## for operator in binary
+## if default(operator/binary_expression, true)
 
 std::unique_ptr<::rush::ast::binary_expression>
 	{{ operator/name }}(
@@ -84,6 +85,7 @@ std::unique_ptr<::rush::ast::binary_expression>
 			std::move(lhs), std::move(rhs),
 			::rush::ast::binary_operator::{{ operator/name }});
 }
+## endif
 ## endfor
 }
 #undef RUSH_BINARY_EXPRESSION_FACTORY_FUNC_DEFNS
