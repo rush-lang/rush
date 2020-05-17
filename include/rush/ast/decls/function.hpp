@@ -22,7 +22,7 @@
 #include "rush/ast/types/builtin.hpp"
 #include "rush/ast/types/function.hpp"
 #include "rush/ast/stmts/statement.hpp"
-#include "rush/ast/decls/declaration.hpp"
+#include "rush/ast/decls/nominal.hpp"
 #include "rush/ast/decls/parameter.hpp"
 #include "rush/ast/exprs/identifier.hpp"
 
@@ -37,7 +37,7 @@ namespace rush::ast::decls {
 }
 
 namespace rush::ast {
-	class function_declaration : public declaration {
+	class function_declaration : public nominal_declaration {
 		struct factory_tag_t {};
 
       friend std::unique_ptr<function_declaration> decls::function(

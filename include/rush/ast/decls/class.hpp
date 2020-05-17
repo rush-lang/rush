@@ -27,7 +27,7 @@
 
 namespace rush::ast {
 
-   class class_declaration : public ast::declaration {
+   class class_declaration : public ast::nominal_declaration {
    public:
       class_declaration(std::string name)
          : _name { std::move(name) }

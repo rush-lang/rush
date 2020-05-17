@@ -20,20 +20,19 @@
 
 #include "rush/ast/node.hpp"
 #include "rush/ast/decls/access.hpp"
-#include "rush/ast/decls/declaration.hpp"
+#include "rush/ast/decls/nominal.hpp"
 
 #include <vector>
 #include <string>
 
 namespace rush::ast {
    class module;
-   class declaration;
 
-   class member_declaration : public ast::declaration {
+   class member_declaration : public ast::nominal_declaration {
    public:
       member_declaration(
-         ast::declaration const* owner,
-         std::unique_ptr<ast::declaration> decl,
+         ast::nominal_declaration const* owner,
+         std::unique_ptr<ast::nominal_declaration> decl,
          ast::member_access acc)
       : _decl { std::move(decl) }
       , _owner { owner }
@@ -78,8 +77,8 @@ namespace rush::ast {
 
    private:
       ast::member_access _access;
-      ast::declaration const* const _owner;
-      std::unique_ptr<ast::declaration> _decl;
+      ast::nominal_declaration const* const _owner;
+      std::unique_ptr<ast::nominal_declaration> _decl;
    };
 } // rush::ast
 

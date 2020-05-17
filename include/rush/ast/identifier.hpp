@@ -28,7 +28,7 @@
 #include <string_view>
 
 namespace rush::ast {
-   class declaration;
+   class nominal_declaration;
    enum class declaration_kind : std::uint8_t;
 
    namespace detail {
@@ -36,7 +36,7 @@ namespace rush::ast {
    }
 
    class identifier {
-      friend class declaration;
+      friend class nominal_declaration;
       friend class detail::identifier_resolver;
 
       identifier(identifier const&) = delete;
@@ -70,14 +70,14 @@ namespace rush::ast {
       //! \brief Returns the declaration for a resolved identifier.
       //!        Note: calling this function before the identifier has been resolved is an error.
       //!              The caller should first check is_unresolved before calling this function.
-      ast::declaration const& declaration() const noexcept;
+      ast::nominal_declaration const& declaration() const noexcept;
 
    private:
       std::variant<
-         ast::declaration const*,
+         ast::nominal_declaration const*,
          ast::identifier::resolver*> _val;
 
-      identifier(ast::declaration const* decl)
+      identifier(ast::nominal_declaration const* decl)
          : _val { decl } {}
    };
 
@@ -96,7 +96,7 @@ namespace rush::ast {
             resolver_callback_t(ast::identifier* id)
                : _ident { id } {}
 
-            void operator ()(ast::declaration const* decl) const {
+            void operator ()(ast::nominal_declaration const* decl) const {
                _ident->_val = decl;
             }
 
@@ -112,7 +112,7 @@ namespace rush::ast {
             return _name;
          }
 
-         void resolve(ast::declaration const* decl) {
+         void resolve(ast::nominal_declaration const* decl) {
             std::for_each(_cbs.begin(), _cbs.end(),
                [&decl](auto& cb) { cb.operator()(decl); });
          }

@@ -14,7 +14,7 @@
 * limitations under the License.
 *************************************************************************/
 #include "rush/ast/identifier.hpp"
-#include "rush/ast/decls/declaration.hpp"
+#include "rush/ast/decls/nominal.hpp"
 #include "rush/ast/types/builtin.hpp"
 
 #include <cassert>
@@ -22,17 +22,17 @@
 using namespace rush;
 
 struct identifier_name_visitor {
-   std::string_view operator ()(ast::declaration const* decl) { return decl->name(); }
+   std::string_view operator ()(ast::nominal_declaration const* decl) { return decl->name(); }
    std::string_view operator ()(ast::identifier::resolver* res) { return res->name(); }
 };
 
 struct identifier_type_visitor {
-   ast::type_ref operator ()(ast::declaration const* decl) { return decl->type(); }
+   ast::type_ref operator ()(ast::nominal_declaration const* decl) { return decl->type(); }
    ast::type_ref operator ()(ast::identifier::resolver* res) { return ast::types::undefined; }
 };
 
 struct identifier_kind_visitor {
-   ast::declaration_kind operator ()(ast::declaration const* decl) { return decl->kind(); }
+   ast::declaration_kind operator ()(ast::nominal_declaration const* decl) { return decl->kind(); }
    ast::declaration_kind operator ()(ast::identifier::resolver* res) { return ast::declaration_kind::undefined; }
 };
 
@@ -57,7 +57,7 @@ namespace rush::ast {
 
    bool identifier::is_unresolved() const noexcept {
       return std::holds_alternative<ast::identifier::resolver*>(_val)
-          || std::get<ast::declaration const*>(_val)->kind() == declaration_kind::undeclared;
+          || std::get<ast::nominal_declaration const*>(_val)->kind() == declaration_kind::undeclared;
    }
 
    std::string_view identifier::name() const noexcept {
@@ -72,8 +72,8 @@ namespace rush::ast {
       return std::visit(identifier_kind_visitor {}, _val);
    }
 
-   ast::declaration const& identifier::declaration() const noexcept {
+   ast::nominal_declaration const& identifier::declaration() const noexcept {
       assert(!is_unresolved() && "attempting to access the declaration of an unresolved identifier.");
-      return *std::get<ast::declaration const*>(_val);
+      return *std::get<ast::nominal_declaration const*>(_val);
    }
 } // rush::ast

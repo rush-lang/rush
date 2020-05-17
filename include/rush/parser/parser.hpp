@@ -242,7 +242,7 @@ namespace rush {
       rush::parse_result<ast::declaration> parse_toplevel_decl();
 
 		rush::parse_result<ast::declaration> _parse_storage_decl(std::string,
-			rush::function_ref<std::unique_ptr<ast::declaration>(std::string, ast::type_ref, std::unique_ptr<ast::expression>)>);
+			rush::function_ref<std::unique_ptr<ast::nominal_declaration>(std::string, ast::type_ref, std::unique_ptr<ast::expression>)>);
 
 		rush::parse_result<ast::declaration> parse_constant_decl();
 		rush::parse_result<ast::declaration> parse_variable_decl();
@@ -314,7 +314,7 @@ namespace rush {
       rush::parse_result<ast::argument_list> parse_argument_list(rush::parse_result<ast::argument>);
 
 
-      rush::parse_result<ast::declaration> scope_insert(std::unique_ptr<ast::declaration> decl, rush::lexical_token const& ident);
+      rush::parse_result<ast::nominal_declaration> scope_insert(std::unique_ptr<ast::nominal_declaration> decl, rush::lexical_token const& ident);
 
 
       std::unique_ptr<diag::syntax_error> parse_terminator() {

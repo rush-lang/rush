@@ -28,11 +28,13 @@ namespace errs = rush::diag::errs;
 
 namespace rush {
 
-   rush::parse_result<ast::declaration> parser::scope_insert(std::unique_ptr<ast::declaration> decl, rush::lexical_token const& ident) {
-      return (!_scope.insert({ *decl }))
-         ? errs::definition_already_exists(ident)
-         : rush::parse_result<ast::declaration> { std::move(decl) };
-   }
+   rush::parse_result<ast::nominal_declaration> parser::scope_insert(
+      std::unique_ptr<ast::nominal_declaration> decl,
+      rush::lexical_token const& ident) {
+         return (!_scope.insert({ *decl }))
+            ? errs::definition_already_exists(ident)
+            : rush::parse_result<ast::nominal_declaration> { std::move(decl) };
+      }
 
    rush::parse_result<ast::declaration> parser::parse_toplevel_decl() {
 		auto tok = peek_skip_indent();
@@ -50,7 +52,7 @@ namespace rush {
    }
 
 	rush::parse_result<ast::declaration> parser::_parse_storage_decl(std::string storage_type,
-		rush::function_ref<std::unique_ptr<ast::declaration>(std::string, ast::type_ref, std::unique_ptr<ast::expression>)> fn
+		rush::function_ref<std::unique_ptr<ast::nominal_declaration>(std::string, ast::type_ref, std::unique_ptr<ast::expression>)> fn
 	) {
 		if (peek_skip_indent().is(symbols::left_bracket)) {
 			// parse_destructure_pattern.

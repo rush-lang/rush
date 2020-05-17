@@ -21,13 +21,13 @@
 #include "rush/ast/list.hpp"
 #include "rush/ast/identifier.hpp"
 #include "rush/ast/types/type_ref.hpp"
-#include "rush/ast/decls/declaration.hpp"
+#include "rush/ast/decls/nominal.hpp"
 
 namespace rush::ast {
    class parameter;
 	using parameter_list = detail::basic_list<parameter>;
 
-	class parameter : public declaration {
+	class parameter : public nominal_declaration {
    public:
       virtual std::string_view name() const override {
          return _name;

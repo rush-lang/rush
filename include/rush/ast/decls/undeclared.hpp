@@ -21,35 +21,35 @@
 
 
 #include "rush/ast/types/builtin.hpp"
-#include "rush/ast/decls/declaration.hpp"
+#include "rush/ast/decls/nominal.hpp"
 
 namespace rush::ast {
 
    //! \brief Sentinel type that is used as a substitute for
    //         identifiers that were not resolved after parsing,
    //         and the scope chain has been destroyed.
-   class undeclared_identifier : public ast::declaration {
+   class undeclared_identifier : public ast::nominal_declaration {
    public:
       undeclared_identifier(std::string name)
          : _name { std::move(name) } {}
 
-      virtual std::string_view name() const {
+      virtual std::string_view name() const override {
          return _name;
       };
 
-      virtual ast::type_ref type() const {
+      virtual ast::type_ref type() const override {
          return ast::types::undeclared;
       }
 
-      virtual ast::declaration_kind kind() const {
+      virtual ast::declaration_kind kind() const override {
          return ast::declaration_kind::undeclared;
       }
 
       using node::accept;
-      virtual void accept(ast::visitor&) const {};
+      virtual void accept(ast::visitor&) const override {};
 
-      virtual void attach(ast::node&, ast::context&) {};
-      virtual void detach(ast::node&, ast::context&) {};
+      virtual void attach(ast::node&, ast::context&) override {};
+      virtual void detach(ast::node&, ast::context&) override {};
 
    private:
       std::string _name;

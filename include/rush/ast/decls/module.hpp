@@ -41,10 +41,6 @@ namespace rush::ast {
          return *_decl;
       }
 
-      virtual std::string_view name() const override {
-         return _decl->name();
-      }
-
       virtual ast::type_ref type() const override {
          return _decl->type();
       }

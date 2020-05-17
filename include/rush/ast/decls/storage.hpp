@@ -20,14 +20,13 @@
 
 #include "rush/ast/identifier.hpp"
 #include "rush/ast/exprs/expression.hpp"
-#include "rush/ast/exprs/identifier.hpp"
-#include "rush/ast/decls/declaration.hpp"
+#include "rush/ast/decls/nominal.hpp"
 #include "rush/ast/types/type_ref.hpp"
 #include "rush/ast/visitor.hpp"
 
 
 namespace rush::ast {
-	class storage_declaration : public declaration {
+	class storage_declaration : public nominal_declaration {
 	public:
       virtual std::string_view name() const noexcept override {
          return _name;

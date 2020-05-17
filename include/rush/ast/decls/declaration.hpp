@@ -19,13 +19,9 @@
 #define RUSH_AST_DECLS_DECLARATION_HPP
 
 #include "rush/ast/node.hpp"
-#include "rush/ast/identifier.hpp"
 #include "rush/ast/types/type_ref.hpp"
 
-#include <string>
-#include <vector>
 #include <cstdint>
-#include <string_view>
 
 namespace rush::ast {
 	enum class declaration_kind : std::uint8_t {
@@ -51,13 +47,9 @@ namespace rush::ast {
 		void operator = (declaration const&) = delete;
 
 	public:
-      virtual std::string_view name() const = 0;
-
       virtual ast::type_ref type() const = 0;
 
 		virtual declaration_kind kind() const = 0;
-
-      ast::identifier identifier() const { return { this }; };
 
    protected:
       declaration() = default;

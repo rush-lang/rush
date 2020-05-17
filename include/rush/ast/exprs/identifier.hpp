@@ -36,7 +36,7 @@ namespace rush::ast {
 }
 
 namespace rush::ast {
-   class declaration;
+   class nominal_declaration;
 
 	// \brief Represents the identifier of a variable, constant
    //        or function within an expression.
@@ -62,7 +62,7 @@ namespace rush::ast {
          return _ident.type();
       };
 
-      declaration const& declaration() const noexcept {
+      ast::nominal_declaration const& declaration() const noexcept {
          return _ident.declaration();
       }
 

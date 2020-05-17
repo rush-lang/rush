@@ -18,13 +18,13 @@
 #ifndef RUSH_AST_DECLS_IMPORT_HPP
 #define RUSH_AST_DECLS_IMPORT_HPP
 
-#include "rush/ast/decls/declaration.hpp"
+#include "rush/ast/decls/nominal.hpp"
 #include "rush/ast/types/builtin.hpp"
 
 #include <memory>
 
 namespace rush::ast {
-   class import_declaration : public ast::declaration {
+   class import_declaration : public ast::nominal_declaration {
    public:
       import_declaration(std::string name)
          : _name { std::move(name) } {}

@@ -73,7 +73,6 @@ namespace rush::ast {
 
    class module;
    class parameter;
-	class declaration;
    class import_declaration;
    class module_declaration;
 	class constant_declaration;

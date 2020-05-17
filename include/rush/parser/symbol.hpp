@@ -19,7 +19,7 @@
 #define RUSH_PARSER_SYMBOL_HPP
 
 #include "rush/parser/attributes.hpp"
-#include "rush/ast/decls/declaration.hpp"
+#include "rush/ast/decls/nominal.hpp"
 
 #include <string>
 
@@ -36,7 +36,7 @@ namespace rush {
       symbol()
          : _decl { nullptr } {}
 
-      symbol(ast::declaration const& decl)
+      symbol(ast::nominal_declaration const& decl)
          : _decl { &decl } {}
 
       // rush::scope const& scope() const noexcept;
@@ -47,7 +47,7 @@ namespace rush {
             : "<undefined>";
       }
 
-      ast::declaration const* declaration() const noexcept {
+      ast::nominal_declaration const* declaration() const noexcept {
          return _decl;
       }
 
@@ -110,7 +110,7 @@ namespace rush {
 		bool is_thread_local_storage_duration() const noexcept;
 
    private:
-      ast::declaration const* _decl;
+      ast::nominal_declaration const* _decl;
    };
 
    // inline bool operator == (symbol const& lhs, symbol const& rhs) {
