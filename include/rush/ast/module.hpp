@@ -63,14 +63,15 @@ namespace rush::ast {
          v.visit_module(*this);
       }
 
-      virtual void attach(ast::node&, ast::context& ctx) override {
-         std::for_each(_imports.begin(), _imports.end(), [this, &ctx](auto& imp) { imp->attach(*this, ctx); });
-         std::for_each(_decls.begin(), _decls.end(), [this, &ctx](auto& decl) { decl->attach(*this, ctx); });
+   protected:
+      virtual void attached(ast::node*, ast::context&) override {
+         std::for_each(_imports.begin(), _imports.end(), [this](auto& imp) { attach(*imp); });
+         std::for_each(_decls.begin(), _decls.end(), [this](auto& decl) { attach(*decl); });
       }
 
-      virtual void detach(ast::node&, ast::context& ctx) override {
-         std::for_each(_imports.begin(), _imports.end(), [this, &ctx](auto& imp) { imp->detach(*this, ctx); });
-         std::for_each(_decls.begin(), _decls.end(), [this, &ctx](auto& decl) { decl->detach(*this, ctx); });
+      virtual void detached(ast::node*, ast::context&) override {
+         std::for_each(_imports.begin(), _imports.end(), [this](auto& imp) { detach(*imp); });
+         std::for_each(_decls.begin(), _decls.end(), [this](auto& decl) { detach(*decl); });
       }
 
    private:

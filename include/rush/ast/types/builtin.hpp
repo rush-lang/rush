@@ -49,8 +49,9 @@ namespace rush::ast {
 			v.visit_builtin_error_type(*this);
 		}
 
-      virtual void attach(ast::node&, ast::context& context) override {}
-      virtual void detach(ast::node&, ast::context& context) override {}
+   protected:
+      virtual void attached(ast::node*, ast::context&) override {}
+      virtual void detached(ast::node*, ast::context&) override {}
    private:
       std::string _msg;
    };
@@ -66,8 +67,9 @@ namespace rush::ast {
 			v.visit_builtin_void_type(*this);
 		}
 
-      virtual void attach(ast::node&, ast::context& context) override {}
-      virtual void detach(ast::node&, ast::context& context) override {}
+   protected:
+      virtual void attached(ast::node*, ast::context&) override {}
+      virtual void detached(ast::node*, ast::context&) override {}
    };
 
    class builtin_bool_type : public builtin_type {
@@ -81,8 +83,9 @@ namespace rush::ast {
 			v.visit_builtin_bool_type(*this);
 		}
 
-      virtual void attach(ast::node&, ast::context& context) override {}
-      virtual void detach(ast::node&, ast::context& context) override {}
+   protected:
+      virtual void attached(ast::node*, ast::context&) override {}
+      virtual void detached(ast::node*, ast::context&) override {}
    };
 
    namespace types {

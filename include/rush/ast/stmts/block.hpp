@@ -50,14 +50,15 @@ namespace rush::ast {
 			v.visit_block_stmt(*this);
 		}
 
-      virtual void attach(ast::node&, ast::context& context) override {
+   protected:
+      virtual void attached(ast::node*, ast::context&) override {
          std::for_each(_stmts.begin(), _stmts.end(),
-            [this, &context](auto& stmt) { stmt->attach(*this, context); });
+            [this](auto& stmt) { attach(*stmt); });
       }
 
-      virtual void detach(ast::node&, ast::context& context) override {
+      virtual void detached(ast::node*, ast::context&) override {
          std::for_each(_stmts.begin(), _stmts.end(),
-            [this, &context](auto& stmt) { stmt->detach(*this, context); });
+            [this](auto& stmt) { detach(*stmt); });
       }
 
 	private:

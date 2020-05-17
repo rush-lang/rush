@@ -27,11 +27,28 @@ namespace rush::ast {
       node() = default;
       virtual ~node() = default;
 
+      ast::node const* parent() const noexcept {
+         return _parent;
+      }
+
+      ast::context* context() const noexcept {
+         return _context;
+      }
+
+      void attach(ast::context& context);
       virtual void accept(ast::visitor&) const = 0;
       virtual void accept(ast::visitor&& v) const { accept(v); }
 
-      virtual void attach(ast::node&, ast::context&) = 0;
-      virtual void detach(ast::node&, ast::context&) = 0;
+   protected:
+      void attach(ast::node& child);
+      void detach(ast::node& child);
+
+      virtual void attached(ast::node*, ast::context&) = 0;
+      virtual void detached(ast::node*, ast::context&) = 0;
+
+   private:
+      ast::node* _parent;
+      ast::context* _context;
    };
 } // rush
 

@@ -222,11 +222,11 @@ namespace rush {
       std::vector<error_type> _errors;
 
       void attach(ast::context& ctx) {
-         if (_node) _node->attach(*_node, ctx);
+         if (_node) _node->attach(ctx);
       }
 
       void detach(ast::context& ctx) {
-         if (_node) _node->detach(*_node, ctx);
+         if (_node) _node->detach(ctx);
       }
    };
 

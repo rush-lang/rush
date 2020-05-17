@@ -32,8 +32,9 @@ namespace rush::ast {
          v.visit_builtin_string_type(*this);
       }
 
-      virtual void attach(ast::node&, ast::context&) override {}
-      virtual void detach(ast::node&, ast::context&) override {}
+   protected:
+      virtual void attached(ast::node*, ast::context&) override {}
+      virtual void detached(ast::node*, ast::context&) override {}
    };
 } // rush::ast
 

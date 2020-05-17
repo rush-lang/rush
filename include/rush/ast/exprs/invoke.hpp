@@ -67,14 +67,15 @@ namespace rush::ast {
          v.visit_invoke_expr(*this);
       }
 
-      virtual void attach(ast::node&, ast::context& context) override {
-         _callable->attach(*this, context);
-         _args->attach(*this, context);
+   protected:
+      virtual void attached(ast::node*, ast::context&) override {
+         attach(*_callable);
+         attach(*_args);
       }
 
-      virtual void detach(ast::node&, ast::context& context) override {
-         _callable->detach(*this, context);
-         _args->detach(*this, context);
+      virtual void detached(ast::node*, ast::context&) override {
+         detach(*_callable);
+         detach(*_args);
       }
 
    private:

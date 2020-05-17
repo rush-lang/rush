@@ -26,8 +26,8 @@
 
 
 namespace rush::ast {
-	class storage_declaration : public nominal_declaration {
-	public:
+   class storage_declaration : public nominal_declaration {
+   public:
       virtual std::string_view name() const noexcept override {
          return _name;
       };
@@ -36,24 +36,16 @@ namespace rush::ast {
          return resolve_type();
       }
 
-		ast::expression* initializer() const noexcept {
-			return _init.get();
-		}
+      ast::expression* initializer() const noexcept {
+         return _init.get();
+      }
 
       bool is_initialized() const noexcept {
          return _init.operator bool();
       }
 
-      virtual void attach(ast::node& parent, ast::context& context) override {
-         if (_init) _init->attach(*this, context);
-      }
-
-      virtual void detach(ast::node& parent, ast::context& context) override {
-         if (_init) _init->detach(*this, context);
-      }
-
-	protected:
-		storage_declaration(
+   protected:
+      storage_declaration(
          std::string name,
          ast::type_ref type,
          std::unique_ptr<expression> init)
@@ -61,10 +53,18 @@ namespace rush::ast {
          , _type { std::move(type) }
          , _init { std::move(init) } {}
 
-	private:
+      virtual void attached(ast::node*, ast::context&) override {
+         if (_init) attach(*_init);
+      }
+
+      virtual void detached(ast::node*, ast::context&) override {
+         if (_init) detach(*_init);
+      }
+
+   private:
       std::string _name;
       mutable ast::type_ref _type;
-		std::unique_ptr<expression> _init;
+      std::unique_ptr<expression> _init;
       mutable bool _resolving_type = false;
 
       ast::type_ref resolve_type() const {
@@ -83,7 +83,7 @@ namespace rush::ast {
               : _type
               : result_type;
       }
-	};
+   };
 } // rush::ast
 
 

@@ -48,8 +48,9 @@ namespace rush::ast {
       using node::accept;
       virtual void accept(ast::visitor&) const override {};
 
-      virtual void attach(ast::node&, ast::context&) override {};
-      virtual void detach(ast::node&, ast::context&) override {};
+   protected:
+      virtual void attached(ast::node*, ast::context&) override {};
+      virtual void detached(ast::node*, ast::context&) override {};
 
    private:
       std::string _name;

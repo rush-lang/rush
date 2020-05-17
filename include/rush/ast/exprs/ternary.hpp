@@ -72,16 +72,17 @@ namespace rush::ast {
          v.visit_ternary_expr(*this);
       }
 
-      virtual void attach(ast::node&, ast::context& context) override {
-         _cond->attach(*this, context);
-         _true->attach(*this, context);
-         _false->attach(*this, context);
+   protected:
+      virtual void attached(ast::node*, ast::context&) override {
+         attach(*_cond);
+         attach(*_true);
+         attach(*_false);
       }
 
-      virtual void detach(ast::node&, ast::context& context) override {
-         _cond->detach(*this, context);
-         _true->detach(*this, context);
-         _false->detach(*this, context);
+      virtual void detached(ast::node*, ast::context&) override {
+         detach(*_cond);
+         detach(*_true);
+         detach(*_false);
       }
 
    private:

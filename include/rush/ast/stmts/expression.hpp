@@ -38,12 +38,13 @@ namespace rush::ast {
 			_expr->accept(v);
 		}
 
-       virtual void attach(ast::node& parent, ast::context& context) override {
-         _expr->attach(parent, context);
+   protected:
+      virtual void attached(ast::node*, ast::context&) override {
+         attach(*_expr);
       }
 
-      virtual void detach(ast::node& parent, ast::context& context) override {
-         _expr->detach(parent, context);
+      virtual void detached(ast::node*, ast::context&) override {
+         detach(*_expr);
       }
 
 	private:

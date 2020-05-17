@@ -13,46 +13,27 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *************************************************************************/
-#pragma once
-
-#ifndef RUSH_AST_TYPE_HPP
-#define RUSH_AST_TYPE_HPP
-
 #include "rush/ast/node.hpp"
-#include "rush/ast/visitor.hpp"
-
-#include <memory>
-#include <string>
-#include <type_traits>
 
 namespace rush::ast {
-   enum class type_kind {
-      error,
-      builtin_void,
-      builtin_bool,
-      builtin_char,
-      builtin_string,
-      builtin_integral,
-      builtin_floating_point,
-      array,
-      tuple,
-      function
-   };
+   void node::attach(ast::context& context) {
+      if (_context != nullptr) detach(*this);
+      attached(_parent = nullptr, *(_context = &context));
+   }
 
-   template <typename TypeT>
-   struct type_traits {};
+   void node::attach(ast::node& child) {
+      child._parent = this;
+      child._context = _context;
+      child.attached(
+         child._parent,
+         *child._context);
+   }
 
-   class type : public node {
-      friend class type_ref;
-   public:
-      virtual ast::type_kind kind() const = 0;
-
-      std::string to_string() const;
-
-   protected:
-      virtual void attached(ast::node*, ast::context&) override {};
-      virtual void detached(ast::node*, ast::context&) override {};
-   };
+   void node::detach(ast::node& child) {
+      child.detached(
+         child._parent,
+         *child._context);
+      child._parent = nullptr;
+      child._context = nullptr;
+   }
 }
-
-#endif // RUSH_AST_TYPE_HPP

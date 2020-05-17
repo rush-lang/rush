@@ -58,15 +58,16 @@ namespace rush::ast {
 			v.visit_literal_expr(*this);
 		}
 
-      virtual void attach(ast::node&, ast::context& ctx) override {
+   protected:
+      virtual void attached(ast::node*, ast::context&) override {
 			std::for_each(_args->begin(), _args->end(),
-				[this, &ctx](auto& a) { a->attach(*this, ctx); });
-         _type = ctx.tuple_type(*this);
+				[this](auto& a) { attach(*a); });
+         _type = context()->tuple_type(*this);
 		}
 
-      virtual void detach(ast::node&, ast::context& ctx) override {
+      virtual void detached(ast::node*, ast::context&) override {
 			std::for_each(_args->begin(), _args->end(),
-				[this, &ctx](auto& a) { a->detach(*this, ctx); });
+				[this](auto& a) { detach(*a); });
          _type = types::undefined;
 		}
 

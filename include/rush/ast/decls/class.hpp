@@ -54,10 +54,11 @@ namespace rush::ast {
          v.visit_class_decl(*this);
       };
 
-      virtual void attach(ast::node&, ast::context& context) override {
+   protected:
+      virtual void attached(ast::node*, ast::context&) override {
       };
 
-      virtual void detach(ast::node&, ast::context&) override {
+      virtual void detached(ast::node*, ast::context&) override {
       };
 
    private:

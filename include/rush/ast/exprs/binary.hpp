@@ -55,14 +55,15 @@ namespace rush::ast {
 			v.visit_binary_expr(*this);
 		}
 
-      virtual void attach(ast::node&, ast::context& context) override {
-         _left->attach(*this, context);
-         _right->attach(*this, context);
+   protected:
+      virtual void attached(ast::node*, ast::context&) override {
+         attach(*_left);
+         attach(*_right);
       }
 
-      virtual void detach(ast::node&, ast::context& context) override {
-         _left->detach(*this, context);
-         _right->detach(*this, context);
+      virtual void detached(ast::node*, ast::context&) override {
+         detach(*_left);
+         detach(*_right);
       }
 
 	private:

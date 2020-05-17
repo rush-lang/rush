@@ -50,14 +50,15 @@ namespace rush::ast {
          return v.visit_member_access_expr(*this);
       }
 
-      virtual void attach(ast::node&, ast::context& ctx) override {
-         _expr->attach(*this, ctx);
-         _member->attach(*this, ctx);
+   protected:
+      virtual void attached(ast::node*, ast::context&) override {
+         attach(*_expr);
+         attach(*_member);
       }
 
-      virtual void detach(ast::node&, ast::context& ctx) override {
-         _expr->detach(*this, ctx);
-         _member->detach(*this, ctx);
+      virtual void detached(ast::node*, ast::context&) override {
+         detach(*_expr);
+         detach(*_member);
       }
 
    private:

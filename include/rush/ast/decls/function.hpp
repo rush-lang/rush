@@ -88,18 +88,19 @@ namespace rush::ast {
          v.visit_function_decl(*this);
       }
 
-      virtual void attach(ast::node&, ast::context& context) override {
-         _type = context.function_type(*this);
+   protected:
+      virtual void attached(ast::node*, ast::context&) override {
+         _type = context()->function_type(*this);
 
-         _params->attach(*this, context);
-         _body->attach(*this, context);
+         attach(*_params);
+         attach(*_body);
       }
 
-      virtual void detach(ast::node&, ast::context& context) override {
+      virtual void detached(ast::node*, ast::context&) override {
          _type = types::undefined;
 
-         _params->detach(*this, context);
-         _body->detach(*this, context);
+         detach(*_params);
+         detach(*_body);
       }
 
 	private:

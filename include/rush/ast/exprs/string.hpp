@@ -50,34 +50,35 @@ namespace rush::ast {
          , _parts { std::move(parts) }
          , _type { ast::types::undefined } {}
 
-         std::string_view original() const noexcept {
-            return _template;
-         }
+      std::string_view original() const noexcept {
+         return _template;
+      }
 
-         std::vector<std::unique_ptr<ast::expression>> const& parts() const noexcept {
-            return _parts;
-         }
+      std::vector<std::unique_ptr<ast::expression>> const& parts() const noexcept {
+         return _parts;
+      }
 
-         virtual ast::type_ref result_type() const noexcept override {
-            return _type;
-         };
+      virtual ast::type_ref result_type() const noexcept override {
+         return _type;
+      };
 
-         using node::accept;
-         virtual void accept(ast::visitor& v) const override {
-            v.visit_string_template_expr(*this);
-         }
+      using node::accept;
+      virtual void accept(ast::visitor& v) const override {
+         v.visit_string_template_expr(*this);
+      }
 
-         virtual void attach(ast::node& parent, ast::context& context) override {
-            _type = context.string_type();
-            std::for_each(_parts.begin(), _parts.end(),
-               [&parent, &context](auto& elem) { elem->attach(parent, context); });
-         }
+   protected:
+      virtual void attached(ast::node*, ast::context&) override {
+         _type = context()->string_type();
+         std::for_each(_parts.begin(), _parts.end(),
+            [this](auto& elem) { attach(*elem); });
+      }
 
-         virtual void detach(ast::node& parent, ast::context& context) override {
-            _type = ast::types::undefined;
-            std::for_each(_parts.begin(), _parts.end(),
-               [&parent, &context](auto& elem) { elem->detach(parent, context); });
-         }
+      virtual void detached(ast::node*, ast::context&) override {
+         _type = ast::types::undefined;
+         std::for_each(_parts.begin(), _parts.end(),
+            [this](auto& elem) { detach(*elem); });
+      }
 
    private:
       std::string _template;

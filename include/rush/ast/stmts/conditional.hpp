@@ -77,14 +77,15 @@ namespace rush::ast {
          v.visit_conditional_stmt(*this);
       }
 
-      virtual void attach(ast::node&, ast::context& context) override {
-         _cond->attach(*this, context);
-         _body->attach(*this, context);
+   protected:
+      virtual void attached(ast::node*, ast::context&) override {
+         attach(*_cond);
+         attach(*_body);
       }
 
-      virtual void detach(ast::node&, ast::context& context) override {
-         _cond->detach(*this, context);
-         _body->detach(*this, context);
+      virtual void detached(ast::node*, ast::context&) override {
+         detach(*_cond);
+         detach(*_body);
       }
 
    private:
@@ -124,14 +125,15 @@ namespace rush::ast {
          v.visit_alternating_stmt(*this);
       }
 
-      virtual void attach(ast::node&, ast::context& context) override {
-         _primary->attach(*this, context);
-         _alternate->attach(*this, context);
+   protected:
+      virtual void attached(ast::node*, ast::context&) override {
+         attach(*_primary);
+         attach(*_alternate);
       }
 
-      virtual void detach(ast::node&, ast::context& context) override {
-         _primary->detach(*this, context);
-         _alternate->detach(*this, context);
+      virtual void detached(ast::node*, ast::context&) override {
+         detach(*_primary);
+         detach(*_alternate);
       }
 
    private:
