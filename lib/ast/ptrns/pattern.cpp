@@ -16,6 +16,7 @@
 #include "rush/ast/ptrns/named.hpp"
 #include "rush/ast/ptrns/destructure.hpp"
 #include "rush/ast/ptrns/type_annotation.hpp"
+#include "rush/ast/types/extension.hpp"
 #include "rush/ast/decls/constant.hpp"
 #include "rush/ast/decls/variable.hpp"
 #include "rush/ast/decls/parameter.hpp"
@@ -41,7 +42,16 @@ public:
    }
 
    virtual void visit_type_annotation_ptrn(ast::type_annotation_pattern const& ptrn) override {
-      _type = ptrn.type();
+      struct strip_type_extension : ast::visitor {
+         ast::type_ref result;
+         strip_type_extension(ast::type_ref type) : result { std::move(type) } {}
+         virtual void visit_type_extension(ast::type_extension const& type)
+         { result = type.underlying_type(); }
+      };
+
+      _type = rush::visit(
+         ptrn.type(),
+         strip_type_extension { ptrn.type() }).result;
    }
 
    // virtual void visit_parameter_decl(ast::parameter const&) {}
