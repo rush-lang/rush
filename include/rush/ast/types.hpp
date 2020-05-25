@@ -26,6 +26,8 @@
 #include "rush/ast/types/integral.hpp"
 #include "rush/ast/types/floating.hpp"
 #include "rush/ast/types/function.hpp"
+#include "rush/ast/types/extension.hpp"
+#include "rush/ast/types/optional.hpp"
 #include "rush/ast/types/type_matcher.hpp"
 #include "rush/ast/types/type_reducer.hpp"
 

@@ -36,7 +36,9 @@ namespace rush::ast {
       builtin_floating_point,
       array,
       tuple,
-      function
+      function,
+      optional,
+      extension,
    };
 
    template <typename TypeT>

@@ -18,6 +18,7 @@
 #ifndef RUSH_AST_EXPRESSION_HPP
 #define RUSH_AST_EXPRESSION_HPP
 
+#include "rush/ast/exprs/nil.hpp"
 #include "rush/ast/exprs/unary.hpp"
 #include "rush/ast/exprs/binary.hpp"
 #include "rush/ast/exprs/ternary.hpp"

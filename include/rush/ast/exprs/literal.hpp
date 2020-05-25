@@ -61,14 +61,6 @@ namespace rush::ast {
       ast::type_ref _type;
    };
 
-   class nil_literal_expression : public literal_expression {
-   public:
-      using literal_expression::literal_expression;
-
-      using node::accept;
-      virtual void accept(ast::visitor& v) const override { v.visit_literal_expr(*this); }
-   };
-
    class string_literal_expression : public literal_expression {
    public:
       using literal_expression::literal_expression;
@@ -107,8 +99,6 @@ namespace rush::ast {
 }
 
 namespace rush::ast::exprs {
-   std::unique_ptr<nil_literal_expression> nil(ast::type_ref);
-
    std::unique_ptr<boolean_literal_expression> literal(bool, ast::context&);
    std::unique_ptr<string_literal_expression>  literal(std::string, ast::context&);
 

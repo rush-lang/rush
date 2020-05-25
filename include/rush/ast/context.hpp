@@ -134,8 +134,13 @@ namespace rush::ast {
       std::variant<ast::type_ref, ast::type_resolver*> function_type(ast::lambda_expression const&);
       std::variant<ast::type_ref, ast::type_resolver*> function_type(ast::function_declaration const&);
 
+      ast::type_ref optional_type(ast::type_ref);
+      ast::type_ref type_extension(ast::type_ref);
+
    private:
       std::unordered_map<ast::node const*, std::unique_ptr<ast::type_resolver>> _type_resolvers;
+      std::unordered_map<ast::type_ref, std::unique_ptr<ast::optional_type>> _optional_types;
+      std::unordered_map<ast::type_ref, std::unique_ptr<ast::type_extension>> _type_extensions;
       std::unordered_map<detail::array_type_key_t, std::unique_ptr<ast::array_type>> _array_types;
       std::unordered_map<detail::tuple_type_key_t, std::unique_ptr<ast::tuple_type>> _tuple_types;
       std::unordered_map<detail::function_type_key_t, std::unique_ptr<ast::function_type>> _function_types;

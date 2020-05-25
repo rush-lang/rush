@@ -197,6 +197,7 @@ namespace rush {
 		case lexical_token_type::keyword:
 			switch (tok.keyword()) {
 			default: return errs::unexpected_keyword_expr(tok);
+         case keywords::nil_: next_skip_indent(); result = exprs::nil(); break;
 			case keywords::true_: next_skip_indent(); result = exprs::literal(true, *_context); break;
 			case keywords::false_: next_skip_indent(); result = exprs::literal(false, *_context); break;
 			} break;

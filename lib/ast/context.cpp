@@ -269,6 +269,19 @@ namespace rush::ast {
       }
    }
 
+   ast::type_ref context::array_type(ast::array_literal_expression& expr) {
+      auto types = expr.elements().result_types();
+      return types.empty()
+           ? array_type(types::undefined)
+           : types.size() == 1
+           ? array_type(types.front())
+           : array_type(std::accumulate(
+               std::next(types.begin()),
+               types.end(),
+               types.front(),
+               ast::types::reduce));
+   }
+
    ast::type_ref context::array_type(ast::type_ref type, size_type rank) {
       auto key = detail::array_type_key_t { rank, type };
       auto it = _array_types.find(key);
@@ -278,7 +291,6 @@ namespace rush::ast {
       }
       return *it->second;
    }
-
 
    ast::type_ref context::tuple_type(ast::tuple_literal_expression& expr) {
       return tuple_type(expr.arguments().result_types());
@@ -341,16 +353,21 @@ namespace rush::ast {
       return *it->second;
    }
 
-   ast::type_ref context::array_type(ast::array_literal_expression& expr) {
-      auto types = expr.elements().result_types();
-      return types.empty()
-           ? array_type(types::undefined)
-           : types.size() == 1
-           ? array_type(types.front())
-           : array_type(std::accumulate(
-               std::next(types.begin()),
-               types.end(),
-               types.front(),
-               ast::types::reduce));
+   ast::type_ref context::optional_type(ast::type_ref type) {
+      auto it = _optional_types.find(type);
+      if (it == _optional_types.end()) {
+         auto p = std::make_unique<ast::optional_type>(type);
+         it = _optional_types.insert({ type, std::move(p) }).first;
+      }
+      return *it->second;
+   }
+
+   ast::type_ref context::type_extension(ast::type_ref type) {
+      auto it = _type_extensions.find(type);
+      if (it == _type_extensions.end()) {
+         auto p = std::make_unique<ast::type_extension>(type);
+         it = _type_extensions.insert({ type, std::move(p) }).first;
+      }
+      return *it->second;
    }
 }

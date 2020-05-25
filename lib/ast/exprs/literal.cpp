@@ -31,10 +31,6 @@ namespace rush::ast {
 }
 
 namespace rush::ast::exprs {
-	std::unique_ptr<nil_literal_expression> nil(ast::type_ref type) {
-		return make_literal_expr<nil_literal_expression>(std::uint64_t(0), type);
-	}
-
 	std::unique_ptr<boolean_literal_expression> literal(bool val, ast::context& ctx) {
 		return make_literal_expr<boolean_literal_expression>(val, ctx.bool_type());
 	}

@@ -84,6 +84,16 @@ namespace rush::ast {
          traverse(decl);
       }
 
+      virtual void visit_type_extension(ast::type_extension const& type) override {
+         write("@");
+         type.underlying_type().accept(*this);
+      }
+
+      virtual void visit_optional_type(ast::optional_type const& type) override {
+         type.underlying_type().accept(*this);
+         write("?");
+      }
+
       virtual void visit_builtin_error_type(ast::builtin_error_type const& type) override {
          write("<error-type: \"{}\">", type.message());
       }
@@ -228,10 +238,6 @@ namespace rush::ast {
          indent_traverse(expr);
       }
 
-		virtual void visit_literal_expr(ast::nil_literal_expression const& expr) override {
-			print_expression("nil", expr);
-		}
-
 		virtual void visit_literal_expr(ast::string_literal_expression const& expr) override {
 			print_literal_expr(fmt::format("\"{}\"", expr.value()), expr);
 		}
@@ -291,6 +297,10 @@ namespace rush::ast {
          print_expression("lambda", expr);
          indent_traverse(expr);
       }
+
+      virtual void visit_nil_expr(ast::nil_expression const& expr) override {
+			print_expression("nil", expr);
+		}
 
 		virtual void visit_constant_decl(ast::constant_declaration const& decl) override {
 			print_storage_decl("constant", decl);

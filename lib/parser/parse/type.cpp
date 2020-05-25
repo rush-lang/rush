@@ -52,6 +52,11 @@ namespace rush {
          break;
       case lexical_token_type::symbol:
          switch (tok.symbol()) {
+         case symbols::ampersat:
+            next_skip_indent();
+            result = parse_type();
+            if (result.failed()) return std::move(result);
+            return _context->type_extension(result.type());
          case symbols::left_parenthesis:
             result = parse_tuple_type();
             istuple = true;
@@ -64,13 +69,18 @@ namespace rush {
       }
 
       if (result.failed())
-      return std::move(result);
+         return std::move(result);
 
       tok = peek_skip_indent();
       if (tok.is_symbol()) {
          switch (tok.symbol()) {
-         case symbols::thin_arrow: return parse_function_type(istuple
-            ? result.type() : _context->tuple_type(result.type()));
+         case symbols::question_mark:
+            next_skip_indent();
+            return _context->optional_type(result.type());
+         case symbols::thin_arrow:
+            return parse_function_type(!istuple
+                 ? _context->tuple_type(result.type())
+                 : result.type());
          // case symbols::left_square_bracket: return parse_array_type(result.type());
          default: return std::move(result);
          }

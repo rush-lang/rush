@@ -23,6 +23,7 @@
 
 namespace rush::ast {
    class type;
+   class type_extension;
    class builtin_error_type;
    class builtin_void_type;
    class builtin_bool_type;
@@ -38,6 +39,7 @@ namespace rush::ast {
    class concept_type;
    class interface_type;
    class function_type;
+   class optional_type;
 
    class named_pattern;
    class discard_pattern;
@@ -55,9 +57,9 @@ namespace rush::ast {
    class string_template_expression;
    class invoke_expression;
    class lambda_expression;
+	class nil_expression;
 
 	class literal_expression;
-	class nil_literal_expression;
    class array_literal_expression;
    class tuple_literal_expression;
 	class string_literal_expression;
@@ -92,12 +94,13 @@ namespace rush::ast {
 
 		// types
 		virtual void visit_type(ast::type const&) {};
-      virtual void visit_builtin_error_type(ast::builtin_error_type const&) {}
-      virtual void visit_builtin_void_type(ast::builtin_void_type const&) {}
-      virtual void visit_builtin_bool_type(ast::builtin_bool_type const&) {}
-      virtual void visit_builtin_integral_type(ast::builtin_integral_type const&) {}
-      virtual void visit_builtin_floating_type(ast::builtin_floating_point_type const&) {}
-      virtual void visit_builtin_string_type(ast::builtin_string_type const&) {}
+      virtual void visit_type_extension(ast::type_extension const&) {};
+      virtual void visit_builtin_error_type(ast::builtin_error_type const&) {};
+      virtual void visit_builtin_void_type(ast::builtin_void_type const&) {};
+      virtual void visit_builtin_bool_type(ast::builtin_bool_type const&) {};
+      virtual void visit_builtin_integral_type(ast::builtin_integral_type const&) {};
+      virtual void visit_builtin_floating_type(ast::builtin_floating_point_type const&) {};
+      virtual void visit_builtin_string_type(ast::builtin_string_type const&) {};
 
       virtual void visit_array_type(ast::array_type const&) {};
       virtual void visit_tuple_type(ast::tuple_type const&) {};
@@ -107,6 +110,7 @@ namespace rush::ast {
       virtual void visit_concept_type(ast::concept_type const&) {};
       virtual void visit_interface_type(ast::interface_type const&) {};
       virtual void visit_function_type(ast::function_type const&) {};
+      virtual void visit_optional_type(ast::optional_type const&) {};
 
       // patterns
       virtual void visit_named_ptrn(ast::named_pattern const&) {};
@@ -125,7 +129,7 @@ namespace rush::ast {
 		virtual void visit_variable_decl(ast::variable_declaration const&) {};
 		virtual void visit_function_decl(ast::function_declaration const&) {};
       virtual void visit_member_decl(ast::member_declaration const&) {};
-      virtual void visit_class_decl(ast::class_declaration const&) {}
+      virtual void visit_class_decl(ast::class_declaration const&) {};
 
 		// statements
 		virtual void visit_block_stmt(statement_block const&) {};
@@ -158,8 +162,8 @@ namespace rush::ast {
       virtual void visit_string_template_expr(string_template_expression const&) {};
       virtual void visit_invoke_expr(invoke_expression const&) {};
       virtual void visit_lambda_expr(lambda_expression const&) {};
+		virtual void visit_nil_expr(nil_expression const&) {};
 
-		virtual void visit_literal_expr(nil_literal_expression const&) {};
 		virtual void visit_literal_expr(string_literal_expression const&) {};
 		virtual void visit_literal_expr(boolean_literal_expression const&) {};
 		virtual void visit_literal_expr(integer_literal_expression const&) {};
