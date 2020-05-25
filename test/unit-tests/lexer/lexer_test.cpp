@@ -168,7 +168,7 @@ TEST_CASE( "rush::lex (identifiers)", "[unit][lexer]" ) {
 	}));
 
 	CHECK( valid_lex("_ _a _z _0 _9 _a0 _z0 _a9 _z9", {
-		tok::identifier("_", { 1, 1 }),
+		tok::underscore({ 1, 1 }),
 		tok::identifier("_a", { 1, 3 }),
 		tok::identifier("_z", { 1, 6 }),
 		tok::identifier("_0", { 1, 9 }),
