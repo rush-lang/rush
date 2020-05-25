@@ -101,8 +101,9 @@ namespace rush::ast {
       }
 
       virtual void visit_array_type(ast::array_type const& type) override {
+         write("[");
          type.underlying_type().accept(*this);
-         write("[]");
+         write("]");
       }
 
       virtual void visit_tuple_type(ast::tuple_type const& type) override {
@@ -374,7 +375,7 @@ namespace rush::ast {
             indent();
             write("<initializer: (type=");
             decl.initializer()->result_type().accept(*this);
-         writeln(")>");
+            writeln(")>");
             indent_accept(*decl.initializer());
             dedent();
          }

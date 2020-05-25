@@ -232,11 +232,11 @@ namespace rush {
 
       // types.
       rush::parse_type_result parse_type();
+      rush::parse_type_result parse_array_type();
       rush::parse_type_result parse_tuple_type();
       rush::parse_type_result parse_simple_type();
 		rush::parse_type_result parse_type_annotation();
 
-      rush::parse_type_result parse_array_type(ast::type_ref);
       rush::parse_type_result parse_function_type(ast::type_ref);
 
 		// declarations.

@@ -56,6 +56,9 @@ namespace rush {
             result = parse_tuple_type();
             istuple = true;
             break;
+         case symbols::left_square_bracket:
+            result = parse_array_type();
+            break;
          default: return errs::expected_type_annotation(tok);
          }
       }
@@ -68,7 +71,7 @@ namespace rush {
          switch (tok.symbol()) {
          case symbols::thin_arrow: return parse_function_type(istuple
             ? result.type() : _context->tuple_type(result.type()));
-         case symbols::left_square_bracket: return parse_array_type(result.type());
+         // case symbols::left_square_bracket: return parse_array_type(result.type());
          default: return std::move(result);
          }
       }
@@ -118,21 +121,34 @@ namespace rush {
       return _context->function_type(ret_type_result.type(), params_type);
    }
 
-   rush::parse_type_result parser::parse_array_type(ast::type_ref elem_type) {
+   rush::parse_type_result parser::parse_array_type() {
       assert(peek_skip_indent().is(symbols::left_square_bracket) && "expected array type symbol '['.");
-      next_skip_indent();
+      next_skip_indent(); // consume '['
 
       auto tok = peek_skip_indent();
-      while (tok.is(symbols::comma)) {
-         next_skip_indent();
-         // grab dimensions etc..
-         tok = peek_skip_indent();
+      if (tok.is_integer_literal()) {
+         // consume fixed size.
+         next_skip_indent(); // consume integer literal.
+         next_skip_indent(); // consume ':'
       }
 
+      // while (tok.is(symbols::comma)) {
+      //    next_skip_indent();
+      //    // grab dimensions etc..
+      //    tok = peek_skip_indent();
+      // }
+
+      auto elem_type_result = parse_type();
+      if (elem_type_result.failed())
+         return std::move(elem_type_result);
+
+
+      tok = peek_skip_indent();
       if (tok.is_not(symbols::right_square_bracket))
          return errs::expected_closing_square_bracket(tok);
       next_skip_indent(); // skip closing ']'
-      return _context->array_type(elem_type);
+
+      return _context->array_type(elem_type_result.type());
    }
 
    rush::parse_type_result parser::parse_tuple_type() {
