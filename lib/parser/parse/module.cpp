@@ -50,7 +50,7 @@ namespace rush {
 
       // mark remaining identifiers as undeclared.
       auto resolvers = _scope.resolvers();
-      std::for_each(resolvers.begin(), resolvers.end(), [&](auto r) {
+      std::for_each(resolvers.begin(), resolvers.end(), [this](auto r) {
          r->resolve(_module->undeclared_identifier(std::string { r->name() }));
       });
 

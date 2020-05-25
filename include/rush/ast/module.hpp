@@ -55,7 +55,7 @@ namespace rush::ast {
       ast::nominal_declaration const* undeclared_identifier(std::string name) {
          auto udid = std::make_unique<ast::undeclared_identifier>(std::move(name));
          push_back(std::move(udid), ast::module_access::internal);
-         return reinterpret_cast<ast::nominal_declaration const*>(_decls.back().get());
+         return reinterpret_cast<ast::nominal_declaration const*>(&_decls.back()->declaration());
       }
 
       using node::accept;
