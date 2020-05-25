@@ -21,6 +21,7 @@
 #include "rush/ast/exprs/expression.hpp"
 #include "rush/ast/types/type_reducer.hpp"
 #include "rush/ast/visitor.hpp"
+#include "rush/ast/context.hpp"
 
 #include <memory>
 
@@ -45,9 +46,20 @@ namespace rush::ast {
 		expression const& right_operand() const noexcept { return *_right; }
 
       virtual ast::type_ref result_type() const noexcept override {
-         return types::reduce(
+         switch (_opkind) {
+         case binary_operator::equal:
+         case binary_operator::not_equal:
+         case binary_operator::logical_or:
+         case binary_operator::logical_and:
+         case binary_operator::less_than:
+         case binary_operator::less_equals:
+         case binary_operator::greater_than:
+         case binary_operator::greater_equals:
+            return context()->bool_type();
+         default: return types::reduce(
             _left->result_type(),
             _right->result_type());
+         }
       }
 
 		using node::accept;
