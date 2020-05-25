@@ -21,6 +21,7 @@
 #include "rush/ast/types/type_ref.hpp"
 #include "rush/ast/types/builtin.hpp"
 #include "rush/ast/decls/storage.hpp"
+#include "rush/ast/ptrns/pattern.hpp"
 
 
 namespace rush::ast {
@@ -28,26 +29,25 @@ namespace rush::ast {
 
 	namespace decls {
 		std::unique_ptr<constant_declaration> constant(
-			std::string name,
-			ast::type_ref type,
-			std::unique_ptr<expression> init);
+         std::unique_ptr<ast::pattern> patt,
+			std::unique_ptr<ast::expression> init = nullptr);
 	}
 
 	class constant_declaration : public storage_declaration {
 		struct factory_tag_t {};
 
 		friend std::unique_ptr<constant_declaration>
-			decls::constant(std::string, ast::type_ref, std::unique_ptr<expression>);
+			decls::constant(
+            std::unique_ptr<ast::pattern>,
+            std::unique_ptr<ast::expression>);
 
 	public:
 		constant_declaration(
-         std::string name,
-         ast::type_ref type,
-         std::unique_ptr<expression> init,
+         std::unique_ptr<ast::pattern> patt,
+         std::unique_ptr<ast::expression> init,
          factory_tag_t)
 			: storage_declaration {
-				std::move(name),
-				std::move(type),
+            std::move(patt),
 				std::move(init)
 			} {}
 
@@ -62,28 +62,14 @@ namespace rush::ast {
 	};
 
 	namespace decls {
-		inline std::unique_ptr<constant_declaration> constant(
-			std::string name,
-			ast::type_ref type,
-			std::unique_ptr<expression> init = nullptr
-		) {
-			return std::make_unique<constant_declaration>(
-				std::move(name),
-				std::move(type),
-				std::move(init),
-				constant_declaration::factory_tag_t {});
-		}
-
-		inline std::unique_ptr<constant_declaration> constant(
-			std::string name,
-			std::unique_ptr<expression> init
-		) {
-			if (!init) throw std::invalid_argument("un-typed constant declaration requires an initializer.");
-			return constant(
-				std::move(name),
-				ast::types::undefined,
-				std::move(init));
-		}
+      inline std::unique_ptr<constant_declaration> constant(
+         std::unique_ptr<ast::pattern> patt,
+         std::unique_ptr<ast::expression> init) {
+            return std::make_unique<constant_declaration>(
+               std::move(patt),
+               std::move(init),
+               constant_declaration::factory_tag_t {});
+         }
 	} // rush::ast::decls
 } // rush::ast
 

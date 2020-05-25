@@ -13,27 +13,30 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *************************************************************************/
-#include "rush/ast/node.hpp"
+#pragma once
+
+#ifndef RUSH_AST_PTRNS_BINDING_HPP
+#define RUSH_AST_PTRNS_BINDING_HPP
+
+#include "rush/ast/ptrns/pattern.hpp"
+#include "rush/ast/exprs/expression.hpp"
+
+#include <memory>
 
 namespace rush::ast {
-   void node::attach(ast::context& context) {
-      if (_context != nullptr) detach(*this);
-      attached(_parent = nullptr, *(_context = &context));
-   }
-
-   void node::attach(ast::node& child, ast::node* parent) {
-      child._parent = parent != nullptr ? parent : this;
-      child._context = _context;
-      child.attached(
-         child._parent,
-         *child._context);
-   }
-
-   void node::detach(ast::node& child) {
-      child.detached(
-         child._parent,
-         *child._context);
-      child._parent = nullptr;
-      child._context = nullptr;
-   }
+   class binding_pattern : public pattern {
+   private:
+      std::unique_ptr<pattern> _pattern;
+      std::unique_ptr<ast::expression> _expression;
+   };
 }
+
+namespace rush::ast::ptrns {
+   std::unique_ptr<ast::binding_pattern> binding(
+      std::unique_ptr<ast::pattern> lhs,
+      std::unique_ptr<ast::expression> rhs) {
+         return nullptr;
+      }
+}
+
+#endif // RUSH_AST_PTRNS_BINDING_HPP

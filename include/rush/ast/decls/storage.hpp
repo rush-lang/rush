@@ -20,20 +20,21 @@
 
 #include "rush/ast/identifier.hpp"
 #include "rush/ast/exprs/expression.hpp"
-#include "rush/ast/decls/nominal.hpp"
+#include "rush/ast/decls/declaration.hpp"
+#include "rush/ast/ptrns/pattern.hpp"
 #include "rush/ast/types/type_ref.hpp"
 #include "rush/ast/visitor.hpp"
 
 
 namespace rush::ast {
-   class storage_declaration : public nominal_declaration {
+   class storage_declaration : public declaration {
    public:
-      virtual std::string_view name() const noexcept override {
-         return _name;
-      };
-
       virtual ast::type_ref type() const noexcept override {
          return resolve_type();
+      }
+
+      ast::pattern& pattern() const noexcept {
+         return *_patt;
       }
 
       ast::expression* initializer() const noexcept {
@@ -46,25 +47,26 @@ namespace rush::ast {
 
    protected:
       storage_declaration(
-         std::string name,
-         ast::type_ref type,
-         std::unique_ptr<expression> init)
-         : _name { std::move(name) }
-         , _type { std::move(type) }
-         , _init { std::move(init) } {}
+         std::unique_ptr<ast::pattern> patt,
+         std::unique_ptr<ast::expression> init)
+         : _patt { std::move(patt) }
+         , _init { std::move(init) }
+         , _type { ast::types::undefined } {}
 
       virtual void attached(ast::node*, ast::context&) override {
          if (_init) attach(*_init);
+         attach(*_patt);
       }
 
       virtual void detached(ast::node*, ast::context&) override {
+         detach(*_patt);
          if (_init) detach(*_init);
       }
 
    private:
-      std::string _name;
+      std::unique_ptr<ast::pattern> _patt;
+      std::unique_ptr<ast::expression> _init;
       mutable ast::type_ref _type;
-      std::unique_ptr<expression> _init;
       mutable bool _resolving_type = false;
 
       ast::type_ref resolve_type() const {

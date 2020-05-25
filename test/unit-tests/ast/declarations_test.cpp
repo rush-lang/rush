@@ -19,23 +19,25 @@
 #include "rush/ast/types/integral.hpp"
 #include "rush/ast/decls/variable.hpp"
 #include "rush/ast/decls/constant.hpp"
+#include "rush/ast/ptrns/named.hpp"
 
 namespace ast = rush::ast;
 namespace exprs = ast::exprs;
 namespace decls = ast::decls;
+namespace ptrns = ast::ptrns;
 
 TEST_CASE( "rush::ast::constant_declaration", "[unit][ast]" ) {
    auto ctx = ast::context {};
-	auto decl = decls::constant("abc", exprs::literal(1, ctx));
+	auto decl = decls::constant(ptrns::named("abc"), exprs::literal(1, ctx));
 
-	REQUIRE( decl->name() == "abc" );
+	// REQUIRE( decl->name() == "abc" );
 	REQUIRE( decl->type() == ctx.int32_type() );
 }
 
 TEST_CASE( "rush::ast::variable_declaration", "[unit][ast]" ) {
    auto ctx = ast::context {};
-	auto decl = decls::variable("def", exprs::literal(1, ctx));
+	auto decl = decls::variable(ptrns::named("def"), exprs::literal(1, ctx));
 
-	REQUIRE( decl->name() == "def" );
+	// REQUIRE( decl->name() == "def" );
 	REQUIRE( decl->type() == ctx.int32_type() );
 }

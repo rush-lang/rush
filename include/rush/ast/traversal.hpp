@@ -23,12 +23,22 @@
 #include "rush/ast/statements.hpp"
 #include "rush/ast/expressions.hpp"
 #include "rush/ast/declarations.hpp"
+#include "rush/ast/patterns.hpp"
 
 namespace rush::ast {
    /*! \brief A traversal derives the AST visitor, in which relevant visitation
     *         methods are overloaded to visit an AST in its entirety. */
    class traversal : public ast::visitor {
    public:
+
+      virtual void visit_destructure_ptrn(ast::destructure_pattern const& ptrn) override {
+         accept(ptrn.pattern());
+      }
+
+      virtual void visit_type_annotation_ptrn(ast::type_annotation_pattern const& ptrn) override {
+         accept(ptrn.pattern());
+      }
+
       virtual void visit_module(ast::module const& mdl) override {
          std::for_each(mdl.imports().begin(), mdl.imports().end(), [this](auto& decl) { accept(*decl); });
          std::for_each(mdl.declarations().begin(), mdl.declarations().end(), [this](auto& decl) { accept(*decl); });
@@ -40,10 +50,12 @@ namespace rush::ast {
 
 		// declarations
 		virtual void visit_constant_decl(ast::constant_declaration const& decl) override {
+         accept(decl.pattern());
          if (decl.initializer()) accept(*decl.initializer());
       }
 
 		virtual void visit_variable_decl(ast::variable_declaration const& decl) override {
+         accept(decl.pattern());
          if (decl.initializer()) accept(*decl.initializer());
       }
 

@@ -13,27 +13,16 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *************************************************************************/
-#include "rush/ast/node.hpp"
+#pragma once
 
-namespace rush::ast {
-   void node::attach(ast::context& context) {
-      if (_context != nullptr) detach(*this);
-      attached(_parent = nullptr, *(_context = &context));
-   }
+#ifndef RUSH_AST_PATTERNS_HPP
+#define RUSH_AST_PATTERNS_HPP
 
-   void node::attach(ast::node& child, ast::node* parent) {
-      child._parent = parent != nullptr ? parent : this;
-      child._context = _context;
-      child.attached(
-         child._parent,
-         *child._context);
-   }
+#include "rush/ast/ptrns/pattern.hpp"
+#include "rush/ast/ptrns/named.hpp"
+#include "rush/ast/ptrns/discard.hpp"
+#include "rush/ast/ptrns/destructure.hpp"
+#include "rush/ast/ptrns/type_annotation.hpp"
+#include "rush/ast/ptrns/list.hpp"
 
-   void node::detach(ast::node& child) {
-      child.detached(
-         child._parent,
-         *child._context);
-      child._parent = nullptr;
-      child._context = nullptr;
-   }
-}
+#endif // RUSH_AST_PATTERNS_HPP

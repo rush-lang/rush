@@ -236,6 +236,9 @@ namespace rush {
          assert(is_ident_head(peek()) && "expected a leading identifier character while attempting to scan an identifier.");
 
          auto ident = scan_while(is_ident_body);
+         if (ident == "_")
+            return tok::make_symbol_token(symbols::underscore, location(), source());
+
          auto kw_val = keywords::to_value(ident);
          return kw_val != keywords::unknown
             ? tok::make_keyword_token(kw_val, location(), source())

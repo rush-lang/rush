@@ -39,6 +39,11 @@ namespace rush::ast {
    class interface_type;
    class function_type;
 
+   class named_pattern;
+   class discard_pattern;
+   class destructure_pattern;
+   class type_annotation_pattern;
+
 	class expression;
    class argument;
    class named_argument;
@@ -102,6 +107,13 @@ namespace rush::ast {
       virtual void visit_concept_type(ast::concept_type const&) {};
       virtual void visit_interface_type(ast::interface_type const&) {};
       virtual void visit_function_type(ast::function_type const&) {};
+
+      // patterns
+      virtual void visit_named_ptrn(ast::named_pattern const&) {};
+      virtual void visit_discard_ptrn(ast::discard_pattern const&) {};
+      // virtual void visit_binding_ptrn(ast::named_pattern const&) {};
+      virtual void visit_destructure_ptrn(ast::destructure_pattern const&) {};
+      virtual void visit_type_annotation_ptrn(ast::type_annotation_pattern const&) {};
 
 		// declarations
       virtual void visit_module(ast::module const&) {};

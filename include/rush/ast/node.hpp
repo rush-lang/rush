@@ -40,7 +40,7 @@ namespace rush::ast {
       virtual void accept(ast::visitor&& v) const { accept(v); }
 
    protected:
-      void attach(ast::node& child);
+      void attach(ast::node& child, ast::node* parent = nullptr);
       void detach(ast::node& child);
 
       virtual void attached(ast::node*, ast::context&) = 0;

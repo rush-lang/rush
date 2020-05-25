@@ -96,7 +96,7 @@ switch (stmt.kind()) {
 default: break; // assert! should be unreachable.
 ## for stmt in statements/simple
 ## if contains(stmt/kinds, "simple")
-case rush::ast::statement_kind::{{ stmt/name }}: writeln("<{{ rtrim(stmt/name, "_") }}_stmt>"); break;
+case rush::ast::statement_kind::{{ stmt/name }}: writeln("<[stmt] {{ rtrim(stmt/name, "_") }}>"); break;
 ## endif
 ## endfor
 }
@@ -109,7 +109,7 @@ switch (stmt.kind()) {
 default: break; // assert! should be unreachable.
 ## for stmt in statements/simple
 ## if contains(stmt/kinds, "result")
-case rush::ast::statement_kind::{{ stmt/name }}: writeln("<{{ rtrim(stmt/name, "_") }}_stmt>"); break;
+case rush::ast::statement_kind::{{ stmt/name }}: writeln("<[stmt] {{ rtrim(stmt/name, "_") }}>"); break;
 ## endif
 ## endfor
 }
@@ -122,7 +122,7 @@ switch (stmt.kind()) {
 default: break; // assert! should be unreachable.
 ## for stmt in statements/compound
 ## if contains(stmt/kinds, "conditional")
-case rush::ast::statement_kind::{{ stmt/name }}: writeln("<{{ rtrim(stmt/name, "_") }}_stmt>"); break;
+case rush::ast::statement_kind::{{ stmt/name }}: writeln("<[stmt] {{ rtrim(stmt/name, "_") }}>"); break;
 ## endif
 ## endfor
 }

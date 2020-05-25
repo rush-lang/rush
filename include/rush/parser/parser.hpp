@@ -28,6 +28,7 @@
 #include "rush/ast/expressions.hpp"
 #include "rush/ast/declarations.hpp"
 #include "rush/ast/statements.hpp"
+#include "rush/ast/patterns.hpp"
 #include "rush/ast/context.hpp"
 
 #include "rush/lexer/token.hpp"
@@ -242,7 +243,9 @@ namespace rush {
       rush::parse_result<ast::declaration> parse_toplevel_decl();
 
 		rush::parse_result<ast::declaration> _parse_storage_decl(std::string,
-			rush::function_ref<std::unique_ptr<ast::nominal_declaration>(std::string, ast::type_ref, std::unique_ptr<ast::expression>)>);
+         rush::function_ref<std::unique_ptr<ast::declaration>(
+            std::unique_ptr<ast::pattern>,
+            std::unique_ptr<ast::expression>)>);
 
 		rush::parse_result<ast::declaration> parse_constant_decl();
 		rush::parse_result<ast::declaration> parse_variable_decl();
@@ -257,6 +260,18 @@ namespace rush {
       rush::parse_result<ast::declaration> parse_class_declaration();
       rush::parse_result<ast::declaration> parse_class_decl_body();
       rush::parse_result<ast::declaration> parse_class_decl_body_section(access_modifier);
+
+      rush::parse_result<ast::pattern> parse_storage_pattern(std::string);
+      rush::parse_result<ast::pattern> parse_argument_pattern();
+      rush::parse_result<ast::pattern> parse_parameter_pattern();
+      rush::parse_result<ast::pattern> parse_pattern_list(
+         rush::function_ref<rush::parse_result<ast::pattern>()> parseFn);
+
+      rush::parse_result<ast::pattern> parse_named_pattern(std::string);
+      rush::parse_result<ast::pattern> parse_discard_pattern();
+      rush::parse_result<ast::pattern> parse_binding_pattern(rush::parse_result<ast::pattern> lhs);
+      rush::parse_result<ast::pattern> parse_destructure_pattern();
+      rush::parse_result<ast::pattern> parse_type_annotation_pattern(rush::parse_result<ast::pattern> lhs);
 
 		// statements.
       rush::parse_result<ast::statement> parse_stmt();

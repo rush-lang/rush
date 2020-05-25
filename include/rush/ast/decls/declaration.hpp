@@ -42,7 +42,7 @@ namespace rush::ast {
 		operator_,
 	};
 
-	class declaration : public node {
+	class declaration : public virtual node {
 		declaration(declaration const&) = delete;
 		void operator = (declaration const&) = delete;
 

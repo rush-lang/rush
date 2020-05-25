@@ -8,6 +8,7 @@ rush_add_library(ast
    types/builtin.cpp
    types/type_matcher.cpp
    types/type_reducer.cpp
+   ptrns/pattern.cpp
    identifier.cpp
    traversal.cpp
    visitor.cpp

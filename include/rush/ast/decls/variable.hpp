@@ -18,8 +18,10 @@
 #ifndef RUSH_AST_DECLS_VARIABLE_HPP
 #define RUSH_AST_DECLS_VARIABLE_HPP
 
-#include "rush/ast/decls/storage.hpp"
+#include "rush/ast/types/type_ref.hpp"
 #include "rush/ast/types/builtin.hpp"
+#include "rush/ast/decls/storage.hpp"
+#include "rush/ast/ptrns/pattern.hpp"
 
 
 namespace rush::ast {
@@ -27,26 +29,25 @@ namespace rush::ast {
 
 	namespace decls {
 		std::unique_ptr<variable_declaration> variable(
-			std::string name,
-			ast::type_ref type,
-			std::unique_ptr<expression> init);
+         std::unique_ptr<ast::pattern> patt,
+			std::unique_ptr<ast::expression> init = nullptr);
 	}
 
 	class variable_declaration : public storage_declaration {
 		struct factory_tag_t {};
 
 		friend std::unique_ptr<variable_declaration>
-			decls::variable(std::string, ast::type_ref, std::unique_ptr<expression>);
+			decls::variable(
+            std::unique_ptr<ast::pattern>,
+            std::unique_ptr<ast::expression>);
 
 	public:
 		variable_declaration(
-         std::string name,
-         ast::type_ref type,
-         std::unique_ptr<expression> init,
+         std::unique_ptr<ast::pattern> patt,
+         std::unique_ptr<ast::expression> init,
          factory_tag_t)
 			: storage_declaration {
-				std::move(name),
-				std::move(type),
+            std::move(patt),
 				std::move(init)
 			} {}
 
@@ -61,28 +62,14 @@ namespace rush::ast {
 	};
 
 	namespace decls {
-		inline std::unique_ptr<variable_declaration> variable(
-			std::string name,
-			ast::type_ref type,
-			std::unique_ptr<expression> init = nullptr
-		) {
-			return std::make_unique<variable_declaration>(
-				std::move(name),
-				std::move(type),
-				std::move(init),
-				variable_declaration::factory_tag_t {});
-		}
-
-		inline std::unique_ptr<variable_declaration> variable(
-			std::string name,
-			std::unique_ptr<expression> init
-		) {
-			if (!init) throw std::invalid_argument("un-typed variable declaration requires an initializer.");
-			return variable(
-				std::move(name),
-				init->result_type(),
-				std::move(init));
-		}
+      inline std::unique_ptr<variable_declaration> variable(
+         std::unique_ptr<ast::pattern> patt,
+         std::unique_ptr<ast::expression> init) {
+            return std::make_unique<variable_declaration>(
+               std::move(patt),
+               std::move(init),
+               variable_declaration::factory_tag_t {});
+         }
 	} // rush::ast::decls
 } // rush::ast
 

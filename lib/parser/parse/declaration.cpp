@@ -52,60 +52,45 @@ namespace rush {
    }
 
 	rush::parse_result<ast::declaration> parser::_parse_storage_decl(std::string storage_type,
-		rush::function_ref<std::unique_ptr<ast::nominal_declaration>(std::string, ast::type_ref, std::unique_ptr<ast::expression>)> fn
-	) {
-		if (peek_skip_indent().is(symbols::left_bracket)) {
-			// parse_destructure_pattern.
-         return errs::not_supported(peek_skip_indent(), "destructuring");
-		}
+		rush::function_ref<std::unique_ptr<ast::declaration>(
+         std::unique_ptr<ast::pattern>,
+         std::unique_ptr<ast::expression>)> fn) {
 
-      auto ident = peek_skip_indent();
-		if (!ident.is_identifier())
-         return errs::expected_identifier(peek_skip_indent());
-      next_skip_indent();
+      struct annotated_type_extractor : public ast::visitor {
+         ast::type_ref result = ast::types::undefined;
+         virtual void visit_type_annotation_ptrn(ast::type_annotation_pattern const& ptrn) {
+            result = ptrn.type();
+         }
+      };
 
-      auto type_result = rush::parse_type_result {};
-      if (peek_skip_indent().is(symbols::colon)) {
-         type_result = parse_type_annotation();
-         if (type_result.failed())
-            return std::move(type_result).errors();
-         if (type_result.is_undefined())
-            return errs::expected_type_annotation(peek_skip_indent());
-      }
+      // todo: extract the names and locations from the parsed pattern
+      //       so that in the event of no type annotation or initializer
+      //       we can present the names in the error below.
+      auto tok = peek_skip_indent();
 
+		auto patt = parse_storage_pattern(storage_type);
+      if (patt.failed()) return std::move(patt).as<ast::declaration>();
+
+      auto type = rush::visit(patt, annotated_type_extractor {}).result;
       auto init = rush::parse_result<ast::expression> {};
-      if (peek_skip_indent().is(symbols::equals)) {
-         next_skip_indent();
+      if (consume_skip_indent(symbols::equals)) {
          if ((init = parse_expr()).failed())
             return std::move(init).as<ast::declaration>();
-      } else if (type_result.failed()) {
-         return std::move(type_result).errors();
-      } else if (type_result.is_undefined()) {
-         if (storage_type == "constant") return errs::constant_requires_type_annotation(ident);
-         if (storage_type == "variable") return errs::variable_requires_type_annotation(ident);
+      } else if (type == ast::types::undefined) {
+         if (storage_type == "constant") return errs::constant_requires_type_annotation(tok);
+         if (storage_type == "variable") return errs::variable_requires_type_annotation(tok);
       }
 
-      type_result = type_result.success() ? std::move(type_result) : ast::types::undefined;
-      auto decl = fn(ident.text(), type_result.type(), std::move(init));
-      if (!decl) return std::move(decl); // todo: should throw here an error here. only reason this should fail is bad-mem-alloc.
-
-      // return scope_insert(std::move(decl), ident);
-      if (!_scope.insert({ *decl })) {
-         if (storage_type == "constant") return errs::local_constant_name_previously_defined(ident);
-         if (storage_type == "variable") return errs::local_variable_name_previously_defined(ident);
-      }
-
-      return std::move(decl);
+      return fn(std::move(patt), std::move(init));
 	}
 
 	rush::parse_result<ast::declaration> parser::parse_constant_decl() {
 		assert(peek_skip_indent().is(keywords::let_) && "expected the 'let' keyword.");
 		next_skip_indent(); // consume let token
 		return _parse_storage_decl("constant", [](
-         std::string name,
-         ast::type_ref type,
+         std::unique_ptr<ast::pattern> patt,
          std::unique_ptr<ast::expression> init) {
-            return decls::constant(std::move(name), std::move(type), std::move(init));
+            return decls::constant(std::move(patt), std::move(init));
          });
 	}
 
@@ -113,10 +98,9 @@ namespace rush {
 		assert(peek_skip_indent().is(keywords::var_) && "expected the 'var' keyword.");
 		next_skip_indent(); // consume var token
 		return _parse_storage_decl("variable", [](
-         std::string name,
-         ast::type_ref type,
+         std::unique_ptr<ast::pattern> patt,
          std::unique_ptr<ast::expression> init) {
-            return decls::variable(std::move(name), std::move(type), std::move(init));
+            return decls::variable(std::move(patt), std::move(init));
          });
 	}
 

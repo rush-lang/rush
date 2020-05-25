@@ -24,6 +24,7 @@
 #include "rush/ast/statements.hpp"
 #include "rush/ast/declarations.hpp"
 #include "rush/ast/expressions.hpp"
+#include "rush/ast/patterns.hpp"
 #include "rush/ast/traversal.hpp"
 
 #include "rush/extra/guard.hpp"
@@ -75,7 +76,7 @@ namespace rush::ast {
       }
 
       virtual void visit_import_decl(ast::import_declaration const& decl) override {
-         writeln("<import_decl: (name=\"{}\")>", decl.name());
+         writeln("<[decl] import: (name=\"{}\")>", decl.name());
       }
 
       virtual void visit_module_decl(ast::module_declaration const& decl) override {
@@ -150,6 +151,41 @@ namespace rush::ast {
          type.return_type().accept(*this);
       }
 
+      virtual void visit_named_ptrn(ast::named_pattern const& ptrn) override {
+         write("<[decl] ");
+         switch (ptrn.kind()) {
+         case ast::declaration_kind::variable: write("variable: "); break;
+         case ast::declaration_kind::constant: write("constant: "); break;
+         case ast::declaration_kind::parameter: write("parameter: "); break;
+         default: assert("impossible.");
+         }
+
+         ptrn.type().accept(*this);
+         writeln(" (name=\"{}\")>", ptrn.name());
+      }
+
+      virtual void visit_discard_ptrn(ast::discard_pattern const& ptrn) override {
+         writeln("<discard>");
+      }
+
+      // virtual void visit_binding_ptrn(ast::binding_pattern const& ptrn) override {
+
+      // }
+
+      virtual void visit_destructure_ptrn(ast::destructure_pattern const& ptrn) override {
+         write("<destructure: ");
+         ptrn.type().accept(*this);
+         writeln(">");
+         indent_traverse(ptrn);
+      }
+
+      virtual void visit_type_annotation_ptrn(ast::type_annotation_pattern const& ptrn) override {
+         write("<type-annotation: (type=");
+         ptrn.type().accept(*this);
+         writeln(")>");
+         indent_traverse(ptrn);
+      }
+
 		virtual void visit_unary_expr(ast::unary_expression const& expr) override {
 #        define RUSH_UNARY_EXPRESSION_PRINT_VISIT_SWITCH
 #        include "rush/ast/exprs/_operators.hpp"
@@ -222,7 +258,7 @@ namespace rush::ast {
       }
 
 		virtual void visit_identifier_expr(ast::identifier_expression const& expr) override {
-			write("<identifier_expr: ");
+			write("<[expr] identifier: ");
 			expr.result_type().accept(*this);
 			writeln(" (name=\"{}\")>", expr.name());
 		}
@@ -233,7 +269,7 @@ namespace rush::ast {
       }
 
       virtual void visit_string_template_expr(string_template_expression const& expr) override {
-         write("<template_expr: ");
+         write("<[expr] template: ");
 			expr.result_type().accept(*this);
 			writeln(" (original=\"{}\")>", expr.original());
          indent_traverse(expr);
@@ -270,7 +306,7 @@ namespace rush::ast {
       }
 
       virtual void visit_function_decl(ast::function_declaration const& decl) override {
-         write("<function_decl: ");
+         write("<[decl] function: ");
          decl.type().accept(*this);
          write(" (name=\"{}\"", decl.name());
          switch (_maccess) {
@@ -281,7 +317,7 @@ namespace rush::ast {
       }
 
       virtual void visit_class_decl(ast::class_declaration const& decl) override {
-         write("<class_decl: {}", decl.name());
+         write("<[decl] class: {}", decl.name());
          switch (_maccess) {
          case ast::module_access::internal: writeln(" (access=internal)>"); break;
          case ast::module_access::exported: writeln(" (access=exported)>"); break;
@@ -290,7 +326,7 @@ namespace rush::ast {
       }
 
       virtual void visit_block_stmt(ast::statement_block const& stmt) override {
-         writeln("<block_stmt>");
+         writeln("<[stmt] block>");
          indent_traverse(stmt);
       }
 
@@ -313,33 +349,36 @@ namespace rush::ast {
       }
 
 		void print_expression(std::string name, ast::expression const& expr) {
-			write("<{}_expr: ", name);
+			write("<[expr] {}: ", name);
 			expr.result_type().accept(*this);
 			writeln(">");
 		}
 
 		void print_literal_expr(std::string value, ast::literal_expression const& expr) {
-			write("<literal_expr: ");
+			write("<[expr] literal: ");
 			expr.result_type().accept(*this);
 			writeln(" (value={})>", value);
 		}
 
-		void print_storage_decl(std::string name, ast::storage_declaration const& decl) {
-			write("<{}_decl: ", name);
-			decl.type().accept(*this);
-
-			write(" (name=\"{}\"", decl.name());
+		void print_storage_decl(std::string kind, ast::storage_declaration const& decl) {
+			write("<[decl] storage: (kind={}", kind);
          if (_current_indent == 1) {
             switch (_maccess) {
             case ast::module_access::internal: write(", access=internal"); break;
             case ast::module_access::exported: write(", access=exported"); break;
             }
          }
-
          writeln(")>");
-			if (decl.initializer() != nullptr) {
-            indent_traverse(decl);
+         indent_accept(decl.pattern());
+         if (decl.initializer()) {
+            indent();
+            write("<initializer: (type=");
+            decl.initializer()->result_type().accept(*this);
+         writeln(")>");
+            indent_accept(*decl.initializer());
+            dedent();
          }
+         // indent_traverse(decl);
 		}
 	};
 
