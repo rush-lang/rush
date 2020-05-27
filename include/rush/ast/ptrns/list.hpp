@@ -56,6 +56,10 @@ namespace rush::ast::ptrns {
       std::vector<std::unique_ptr<ast::pattern>> patterns) {
          return std::make_unique<ast::list_pattern>(std::move(patterns));
       }
+
+   inline std::unique_ptr<ast::list_pattern> list() {
+      return ptrns::list({});
+   }
 }
 
 #endif // RUSH_AST_PTRNS_LIST_HPP

@@ -31,6 +31,11 @@ namespace rush::ast {
    class traversal : public ast::visitor {
    public:
 
+      virtual void visit_binding_ptrn(ast::binding_pattern const& ptrn) override {
+         accept(ptrn.pattern());
+         accept(ptrn.expression());
+      }
+
       virtual void visit_destructure_ptrn(ast::destructure_pattern const& ptrn) override {
          accept(ptrn.pattern());
       }

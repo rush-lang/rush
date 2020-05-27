@@ -18,11 +18,11 @@
 #ifndef RUSH_AST_EXPRS_LAMBDA_HPP
 #define RUSH_AST_EXPRS_LAMBDA_HPP
 
-#include "rush/ast/decls/parameter.hpp"
+#include "rush/ast/ptrns/pattern.hpp"
+#include "rush/ast/ptrns/list.hpp"
 #include "rush/ast/stmts/statement.hpp"
 #include "rush/ast/types/builtin.hpp"
 #include "rush/ast/types/function.hpp"
-
 #include "rush/ast/context.hpp"
 
 #include <memory>
@@ -32,14 +32,14 @@ namespace rush::ast {
 	class lambda_expression : public ast::expression {
 	public:
 		lambda_expression(
-         std::unique_ptr<ast::parameter_list> params,
+         std::unique_ptr<ast::pattern> params,
 			std::unique_ptr<ast::statement> body)
 			: _params { std::move(params) }
          , _type { ast::types::undefined }
          , _explicit_return_type { ast::types::undefined }
 			, _body { std::move(body) } {}
 
-		ast::parameter_list const& parameters() const noexcept {
+		ast::pattern const& parameters() const noexcept {
 			return *_params;
 		}
 
@@ -61,21 +61,19 @@ namespace rush::ast {
 
    protected:
       virtual void attached(ast::node*, ast::context&) override {
-         _type = context()->function_type(*this);
-
          attach(*_params);
 			attach(*_body);
+         _type = context()->function_type(*this);
 		}
 
       virtual void detached(ast::node*, ast::context&) override {
-         _type = types::undefined;
-
          detach(*_params);
 			detach(*_body);
+         _type = types::undefined;
 		}
 
 	private:
-		std::unique_ptr<ast::parameter_list> _params;
+		std::unique_ptr<ast::pattern> _params;
 		std::unique_ptr<ast::statement> _body;
       mutable ast::type_ref _explicit_return_type;
       mutable std::variant<
@@ -104,7 +102,7 @@ namespace rush::ast {
 
 	namespace exprs {
 		inline std::unique_ptr<lambda_expression> lambda(
-			std::unique_ptr<ast::parameter_list> params,
+			std::unique_ptr<ast::pattern> params,
 			std::unique_ptr<ast::statement> body) {
             return std::make_unique<ast::lambda_expression>(
                std::move(params),
@@ -114,7 +112,7 @@ namespace rush::ast {
 		inline std::unique_ptr<lambda_expression> lambda(
 			std::unique_ptr<ast::statement> body) {
 				return lambda(
-					decls::param_list(),
+					ptrns::list(),
 					std::move(body));
 			}
 	}

@@ -14,6 +14,7 @@
 * limitations under the License.
 *************************************************************************/
 #include "rush/parser/parser.hpp"
+#include "rush/ast/patterns.hpp"
 #include "rush/ast/expressions.hpp"
 #include "rush/ast/declarations.hpp"
 #include "rush/diag/syntax_error.hpp"
@@ -21,6 +22,7 @@
 namespace ast = rush::ast;
 namespace errs = rush::diag::errs;
 namespace exprs = rush::ast::exprs;
+namespace ptrns = rush::ast::ptrns;
 
 namespace rush {
 
@@ -67,7 +69,8 @@ namespace rush {
 
    rush::parse_result<ast::expression> parser::parse_simple_paren_expr() {
       assert(peek_skip_indent().is(symbols::left_parenthesis) && "expected token to be \'(\'");
-      if (peek_skip_indent(1).is(symbols::right_parenthesis))
+      if (peek_skip_indent(1).is(symbols::right_parenthesis)
+       || peek_skip_indent(1).is(symbols::left_bracket))
          return parse_lambda_expr();
 
       next_skip_indent(); // consume '('
@@ -155,16 +158,23 @@ namespace rush {
 
    rush::parse_result<ast::expression> parser::parse_lambda_expr() {
       _scope.push(rush::scope_kind::function);
-      auto params = std::unique_ptr<ast::parameter_list> {};
+      auto params = std::unique_ptr<ast::pattern> {};
       if (peek_skip_indent().is_identifier()) {
-         auto paramsv = std::vector<std::unique_ptr<ast::parameter>> { };
-         paramsv.push_back(ast::decls::param(next_skip_indent().text(), ast::types::undefined));
-         params = ast::decls::param_list(std::move(paramsv));
+         auto result = parse_named_pattern("parameter");
+         if (result.failed()) return std::move(result).as<ast::expression>();
+         params = std::move(result);
+      } else if (peek_skip_indent().is(symbols::underscore)) {
+         auto result = parse_discard_pattern();
+         if (result.failed()) return std::move(result).as<ast::expression>();
+         params = std::move(result);
+      } else if (peek_skip_indent().is(symbols::left_bracket)) {
+         auto result = parse_destructure_pattern();
+         if (result.failed()) return std::move(result).as<ast::expression>();
+         params = std::move(result);
       } else {
-         auto params_result = parse_parameter_list();
-         if (params_result.failed())
-            return std::move(params_result).as<ast::expression>();
-         params = std::move(params_result);
+         auto result = parse_parameter_list();
+         if (result.failed()) return std::move(result).as<ast::expression>();
+         params = std::move(result);
       }
 
       if (!peek_skip_indent().is(symbols::thick_arrow))

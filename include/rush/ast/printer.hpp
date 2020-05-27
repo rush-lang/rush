@@ -167,7 +167,7 @@ namespace rush::ast {
          switch (ptrn.kind()) {
          case ast::declaration_kind::variable: write("variable: "); break;
          case ast::declaration_kind::constant: write("constant: "); break;
-         case ast::declaration_kind::parameter: write("parameter: "); break;
+         case ast::declaration_kind::function: write("parameter: "); break;
          default: assert("impossible.");
          }
 
@@ -179,9 +179,10 @@ namespace rush::ast {
          writeln("<discard>");
       }
 
-      // virtual void visit_binding_ptrn(ast::binding_pattern const& ptrn) override {
-
-      // }
+      virtual void visit_binding_ptrn(ast::binding_pattern const& ptrn) override {
+         writeln("<binding>");
+         indent_traverse(ptrn);
+      }
 
       virtual void visit_destructure_ptrn(ast::destructure_pattern const& ptrn) override {
          write("<destructure: ");
@@ -255,12 +256,12 @@ namespace rush::ast {
 		}
 
       virtual void visit_literal_expr(ast::array_literal_expression const& expr) override {
-         print_expression("array_literal", expr);
+         print_expression("array-literal", expr);
          indent_traverse(expr);
       }
 
       virtual void visit_literal_expr(ast::tuple_literal_expression const& expr) override {
-         print_expression("tuple_literal", expr);
+         print_expression("tuple-literal", expr);
          indent_traverse(expr);
       }
 
@@ -271,7 +272,7 @@ namespace rush::ast {
 		}
 
       virtual void visit_member_access_expr(ast::member_access_expression const& expr) override {
-         print_expression("member_access", expr);
+         print_expression("member-access", expr);
          indent_traverse(expr);
       }
 

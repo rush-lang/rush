@@ -14,11 +14,13 @@
 * limitations under the License.
 *************************************************************************/
 #include "rush/ast/ptrns/named.hpp"
+#include "rush/ast/ptrns/binding.hpp"
 #include "rush/ast/ptrns/destructure.hpp"
 #include "rush/ast/ptrns/type_annotation.hpp"
 #include "rush/ast/types/extension.hpp"
 #include "rush/ast/decls/constant.hpp"
 #include "rush/ast/decls/variable.hpp"
+#include "rush/ast/decls/function.hpp"
 #include "rush/ast/decls/parameter.hpp"
 #include "rush/ast/visitor.hpp"
 
@@ -31,11 +33,10 @@ public:
 
    ast::type_ref result() const noexcept { return _type; }
 
-   // virtual void visit_binding_ptrn(ast::binding_pattern const& ptrn) override {
-   //    _type = ptrn.expression().result_type();
-   // }
+   virtual void visit_binding_ptrn(ast::binding_pattern const& ptrn) override {
+      _type = ptrn.expression().result_type();
+   }
 
-   // virtual void visit_binding_ptrn(ast::named_pattern const&) {}
    virtual void visit_destructure_ptrn(ast::destructure_pattern const& ptrn) override {
       // todo: find and extract types of the destructured member.
       _type = ptrn.type();
@@ -71,9 +72,9 @@ public:
       return _decl;
    }
 
-   // virtual void visit_binding_ptrn(ast::binding_pattern const&) override {
-   //    if (ptrn.parent()) ptrn.parent()->accept(*this);
-   // }
+   virtual void visit_binding_ptrn(ast::binding_pattern const& ptrn) override {
+      if (ptrn.parent()) ptrn.parent()->accept(*this);
+   }
 
    virtual void visit_destructure_ptrn(ast::destructure_pattern const& ptrn) override {
       if (ptrn.parent()) ptrn.parent()->accept(*this);
@@ -86,6 +87,7 @@ public:
    // virtual void visit_parameter_decl(ast::parameter const&) {}
 	virtual void visit_constant_decl(ast::constant_declaration const& decl) override { _decl = &decl; }
 	virtual void visit_variable_decl(ast::variable_declaration const& decl) override { _decl = &decl; }
+   virtual void visit_function_decl(ast::function_declaration const& decl) override { _decl = &decl; }
 
 private:
    ast::declaration const* _decl;

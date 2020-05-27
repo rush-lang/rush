@@ -20,22 +20,57 @@
 
 #include "rush/ast/ptrns/pattern.hpp"
 #include "rush/ast/exprs/expression.hpp"
+#include "rush/ast/visitor.hpp"
+#include "rush/ast/context.hpp"
 
 #include <memory>
 
 namespace rush::ast {
-   class binding_pattern : public pattern {
+   class binding_pattern : public ast::pattern {
+   public:
+      binding_pattern(
+         std::unique_ptr<ast::pattern> patt,
+         std::unique_ptr<ast::expression> expr)
+         : _pattern { std::move(patt) }
+         , _expression { std::move(expr) } {}
+
+      ast::pattern const& pattern() const noexcept {
+         return *_pattern;
+      }
+
+      ast::expression const& expression() const noexcept {
+         return *_expression;
+      }
+
+      using node::accept;
+      virtual void accept(ast::visitor& v) const override {
+         v.visit_binding_ptrn(*this);
+      }
+
+   protected:
+      virtual void attached(ast::node*, ast::context&) override {
+         attach(*_pattern);
+         attach(*_expression);
+      }
+
+      virtual void detached(ast::node*, ast::context&) override {
+         detach(*_pattern);
+         detach(*_expression);
+      }
+
    private:
-      std::unique_ptr<pattern> _pattern;
+      std::unique_ptr<ast::pattern> _pattern;
       std::unique_ptr<ast::expression> _expression;
    };
 }
 
 namespace rush::ast::ptrns {
-   std::unique_ptr<ast::binding_pattern> binding(
+   inline std::unique_ptr<ast::binding_pattern> binding(
       std::unique_ptr<ast::pattern> lhs,
       std::unique_ptr<ast::expression> rhs) {
-         return nullptr;
+         return std::make_unique<ast::binding_pattern>(
+            std::move(lhs),
+            std::move(rhs));
       }
 }
 

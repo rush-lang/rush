@@ -1,0 +1,32 @@
+import std.io
+import std.math
+
+class point:
+
+func to_string({x, y}: point) => "($x, $y)"
+
+func add(a, b: int) => a + b
+func sub(a, b: int) => a - b
+func mul(a, b: int) => a * b
+func div(a, b: int) => a / b
+
+func json<T>(o: T) => pass
+func json<T>(a: [T]) => pass
+
+func map<T, R>(src: @iterable<T>, fn: T -> R):
+   let it = src.iterator()
+   while it.next():
+      yield fn(iter.value)
+
+func zip() => ()
+func zip(a: [any]) => a;
+func zip(a, b, args: ...[any]):
+   for i, j in a, b:
+      yield (i, j) + zip(args...)
+
+func main(args: [string]):
+   let xs = map(1...10, x => pow(x, 2));
+   let ys = map(1...10, y => pow(y, 3));
+   for {x, y} in zip(xs, ys):
+      println("$x : $y");
+

@@ -18,6 +18,7 @@
 #include "rush/ast/visitor.hpp"
 #include "rush/ast/expressions.hpp"
 #include "rush/ast/declarations.hpp"
+#include "rush/ast/patterns.hpp"
 
 using namespace rush;
 
@@ -32,6 +33,8 @@ public:
 
    // ultimately we're trying to find this.
    virtual void visit_function_type(ast::function_type const& type) override { _result = type.return_type(); }
+
+   virtual void visit_named_ptrn(ast::named_pattern const& ptrn) override { ptrn.type().accept(*this); }
 
    virtual void visit_constant_decl(ast::constant_declaration const& decl) override { decl.type().accept(*this); }
    virtual void visit_variable_decl(ast::variable_declaration const& decl) override { decl.type().accept(*this); }

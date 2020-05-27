@@ -23,27 +23,12 @@
 #include "rush/ast/types/type_resolver.hpp"
 #include "rush/ast/types/builtin.hpp"
 #include "rush/ast/decls/parameter.hpp"
+#include "rush/ast/ptrns/pattern.hpp"
 
 #include <memory>
 
-
-namespace rush::ast::decls {
-   std::unique_ptr<function_declaration> function(
-      std::string,
-      ast::type_ref,
-      std::unique_ptr<parameter_list>,
-      std::unique_ptr<statement>);
-}
-
-namespace rush::ast::exprs {
-   std::unique_ptr<lambda_expression> lambda(
-      std::unique_ptr<ast::parameter_list>,
-      std::unique_ptr<ast::statement>);
-}
-
 namespace rush::ast {
    class function_type;
-   class function_declaration;
 
    template <>
 	struct type_traits<function_type> {
@@ -53,18 +38,6 @@ namespace rush::ast {
 	};
 
    class function_type : public ast::type {
-      struct factory_tag_t {};
-
-      friend std::unique_ptr<lambda_expression> exprs::lambda(
-			std::unique_ptr<ast::parameter_list>,
-			std::unique_ptr<ast::statement>);
-
-      friend std::unique_ptr<function_declaration> decls::function(
-         std::string,
-         ast::type_ref,
-         std::unique_ptr<parameter_list>,
-         std::unique_ptr<statement>);
-
    public:
       function_type(ast::type_ref return_type, ast::type_ref param_types)
          : _param_types { std::move(param_types) }

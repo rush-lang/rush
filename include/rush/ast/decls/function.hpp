@@ -18,12 +18,13 @@
 #ifndef RUSH_AST_DECLS_FUNCTION_HPP
 #define RUSH_AST_DECLS_FUNCTION_HPP
 
+#include "rush/ast/ptrns/pattern.hpp"
+#include "rush/ast/ptrns/list.hpp"
 #include "rush/ast/identifier.hpp"
 #include "rush/ast/types/builtin.hpp"
 #include "rush/ast/types/function.hpp"
 #include "rush/ast/stmts/statement.hpp"
 #include "rush/ast/decls/nominal.hpp"
-#include "rush/ast/decls/parameter.hpp"
 #include "rush/ast/exprs/identifier.hpp"
 
 #include "rush/ast/context.hpp"
@@ -32,7 +33,7 @@ namespace rush::ast::decls {
    std::unique_ptr<function_declaration> function(
       std::string,
       ast::type_ref,
-      std::unique_ptr<parameter_list>,
+      std::unique_ptr<pattern>,
       std::unique_ptr<statement>);
 }
 
@@ -43,14 +44,14 @@ namespace rush::ast {
       friend std::unique_ptr<function_declaration> decls::function(
          std::string,
          ast::type_ref,
-         std::unique_ptr<parameter_list>,
+         std::unique_ptr<pattern>,
          std::unique_ptr<statement>);
 
 	public:
 		function_declaration(
 			std::string name,
          ast::type_ref return_type,
-         std::unique_ptr<ast::parameter_list> params,
+         std::unique_ptr<ast::pattern> params,
 			std::unique_ptr<ast::statement> body,
 			factory_tag_t)
          : _name { std::move(name) }
@@ -75,7 +76,7 @@ namespace rush::ast {
          return resolve_explicit_return_type();
       }
 
-		ast::parameter_list const& parameters() const noexcept {
+		ast::pattern const& parameters() const noexcept {
          return *_params;
 		}
 
@@ -90,15 +91,13 @@ namespace rush::ast {
 
    protected:
       virtual void attached(ast::node*, ast::context&) override {
-         _type = context()->function_type(*this);
-
          attach(*_params);
          attach(*_body);
+         _type = context()->function_type(*this);
       }
 
       virtual void detached(ast::node*, ast::context&) override {
          _type = types::undefined;
-
          detach(*_params);
          detach(*_body);
       }
@@ -110,7 +109,7 @@ namespace rush::ast {
          ast::type_resolver*> _type;
       ast::type_ref _explicit_return_type;
 		std::unique_ptr<ast::statement> _body;
-      std::unique_ptr<ast::parameter_list> _params;
+      std::unique_ptr<ast::pattern> _params;
 
       ast::type_ref resolve_type() const {
          struct type_visitor {
@@ -139,7 +138,7 @@ namespace rush::ast {
 				return decls::function(
 					std::move(name),
                ast::types::undefined,
-               decls::param_list(),
+               ptrns::list(),
 					std::move(body));
 			}
 
@@ -150,13 +149,13 @@ namespace rush::ast {
 				return decls::function(
 					std::move(name),
 					std::move(return_type),
-               decls::param_list(),
+               ptrns::list(),
 					std::move(body));
 			}
 
 		inline std::unique_ptr<function_declaration> function(
 			std::string name,
-			std::unique_ptr<parameter_list> params,
+			std::unique_ptr<pattern> params,
 			std::unique_ptr<statement> body) {
 				return decls::function(
 					std::move(name),
@@ -168,7 +167,7 @@ namespace rush::ast {
 		inline std::unique_ptr<function_declaration> function(
 			std::string name,
          ast::type_ref return_type,
-			std::unique_ptr<parameter_list> params,
+			std::unique_ptr<pattern> params,
 			std::unique_ptr<statement> body) {
             return std::make_unique<function_declaration>(
                std::move(name),

@@ -1,0 +1,17 @@
+## Numeric literal digits can be seperated by a series of back-ticks
+## for easier reading. The back-ticks themselves hold no semantic
+## significance, it will be as if they were never even there,
+## once compiled.
+
+let long_num = 1`234`567`890
+
+## the back-ticks may only appear inside of the numeric literal
+
+let n1 = `123`456  ## error: leading back-tick
+let n2 = 123`456`  ## error: trailing back-tick
+
+## there are no rules governing how many digits can appear either
+## side of a back-tick, this is left to the disgression of the user.
+
+let n3 = 1`2`3`4`5`6          ## valid, but not recommended.
+let n4 = 12345678`12345678    ## valid.

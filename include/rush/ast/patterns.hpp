@@ -21,6 +21,7 @@
 #include "rush/ast/ptrns/pattern.hpp"
 #include "rush/ast/ptrns/named.hpp"
 #include "rush/ast/ptrns/discard.hpp"
+#include "rush/ast/ptrns/binding.hpp"
 #include "rush/ast/ptrns/destructure.hpp"
 #include "rush/ast/ptrns/type_annotation.hpp"
 #include "rush/ast/ptrns/list.hpp"

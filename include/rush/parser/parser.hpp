@@ -255,7 +255,7 @@ namespace rush {
       rush::parse_result<ast::statement> parse_function_body();
       rush::parse_result<ast::statement> parse_function_expr_body();
       rush::parse_result<ast::statement> parse_function_stmt_body();
-      rush::parse_result<ast::parameter_list> parse_parameter_list();
+      rush::parse_result<ast::pattern> parse_parameter_list();
 
       rush::parse_result<ast::declaration> parse_class_declaration();
       rush::parse_result<ast::declaration> parse_class_decl_body();

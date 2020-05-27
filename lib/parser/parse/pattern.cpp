@@ -42,12 +42,36 @@ namespace rush {
       return std::move(result);
    }
 
-   rush::parse_result<ast::pattern> parser::parse_argument_pattern() {
-      return errs::not_supported(_eof, "argument pattern");
+   rush::parse_result<ast::pattern> parser::parse_parameter_pattern() {
+      auto result = parse_pattern_list([this]()
+         -> rush::parse_result<ast::pattern> {
+            auto tok = peek_skip_indent();
+            if (tok.is_identifier()) {
+               return parse_named_pattern("parameter");
+            } else if (tok.is(symbols::left_bracket)) {
+               return parse_destructure_pattern();
+            } else return errs::expected(
+               peek_skip_indent(),
+               "parameter pattern");
+         });
+
+      if (result.failed()) return std::move(result);
+
+      if (peek_skip_indent().is(symbols::colon)) {
+         result = parse_type_annotation_pattern(std::move(result));
+         if (result.failed()) return std::move(result);
+      } else { return errs::expected_type_annotation(peek_skip_indent()); }
+
+      if (peek_skip_indent().is(symbols::equals)) {
+         result = parse_binding_pattern(std::move(result));
+         if (result.failed()) return std::move(result);
+      }
+
+      return std::move(result);
    }
 
-   rush::parse_result<ast::pattern> parser::parse_parameter_pattern() {
-      return errs::not_supported(_eof, "parameter pattern");
+   rush::parse_result<ast::pattern> parser::parse_argument_pattern() {
+      return errs::not_supported(_eof, "argument pattern");
    }
 
    rush::parse_result<ast::pattern> parser::parse_named_pattern(std::string decl_type) {
@@ -58,6 +82,7 @@ namespace rush {
       if (!_scope.insert({ *decl })) {
          if (decl_type == "variable") return errs::local_variable_name_previously_defined(ident);
          if (decl_type == "constant") return errs::local_constant_name_previously_defined(ident);
+         if (decl_type == "parameter") return errs::parameter_redefinition(ident);
          return errs::internal_parse_error(ident);
       }
 
@@ -71,7 +96,15 @@ namespace rush {
    }
 
    rush::parse_result<ast::pattern> parser::parse_binding_pattern(rush::parse_result<ast::pattern> lhs) {
-      return errs::not_supported(_eof, "binding pattern");
+      assert(peek_skip_indent().is_any(symbols::equals, symbols::colon) && "expected '=' or ':'.");
+      next_skip_indent(); // skip '=' or ':'
+      auto expr_result = parse_expr();
+      if (expr_result.failed())
+         return std::move(expr_result).as<ast::pattern>();
+
+      return ptrns::binding(
+         std::move(lhs),
+         std::move(expr_result));
    }
 
    rush::parse_result<ast::pattern> parser::parse_destructure_pattern() {
@@ -119,7 +152,11 @@ namespace rush {
          std::vector<rush::parse_result<ast::pattern>> results;
          do { results.push_back(parseFn()); }
          while (consume_skip_indent(symbols::comma));
+         if (results.size() == 1)
+            return std::move(results.back());
 
+         // todo: collect all error results and
+         // return them as one.
          auto it = std::find_if(
             results.begin(), results.end(),
             [](auto& r) { return r.failed(); });

@@ -23,6 +23,7 @@
 
 namespace decls = rush::ast::decls;
 namespace stmts = rush::ast::stmts;
+namespace ptrns = rush::ast::ptrns;
 
 namespace errs = rush::diag::errs;
 
@@ -104,57 +105,24 @@ namespace rush {
          });
 	}
 
-	rush::parse_result<ast::parameter_list> parser::parse_parameter_list() {
+	rush::parse_result<ast::pattern> parser::parse_parameter_list() {
 		assert(peek_skip_indent().is(symbols::left_parenthesis) && "expected an opening parenthesis '('");
 		next_skip_indent(); // consume '(' symbol.
 
       if (peek_skip_indent().is(symbols::right_parenthesis)) {
          next_skip_indent(); // consume ')' symbol.
-         return decls::param_list(); // empty parameter list case.
+         return ptrns::list(); // empty parameter list case.
       }
 
-      std::vector<rush::parse_result<ast::parameter>> results;
-      do {
-         auto names = std::vector<rush::lexical_token> {};
-         while (peek_skip_indent().is_identifier()) {
-            names.push_back(next_skip_indent());
-            if (peek_skip_indent().is(symbols::comma))
-               next_skip_indent(); // skip comma to consume another name.
-         }
-
-         if (names.empty())
-            return errs::expected_parameter_name(peek_skip_indent());
-
-         auto type = ast::types::undefined;
-         if (peek_skip_indent().is(symbols::colon)) {
-            auto type_result = parse_type_annotation();
-            if (type_result.failed()) return std::move(type_result).errors();
-            type = type_result.type();
-         }
-
-         std::transform(
-            std::make_move_iterator(names.begin()),
-            std::make_move_iterator(names.end()),
-            std::back_inserter(results), [this, &type](auto n) {
-               auto p = decls::param(n.text(), type);
-               return !_scope.insert({ *p })
-                  ? errs::parameter_redefinition(n)
-                  : rush::parse_result<ast::parameter> { std::move(p) };
-         });
-
-      } while (consume_skip_indent(symbols::comma));
-
-      // check for any parameter parsing failures.
-      if (std::any_of(results.begin(), results.end(), [](auto& p) { return p.failed(); }))
-         return nullptr; // todo: accumulate parameter errors and return.
+      auto params = parse_pattern_list([this]()
+         -> rush::parse_result<ast::pattern> { return parse_parameter_pattern(); });
+      if (params.failed()) return std::move(params);
 
       if (peek_skip_indent().is_not(symbols::right_parenthesis))
          return errs::expected(peek_skip_indent(), ")");
       next_skip_indent();
 
-      auto params = std::vector<std::unique_ptr<ast::parameter>> {};
-      std::move(results.begin(), results.end(), std::back_inserter(params));
-      return { decls::param_list(std::move(params)) };
+      return std::move(params);
 	}
 
 
@@ -167,14 +135,14 @@ namespace rush {
          return errs::expected_function_name(peek_skip_indent());
 		auto ident = next_skip_indent();
 
-      auto plist_result = parse_result<ast::parameter_list>();
+      auto plist_result = parse_result<ast::pattern>();
       if (peek_skip_indent().is_not(symbols::left_parenthesis)) {
          plist_result = (peek_skip_indent().is_any(
                            symbols::colon,
                            symbols::thin_arrow,
                            symbols::thick_arrow))
-                      ? parse_result<ast::parameter_list> { decls::param_list() }
-                      : parse_result<ast::parameter_list> { errs::expected_signature_or_body(peek_skip_indent()) };
+                      ? parse_result<ast::pattern> { ptrns::list() }
+                      : parse_result<ast::pattern> { errs::expected_signature_or_body(peek_skip_indent()) };
       } else { plist_result = parse_parameter_list(); }
 
       if (plist_result.failed())

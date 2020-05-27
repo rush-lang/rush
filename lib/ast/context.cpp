@@ -52,6 +52,18 @@ ast::type_ref reduce_return_types(ast::type_ref lt, ast::type_ref rt) {
         ? lt : reduce_expression_types(lt, rt);
 }
 
+class parameter_types_extractor : public ast::visitor {
+public:
+   std::vector<ast::type_ref> results() { return std::move(_results); }
+   virtual void visit_named_ptrn(ast::named_pattern const& ptrn) override { _results.push_back(ptrn.type()); }
+   virtual void visit_binding_ptrn(ast::binding_pattern const& ptrn) override { ptrn.pattern().accept(*this); }
+   virtual void visit_destructure_ptrn(ast::destructure_pattern const& ptrn) override { _results.push_back(ptrn.type()); };
+   virtual void visit_type_annotation_ptrn(ast::type_annotation_pattern const& ptrn) override { ptrn.pattern().accept(*this); };
+
+private:
+   std::vector<ast::type_ref> _results;
+};
+
 class return_type_resolver : public ast::visitor {
 public:
    return_type_resolver()
@@ -316,13 +328,13 @@ namespace rush::ast {
 
    std::variant<ast::type_ref, ast::type_resolver*>
    context::function_type(ast::lambda_expression const& expr) {
-      auto params_type = tuple_type(expr.parameters().types());
+      auto params_type = tuple_type(rush::visit(expr.parameters(), parameter_types_extractor {}).results());
       return function_type_impl(&expr, expr.return_type(), params_type);
    }
 
    std::variant<ast::type_ref, ast::type_resolver*>
    context::function_type(ast::function_declaration const& decl) {
-      auto params_type = tuple_type(decl.parameters().types());
+      auto params_type = tuple_type(rush::visit(decl.parameters(), parameter_types_extractor {}).results());
       return function_type_impl(&decl, decl.return_type(), params_type);
    }
 
