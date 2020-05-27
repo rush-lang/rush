@@ -356,6 +356,7 @@ TEST_CASE( "rush::lex (tab-indentation)" ) {
 	CHECK( valid_lex("\tabc\n\tdef", {
 		tok::indent({ 1, 1 }),
 		tok::identifier("abc", { 1, 2 }),
+		tok::lbreak({ 2, 1 }),
 		tok::identifier("def", { 2, 2 }),
 		tok::dedent({ 3, 1 })
 	}));
@@ -367,6 +368,7 @@ TEST_CASE( "rush::lex (tab-indentation)" ) {
 	CHECK( valid_lex("\tabc\n\t  \n\tdef", {
 		tok::indent({ 1, 1 }),
 		tok::identifier("abc", { 1, 2 }),
+		tok::lbreak({ 3, 1 }),
 		tok::identifier("def", { 3, 2 }),
 		tok::dedent({ 4, 1 })
 	}));
@@ -374,6 +376,7 @@ TEST_CASE( "rush::lex (tab-indentation)" ) {
 	CHECK( valid_lex("\tabc\n\t\t\n\tdef", {
 		tok::indent({ 1, 1 }),
 		tok::identifier("abc", { 1, 2 }),
+		tok::lbreak({ 3, 1 }),
 		tok::identifier("def", { 3, 2 }),
 		tok::dedent({ 4, 1 })
 	}));

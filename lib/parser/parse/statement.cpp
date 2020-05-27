@@ -96,6 +96,7 @@ namespace rush {
    rush::parse_result<ast::statement> parser::parse_if_stmt() {
       assert(peek_skip_indent().is(keywords::if_) && "expected 'if' keyword.");
       next_skip_indent(); // consume 'if' keyword.
+      _scope.push(scope_kind::block);
 
       auto cond_result = parse_expr();
       if (cond_result.failed())
@@ -103,12 +104,13 @@ namespace rush {
 
       if (!peek_skip_indent().is(symbols::colon))
          return errs::expected_if_stmt_body(peek_skip_indent());
-      next_skip_indent(); // consume ':' symbol.
+      auto tok_colon = next_skip_indent(); // consume ':' symbol.
 
-      _scope.push(scope_kind::block);
       auto then_result = (peek_with_indent().is(symbols::indent))
          ? parse_block_stmt()
-         : parse_inline_stmt();
+         : peek_with_lbreak().is_not(symbols::lbreak)
+         ? parse_inline_stmt()
+         : errs::expected_if_stmt_body(tok_colon);
       if (then_result.failed())
          return std::move(then_result);
       _scope.pop();
@@ -139,18 +141,20 @@ namespace rush {
          if (result.second) return std::move(result.first);
          return errs::expected_compound_stmt(tok);
       } else if (tok.is(symbols::colon)) {
-         next_skip_indent(); // consume ':' symbol.
-
+         auto tok_colon = next_skip_indent(); // consume ':' symbol.
          _scope.push(scope_kind::block);
+
          auto result = (peek_with_indent().is(symbols::indent))
             ? parse_block_stmt()
-            : parse_inline_stmt();
-         _scope.pop();
+            : peek_with_lbreak().is_not(symbols::lbreak)
+            ? parse_inline_stmt()
+            : errs::expected_else_stmt_body(tok_colon);
 
+         _scope.pop();
          return std::move(result);
       }
 
-      return errs::expected(tok, ":");
+      return errs::expected_else_stmt_body(tok);
    }
 
    rush::parse_result<ast::statement> parser::parse_for_stmt() {
@@ -172,12 +176,15 @@ namespace rush {
       if (expr_result.failed())
          return std::move(expr_result).as<ast::statement>();
 
-      if (!consume_skip_indent(symbols::colon))
+      if (!peek_skip_indent().is(symbols::colon))
          return errs::expected_for_stmt_body(peek_skip_indent());
+      auto tok_colon = next_skip_indent();
 
       auto then_result = (peek_with_indent().is(symbols::indent))
          ? parse_block_stmt()
-         : parse_inline_stmt();
+         : peek_with_lbreak().is_not(symbols::lbreak)
+         ? parse_inline_stmt()
+         : errs::expected_for_stmt_body(tok_colon);
       if (then_result.failed())
          return std::move(then_result);
 
@@ -191,23 +198,26 @@ namespace rush {
    rush::parse_result<ast::statement> parser::parse_while_stmt() {
       assert(peek_skip_indent().is(keywords::while_) && "expected 'while' keyword.");
       next_skip_indent(); // consume 'while' keyword.
+      _scope.push(scope_kind::block);
 
       auto cond_result = parse_expr();
       if (cond_result.failed())
          return std::move(cond_result).as<ast::statement>();
 
       // consume ':' symbol.
-      if (auto next = next_skip_indent(); !next.is(symbols::colon))
-         return errs::expected_while_stmt_body(next);
+      if (!peek_skip_indent().is(symbols::colon))
+         return errs::expected_while_stmt_body(peek_skip_indent());
+      auto tok_colon = next_skip_indent();
 
-      _scope.push(scope_kind::block);
       auto then_result = (peek_with_indent().is(symbols::indent))
          ? parse_block_stmt()
-         : parse_inline_stmt();
+         : peek_with_lbreak().is_not(symbols::lbreak)
+         ? parse_inline_stmt()
+         : errs::expected_while_stmt_body(tok_colon);
       if (then_result.failed())
          return std::move(then_result);
-      _scope.pop();
 
+      _scope.pop();
       return ast::stmts::while_(
          std::move(cond_result),
          std::move(then_result));
@@ -221,7 +231,8 @@ namespace rush {
       // at the end of a statement block in
       if (peek_skip_indent().is_any(
          symbols::semi_colon,
-         symbols::dedent))
+         symbols::dedent) ||
+         peek_with_lbreak().is(symbols::lbreak))
          return ast::stmts::return_();
 
       auto result = parse_expr();

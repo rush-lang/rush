@@ -46,6 +46,7 @@ namespace rush {
 			[](symbol_token_t const& arg) -> std::string {
 				switch (arg) {
 				case symbols::eof: return "<eof>";
+            case symbols::lbreak: return "<break>";
 				case symbols::indent: return "<indent>";
 				case symbols::dedent: return "<dedent>";
 				default: return to_string(arg);
@@ -59,7 +60,7 @@ namespace rush {
 		std::ostringstream oss;
       oss << "<" << tok.location() << " ";
 
-		if (tok.is_any(symbols::indent, symbols::dedent, symbols::eof)) {
+		if (tok.is_any(symbols::indent, symbols::dedent, symbols::lbreak, symbols::eof)) {
          oss << to_string(tok) << ">";
 		   return oss.str();
       }

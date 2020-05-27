@@ -126,12 +126,31 @@ namespace rush {
              && indent_stack[indent_stack.size() - offset - 1];
       }
 
+      lexical_token const& peek_with_lbreak(lxa_iterator_difference_type offset = 0) {
+         return peek_with_lbreak(
+            _range.first,
+            _range.second,
+            offset);
+      }
+
+      lexical_token const& peek_with_lbreak(lxa_iterator& first, lxa_iterator const& last, lxa_iterator_difference_type offset = 0) {
+         auto temp = first;
+         std::size_t indent_offset = 0;
+         for (; temp != last &&
+            (temp->is_comment()) ||
+            (temp->is(symbols::indent)) ||
+            ((temp->is(symbols::dedent) && is_indent_skipped(indent_offset++))
+            || offset-- > 0); ++temp) ;
+         return temp != last ? *temp : _eof;
+      }
+
       lexical_token const& peek_with_indent(lxa_iterator_difference_type offset = 0) {
          auto temp = _range.first;
          auto& last = _range.second;
          std::size_t indent_offset = 0;
          for (; temp != last &&
             (temp->is_comment()) ||
+            (temp->is(symbols::lbreak)) ||
             ((temp->is(symbols::dedent) && is_indent_skipped(indent_offset++)) ||
             offset-- > 0); ++temp) ;
          return temp != last ? *temp : _eof;
@@ -142,6 +161,7 @@ namespace rush {
          std::size_t indent_offset = 0;
          for (; temp != last &&
             (temp->is_comment()) ||
+            (temp->is(symbols::lbreak)) ||
             (temp->is(symbols::indent) ||
             (temp->is(symbols::dedent) && is_indent_skipped(indent_offset++))
             || offset-- > 0); ++temp) ;
@@ -154,6 +174,10 @@ namespace rush {
          auto& last = _range.second;
 
          while (first != last && first->is_comment()) {
+            temp = ++first;
+         }
+
+         while (first != last && first->is(symbols::lbreak)) {
             temp = ++first;
          }
 
@@ -174,6 +198,10 @@ namespace rush {
          auto temp = first;
 
          while (first != last && first->is_comment()) {
+            temp = ++first;
+         }
+
+         while (first != last && first->is(symbols::lbreak)) {
             temp = ++first;
          }
 

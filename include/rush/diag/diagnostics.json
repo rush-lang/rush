@@ -54,6 +54,7 @@
 
             { "name": "expected_compound_stmt", "text": "expected compound statement before '{}'." },
             { "name": "expected_if_stmt_body", "text": "expected ':', and subsequent body of 'if' statement before '{}'." },
+            { "name": "expected_else_stmt_body", "text": "expected ':', and subsequent body of 'else' statement before '{}'." },
             { "name": "expected_for_in_expr", "text": "expected 'in' keyword, and subsequent expression or expression list before '{}'." },
             { "name": "expected_for_stmt_body", "text": "expected ':', and subsequent body of 'for' statement before '{}'." },
             { "name": "expected_while_stmt_body", "text": "expected ':', and subsequent body of 'while' statement before '{}'." },
