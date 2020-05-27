@@ -30,8 +30,10 @@ namespace rush {
             auto tok = peek_skip_indent();
             if (tok.is_identifier()) {
                return parse_named_pattern(decl_type);
+            } else if (tok.is(symbols::left_square_bracket)) {
+               return parse_array_destructure_pattern();
             } else if (tok.is(symbols::left_bracket)) {
-               return parse_destructure_pattern();
+               return parse_object_destructure_pattern();
             }
             return errs::expected(tok, "storage pattern");
          });
@@ -49,8 +51,10 @@ namespace rush {
             return parse_named_pattern("constant");
          } else if (tok.is(symbols::underscore)) {
             return parse_discard_pattern();
+         } else if (tok.is(symbols::left_square_bracket)) {
+            return parse_array_destructure_pattern();
          } else if (tok.is(symbols::left_bracket)) {
-            return parse_destructure_pattern();
+            return parse_object_destructure_pattern();
          }
 
          return errs::expected(tok, "iteration pattern");
@@ -63,8 +67,10 @@ namespace rush {
             auto tok = peek_skip_indent();
             if (tok.is_identifier()) {
                return parse_named_pattern("parameter");
+            } else if (tok.is(symbols::left_square_bracket)) {
+               return parse_array_destructure_pattern();
             } else if (tok.is(symbols::left_bracket)) {
-               return parse_destructure_pattern();
+               return parse_object_destructure_pattern();
             } else return errs::expected(
                peek_skip_indent(),
                "parameter pattern");
@@ -122,7 +128,41 @@ namespace rush {
          std::move(expr_result));
    }
 
-   rush::parse_result<ast::pattern> parser::parse_destructure_pattern() {
+   rush::parse_result<ast::pattern> parser::parse_array_destructure_pattern() {
+      assert(peek_skip_indent().is(symbols::left_square_bracket) && "expected '{' parsing destructure pattern.");
+      next_skip_indent(); // consume '['
+
+      auto result = parse_pattern_list([this]()
+         -> rush::parse_result<ast::pattern> {
+            auto tok = peek_skip_indent();
+            auto result = rush::parse_result<ast::pattern> {};
+            if (tok.is_identifier()) {
+               result = parse_named_pattern("constant");
+            } else if (tok.is(symbols::underscore)) {
+               result = parse_discard_pattern();
+            } else if (tok.is(symbols::left_square_bracket)) {
+               result = parse_array_destructure_pattern();
+            } else if (tok.is(symbols::left_bracket)) {
+               result = parse_object_destructure_pattern();
+            } else return errs::expected(tok, "storage pattern");
+
+            if (result.failed()) return std::move(result);
+            if (peek_skip_indent().is(symbols::equals))
+               result = parse_binding_pattern(std::move(result));
+
+            return std::move(result);
+         });
+
+      if (result.failed()) return std::move(result);
+
+      // consume ']'
+      if (!consume_skip_indent(symbols::right_square_bracket))
+         return errs::expected_closing_bracket(peek_skip_indent());
+
+      return ptrns::destructure_array(std::move(result));
+   }
+
+   rush::parse_result<ast::pattern> parser::parse_object_destructure_pattern() {
       assert(peek_skip_indent().is(symbols::left_bracket) && "expected '{' parsing destructure pattern.");
       next_skip_indent(); // consume '{'
 
@@ -134,8 +174,10 @@ namespace rush {
                result = parse_named_pattern("constant");
             } else if (tok.is(symbols::underscore)) {
                result = parse_discard_pattern();
+            } else if (tok.is(symbols::left_square_bracket)) {
+               result = parse_array_destructure_pattern();
             } else if (tok.is(symbols::left_bracket)) {
-               result = parse_destructure_pattern();
+               result = parse_object_destructure_pattern();
             } else return errs::expected(tok, "storage pattern");
 
             if (result.failed()) return std::move(result);
@@ -145,11 +187,13 @@ namespace rush {
             return std::move(result);
          });
 
+      if (result.failed()) return std::move(result);
+
       // consume '}'
       if (!consume_skip_indent(symbols::right_bracket))
          return errs::expected_closing_bracket(peek_skip_indent());
 
-      return ptrns::destructure(std::move(result));
+      return ptrns::destructure_object(std::move(result));
    }
 
    rush::parse_result<ast::pattern> parser::parse_type_annotation_pattern(rush::parse_result<ast::pattern> lhs) {

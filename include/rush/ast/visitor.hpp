@@ -44,7 +44,8 @@ namespace rush::ast {
    class named_pattern;
    class discard_pattern;
    class binding_pattern;
-   class destructure_pattern;
+   class array_destructure_pattern;
+   class object_destructure_pattern;
    class type_annotation_pattern;
 
 	class expression;
@@ -117,7 +118,8 @@ namespace rush::ast {
       virtual void visit_named_ptrn(ast::named_pattern const&) {};
       virtual void visit_discard_ptrn(ast::discard_pattern const&) {};
       virtual void visit_binding_ptrn(ast::binding_pattern const&) {};
-      virtual void visit_destructure_ptrn(ast::destructure_pattern const&) {};
+      virtual void visit_array_destructure_ptrn(ast::array_destructure_pattern const&) {};
+      virtual void visit_object_destructure_ptrn(ast::object_destructure_pattern const&) {};
       virtual void visit_type_annotation_ptrn(ast::type_annotation_pattern const&) {};
 
 		// declarations

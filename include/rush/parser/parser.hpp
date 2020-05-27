@@ -306,7 +306,8 @@ namespace rush {
       rush::parse_result<ast::pattern> parse_named_pattern(std::string);
       rush::parse_result<ast::pattern> parse_discard_pattern();
       rush::parse_result<ast::pattern> parse_binding_pattern(rush::parse_result<ast::pattern> lhs);
-      rush::parse_result<ast::pattern> parse_destructure_pattern();
+      rush::parse_result<ast::pattern> parse_array_destructure_pattern();
+      rush::parse_result<ast::pattern> parse_object_destructure_pattern();
       rush::parse_result<ast::pattern> parse_type_annotation_pattern(rush::parse_result<ast::pattern> lhs);
 
 		// statements.

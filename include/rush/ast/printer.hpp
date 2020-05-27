@@ -184,8 +184,15 @@ namespace rush::ast {
          indent_traverse(ptrn);
       }
 
-      virtual void visit_destructure_ptrn(ast::destructure_pattern const& ptrn) override {
-         write("<destructure: ");
+      virtual void visit_array_destructure_ptrn(ast::array_destructure_pattern const& ptrn) override {
+         write("<destructure-array: ");
+         ptrn.type().accept(*this);
+         writeln(">");
+         indent_traverse(ptrn);
+      }
+
+      virtual void visit_object_destructure_ptrn(ast::object_destructure_pattern const& ptrn) override {
+         write("<destructure-object: ");
          ptrn.type().accept(*this);
          writeln(">");
          indent_traverse(ptrn);

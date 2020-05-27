@@ -57,7 +57,8 @@ public:
    std::vector<ast::type_ref> results() { return std::move(_results); }
    virtual void visit_named_ptrn(ast::named_pattern const& ptrn) override { _results.push_back(ptrn.type()); }
    virtual void visit_binding_ptrn(ast::binding_pattern const& ptrn) override { ptrn.pattern().accept(*this); }
-   virtual void visit_destructure_ptrn(ast::destructure_pattern const& ptrn) override { _results.push_back(ptrn.type()); };
+   virtual void visit_array_destructure_ptrn(ast::array_destructure_pattern const& ptrn) override { _results.push_back(ptrn.type()); };
+   virtual void visit_object_destructure_ptrn(ast::object_destructure_pattern const& ptrn) override { _results.push_back(ptrn.type()); };
    virtual void visit_type_annotation_ptrn(ast::type_annotation_pattern const& ptrn) override { ptrn.pattern().accept(*this); };
 
 private:

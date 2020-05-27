@@ -37,7 +37,12 @@ public:
       _type = ptrn.expression().result_type();
    }
 
-   virtual void visit_destructure_ptrn(ast::destructure_pattern const& ptrn) override {
+   virtual void visit_array_destructure_ptrn(ast::array_destructure_pattern const& ptrn) override {
+      // todo: find and extract types of the destructured member.
+      _type = ptrn.type();
+   }
+
+   virtual void visit_object_destructure_ptrn(ast::object_destructure_pattern const& ptrn) override {
       // todo: find and extract types of the destructured member.
       _type = ptrn.type();
    }
@@ -76,7 +81,11 @@ public:
       if (ptrn.parent()) ptrn.parent()->accept(*this);
    }
 
-   virtual void visit_destructure_ptrn(ast::destructure_pattern const& ptrn) override {
+   virtual void visit_array_destructure_ptrn(ast::array_destructure_pattern const& ptrn) override {
+      if (ptrn.parent()) ptrn.parent()->accept(*this);
+   }
+
+   virtual void visit_object_destructure_ptrn(ast::object_destructure_pattern const& ptrn) override {
       if (ptrn.parent()) ptrn.parent()->accept(*this);
    }
 

@@ -168,8 +168,12 @@ namespace rush {
          auto result = parse_discard_pattern();
          if (result.failed()) return std::move(result).as<ast::expression>();
          params = std::move(result);
+      } else if (peek_skip_indent().is(symbols::left_square_bracket)) {
+         auto result = parse_array_destructure_pattern();
+         if (result.failed()) return std::move(result).as<ast::expression>();
+         params = std::move(result);
       } else if (peek_skip_indent().is(symbols::left_bracket)) {
-         auto result = parse_destructure_pattern();
+         auto result = parse_object_destructure_pattern();
          if (result.failed()) return std::move(result).as<ast::expression>();
          params = std::move(result);
       } else {

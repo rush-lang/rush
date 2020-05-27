@@ -41,11 +41,6 @@ namespace rush::ast {
          return *_pattern;
       }
 
-      using node::accept;
-      virtual void accept(ast::visitor& v) const override {
-         v.visit_destructure_ptrn(*this);
-      }
-
    protected:
       virtual void attached(ast::node*, ast::context&) override {
          attach(*_pattern);
@@ -61,12 +56,39 @@ namespace rush::ast {
 
       ast::type_ref resolve_type() const;
    };
+
+   class array_destructure_pattern : public destructure_pattern {
+   public:
+      array_destructure_pattern(std::unique_ptr<ast::pattern> patt)
+         : destructure_pattern { std::move(patt) } {}
+
+      using node::accept;
+      virtual void accept(ast::visitor& v) const override {
+         v.visit_array_destructure_ptrn(*this);
+      }
+   };
+
+   class object_destructure_pattern : public destructure_pattern {
+   public:
+      object_destructure_pattern(std::unique_ptr<ast::pattern> patt)
+         : destructure_pattern { std::move(patt) } {}
+
+      using node::accept;
+      virtual void accept(ast::visitor& v) const override {
+         v.visit_object_destructure_ptrn(*this);
+      }
+   };
 } // rush::ast
 
 namespace rush::ast::ptrns {
-   inline std::unique_ptr<ast::destructure_pattern> destructure(
+   inline std::unique_ptr<ast::destructure_pattern> destructure_array(
       std::unique_ptr<ast::pattern> patt) {
-         return std::make_unique<ast::destructure_pattern>(std::move(patt));
+         return std::make_unique<ast::array_destructure_pattern>(std::move(patt));
+      }
+
+   inline std::unique_ptr<ast::destructure_pattern> destructure_object(
+      std::unique_ptr<ast::pattern> patt) {
+         return std::make_unique<ast::object_destructure_pattern>(std::move(patt));
       }
 } // rush::ast::ptrns
 

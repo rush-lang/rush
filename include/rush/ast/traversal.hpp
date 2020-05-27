@@ -36,7 +36,11 @@ namespace rush::ast {
          accept(ptrn.expression());
       }
 
-      virtual void visit_destructure_ptrn(ast::destructure_pattern const& ptrn) override {
+      virtual void visit_array_destructure_ptrn(ast::array_destructure_pattern const& ptrn) override {
+         accept(ptrn.pattern());
+      }
+
+      virtual void visit_object_destructure_ptrn(ast::object_destructure_pattern const& ptrn) override {
          accept(ptrn.pattern());
       }
 
