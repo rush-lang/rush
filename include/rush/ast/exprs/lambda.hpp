@@ -20,9 +20,10 @@
 
 #include "rush/ast/ptrns/pattern.hpp"
 #include "rush/ast/ptrns/list.hpp"
-#include "rush/ast/stmts/statement.hpp"
 #include "rush/ast/types/builtin.hpp"
 #include "rush/ast/types/function.hpp"
+#include "rush/ast/stmts/statement.hpp"
+#include "rush/ast/decls/parameter.hpp"
 #include "rush/ast/context.hpp"
 
 #include <memory>
@@ -34,13 +35,13 @@ namespace rush::ast {
 		lambda_expression(
          std::unique_ptr<ast::pattern> params,
 			std::unique_ptr<ast::statement> body)
-			: _params { std::move(params) }
+			: _params { decls::parameter(std::move(params)) }
          , _type { ast::types::undefined }
          , _explicit_return_type { ast::types::undefined }
 			, _body { std::move(body) } {}
 
 		ast::pattern const& parameters() const noexcept {
-			return *_params;
+			return _params->pattern();
 		}
 
 		ast::statement const& body() const noexcept {
@@ -73,7 +74,7 @@ namespace rush::ast {
 		}
 
 	private:
-		std::unique_ptr<ast::pattern> _params;
+		std::unique_ptr<ast::storage_declaration> _params;
 		std::unique_ptr<ast::statement> _body;
       mutable ast::type_ref _explicit_return_type;
       mutable std::variant<

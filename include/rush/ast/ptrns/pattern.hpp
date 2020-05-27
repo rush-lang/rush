@@ -18,12 +18,9 @@
 #ifndef RUSH_AST_PATTERN_HPP
 #define RUSH_AST_PATTERN_HPP
 
-#include "rush/ast/types/type_ref.hpp"
-#include "rush/ast/decls/nominal.hpp"
-#include "rush/ast/identifier.hpp"
-#include "rush/ast/decls/parameter.hpp"
+#include "rush/ast/node.hpp"
 
-#include <vector>
+#include <cstdint>
 
 namespace rush::ast {
    enum class pattern_kind : std::uint8_t {

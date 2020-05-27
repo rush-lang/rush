@@ -29,6 +29,13 @@ namespace rush::ast {
       visit_return_stmt(static_cast<simple_statement const&>(stmt));
    };
 
+   void visitor::visit_iteration_stmt(iteration_statement const& stmt) {
+      switch (stmt.kind()) {
+      default: break; // assert! should be unreachable.
+      case statement_kind::for_: visit_for_stmt(stmt); break;
+      }
+   }
+
    void visitor::visit_conditional_stmt(conditional_statement const& stmt) {
       switch (stmt.kind()) {
       default: break; // assert! should be unreachable.

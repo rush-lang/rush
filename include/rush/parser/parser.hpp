@@ -269,6 +269,7 @@ namespace rush {
       rush::parse_result<ast::declaration> parse_class_decl_body_section(access_modifier);
 
       rush::parse_result<ast::pattern> parse_storage_pattern(std::string);
+      rush::parse_result<ast::pattern> parse_iteration_pattern();
       rush::parse_result<ast::pattern> parse_argument_pattern();
       rush::parse_result<ast::pattern> parse_parameter_pattern();
       rush::parse_result<ast::pattern> parse_pattern_list(

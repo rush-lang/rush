@@ -42,6 +42,21 @@ namespace rush {
       return std::move(result);
    }
 
+   rush::parse_result<ast::pattern> parser::parse_iteration_pattern() {
+      return parse_pattern_list([this]() -> rush::parse_result<ast::pattern> {
+         auto tok = peek_skip_indent();
+         if (tok.is_identifier()) {
+            return parse_named_pattern("constant");
+         } else if (tok.is(symbols::underscore)) {
+            return parse_discard_pattern();
+         } else if (tok.is(symbols::left_bracket)) {
+            return parse_destructure_pattern();
+         }
+
+         return errs::expected(tok, "iteration pattern");
+      });
+   }
+
    rush::parse_result<ast::pattern> parser::parse_parameter_pattern() {
       auto result = parse_pattern_list([this]()
          -> rush::parse_result<ast::pattern> {

@@ -15,66 +15,56 @@
 *************************************************************************/
 #pragma once
 
-#ifndef RUSH_AST_PARAMETER_HPP
-#define RUSH_AST_PARAMETER_HPP
+#ifndef RUSH_AST_DECLS_PARAMETER_HPP
+#define RUSH_AST_DECLS_PARAMETER_HPP
 
-#include "rush/ast/list.hpp"
-#include "rush/ast/identifier.hpp"
 #include "rush/ast/types/type_ref.hpp"
-#include "rush/ast/decls/nominal.hpp"
+#include "rush/ast/types/builtin.hpp"
+#include "rush/ast/decls/storage.hpp"
+#include "rush/ast/ptrns/pattern.hpp"
+
 
 namespace rush::ast {
-   class parameter;
-	using parameter_list = detail::basic_list<parameter>;
-
-	class parameter : public nominal_declaration {
-   public:
-      virtual std::string_view name() const override {
-         return _name;
-      }
-
-      virtual ast::type_ref type() const noexcept override {
-         return _type;
-      }
-
-		virtual declaration_kind kind() const noexcept override {
-         return ast::declaration_kind::parameter;
-      }
-
-      parameter(
-         std::string name,
-         ast::type_ref type)
-         : _name { std::move(name) }
-         , _type { std::move(type) } {}
-
-      using node::accept;
-      virtual void accept(ast::visitor& v) const override {
-         v.visit_parameter_decl(*this);
-      }
-
-   protected:
-      virtual void attached(ast::node*, ast::context&) override {}
-      virtual void detached(ast::node*, ast::context&) override {}
-
-   private:
-      std::string _name;
-      ast::type_ref _type;
-   };
+	class parameter_declaration;
 
 	namespace decls {
-		inline std::unique_ptr<ast::parameter> param(std::string name, ast::type_ref type) {
-         return std::make_unique<parameter>(std::move(name), std::move(type));
-      }
+		std::unique_ptr<parameter_declaration> parameter(
+         std::unique_ptr<ast::pattern> patt);
+	}
 
-      inline std::unique_ptr<parameter_list> param_list() {
-         return std::make_unique<parameter_list>();
-      }
+	class parameter_declaration : public storage_declaration {
+		struct factory_tag_t {};
 
-      inline std::unique_ptr<parameter_list> param_list(std::vector<std::unique_ptr<ast::parameter>> params) {
-         return std::make_unique<parameter_list>(std::move(params));
-      }
+		friend std::unique_ptr<parameter_declaration>
+			decls::parameter(std::unique_ptr<ast::pattern>);
+
+	public:
+		parameter_declaration(
+         std::unique_ptr<ast::pattern> patt,
+         factory_tag_t)
+			: storage_declaration {
+            std::move(patt),
+				nullptr
+			} {}
+
+		virtual declaration_kind kind() const noexcept override {
+			return declaration_kind::parameter;
+		}
+
+		using node::accept;
+		virtual void accept(ast::visitor& v) const override {
+			v.visit_parameter_decl(*this);
+		}
+	};
+
+	namespace decls {
+      inline std::unique_ptr<parameter_declaration> parameter(
+         std::unique_ptr<ast::pattern> patt) {
+            return std::make_unique<parameter_declaration>(
+               std::move(patt),
+               parameter_declaration::factory_tag_t {});
+         }
 	} // rush::ast::decls
 } // rush::ast
 
-
-#endif // RUSH_AST_PARAMETER_HPP
+#endif // RUSH_AST_DECLS_PARAMETER_HPP

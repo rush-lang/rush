@@ -154,6 +154,12 @@ namespace rush::ast {
          accept(stmt.expression());
       }
 
+      void traverse_iteration_stmt(ast::iteration_statement const& stmt) {
+         accept(stmt.pattern());
+         accept(stmt.expression());
+         accept(stmt.body());
+      }
+
       void traverse_conditional_stmt(ast::conditional_statement const& stmt) {
          accept(stmt.condition());
          accept(stmt.body());

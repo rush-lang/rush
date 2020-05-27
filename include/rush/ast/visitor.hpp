@@ -80,11 +80,11 @@ namespace rush::ast {
    class result_statement;
 
    class module;
-   class parameter;
    class import_declaration;
    class module_declaration;
 	class constant_declaration;
 	class variable_declaration;
+   class parameter_declaration;
 	class function_declaration;
    class member_declaration;
    class class_declaration;
@@ -125,9 +125,9 @@ namespace rush::ast {
       virtual void visit_import_decl(ast::import_declaration const&) {};
       virtual void visit_module_decl(ast::module_declaration const&) {};
 
-      virtual void visit_parameter_decl(ast::parameter const&) {};
 		virtual void visit_constant_decl(ast::constant_declaration const&) {};
 		virtual void visit_variable_decl(ast::variable_declaration const&) {};
+      virtual void visit_parameter_decl(ast::parameter_declaration const&) {};
 		virtual void visit_function_decl(ast::function_declaration const&) {};
       virtual void visit_member_decl(ast::member_declaration const&) {};
       virtual void visit_class_decl(ast::class_declaration const&) {};
@@ -135,7 +135,7 @@ namespace rush::ast {
 		// statements
 		virtual void visit_block_stmt(statement_block const&) {};
 
-      virtual void visit_iteration_stmt(iteration_statement const&) {}
+      virtual void visit_iteration_stmt(iteration_statement const&);
       virtual void visit_conditional_stmt(conditional_statement const&);
       virtual void visit_alternating_stmt(alternating_statement const&);
 

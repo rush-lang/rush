@@ -72,6 +72,15 @@ virtual void visit_{{ rtrim(stmt/name, "_") }}_stmt(rush::ast::result_statement 
 #undef RUSH_TRAVERSAL_RESULT_STMT_FUNC_IMPLS
 #endif
 
+#ifdef RUSH_TRAVERSAL_ITERATION_STMT_FUNC_IMPLS
+## for stmt in statements/compound
+## if contains(stmt/kinds, "iteration")
+virtual void visit_{{ rtrim(stmt/name, "_") }}_stmt(rush::ast::iteration_statement const& stmt) override { traverse_iteration_stmt(stmt); }
+## endif
+## endfor
+#undef RUSH_TRAVERSAL_ITERATION_STMT_FUNC_IMPLS
+#endif
+
 #ifdef RUSH_TRAVERSAL_CONDITIONAL_STMT_FUNC_IMPLS
 ## for stmt in statements/compound
 ## if contains(stmt/kinds, "conditional")
@@ -116,6 +125,17 @@ case rush::ast::statement_kind::{{ stmt/name }}: writeln("<[stmt] {{ rtrim(stmt/
 #undef RUSH_RESULT_STATEMENT_PRINT_VISIT_SWITCH
 #endif
 
+#ifdef RUSH_SIMPLE_ITERATION_PRINT_VISIT_SWITCH
+switch (stmt.kind()) {
+default: break; // assert! should be unreachable.
+## for stmt in statements/compound
+## if contains(stmt/kinds, "iteration")
+case rush::ast::statement_kind::{{ stmt/name }}: writeln("<[stmt] {{ rtrim(stmt/name, "_") }}>"); break;
+## endif
+## endfor
+}
+#undef RUSH_SIMPLE_ITERATION_PRINT_VISIT_SWITCH
+#endif
 
 #ifdef RUSH_SIMPLE_CONDITIONAL_PRINT_VISIT_SWITCH
 switch (stmt.kind()) {

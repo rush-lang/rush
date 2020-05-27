@@ -167,7 +167,7 @@ namespace rush::ast {
          switch (ptrn.kind()) {
          case ast::declaration_kind::variable: write("variable: "); break;
          case ast::declaration_kind::constant: write("constant: "); break;
-         case ast::declaration_kind::function: write("parameter: "); break;
+         case ast::declaration_kind::parameter: write("parameter: "); break;
          default: assert("impossible.");
          }
 
@@ -228,6 +228,11 @@ namespace rush::ast {
          indent_traverse(stmt);
       }
 
+      virtual void visit_iteration_stmt(ast::iteration_statement const& stmt) override {
+#        define RUSH_SIMPLE_ITERATION_PRINT_VISIT_SWITCH
+#        include "rush/ast/stmts/_statements.hpp"
+         indent_traverse(stmt);
+      }
 
       virtual void visit_named_argument(ast::named_argument const& arg) override {
          writeln("<named_binding: (name=\"{}\")>", arg.name());
@@ -311,10 +316,8 @@ namespace rush::ast {
 			print_storage_decl("variable", decl);
 		}
 
-      virtual void visit_parameter_decl(ast::parameter const& param) override {
-         write("<param: ");
-         param.type().accept(*this);
-         writeln(" (name=\"{}\")>", param.name());
+      virtual void visit_parameter_decl(ast::parameter_declaration const& decl) override {
+         print_storage_decl("parameter", decl);
       }
 
       virtual void visit_function_decl(ast::function_declaration const& decl) override {

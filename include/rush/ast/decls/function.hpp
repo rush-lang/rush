@@ -57,7 +57,7 @@ namespace rush::ast {
          : _name { std::move(name) }
          , _type { types::undefined }
          , _explicit_return_type { std::move(return_type) }
-         , _params { std::move(params) }
+         , _params { decls::parameter(std::move(params)) }
 			, _body { std::move(body) } {}
 
       virtual std::string_view name() const noexcept override {
@@ -77,7 +77,7 @@ namespace rush::ast {
       }
 
 		ast::pattern const& parameters() const noexcept {
-         return *_params;
+         return _params->pattern();
 		}
 
 		ast::statement const& body() const noexcept {
@@ -109,7 +109,7 @@ namespace rush::ast {
          ast::type_resolver*> _type;
       ast::type_ref _explicit_return_type;
 		std::unique_ptr<ast::statement> _body;
-      std::unique_ptr<ast::pattern> _params;
+      std::unique_ptr<ast::storage_declaration> _params;
 
       ast::type_ref resolve_type() const {
          struct type_visitor {

@@ -157,14 +157,35 @@ namespace rush {
       assert(peek_skip_indent().is(keywords::for_) && "expected 'for' keyword.");
       next_skip_indent(); // consume 'for' keyword.
 
-      // auto pat = parse_identifier_pattern_expr();
       _scope.push(scope_kind::block);
-      if (auto next = next_skip_indent(); next.is_not(keywords::in_))
-         return errs::expected(next, "in");
 
+      auto ptrn_result = peek_skip_indent().is_not(keywords::in_)
+         ? parse_iteration_pattern()
+         : ast::ptrns::discard();
+      if (ptrn_result.failed())
+         return std::move(ptrn_result).as<ast::statement>();
 
+      if (!consume_skip_indent(keywords::in_))
+         return errs::expected_for_in_expr(peek_skip_indent());
 
-      return errs::not_supported(_eof, "for loop iteration");
+      auto expr_result = parse_expr();
+      if (expr_result.failed())
+         return std::move(expr_result).as<ast::statement>();
+
+      if (!consume_skip_indent(symbols::colon))
+         return errs::expected_for_stmt_body(peek_skip_indent());
+
+      auto then_result = (peek_with_indent().is(symbols::indent))
+         ? parse_block_stmt()
+         : parse_inline_stmt();
+      if (then_result.failed())
+         return std::move(then_result);
+
+      _scope.pop();
+      return ast::stmts::for_(
+         std::move(ptrn_result),
+         std::move(expr_result),
+         std::move(then_result));
    }
 
    rush::parse_result<ast::statement> parser::parse_while_stmt() {

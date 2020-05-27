@@ -55,9 +55,9 @@ public:
          strip_type_extension { ptrn.type() }).result;
    }
 
-   // virtual void visit_parameter_decl(ast::parameter const&) {}
 	virtual void visit_constant_decl(ast::constant_declaration const& decl) override { _type = decl.type(); }
 	virtual void visit_variable_decl(ast::variable_declaration const& decl) override { _type = decl.type(); }
+   virtual void visit_parameter_decl(ast::parameter_declaration const& decl) override { _type = decl.type(); }
 
 private:
    ast::type_ref _type;
@@ -84,10 +84,9 @@ public:
       if (ptrn.parent()) ptrn.parent()->accept(*this);
    }
 
-   // virtual void visit_parameter_decl(ast::parameter const&) {}
 	virtual void visit_constant_decl(ast::constant_declaration const& decl) override { _decl = &decl; }
 	virtual void visit_variable_decl(ast::variable_declaration const& decl) override { _decl = &decl; }
-   virtual void visit_function_decl(ast::function_declaration const& decl) override { _decl = &decl; }
+   virtual void visit_parameter_decl(ast::parameter_declaration const& decl) override { _decl = &decl; }
 
 private:
    ast::declaration const* _decl;
