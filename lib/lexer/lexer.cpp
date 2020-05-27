@@ -251,13 +251,26 @@ namespace rush {
 
          auto prev = peek();
          auto escape = false;
+         auto bracket = 0;
+         auto bracket_escape = false;
 
          skip(); // consume quotation mark.
          auto result = scan_while([&](auto const& cp){
-            escape = (prev == '\\' && !escape);
-            if (is_quote(cp) && !escape)
-            { prev = cp; return false; }
-            prev = cp; return true;
+            if (bracket > 0) {
+               if (cp == '{') ++bracket;
+               if (cp == '}') --bracket;
+               return true;
+            } else if (!bracket_escape && prev == '$' && cp == '{') {
+               ++bracket;
+               return true;
+            } else {
+               escape = (prev == '\\' && !escape);
+               bracket_escape = (escape && cp == '$');
+               if (is_quote(cp) && !escape)
+               { prev = cp; return false; }
+               prev = cp;
+               return true;
+            }
          });
 
          if (!check_if(is_quote))

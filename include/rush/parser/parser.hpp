@@ -83,6 +83,13 @@ namespace rush {
 		std::pair<lxa_iterator, lxa_iterator> _range;
 
 
+      std::pair<lxa_iterator, lxa_iterator> inject(lxa_iterator first, lxa_iterator last) {
+         auto temp = _range;
+         _range.first = first;
+         _range.second = last;
+         return temp;
+      }
+
 		void initialize(lexical_analysis const& lxa) {
          if (!lxa.empty()) {
             auto loc = lxa.back().location();

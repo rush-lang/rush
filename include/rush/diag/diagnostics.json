@@ -44,7 +44,7 @@
             { "name": "expected_class_name", "text": "exepected class name before '{}'." },
             { "name": "unexpected_symbol_expr", "text": "unexpected symbol '{}' parsing primary expression." },
             { "name": "unexpected_keyword_expr", "text": "unexpected keyword '{}' parsing primary expression." },
-            { "name": "expected_closing_bracket", "text": "expected a closing '}' before '{}'." },
+            { "name": "expected_closing_bracket", "text": "expected a closing '}}' before '{}'." },
             { "name": "expected_closing_parenthesis", "text": "expected a closing ')' before '{}'." },
             { "name": "expected_closing_parenthesis_or_tuple", "text": "expected a closing ')' or ',' before '{}'." },
             { "name": "expected_closing_square_bracket", "text": "expected a closing ']' before '{}'." },
@@ -68,7 +68,8 @@
 
             { "name": "constant_used_like_type", "text": "'{}' is a constant but is used like a type." },
             { "name": "variable_used_like_type", "text": "'{}' is a variable but is used like a type." },
-            { "name": "function_used_like_type", "text": "'{}' is a function but is used like a type." }
+            { "name": "function_used_like_type", "text": "'{}' is a function but is used like a type." },
+            { "name": "template_string_parse_error", "text": "could not parse string template: {1}", "params": [ "errmsg" ] }
          ]
       },
       {

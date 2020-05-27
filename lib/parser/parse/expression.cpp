@@ -14,6 +14,7 @@
 * limitations under the License.
 *************************************************************************/
 #include "rush/parser/parser.hpp"
+#include "rush/parser/string_parser.hpp"
 #include "rush/ast/patterns.hpp"
 #include "rush/ast/expressions.hpp"
 #include "rush/ast/declarations.hpp"
@@ -232,8 +233,8 @@ namespace rush {
 	rush::parse_result<ast::expression> parser::parse_string_expr() {
 		assert(peek_skip_indent().is_string_literal() && "expected token to be a string literal.");
 		auto tok = next_skip_indent();
-		auto str = tok.text();
-		return exprs::literal(str, *_context);
+      auto sp = rush::string_parser { *this };
+      return sp.parse(tok);
 	}
 
 	rush::parse_result<ast::expression> parser::parse_integer_expr() {
