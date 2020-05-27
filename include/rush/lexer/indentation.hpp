@@ -72,9 +72,7 @@ namespace rush {
 				return this->is_indent_char(cp);
 			})) {
 				auto d = distance_to_depth(pin, first);
-				if (d < _depth) return { _depth - 1, _inlen, _style };
-				if (d > _depth) return { _depth + 1, _inlen, _style };
-				return *this;
+				return { d, _inlen, _style };
 			}
 
 			return { 0, _inlen, _style };

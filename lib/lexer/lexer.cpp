@@ -199,7 +199,12 @@ namespace rush {
          return _unwind_indentation();
       }
 
+      int indent_diff = 0;
       std::optional<lexical_token> scan_whitespace() {
+         if (_indent.style() != indentation_style::unknown) {
+            if (indent_diff < 0) { indent_diff += 1; _indent.decrement(); return tok::dedent(location(), source()); }
+            if (indent_diff > 0) { indent_diff -= 1; _indent.increment(); return tok::indent(location(), source()); }
+         }
          while (!eof()) {
             skip_while(is_vspace);
             if (eof()) break;
@@ -207,12 +212,14 @@ namespace rush {
             if (is_line_start()) {
                _loc = _lab->peek().location(); // pin the location
                auto wspace = scan_while(is_hspace);
+
                if (eof() || is_comment_head(peek())) break;
 
                if (!is_newline(peek())) {
                   auto indent = _indent.measure(wspace.begin(), wspace.end());
-                  if (indent < _indent) { _indent.decrement(); return tok::dedent(location(), source()); }
-                  if (indent > _indent) { _indent.increment(); return tok::indent(location(), source()); }
+                  if (_indent.style() != indentation_style::unknown) { indent_diff = ((int)indent.depth() - (int)_indent.depth()); }
+                  if (indent < _indent) { indent_diff += 1; _indent.decrement(); return tok::dedent(location(), source()); }
+                  if (indent > _indent) { indent_diff -= 1; _indent.increment(); return tok::indent(location(), source()); }
                   break;
                }
             } else {
