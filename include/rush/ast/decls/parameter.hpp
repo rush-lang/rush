@@ -39,13 +39,8 @@ namespace rush::ast {
 			decls::parameter(std::unique_ptr<ast::pattern>);
 
 	public:
-		parameter_declaration(
-         std::unique_ptr<ast::pattern> patt,
-         factory_tag_t)
-			: storage_declaration {
-            std::move(patt),
-				nullptr
-			} {}
+		parameter_declaration(std::unique_ptr<ast::pattern> patt, factory_tag_t)
+			: storage_declaration { std::move(patt) } {}
 
 		virtual declaration_kind kind() const noexcept override {
 			return declaration_kind::parameter;

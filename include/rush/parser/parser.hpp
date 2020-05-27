@@ -278,9 +278,7 @@ namespace rush {
       rush::parse_result<ast::declaration> parse_toplevel_decl();
 
 		rush::parse_result<ast::declaration> _parse_storage_decl(std::string,
-         rush::function_ref<std::unique_ptr<ast::declaration>(
-            std::unique_ptr<ast::pattern>,
-            std::unique_ptr<ast::expression>)>);
+         rush::function_ref<std::unique_ptr<ast::declaration>(std::unique_ptr<ast::pattern>)>);
 
 		rush::parse_result<ast::declaration> parse_constant_decl();
 		rush::parse_result<ast::declaration> parse_variable_decl();

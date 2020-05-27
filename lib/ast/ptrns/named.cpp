@@ -60,9 +60,9 @@ public:
          strip_type_extension { ptrn.type() }).result;
    }
 
-	virtual void visit_constant_decl(ast::constant_declaration const& decl) override { _type = decl.type(); }
-	virtual void visit_variable_decl(ast::variable_declaration const& decl) override { _type = decl.type(); }
-   virtual void visit_parameter_decl(ast::parameter_declaration const& decl) override { _type = decl.type(); }
+	virtual void visit_constant_decl(ast::constant_declaration const& decl) override { _type = ast::types::inference_fail; }
+	virtual void visit_variable_decl(ast::variable_declaration const& decl) override { _type = ast::types::inference_fail; }
+   virtual void visit_parameter_decl(ast::parameter_declaration const& decl) override { _type = ast::types::inference_fail; }
 
 private:
    ast::type_ref _type;
@@ -102,11 +102,19 @@ private:
 };
 
 namespace rush::ast {
-
    ast::type_ref named_pattern::resolve_type() const {
-      return parent()
-           ? rush::visit(*parent(), pattern_type_resolver {}).result()
-           : ast::types::undeclared;
+      if (_resolving_type) return ast::types::circular_ref;
+
+      _resolving_type = true;
+      auto result_type = parent()
+         ? rush::visit(*parent(), pattern_type_resolver {}).result()
+         : ast::types::undeclared;
+      _resolving_type = false;
+
+      return result_type.kind() == type_kind::error
+          && result_type != ast::types::circular_ref
+           ? ast::types::inference_fail
+           : result_type;
    }
 
    ast::declaration const* named_pattern::resolve_declaration() const {

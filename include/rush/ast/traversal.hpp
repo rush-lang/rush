@@ -60,12 +60,10 @@ namespace rush::ast {
 		// declarations
 		virtual void visit_constant_decl(ast::constant_declaration const& decl) override {
          accept(decl.pattern());
-         if (decl.initializer()) accept(*decl.initializer());
       }
 
 		virtual void visit_variable_decl(ast::variable_declaration const& decl) override {
          accept(decl.pattern());
-         if (decl.initializer()) accept(*decl.initializer());
       }
 
 		virtual void visit_function_decl(ast::function_declaration const& decl) override {

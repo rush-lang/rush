@@ -41,10 +41,6 @@ namespace rush::ast {
          return *_decl;
       }
 
-      virtual ast::type_ref type() const override {
-         return _decl->type();
-      }
-
 		virtual declaration_kind kind() const override {
          return _decl->kind();
       }

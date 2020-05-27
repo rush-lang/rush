@@ -27,20 +27,27 @@ namespace rush {
    rush::parse_result<ast::pattern> parser::parse_storage_pattern(std::string decl_type) {
       auto result = parse_pattern_list([this, &decl_type]()
          -> rush::parse_result<ast::pattern> {
-            auto tok = peek_skip_indent();
-            if (tok.is_identifier()) {
-               return parse_named_pattern(decl_type);
-            } else if (tok.is(symbols::left_square_bracket)) {
-               return parse_array_destructure_pattern();
-            } else if (tok.is(symbols::left_bracket)) {
-               return parse_object_destructure_pattern();
-            }
-            return errs::expected(tok, "storage pattern");
-         });
-      if (result.failed()) return std::move(result);
+            auto result = parse_pattern_list([this, &decl_type]()
+               -> rush::parse_result<ast::pattern> {
+                  auto tok = peek_skip_indent();
+                  if (tok.is_identifier()) {
+                     return parse_named_pattern(decl_type);
+                  } else if (tok.is(symbols::left_square_bracket)) {
+                     return parse_array_destructure_pattern();
+                  } else if (tok.is(symbols::left_bracket)) {
+                     return parse_object_destructure_pattern();
+                  }
+                  return errs::expected(tok, "storage pattern");
+               });
 
-      if (peek_skip_indent().is(symbols::colon))
-         result = parse_type_annotation_pattern(std::move(result));
+            if (result.success() && peek_skip_indent().is(symbols::colon))
+               result = parse_type_annotation_pattern(std::move(result));
+
+            if (result.success() && peek_skip_indent().is(symbols::equals))
+               result = parse_binding_pattern(std::move(result));
+
+            return std::move(result);
+         });
       return std::move(result);
    }
 
@@ -77,16 +84,14 @@ namespace rush {
          });
 
       if (result.failed()) return std::move(result);
+      if (!peek_skip_indent().is_any(symbols::colon, symbols::equals))
+         return errs::expected_type_annotation(peek_skip_indent());
 
-      if (peek_skip_indent().is(symbols::colon)) {
+      if (result.success() && peek_skip_indent().is(symbols::colon))
          result = parse_type_annotation_pattern(std::move(result));
-         if (result.failed()) return std::move(result);
-      } else { return errs::expected_type_annotation(peek_skip_indent()); }
 
-      if (peek_skip_indent().is(symbols::equals)) {
+      if (result.success() && peek_skip_indent().is(symbols::equals))
          result = parse_binding_pattern(std::move(result));
-         if (result.failed()) return std::move(result);
-      }
 
       return std::move(result);
    }

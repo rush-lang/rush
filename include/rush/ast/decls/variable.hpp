@@ -28,28 +28,21 @@ namespace rush::ast {
 	class variable_declaration;
 
 	namespace decls {
-		std::unique_ptr<variable_declaration> variable(
-         std::unique_ptr<ast::pattern> patt,
-			std::unique_ptr<ast::expression> init = nullptr);
+		std::unique_ptr<variable_declaration>
+         variable(std::unique_ptr<ast::pattern> patt);
 	}
 
 	class variable_declaration : public storage_declaration {
 		struct factory_tag_t {};
 
 		friend std::unique_ptr<variable_declaration>
-			decls::variable(
-            std::unique_ptr<ast::pattern>,
-            std::unique_ptr<ast::expression>);
+			decls::variable(std::unique_ptr<ast::pattern>);
 
 	public:
 		variable_declaration(
          std::unique_ptr<ast::pattern> patt,
-         std::unique_ptr<ast::expression> init,
          factory_tag_t)
-			: storage_declaration {
-            std::move(patt),
-				std::move(init)
-			} {}
+			: storage_declaration { std::move(patt) } {}
 
 		virtual declaration_kind kind() const noexcept override {
 			return declaration_kind::variable;
@@ -62,12 +55,10 @@ namespace rush::ast {
 	};
 
 	namespace decls {
-      inline std::unique_ptr<variable_declaration> variable(
-         std::unique_ptr<ast::pattern> patt,
-         std::unique_ptr<ast::expression> init) {
+      inline std::unique_ptr<variable_declaration>
+         variable(std::unique_ptr<ast::pattern> patt) {
             return std::make_unique<variable_declaration>(
                std::move(patt),
-               std::move(init),
                variable_declaration::factory_tag_t {});
          }
 	} // rush::ast::decls

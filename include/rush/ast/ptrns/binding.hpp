@@ -26,13 +26,27 @@
 #include <memory>
 
 namespace rush::ast {
+   enum class binding_kind : std::uint8_t {
+      unknown,
+      parameter,
+      initializer,
+      default_value,
+   };
+
    class binding_pattern : public ast::pattern {
    public:
       binding_pattern(
          std::unique_ptr<ast::pattern> patt,
          std::unique_ptr<ast::expression> expr)
          : _pattern { std::move(patt) }
-         , _expression { std::move(expr) } {}
+         , _expression { std::move(expr) }
+         , _kind { binding_kind::unknown } {}
+
+      binding_kind kind() const noexcept {
+         return _kind == binding_kind::unknown
+              ? _kind = resolve_binding_kind()
+              : _kind;
+      }
 
       ast::pattern const& pattern() const noexcept {
          return *_pattern;
@@ -61,6 +75,9 @@ namespace rush::ast {
    private:
       std::unique_ptr<ast::pattern> _pattern;
       std::unique_ptr<ast::expression> _expression;
+      mutable binding_kind _kind;
+
+      binding_kind resolve_binding_kind() const;
    };
 }
 

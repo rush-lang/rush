@@ -29,62 +29,24 @@
 namespace rush::ast {
    class storage_declaration : public declaration {
    public:
-      virtual ast::type_ref type() const noexcept override {
-         return resolve_type();
-      }
-
       ast::pattern& pattern() const noexcept {
          return *_patt;
       }
 
-      ast::expression* initializer() const noexcept {
-         return _init.get();
-      }
-
-      bool is_initialized() const noexcept {
-         return _init.operator bool();
-      }
-
    protected:
-      storage_declaration(
-         std::unique_ptr<ast::pattern> patt,
-         std::unique_ptr<ast::expression> init)
-         : _patt { std::move(patt) }
-         , _init { std::move(init) }
-         , _type { ast::types::undefined } {}
+      storage_declaration(std::unique_ptr<ast::pattern> patt)
+         : _patt { std::move(patt) } {}
 
       virtual void attached(ast::node*, ast::context&) override {
-         if (_init) attach(*_init);
          attach(*_patt);
       }
 
       virtual void detached(ast::node*, ast::context&) override {
          detach(*_patt);
-         if (_init) detach(*_init);
       }
 
    private:
       std::unique_ptr<ast::pattern> _patt;
-      std::unique_ptr<ast::expression> _init;
-      mutable ast::type_ref _type;
-      mutable bool _resolving_type = false;
-
-      ast::type_ref resolve_type() const {
-         if (_resolving_type)
-            return _type = ast::types::circular_ref;
-
-         _resolving_type = true;
-         auto result_type = (_type == ast::types::undefined && initializer())
-            ? initializer()->result_type()
-            : _type;
-         _resolving_type = false;
-
-         return _type = (result_type.kind() == type_kind::error)
-              ? (_type != ast::types::circular_ref)
-              ? ast::types::inference_fail
-              : _type
-              : result_type;
-      }
    };
 } // rush::ast
 

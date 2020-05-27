@@ -35,7 +35,8 @@ namespace rush::ast {
       explicit named_pattern(std::string name)
          : _name { std::move(name) }
          , _type { ast::types::undefined }
-         , _decl { nullptr } {}
+         , _decl { nullptr }
+         , _resolving_type { false } {}
 
       //! \brief Gets the resolved type of the named pattern
       //!        obtained by walking the patterns ancestors until the root
@@ -82,6 +83,7 @@ namespace rush::ast {
       std::string _name;
       mutable ast::declaration const* _decl;
       mutable ast::type_ref _type;
+      mutable bool _resolving_type;
 
       ast::type_ref resolve_type() const;
       ast::declaration const* resolve_declaration() const;

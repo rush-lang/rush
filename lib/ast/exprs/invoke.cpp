@@ -27,17 +27,12 @@ public:
    invoke_result_type_resolver()
       : _result { ast::types::undefined } {}
 
-   ast::type_ref result() const noexcept {
-      return _result;
-   }
+   ast::type_ref result() const noexcept { return _result; }
 
    // ultimately we're trying to find this.
    virtual void visit_function_type(ast::function_type const& type) override { _result = type.return_type(); }
 
    virtual void visit_named_ptrn(ast::named_pattern const& ptrn) override { ptrn.type().accept(*this); }
-
-   virtual void visit_constant_decl(ast::constant_declaration const& decl) override { decl.type().accept(*this); }
-   virtual void visit_variable_decl(ast::variable_declaration const& decl) override { decl.type().accept(*this); }
    virtual void visit_function_decl(ast::function_declaration const& decl) override { decl.type().accept(*this); }
 
    virtual void visit_unary_expr(ast::unary_expression const& expr) override { expr.result_type().accept(*this); }

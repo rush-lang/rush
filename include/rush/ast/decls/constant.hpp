@@ -28,28 +28,21 @@ namespace rush::ast {
 	class constant_declaration;
 
 	namespace decls {
-		std::unique_ptr<constant_declaration> constant(
-         std::unique_ptr<ast::pattern> patt,
-			std::unique_ptr<ast::expression> init = nullptr);
+		std::unique_ptr<constant_declaration>
+         constant(std::unique_ptr<ast::pattern> patt);
 	}
 
 	class constant_declaration : public storage_declaration {
 		struct factory_tag_t {};
 
 		friend std::unique_ptr<constant_declaration>
-			decls::constant(
-            std::unique_ptr<ast::pattern>,
-            std::unique_ptr<ast::expression>);
+			decls::constant(std::unique_ptr<ast::pattern>);
 
 	public:
 		constant_declaration(
          std::unique_ptr<ast::pattern> patt,
-         std::unique_ptr<ast::expression> init,
          factory_tag_t)
-			: storage_declaration {
-            std::move(patt),
-				std::move(init)
-			} {}
+			: storage_declaration { std::move(patt) } {}
 
 		virtual declaration_kind kind() const noexcept override {
 			return declaration_kind::constant;
@@ -62,12 +55,10 @@ namespace rush::ast {
 	};
 
 	namespace decls {
-      inline std::unique_ptr<constant_declaration> constant(
-         std::unique_ptr<ast::pattern> patt,
-         std::unique_ptr<ast::expression> init) {
+      inline std::unique_ptr<constant_declaration>
+         constant(std::unique_ptr<ast::pattern> patt) {
             return std::make_unique<constant_declaration>(
                std::move(patt),
-               std::move(init),
                constant_declaration::factory_tag_t {});
          }
 	} // rush::ast::decls

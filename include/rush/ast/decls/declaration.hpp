@@ -47,13 +47,19 @@ namespace rush::ast {
 		void operator = (declaration const&) = delete;
 
 	public:
-      virtual ast::type_ref type() const = 0;
-
-		virtual declaration_kind kind() const = 0;
+      virtual declaration_kind kind() const = 0;
 
    protected:
       declaration() = default;
 	};
+
+   class typed_declaration : public declaration {
+   public:
+       virtual ast::type_ref type() const = 0;
+
+   protected:
+      typed_declaration() = default;
+   };
 }
 
 #endif // RUSH_AST_DECLS_DECLARATION_HPP

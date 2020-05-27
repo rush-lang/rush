@@ -180,7 +180,14 @@ namespace rush::ast {
       }
 
       virtual void visit_binding_ptrn(ast::binding_pattern const& ptrn) override {
-         writeln("<binding>");
+         switch (ptrn.kind()) {
+         case ast::binding_kind::unknown: write("<binding: "); break;
+         case ast::binding_kind::parameter: write("<argument-binding: "); break;
+         case ast::binding_kind::initializer: write("<initializer-binding: "); break;
+         case ast::binding_kind::default_value: write("<default-value-binding: "); break;
+         }
+         ptrn.expression().result_type().accept(*this);
+         writeln(">");
          indent_traverse(ptrn);
       }
 
@@ -391,16 +398,7 @@ namespace rush::ast {
             }
          }
          writeln(")>");
-         indent_accept(decl.pattern());
-         if (decl.initializer()) {
-            indent();
-            write("<initializer: (type=");
-            decl.initializer()->result_type().accept(*this);
-            writeln(")>");
-            indent_accept(*decl.initializer());
-            dedent();
-         }
-         // indent_traverse(decl);
+         indent_traverse(decl);
 		}
 	};
 
