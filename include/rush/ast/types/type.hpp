@@ -39,6 +39,7 @@ namespace rush::ast {
       function,
       optional,
       extension,
+      user_type,
    };
 
    template <typename TypeT>

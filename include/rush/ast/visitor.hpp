@@ -40,6 +40,7 @@ namespace rush::ast {
    class interface_type;
    class function_type;
    class optional_type;
+   class user_type;
 
    class pattern_list;
    class named_pattern;
@@ -115,6 +116,7 @@ namespace rush::ast {
       virtual void visit_interface_type(ast::interface_type const&) {};
       virtual void visit_function_type(ast::function_type const&) {};
       virtual void visit_optional_type(ast::optional_type const&) {};
+      virtual void visit_user_type(ast::user_type const&) {};
 
       // patterns
       virtual void visit_ptrn_list(ast::pattern_list const&);

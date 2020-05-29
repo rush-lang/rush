@@ -21,7 +21,7 @@
 #include "rush/ast/types/type_ref.hpp"
 #include "rush/ast/types/builtin.hpp"
 #include "rush/ast/exprs/expression.hpp"
-#include "rush/ast/decls/class.hpp"
+#include "rush/ast/decls/type.hpp"
 #include "rush/ast/visitor.hpp"
 #include "rush/ast/context.hpp"
 #include "rush/ast/iterator.hpp"
@@ -33,13 +33,13 @@ namespace rush::ast {
    public:
       this_expression() = default;
 
-      ast::class_declaration const* class_() const noexcept {
-         return _class;
+      ast::type_declaration const* declaration() const noexcept {
+         return _decl;
       }
 
       virtual ast::type_ref result_type() const override {
-         return class_()
-              ? class_()->type()
+         return declaration()
+              ? declaration()->type()
               : ast::types::undefined;
       }
 
@@ -50,16 +50,16 @@ namespace rush::ast {
 
    protected:
       virtual void attached(ast::node*, ast::context&) override {
-         auto it = ast::find_ancestor<ast::class_declaration>();
-         if (it != ast::ancestor_iterator()) _class = it;
+         auto it = ast::find_ancestor<ast::type_declaration>();
+         if (it != ast::ancestor_iterator()) _decl = &*it;
       }
 
       virtual void detached(ast::node*, ast::context&) override {
-         _class = nullptr;
+         _decl = nullptr;
       }
 
    private:
-      ast::class_declaration const* _class;
+      ast::type_declaration const* _decl;
    };
 }
 

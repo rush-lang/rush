@@ -162,6 +162,10 @@ namespace rush::ast {
          type.return_type().accept(*this);
       }
 
+      virtual void visit_user_type(ast::user_type const& type) override {
+         write("{}", type.name());
+      }
+
       virtual void visit_named_ptrn(ast::named_pattern const& ptrn) override {
          write("<[decl] ");
          switch (ptrn.kind()) {

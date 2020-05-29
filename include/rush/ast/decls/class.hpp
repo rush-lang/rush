@@ -18,7 +18,7 @@
 #ifndef RUSH_AST_DECLS_CLASS_HPP
 #define RUSH_AST_DECLS_CLASS_HPP
 
-#include "rush/ast/decls/declaration.hpp"
+#include "rush/ast/decls/type.hpp"
 #include "rush/ast/decls/member.hpp"
 #include "rush/ast/context.hpp"
 
@@ -27,19 +27,10 @@
 
 namespace rush::ast {
 
-   class class_declaration : public ast::nominal_declaration {
+   class class_declaration : public ast::type_declaration {
    public:
       class_declaration(std::string name)
-         : _name { std::move(name) }
-         , _type { types::undefined } {}
-
-      virtual std::string_view name() const noexcept override {
-         return _name;
-      }
-
-      virtual ast::type_ref type() const noexcept override {
-         return types::void_type;
-      }
+         : ast::type_declaration { std::move(name) } {}
 
 		virtual declaration_kind kind() const noexcept override {
          return declaration_kind::class_;
@@ -62,9 +53,6 @@ namespace rush::ast {
       };
 
    private:
-      std::string _name;
-      ast::type_ref _type;
-
       std::vector<std::unique_ptr<ast::member_declaration>> _members;
    };
 } // rush::ast
