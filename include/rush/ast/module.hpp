@@ -18,6 +18,9 @@
 #ifndef RUSH_AST_MODULE_HPP
 #define RUSH_AST_MODULE_HPP
 
+#include "rush/extra/iterator_range.hpp"
+#include "rush/extra/dereferencing_iterator.hpp"
+
 #include "rush/ast/decls/import.hpp"
 #include "rush/ast/decls/module.hpp"
 #include "rush/ast/decls/declaration.hpp"
@@ -50,8 +53,16 @@ namespace rush::ast {
          _decls.push_back(std::make_unique<ast::module_declaration>(std::move(decl), access));
       }
 
-      std::vector<std::unique_ptr<import_declaration>> const& imports() const noexcept {
-         return _imports;
+      auto imports() const noexcept {
+         return rush::make_iterator_range(
+            make_deref_iterator(_imports.begin()),
+            make_deref_iterator(_imports.end()));
+      }
+
+      auto declarations() const noexcept {
+         return rush::make_iterator_range(
+            make_deref_iterator(_decls.begin()),
+            make_deref_iterator(_decls.end()));
       }
 
       ast::declaration const& undeclared_declaration() const {

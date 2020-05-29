@@ -49,8 +49,8 @@ namespace rush::ast {
       }
 
       virtual void visit_module(ast::module const& mdl) override {
-         std::for_each(mdl.imports().begin(), mdl.imports().end(), [this](auto& decl) { accept(*decl); });
-         std::for_each(mdl.declarations().begin(), mdl.declarations().end(), [this](auto& decl) { accept(*decl); });
+         std::for_each(mdl.imports().begin(), mdl.imports().end(), [this](auto& decl) { accept(decl); });
+         std::for_each(mdl.declarations().begin(), mdl.declarations().end(), [this](auto& decl) { accept(decl); });
       }
 
       virtual void visit_module_decl(ast::module_declaration const& exp) override {
@@ -81,7 +81,8 @@ namespace rush::ast {
 
 		// statements
 		virtual void visit_block_stmt(ast::statement_block const& stmt) override {
-         for (auto& s : stmt) accept(*s);
+         std::for_each(stmt.begin(), stmt.end(),
+            [this](auto& s) { accept(s); });
       }
 
 		virtual void visit_switch_stmt(ast::switch_statement const& stmt) override {
@@ -100,7 +101,9 @@ namespace rush::ast {
       }
 
       virtual void visit_string_template_expr(string_template_expression const& expr) override {
-         for (auto& p : expr.parts()) accept(*p);
+         auto parts = expr.parts();
+         std::for_each(parts.begin(), parts.end(),
+            [this](auto& p) { accept(p); });
       }
 
       virtual void visit_invoke_expr(ast::invoke_expression const& expr) override {

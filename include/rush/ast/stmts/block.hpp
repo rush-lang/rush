@@ -18,6 +18,8 @@
 #ifndef RUSH_AST_STMT_STATEMENT_BLOCK_HPP
 #define RUSH_AST_STMT_STATEMENT_BLOCK_HPP
 
+#include "rush/extra/dereferencing_iterator.hpp"
+
 #include "rush/ast/stmts/statement.hpp"
 #include "rush/ast/stmts/forwarding.hpp"
 
@@ -42,8 +44,8 @@ namespace rush::ast {
 			: statement { ast::statement_kind::block }
          , _stmts(std::move(stmts)) {}
 
-      const_iterator begin() const noexcept { return _stmts.begin(); }
-      const_iterator end() const noexcept { return _stmts.end(); }
+      auto begin() const noexcept { return rush::make_deref_iterator(_stmts.begin()); }
+      auto end() const noexcept { return rush::make_deref_iterator(_stmts.end()); }
 
 		using node::accept;
 		virtual void accept(ast::visitor& v) const override {

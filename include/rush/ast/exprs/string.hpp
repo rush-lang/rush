@@ -18,6 +18,9 @@
 #ifndef RUSH_AST_EXPRS_STRING_HPP
 #define RUSH_AST_EXPRS_STRING_HPP
 
+#include "rush/extra/iterator_range.hpp"
+#include "rush/extra/dereferencing_iterator.hpp"
+
 #include "rush/ast/exprs/expression.hpp"
 #include "rush/ast/types/string.hpp"
 
@@ -54,8 +57,10 @@ namespace rush::ast {
          return _template;
       }
 
-      std::vector<std::unique_ptr<ast::expression>> const& parts() const noexcept {
-         return _parts;
+      auto parts() const noexcept {
+         return rush::make_iterator_range(
+            rush::make_deref_iterator(_parts.begin()),
+            rush::make_deref_iterator(_parts.end()));
       }
 
       virtual ast::type_ref result_type() const noexcept override {
