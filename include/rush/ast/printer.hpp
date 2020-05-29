@@ -317,6 +317,10 @@ namespace rush::ast {
 			print_expression("nil", expr);
 		}
 
+      virtual void visit_this_expr(ast::this_expression const& expr) override {
+			print_expression("this", expr);
+		}
+
 		virtual void visit_constant_decl(ast::constant_declaration const& decl) override {
 			print_storage_decl("constant", decl);
 		}

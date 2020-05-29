@@ -227,6 +227,8 @@ namespace rush {
          case keywords::nil_: next_skip_indent(); result = exprs::nil(); break;
 			case keywords::true_: next_skip_indent(); result = exprs::literal(true, *_context); break;
 			case keywords::false_: next_skip_indent(); result = exprs::literal(false, *_context); break;
+         case keywords::this_: next_skip_indent(); result = exprs::this_(); break;
+         case keywords::base_: next_skip_indent(); result = exprs::base_(); break;
 			} break;
 		case lexical_token_type::symbol:
          if (is_unary_prefix_operator(tok)) result = parse_unary_expr();

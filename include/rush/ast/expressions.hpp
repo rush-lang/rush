@@ -31,5 +31,6 @@
 #include "rush/ast/exprs/tuple.hpp"
 #include "rush/ast/exprs/array.hpp"
 #include "rush/ast/exprs/string.hpp"
+#include "rush/ast/exprs/this.hpp"
 
 #endif // RUSH_AST_EXPRESSION_HPP
