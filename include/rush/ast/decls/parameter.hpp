@@ -21,8 +21,11 @@
 #include "rush/ast/types/type_ref.hpp"
 #include "rush/ast/types/builtin.hpp"
 #include "rush/ast/decls/storage.hpp"
-#include "rush/ast/ptrns/pattern.hpp"
+#include "rush/ast/ptrns/named.hpp"
+#include "rush/ast/ptrns/binding.hpp"
+#include "rush/ast/ptrns/type_annotation.hpp"
 
+#include <memory>
 
 namespace rush::ast {
 	class parameter_declaration;
@@ -53,12 +56,35 @@ namespace rush::ast {
 	};
 
 	namespace decls {
-      inline std::unique_ptr<parameter_declaration> parameter(
-         std::unique_ptr<ast::pattern> patt) {
-            return std::make_unique<parameter_declaration>(
+      inline std::unique_ptr<ast::parameter_declaration>
+         parameter(std::unique_ptr<ast::pattern> patt) {
+            return std::make_unique<ast::parameter_declaration>(
                std::move(patt),
-               parameter_declaration::factory_tag_t {});
+               ast::parameter_declaration::factory_tag_t {});
          }
+
+      inline std::unique_ptr<ast::parameter_declaration>
+         parameter(std::string name, ast::type_ref type) {
+            return parameter(ptrns::annotation(
+               ptrns::name(std::move(name)),
+               type));
+         }
+
+      inline std::unique_ptr<ast::parameter_declaration>
+         parameter(std::string name, std::unique_ptr<ast::expression> default_) {
+            return parameter(ptrns::binding(
+               ptrns::name(std::move(name)),
+               std::move(default_)));
+         }
+
+      inline std::unique_ptr<ast::parameter_declaration>
+         parameter(std::string name, ast::type_ref type, std::unique_ptr<ast::expression> default_) {
+            return parameter(ptrns::binding(
+               ptrns::annotation(
+                  ptrns::name(std::move(name)),
+                  std::move(type)),
+               std::move(default_)));
+       }
 	} // rush::ast::decls
 } // rush::ast
 

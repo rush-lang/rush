@@ -25,6 +25,8 @@
 #include "rush/ast/types/type_ref.hpp"
 #include "rush/ast/visitor.hpp"
 
+#include "rush/extra/iterator_range.hpp"
+#include "rush/ast/iterator.hpp"
 
 namespace rush::ast {
    class storage_declaration : public declaration {
@@ -32,6 +34,10 @@ namespace rush::ast {
       ast::pattern& pattern() const noexcept {
          return *_patt;
       }
+
+      auto names() const -> decltype(ast::iterator_range<ast::named_pattern>());
+      auto annotations() const -> decltype(ast::iterator_range<ast::type_annotation_pattern>());
+      auto initializers() const -> decltype(ast::iterator_range<ast::binding_pattern>());
 
    protected:
       storage_declaration(std::unique_ptr<ast::pattern> patt)
@@ -49,9 +55,5 @@ namespace rush::ast {
       std::unique_ptr<ast::pattern> _patt;
    };
 } // rush::ast
-
-
-#include "rush/ast/decls/constant.hpp"
-#include "rush/ast/decls/variable.hpp"
 
 #endif // RUSH_AST_DECLS_STORAGE_HPP

@@ -21,7 +21,6 @@
 #include "rush/ast/ptrns/pattern.hpp"
 #include "rush/ast/exprs/expression.hpp"
 #include "rush/ast/visitor.hpp"
-#include "rush/ast/context.hpp"
 
 #include <memory>
 

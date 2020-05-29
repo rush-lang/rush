@@ -21,7 +21,9 @@
 #include "rush/ast/types/type_ref.hpp"
 #include "rush/ast/types/builtin.hpp"
 #include "rush/ast/decls/storage.hpp"
-#include "rush/ast/ptrns/pattern.hpp"
+#include "rush/ast/ptrns/named.hpp"
+#include "rush/ast/ptrns/binding.hpp"
+#include "rush/ast/ptrns/type_annotation.hpp"
 
 
 namespace rush::ast {
@@ -29,7 +31,7 @@ namespace rush::ast {
 
 	namespace decls {
 		std::unique_ptr<variable_declaration>
-         variable(std::unique_ptr<ast::pattern> patt);
+         variable(std::unique_ptr<ast::pattern> ptrn);
 	}
 
 	class variable_declaration : public storage_declaration {
@@ -40,9 +42,9 @@ namespace rush::ast {
 
 	public:
 		variable_declaration(
-         std::unique_ptr<ast::pattern> patt,
+         std::unique_ptr<ast::pattern> ptrn,
          factory_tag_t)
-			: storage_declaration { std::move(patt) } {}
+			: storage_declaration { std::move(ptrn) } {}
 
 		virtual declaration_kind kind() const noexcept override {
 			return declaration_kind::variable;
@@ -55,11 +57,34 @@ namespace rush::ast {
 	};
 
 	namespace decls {
-      inline std::unique_ptr<variable_declaration>
-         variable(std::unique_ptr<ast::pattern> patt) {
+      inline std::unique_ptr<ast::variable_declaration>
+         variable(std::unique_ptr<ast::pattern> ptrn) {
             return std::make_unique<variable_declaration>(
-               std::move(patt),
+               std::move(ptrn),
                variable_declaration::factory_tag_t {});
+         }
+
+      inline std::unique_ptr<ast::variable_declaration>
+         variable(std::string name, ast::type_ref type) {
+            return variable(ptrns::annotation(
+               ptrns::name(std::move(name)),
+               type));
+         }
+
+      inline std::unique_ptr<ast::variable_declaration>
+         variable(std::string name, std::unique_ptr<ast::expression> init) {
+            return variable(ptrns::binding(
+               ptrns::name(std::move(name)),
+               std::move(init)));
+         }
+
+      inline std::unique_ptr<ast::variable_declaration>
+         variable(std::string name, ast::type_ref type, std::unique_ptr<ast::expression> init) {
+            return variable(ptrns::binding(
+               ptrns::annotation(
+                  ptrns::name(std::move(name)),
+                  std::move(type)),
+               std::move(init)));
          }
 	} // rush::ast::decls
 } // rush::ast

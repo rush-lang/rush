@@ -104,7 +104,7 @@ namespace rush {
       assert(peek_skip_indent().is_identifier() && "expected identifier.");
 
       auto ident = next_skip_indent();
-      auto decl = ptrns::named(ident.text());
+      auto decl = ptrns::name(ident.text());
       if (!_scope.insert({ *decl })) {
          if (decl_type == "variable") return errs::local_variable_name_previously_defined(ident);
          if (decl_type == "constant") return errs::local_constant_name_previously_defined(ident);

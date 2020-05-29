@@ -20,14 +20,13 @@
 
 #include "rush/ast/ptrns/pattern.hpp"
 #include "rush/ast/ptrns/list.hpp"
-#include "rush/ast/identifier.hpp"
 #include "rush/ast/types/builtin.hpp"
 #include "rush/ast/types/function.hpp"
 #include "rush/ast/stmts/statement.hpp"
 #include "rush/ast/decls/nominal.hpp"
-#include "rush/ast/exprs/identifier.hpp"
 
 #include "rush/ast/context.hpp"
+
 
 namespace rush::ast::decls {
    std::unique_ptr<function_declaration> function(

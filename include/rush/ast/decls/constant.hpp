@@ -21,15 +21,18 @@
 #include "rush/ast/types/type_ref.hpp"
 #include "rush/ast/types/builtin.hpp"
 #include "rush/ast/decls/storage.hpp"
-#include "rush/ast/ptrns/pattern.hpp"
+#include "rush/ast/ptrns/named.hpp"
+#include "rush/ast/ptrns/binding.hpp"
+#include "rush/ast/ptrns/type_annotation.hpp"
 
+#include <memory>
 
 namespace rush::ast {
 	class constant_declaration;
 
 	namespace decls {
 		std::unique_ptr<constant_declaration>
-         constant(std::unique_ptr<ast::pattern> patt);
+         constant(std::unique_ptr<ast::pattern>);
 	}
 
 	class constant_declaration : public storage_declaration {
@@ -40,9 +43,9 @@ namespace rush::ast {
 
 	public:
 		constant_declaration(
-         std::unique_ptr<ast::pattern> patt,
+         std::unique_ptr<ast::pattern> ptrn,
          factory_tag_t)
-			: storage_declaration { std::move(patt) } {}
+			: storage_declaration { std::move(ptrn) } {}
 
 		virtual declaration_kind kind() const noexcept override {
 			return declaration_kind::constant;
@@ -55,11 +58,34 @@ namespace rush::ast {
 	};
 
 	namespace decls {
-      inline std::unique_ptr<constant_declaration>
-         constant(std::unique_ptr<ast::pattern> patt) {
-            return std::make_unique<constant_declaration>(
-               std::move(patt),
-               constant_declaration::factory_tag_t {});
+      inline std::unique_ptr<ast::constant_declaration>
+         constant(std::unique_ptr<ast::pattern> ptrn) {
+            return std::make_unique<ast::constant_declaration>(
+               std::move(ptrn),
+               ast::constant_declaration::factory_tag_t {});
+         }
+
+      inline std::unique_ptr<ast::constant_declaration>
+         constant(std::string name, ast::type_ref type) {
+            return constant(ptrns::annotation(
+               ptrns::name(std::move(name)),
+               type));
+         }
+
+      inline std::unique_ptr<ast::constant_declaration>
+         constant(std::string name, std::unique_ptr<ast::expression> init) {
+            return constant(ptrns::binding(
+               ptrns::name(std::move(name)),
+               std::move(init)));
+         }
+
+      inline std::unique_ptr<ast::constant_declaration>
+         constant(std::string name, ast::type_ref type, std::unique_ptr<ast::expression> init) {
+            return constant(ptrns::binding(
+               ptrns::annotation(
+                  ptrns::name(std::move(name)),
+                  std::move(type)),
+               std::move(init)));
          }
 	} // rush::ast::decls
 } // rush::ast

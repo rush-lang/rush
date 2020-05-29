@@ -20,6 +20,7 @@
 
 #include "rush/extra/iterator_range.hpp"
 #include "rush/extra/hash_combine.hpp"
+#include "rush/ast/types/type_resolver.hpp"
 #include "rush/ast/types.hpp"
 
 #include <vector>

@@ -91,7 +91,7 @@ namespace rush::ast {
 }
 
 namespace rush::ast::ptrns {
-   inline std::unique_ptr<ast::named_pattern> named(std::string name) {
+   inline std::unique_ptr<ast::named_pattern> name(std::string name) {
       return std::make_unique<ast::named_pattern>(std::move(name));
    }
 }

@@ -20,10 +20,9 @@
 
 #include "rush/ast/types/type.hpp"
 #include "rush/ast/types/type_ref.hpp"
-#include "rush/ast/types/type_resolver.hpp"
 #include "rush/ast/types/builtin.hpp"
 #include "rush/ast/decls/parameter.hpp"
-#include "rush/ast/ptrns/pattern.hpp"
+#include "rush/ast/visitor.hpp"
 
 #include <memory>
 
