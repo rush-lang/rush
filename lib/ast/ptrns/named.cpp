@@ -13,8 +13,6 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *************************************************************************/
-#include "rush/ast/ptrns/named.hpp"
-#include "rush/ast/ptrns/binding.hpp"
 #include "rush/ast/ptrns/destructure.hpp"
 #include "rush/ast/ptrns/type_annotation.hpp"
 #include "rush/ast/types/extension.hpp"
@@ -23,6 +21,8 @@
 #include "rush/ast/decls/function.hpp"
 #include "rush/ast/decls/parameter.hpp"
 #include "rush/ast/visitor.hpp"
+#include "rush/ast/ptrns/binding.hpp"
+#include "rush/ast/ptrns/named.hpp"
 
 using namespace rush;
 
@@ -32,6 +32,10 @@ public:
       : _type { ast::types::undefined } {}
 
    ast::type_ref result() const noexcept { return _type; }
+
+   virtual void visit_list_ptrn(ast::list_pattern const& ptrn) override {
+      ptrn.parent()->accept(*this);
+   }
 
    virtual void visit_binding_ptrn(ast::binding_pattern const& ptrn) override {
       _type = ptrn.expression().result_type();
@@ -75,6 +79,10 @@ public:
 
    ast::declaration const* result() const noexcept {
       return _decl;
+   }
+
+   virtual void visit_list_ptrn(ast::list_pattern const& ptrn) override {
+      if (ptrn.parent()) ptrn.parent()->accept(*this);
    }
 
    virtual void visit_binding_ptrn(ast::binding_pattern const& ptrn) override {

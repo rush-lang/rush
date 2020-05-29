@@ -13,6 +13,7 @@ rush_add_library(ast
    ptrns/named.cpp
    identifier.cpp
    traversal.cpp
+   iterator.cpp
    visitor.cpp
    context.cpp
    node.cpp

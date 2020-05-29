@@ -16,11 +16,17 @@
 #include "rush/ast/visitor.hpp"
 
 #include "rush/ast/types.hpp"
+#include "rush/ast/patterns.hpp"
 #include "rush/ast/expressions.hpp"
 #include "rush/ast/declarations.hpp"
 #include "rush/ast/statements.hpp"
 
 namespace rush::ast {
+   void visitor::visit_list_ptrn(ast::list_pattern const& ptrn) {
+      std::for_each(ptrn.begin(), ptrn.end(),
+         [this](auto& p) { p.accept(*this); });
+   }
+
    void visitor::visit_throw_stmt(result_statement const& stmt) {
       visit_throw_stmt(static_cast<simple_statement const&>(stmt));
    }

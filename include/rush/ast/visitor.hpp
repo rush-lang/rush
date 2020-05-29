@@ -41,6 +41,7 @@ namespace rush::ast {
    class function_type;
    class optional_type;
 
+   class list_pattern;
    class named_pattern;
    class discard_pattern;
    class binding_pattern;
@@ -115,6 +116,7 @@ namespace rush::ast {
       virtual void visit_optional_type(ast::optional_type const&) {};
 
       // patterns
+      virtual void visit_list_ptrn(ast::list_pattern const&);
       virtual void visit_named_ptrn(ast::named_pattern const&) {};
       virtual void visit_discard_ptrn(ast::discard_pattern const&) {};
       virtual void visit_binding_ptrn(ast::binding_pattern const&) {};

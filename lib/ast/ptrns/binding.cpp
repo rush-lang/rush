@@ -14,10 +14,11 @@
 * limitations under the License.
 *************************************************************************/
 #include "rush/ast/visitor.hpp"
-#include "rush/ast/ptrns/binding.hpp"
 #include "rush/ast/decls/constant.hpp"
 #include "rush/ast/decls/variable.hpp"
 #include "rush/ast/decls/parameter.hpp"
+#include "rush/ast/ptrns/binding.hpp"
+#include "rush/ast/ptrns/list.hpp"
 
 using namespace rush;
 using namespace rush::ast;
@@ -25,6 +26,7 @@ using namespace rush::ast;
 class binding_kind_resolver : public ast::visitor {
 public:
    binding_kind result() { return _result; }
+   virtual void visit_list_ptrn(ast::list_pattern const& ptrn) override { ptrn.parent()->accept(*this); }
    virtual void visit_constant_decl(ast::constant_declaration const&) override { _result = binding_kind::initializer; }
    virtual void visit_variable_decl(ast::variable_declaration const&) override { _result = binding_kind::initializer; }
    virtual void visit_parameter_decl(ast::parameter_declaration const&) override { _result = binding_kind::default_value; }

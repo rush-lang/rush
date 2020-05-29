@@ -24,42 +24,23 @@
 #include <vector>
 
 namespace rush::ast {
-   class list_pattern : public pattern {
+   class list_pattern : public node_list<ast::pattern> {
    public:
-      explicit list_pattern(std::vector<std::unique_ptr<pattern>> patterns)
-      : _patterns { std::move(patterns) } {}
-
-      using node::accept;
+      using node_list<ast::pattern>::accept;
+      using node_list<ast::pattern>::node_list;
       virtual void accept(ast::visitor& v) const override {
-         std::for_each(_patterns.begin(), _patterns.end(),
-            [&v](auto& p) { p->accept(v); });
+         v.visit_list_ptrn(*this);
       }
-
-   protected:
-      virtual void attached(ast::node* parent, ast::context&) override {
-         std::for_each(_patterns.begin(), _patterns.end(),
-            [this, &parent](auto& p) { attach(*p, parent); });
-      }
-
-      virtual void detached(ast::node*, ast::context&) override {
-         std::for_each(_patterns.begin(), _patterns.end(),
-            [this](auto& p) { detach(*p); });
-      }
-
-   private:
-      std::vector<std::unique_ptr<pattern>> _patterns;
    };
 }
 
 namespace rush::ast::ptrns {
    inline std::unique_ptr<ast::list_pattern> list(
-      std::vector<std::unique_ptr<ast::pattern>> patterns) {
-         return std::make_unique<ast::list_pattern>(std::move(patterns));
-      }
+      std::vector<std::unique_ptr<ast::pattern>> patterns)
+      { return std::make_unique<ast::list_pattern>(std::move(patterns)); }
 
-   inline std::unique_ptr<ast::list_pattern> list() {
-      return ptrns::list({});
-   }
+   inline std::unique_ptr<ast::list_pattern> list()
+   { return ptrns::list({}); }
 }
 
 #endif // RUSH_AST_PTRNS_LIST_HPP

@@ -18,6 +18,12 @@
 #ifndef RUSH_AST_NODE_HPP
 #define RUSH_AST_NODE_HPP
 
+#include "rush/extra/dereferencing_iterator.hpp"
+
+#include <vector>
+#include <memory>
+
+
 namespace rush::ast {
    class visitor;
    class context;
@@ -50,6 +56,54 @@ namespace rush::ast {
       ast::node* _parent;
       ast::context* _context;
    };
-} // rush
+
+   template <typename NodeT, typename BaseNodeT = NodeT>
+   class node_list : public BaseNodeT {
+   private:
+      std::vector<std::unique_ptr<NodeT>> _children;
+
+   public:
+      using BaseNodeT::attach;
+      using BaseNodeT::detach;
+
+      using iterator = decltype(make_deref_iterator(_children.begin()));
+      using const_iterator = decltype(make_deref_iterator(_children.cbegin()));
+
+      using value_type = typename iterator::value_type;
+      using pointer = typename iterator::pointer;
+      using reference = typename iterator::reference;
+      using const_pointer = typename const_iterator::reference;
+      using const_reference = typename const_iterator::reference;
+
+      explicit node_list(std::vector<std::unique_ptr<NodeT>> nodes)
+      : _children { std::move(nodes) } {}
+
+      reference front() noexcept { return *_children.front(); }
+      reference back() noexcept { return *_children.back(); }
+
+      const_reference front() const noexcept { return *_children.front(); }
+      const_reference back() const noexcept { return *_children.back(); }
+
+      iterator begin() noexcept { return make_deref_iterator(_children.begin()); }
+      iterator end() noexcept { return make_deref_iterator(_children.end()); }
+
+      const_iterator cbegin() const noexcept { return make_deref_iterator(_children.cbegin()); }
+      const_iterator cend() const noexcept { return make_deref_iterator(_children.cend()); }
+
+      const_iterator begin() const noexcept { return make_deref_iterator(_children.begin()); }
+      const_iterator end() const noexcept { return make_deref_iterator(_children.end()); }
+
+   protected:
+      virtual void attached(ast::node* parent, ast::context&) override {
+         std::for_each(_children.begin(), _children.end(),
+            [this, &parent](auto& p) { attach(*p); });
+      }
+
+      virtual void detached(ast::node*, ast::context&) override {
+         std::for_each(_children.begin(), _children.end(),
+            [this](auto& p) { detach(*p); });
+      }
+   };
+} // rush::ast
 
 #endif // RUSH_AST_NODE_HPP
