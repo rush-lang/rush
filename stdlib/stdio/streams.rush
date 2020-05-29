@@ -1,14 +1,3 @@
 
-class ostream:
-   pass
-
-class istream:
-   pass
-
-
-func write(os: ostream, args: ...any) void:
-   pass
-
-func writeln(os: ostream, args: ...any) void:
-   write(os, args...)
-   write(env.newline)
+export class ostream:
+export class istream:

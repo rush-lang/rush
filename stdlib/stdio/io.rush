@@ -1,3 +1,18 @@
 
-func print(args: ...printable) => writeln(stdout, args...)
-func println(args: ...printable) => writeln(stdout, args...)
+export func read(istr: istream) => pass
+export func readln(istr: istream) => pass
+
+export func write(ostr: ostream, args: ...printable) => pass
+export func writeln(ostr: ostream, args: ...printable) => pass
+
+export func write(ostr: ostream, fmt: string, args: ...printable) => pass
+export func writeln(ostr: ostream, fmt: string, args: ...printable) => pass
+
+export func scan() => read(stdin)
+export func scanln() => readln(stdin)
+
+export func print(args: ...printable) => writeln(stdout, args...)
+export func println(args: ...printable) => writeln(stdout, args...)
+
+export func print(fmt: string, args: ...printable) => writeln(stdout, fmt, args...)
+export func println(fmt: string, args: ...printable) => writeln(stdout, fmt, args...)
