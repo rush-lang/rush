@@ -21,7 +21,7 @@
 #include "rush/ast/types/builtin.hpp"
 #include "rush/ast/exprs/expression.hpp"
 #include "rush/ast/exprs/identifier.hpp"
-#include "rush/ast/exprs/argument.hpp"
+#include "rush/ast/exprs/list.hpp"
 
 #include <string>
 #include <memory>
@@ -33,7 +33,7 @@ namespace rush::ast {
 namespace rush::ast::exprs {
    std::unique_ptr<invoke_expression> invoke(
       std::unique_ptr<ast::expression> callable,
-      std::unique_ptr<ast::argument_list> args);
+      std::unique_ptr<ast::expression_list> args);
 }
 
 namespace rush::ast {
@@ -42,12 +42,12 @@ namespace rush::ast {
 
       friend std::unique_ptr<invoke_expression> exprs::invoke(
          std::unique_ptr<ast::expression> callable,
-         std::unique_ptr<ast::argument_list> args);
+         std::unique_ptr<ast::expression_list> args);
 
    public:
       invoke_expression(
          std::unique_ptr<ast::expression> callable,
-         std::unique_ptr<ast::argument_list> args,
+         std::unique_ptr<ast::expression_list> args,
          factory_tag_t)
          : _callable { std::move(callable) }
          , _args { std::move(args) } {}
@@ -56,7 +56,7 @@ namespace rush::ast {
          return *_callable;
       }
 
-      ast::argument_list const& arguments() const noexcept {
+      ast::expression_list const& arguments() const noexcept {
          return *_args;
       }
 
@@ -80,14 +80,14 @@ namespace rush::ast {
 
    private:
       std::unique_ptr<ast::expression> _callable;
-      std::unique_ptr<ast::argument_list> _args;
+      std::unique_ptr<ast::expression_list> _args;
    };
 }
 
 namespace rush::ast::exprs {
    inline std::unique_ptr<invoke_expression> invoke(
       std::unique_ptr<ast::expression> callable,
-      std::unique_ptr<ast::argument_list> args) {
+      std::unique_ptr<ast::expression_list> args) {
          return std::make_unique<invoke_expression>(
             std::move(callable),
             std::move(args),

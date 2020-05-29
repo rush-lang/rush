@@ -243,14 +243,22 @@ namespace rush::ast {
    { return ancestor_node_iterator { node }; }
 
    template <typename NodeT>
-   inline typed_node_iterator<NodeT> iterator(ast::node const* node = nullptr) {
+   inline typed_node_iterator<NodeT> iterator()
+   { return typed_node_iterator<NodeT> { iterator() }; }
+
+   template <typename NodeT>
+   inline typed_ancestor_node_iterator<NodeT> ancestor_iterator()
+   { return typed_ancestor_node_iterator<NodeT> { ancestor_iterator() }; }
+
+   template <typename NodeT>
+   inline typed_node_iterator<NodeT> find_child(ast::node const* node = nullptr) {
       auto it = typed_node_iterator<NodeT> { iterator(node) };
       if (node != nullptr && !dynamic_cast<NodeT const*>(node)) ++it;
       return it;
    }
 
    template <typename NodeT>
-   inline typed_ancestor_node_iterator<NodeT> ancestor_iterator(ast::node const* node = nullptr) {
+   inline typed_ancestor_node_iterator<NodeT> find_ancestor(ast::node const* node = nullptr) {
       auto it = typed_ancestor_node_iterator<NodeT> { ancestor_iterator(node) };
       if (node != nullptr && !dynamic_cast<NodeT const*>(node)) ++it;
       return it;
@@ -261,7 +269,7 @@ namespace rush::ast {
 
    template <typename NodeT>
    inline rush::iterator_range<typed_node_iterator<NodeT>> iterator_range(ast::node const* node = nullptr)
-   { return { iterator<NodeT>(node), node ? iterator<NodeT>(node->parent()) : iterator<NodeT>() }; }
+   { return { find_child<NodeT>(node), node ? typed_node_iterator<NodeT> { iterator(node->parent()) } : iterator<NodeT>() }; }
 } // rush::ast
 
 #endif // RUSH_AST_ITERATOR_HPP

@@ -22,9 +22,14 @@
 #include "rush/ast/statements.hpp"
 
 namespace rush::ast {
-   void visitor::visit_list_ptrn(ast::list_pattern const& ptrn) {
+   void visitor::visit_ptrn_list(ast::pattern_list const& ptrn) {
       std::for_each(ptrn.begin(), ptrn.end(),
          [this](auto& p) { p.accept(*this); });
+   }
+
+   void visitor::visit_expr_list(ast::expression_list const& expr) {
+      std::for_each(expr.begin(), expr.end(),
+         [this](auto& e) { e.accept(*this); });
    }
 
    void visitor::visit_throw_stmt(result_statement const& stmt) {

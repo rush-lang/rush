@@ -20,9 +20,16 @@
 #include "rush/ast/decls/constant.hpp"
 #include "rush/ast/decls/variable.hpp"
 #include "rush/ast/decls/function.hpp"
+#include "rush/ast/exprs/invoke.hpp"
+#include "rush/ast/exprs/lambda.hpp"
+#include "rush/ast/exprs/list.hpp"
 #include "rush/ast/visitor.hpp"
-#include "rush/ast/ptrns/binding.hpp"
+#include "rush/ast/ptrns/list.hpp"
 #include "rush/ast/ptrns/named.hpp"
+#include "rush/ast/ptrns/binding.hpp"
+#include "rush/ast/ptrns/type_annotation.hpp"
+#include "rush/ast/iterator.hpp"
+#include "rush/ast/module.hpp"
 
 using namespace rush;
 
@@ -33,12 +40,40 @@ public:
 
    ast::type_ref result() const noexcept { return _type; }
 
-   virtual void visit_list_ptrn(ast::list_pattern const& ptrn) override {
-      ptrn.parent()->accept(*this);
+   virtual void visit_ptrn_list(ast::pattern_list const& ptrn) override {
+      if (ptrn.parent()) ptrn.parent()->accept(*this);
+   }
+
+   virtual void visit_expr_list(ast::expression_list const& expr) override {
+      if (expr.parent()) expr.parent()->accept(*this);
    }
 
    virtual void visit_binding_ptrn(ast::binding_pattern const& ptrn) override {
-      _type = ptrn.expression().result_type();
+      struct parameter_type_finder : public ast::visitor {
+      public:
+         std::string_view _name;
+         ast::type_ref result = ast::types::undefined;
+         virtual void visit_named_ptrn(ast::named_pattern const& ptrn) override {
+            // if name is empty this is just the first node to accept this visitor, the node we're trying to resolve.
+            if (_name.empty()) { _name = ptrn.name(); ptrn.declaration()->accept(*this); }
+            else if (_name == ptrn.name()) { result = ptrn.type(); }
+         }
+
+         virtual void visit_ptrn_list(ast::pattern_list const& ptrn) override {
+            auto it = std::find_if(ptrn.begin(), ptrn.end(), [this](auto& p) {
+               p.accept(*this);
+               return result != ast::types::undefined;
+            });
+         }
+
+         virtual void visit_binding_ptrn(ast::binding_pattern const& ptrn) override { ptrn.pattern().accept(*this); }
+         virtual void visit_parameter_decl(ast::parameter_declaration const& decl) override { decl.pattern().accept(*this); }
+         virtual void visit_type_annotation_ptrn(ast::type_annotation_pattern const& ptrn) override { ptrn.pattern().accept(*this); }
+      };
+
+      _type = ptrn.kind() == ast::binding_kind::parameter && ptrn.parent()
+            ? rush::visit(ptrn.pattern(), parameter_type_finder {}).result
+            : ptrn.expression().result_type();
    }
 
    virtual void visit_array_destructure_ptrn(ast::array_destructure_pattern const& ptrn) override {
@@ -74,14 +109,23 @@ private:
 
 class named_pattern_declaration_resolver : public ast::visitor {
 public:
-   named_pattern_declaration_resolver()
-      : _decl { nullptr } {}
+   named_pattern_declaration_resolver(ast::named_pattern const& name)
+      : _decl { nullptr }
+      , _named { name } {}
 
    ast::declaration const* result() const noexcept {
       return _decl;
    }
 
-   virtual void visit_list_ptrn(ast::list_pattern const& ptrn) override {
+   virtual void visit_ptrn_list(ast::pattern_list const& ptrn) override {
+      if (ptrn.parent()) ptrn.parent()->accept(*this);
+   }
+
+   virtual void visit_expr_list(ast::expression_list const& expr) override {
+      if (expr.parent()) expr.parent()->accept(*this);
+   }
+
+   virtual void visit_named_ptrn(ast::named_pattern const& ptrn) override {
       if (ptrn.parent()) ptrn.parent()->accept(*this);
    }
 
@@ -101,12 +145,68 @@ public:
       if (ptrn.parent()) ptrn.parent()->accept(*this);
    }
 
+   virtual void visit_invoke_expr(ast::invoke_expression const& expr) override {
+      struct parameter_decl_finder : public ast::visitor {
+         std::string_view name;
+         ast::declaration const* result = nullptr;
+
+         parameter_decl_finder(std::string_view name)
+            : name { std::move(name) } {}
+
+         virtual void visit_ptrn_list(ast::pattern_list const& ptrn) override {
+            std::find_if(ptrn.begin(), ptrn.end(), [this](auto& p) {
+               p.accept(*this);
+               return result != nullptr;
+            });
+         }
+
+         virtual void visit_named_ptrn(ast::named_pattern const& ptrn) override {
+            if (name == ptrn.name()) result = &ptrn;
+         }
+
+         virtual void visit_binding_ptrn(ast::binding_pattern const& ptrn) override {
+            ptrn.pattern().accept(*this);
+         }
+
+         virtual void visit_type_annotation_ptrn(ast::type_annotation_pattern const& ptrn) override {
+            ptrn.pattern().accept(*this);
+         }
+
+         virtual void visit_lambda_expr(ast::lambda_expression const& expr) override {
+            expr.parameters().accept(*this);
+         }
+
+         virtual void visit_function_decl(ast::function_declaration const& decl) override {
+            decl.parameters().accept(*this);
+         }
+
+         virtual void visit_constant_decl(ast::constant_declaration const& decl) override { decl.pattern().accept(*this); }
+         virtual void visit_variable_decl(ast::variable_declaration const& decl) override { decl.pattern().accept(*this); }
+         virtual void visit_parameter_decl(ast::parameter_declaration const& decl) override { decl.pattern().accept(*this); }
+
+         virtual void visit_identifier_expr(ast::identifier_expression const& expr) override {
+            if (!expr.is_unresolved())
+               expr.declaration().accept(*this);
+         }
+      };
+
+      if (expr.callable().result_type().kind() != ast::type_kind::error) {
+         _decl = rush::visit(
+            expr.callable(),
+            parameter_decl_finder { _named.name() }).result;
+
+         if (_decl != nullptr)
+            rush::visit(*_decl, *this);
+      }
+   }
+
 	virtual void visit_constant_decl(ast::constant_declaration const& decl) override { _decl = &decl; }
 	virtual void visit_variable_decl(ast::variable_declaration const& decl) override { _decl = &decl; }
    virtual void visit_parameter_decl(ast::parameter_declaration const& decl) override { _decl = &decl; }
 
 private:
    ast::declaration const* _decl;
+   ast::named_pattern const& _named;
 };
 
 namespace rush::ast {
@@ -126,9 +226,18 @@ namespace rush::ast {
    }
 
    ast::declaration const* named_pattern::resolve_declaration() const {
-      return parent()
-           ? rush::visit(*parent(), named_pattern_declaration_resolver {}).result()
-           : nullptr;
+      if (parent()) {
+         auto result = rush::visit(*parent(),
+                       named_pattern_declaration_resolver { *this })
+                      .result();
+         if (result != nullptr) return result;
+      }
+
+      auto miter = ast::find_ancestor<ast::module>(this);
+      if (miter != ast::ancestor_iterator<ast::module>())
+         return &miter->undeclared_declaration();
+
+      return nullptr;
    }
 
    ast::type_ref destructure_pattern::resolve_type() const {

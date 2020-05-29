@@ -20,33 +20,33 @@
 
 #include "rush/ast/types/builtin.hpp"
 #include "rush/ast/exprs/expression.hpp"
+#include "rush/ast/exprs/list.hpp"
 #include "rush/ast/context.hpp"
 
 #include <algorithm>
 
 namespace rush::ast {
 	class array_literal_expression;
-	using element_list = detail::basic_list<ast::expression>;
 
 	namespace exprs {
 		std::unique_ptr<ast::array_literal_expression> array(
-			std::unique_ptr<element_list> elems);
+			std::unique_ptr<expression_list> elems);
 	}
 
 	class array_literal_expression : public ast::expression {
 		struct factory_tag_t {};
 
 		friend std::unique_ptr<ast::array_literal_expression> exprs::array(
-			std::unique_ptr<element_list> elems);
+			std::unique_ptr<ast::expression_list> elems);
 
 	public:
 		array_literal_expression(
-			std::unique_ptr<element_list> elems,
+			std::unique_ptr<ast::expression_list> elems,
 			factory_tag_t)
 			: _type { ast::types::undefined }
 			, _elems { std::move(elems) } {}
 
-		element_list const& elements() const noexcept {
+		ast::expression_list const& elements() const noexcept {
 			return *_elems;
 		}
 
@@ -62,36 +62,28 @@ namespace rush::ast {
    protected:
       virtual void attached(ast::node*, ast::context&) override {
 			std::for_each(_elems->begin(), _elems->end(),
-				[this](auto& a) { attach(*a); });
+				[this](auto& a) { attach(a); });
          _type = context()->array_type(*this);
 		}
 
       virtual void detached(ast::node*, ast::context&) override {
 			std::for_each(_elems->begin(), _elems->end(),
-				[this](auto& a) { detach(*a); });
+				[this](auto& a) { detach(a); });
 			_type = ast::types::undefined;
 		}
 
 	private:
 		ast::type_ref _type;
-		std::unique_ptr<element_list> _elems;
+		std::unique_ptr<ast::expression_list> _elems;
 	};
 
 	namespace exprs {
 		inline std::unique_ptr<ast::array_literal_expression> array(
-			std::unique_ptr<element_list> elems) {
+			std::unique_ptr<ast::expression_list> elems) {
 				return std::make_unique<ast::array_literal_expression>(
 					std::move(elems),
 					array_literal_expression::factory_tag_t {});
 			}
-
-      inline std::unique_ptr<ast::element_list> elem_list() {
-         return std::make_unique<ast::element_list>();
-      }
-
-      inline std::unique_ptr<ast::element_list> elem_list(std::vector<std::unique_ptr<ast::expression>> args) {
-         return std::make_unique<ast::element_list>(std::move(args));
-      }
 	}
 }
 

@@ -176,37 +176,37 @@ namespace rush::ast {
       }
 
       virtual void visit_discard_ptrn(ast::discard_pattern const& ptrn) override {
-         writeln("<discard>");
+         writeln("<[ptrn] discard>");
       }
 
       virtual void visit_binding_ptrn(ast::binding_pattern const& ptrn) override {
          switch (ptrn.kind()) {
          case ast::binding_kind::unknown: write("<binding: "); break;
-         case ast::binding_kind::parameter: write("<argument-binding: "); break;
-         case ast::binding_kind::initializer: write("<initializer-binding: "); break;
-         case ast::binding_kind::default_value: write("<default-value-binding: "); break;
+         case ast::binding_kind::parameter: write("<[expr] parameter-binding: "); break;
+         case ast::binding_kind::initializer: write("<[expr] initializer-binding: "); break;
+         case ast::binding_kind::default_value: write("<[expr] default-value-binding: "); break;
          }
-         ptrn.expression().result_type().accept(*this);
+         ptrn.result_type().accept(*this);
          writeln(">");
          indent_traverse(ptrn);
       }
 
       virtual void visit_array_destructure_ptrn(ast::array_destructure_pattern const& ptrn) override {
-         write("<destructure-array: ");
+         write("<[ptrn] destructure-array: ");
          ptrn.type().accept(*this);
          writeln(">");
          indent_traverse(ptrn);
       }
 
       virtual void visit_object_destructure_ptrn(ast::object_destructure_pattern const& ptrn) override {
-         write("<destructure-object: ");
+         write("<[ptrn] destructure-object: ");
          ptrn.type().accept(*this);
          writeln(">");
          indent_traverse(ptrn);
       }
 
       virtual void visit_type_annotation_ptrn(ast::type_annotation_pattern const& ptrn) override {
-         write("<type-annotation: (type=");
+         write("<[ptrn] type-annotation: (type=");
          ptrn.type().accept(*this);
          writeln(")>");
          indent_traverse(ptrn);
@@ -246,11 +246,6 @@ namespace rush::ast {
 #        define RUSH_SIMPLE_ITERATION_PRINT_VISIT_SWITCH
 #        include "rush/ast/stmts/_statements.hpp"
          indent_traverse(stmt);
-      }
-
-      virtual void visit_named_argument(ast::named_argument const& arg) override {
-         writeln("<named_binding: (name=\"{}\")>", arg.name());
-         indent_traverse(arg);
       }
 
       virtual void visit_ternary_expr(ast::ternary_expression const& expr) override {

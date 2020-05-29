@@ -28,6 +28,12 @@
 
 namespace rush::ast {
    class module : public ast::node {
+   private:
+      std::vector<std::unique_ptr<ast::import_declaration>> _imports;
+      std::vector<std::unique_ptr<ast::module_declaration>> _decls;
+      mutable std::unique_ptr<ast::declaration> _undecl;
+      std::string _id;
+
    public:
       module(std::string id)
          : _id { std::move(id) } {}
@@ -48,14 +54,16 @@ namespace rush::ast {
          return _imports;
       }
 
-      std::vector<std::unique_ptr<module_declaration>> const& declarations() const noexcept {
-         return _decls;
+      ast::declaration const& undeclared_declaration() const {
+         return _undecl == nullptr
+              ? *(_undecl = std::make_unique<ast::undeclared_identifier>("$$no-name$$"))
+              : *(_undecl);
       }
 
       ast::nominal_declaration const* undeclared_identifier(std::string name) {
          auto udid = std::make_unique<ast::undeclared_identifier>(std::move(name));
          push_back(std::move(udid), ast::module_access::internal);
-         return reinterpret_cast<ast::nominal_declaration const*>(&_decls.back()->declaration());
+         return static_cast<ast::nominal_declaration const*>(&_decls.back()->declaration());
       }
 
       using node::accept;
@@ -73,11 +81,6 @@ namespace rush::ast {
          std::for_each(_imports.begin(), _imports.end(), [this](auto& imp) { detach(*imp); });
          std::for_each(_decls.begin(), _decls.end(), [this](auto& decl) { detach(*decl); });
       }
-
-   private:
-      std::vector<std::unique_ptr<import_declaration>> _imports;
-      std::vector<std::unique_ptr<module_declaration>> _decls;
-      std::string _id;
    };
 } // rush::ast
 

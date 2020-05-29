@@ -32,7 +32,9 @@ namespace rush::ast {
       default_value,
    };
 
-   class binding_pattern : public ast::pattern {
+   class binding_pattern
+      : public ast::pattern
+      , public ast::expression {
    public:
       binding_pattern(
          std::unique_ptr<ast::pattern> patt,
@@ -45,6 +47,10 @@ namespace rush::ast {
          return _kind == binding_kind::unknown
               ? _kind = resolve_binding_kind()
               : _kind;
+      }
+
+      virtual ast::type_ref result_type() const override {
+         return _expression->result_type();
       }
 
       ast::pattern const& pattern() const noexcept {

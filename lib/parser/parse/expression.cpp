@@ -80,7 +80,7 @@ namespace rush {
 
       auto next = peek_skip_indent();
       if (next.is(symbols::comma)) {
-         result = parse_tuple_literal_expr(exprs::arg(std::move(result)));
+         result = parse_tuple_literal_expr(std::move(result));
       } else {
          if (next.is_not(symbols::right_parenthesis))
             return errs::expected_closing_parenthesis(next);
@@ -113,8 +113,8 @@ namespace rush {
          switch (tok.symbol()) {
          default: return errs::expected_closing_parenthesis_or_tuple(tok);
          case symbols::comma: // tuple expression
-            return parse_tuple_literal_expr(exprs::arg(
-               ident.text(),
+            return parse_tuple_literal_expr(ptrns::binding(
+               ptrns::name(ident.text()),
                std::move(expr_result)));
          case symbols::right_parenthesis: // assignment expression
             next_skip_indent(); // consume ')'
@@ -136,10 +136,22 @@ namespace rush {
 
    rush::parse_result<ast::expression> parser::parse_array_literal_expr() {
       assert(peek_skip_indent().is(symbols::left_square_bracket) && "expected left square bracket to start array expression.");
-      auto elist = parse_element_list();
-      return elist.failed()
-         ? std::move(elist).as<ast::expression>()
-         : exprs::array(std::move(elist));
+      assert(peek_skip_indent().is(symbols::left_square_bracket) && "expected '[' start of element list.");
+      next_skip_indent(); // consume '[' symbol
+
+      if (consume_skip_indent(symbols::right_square_bracket))
+         return exprs::array(exprs::list());
+
+      auto expr_list_result = parse_expr_list();
+      if (expr_list_result.failed())
+         return std::move(expr_list_result).as<ast::expression>();
+
+      // consume possible trailing comma.
+      consume_skip_indent(symbols::comma);
+
+      return consume_skip_indent(symbols::right_square_bracket)
+           ? rush::parse_result<ast::expression> { exprs::array(std::move(expr_list_result)) }
+           : errs::expected_closing_square_bracket_or_comma(peek_skip_indent());
    }
 
    rush::parse_result<ast::expression> parser::parse_tuple_literal_expr() {
@@ -149,12 +161,12 @@ namespace rush {
       return parse_tuple_literal_expr(parse_argument());
    }
 
-   rush::parse_result<ast::expression> parser::parse_tuple_literal_expr(rush::parse_result<ast::argument> result) {
+   rush::parse_result<ast::expression> parser::parse_tuple_literal_expr(rush::parse_result<ast::expression> result) {
       assert(peek_skip_indent().is(symbols::comma) && "expected comma to start tuple expression.");
-      auto alist = parse_argument_list(std::move(result));
-      return alist.failed()
-         ? std::move(alist).as<ast::expression>()
-         : exprs::tuple(std::move(alist));
+      auto elist = parse_argument_list(std::move(result));
+      return elist.failed()
+         ? std::move(elist).as<ast::expression>()
+         : exprs::tuple(std::move(elist));
    }
 
    rush::parse_result<ast::expression> parser::parse_lambda_expr() {
@@ -459,98 +471,79 @@ namespace rush {
          std::move(false_result));
    }
 
-   rush::parse_result<ast::argument> parser::parse_argument() {
-
-      if (peek_skip_indent().is_identifier() && peek_skip_indent(1).is(symbols::equals)) {
+   rush::parse_result<ast::expression> parser::parse_argument() {
+      if (peek_skip_indent().is_identifier()
+      && peek_skip_indent(1).is(symbols::colon)) {
          auto ident = next_skip_indent();
-         next_skip_indent(); // skip '=';
+         next_skip_indent(); // skip ':';
 
          auto expr_result = parse_expr();
          if (expr_result.failed())
-            return std::move(expr_result).as<ast::argument>();
+            return std::move(expr_result);
 
-         return exprs::arg(ident.text(), std::move(expr_result));
+         return ptrns::binding(
+            ptrns::name(ident.text()),
+            std::move(expr_result));
       } else {
          auto expr_result = parse_expr();
-         if (expr_result.failed())
-            return std::move(expr_result).as<ast::argument>();
-
-         return exprs::arg(std::move(expr_result));
+         return std::move(expr_result);
       }
    }
 
-   rush::parse_result<ast::element_list> parser::parse_element_list() {
-      assert(peek_skip_indent().is(symbols::left_square_bracket) && "expected '[' start of element list.");
-      next_skip_indent(); // consume '[' symbol
+   rush::parse_result<ast::expression_list> parser::parse_expr_list() {
+      std::vector<std::unique_ptr<ast::expression>> results; do {
+         auto result = parse_expr();
+         if (result.failed())
+            return std::move(result)
+               .as<ast::expression_list>();
 
-      if (peek_skip_indent().is(symbols::right_square_bracket)) {
-         next_skip_indent();
-         return exprs::elem_list();
-      }
+         results.push_back(std::move(result));
+      } while (consume_skip_indent(symbols::comma));
 
-      std::vector<std::unique_ptr<ast::expression>> results;
-      do {
-         auto arg_result = parse_expr();
-         if (arg_result.failed())
-            return std::move(arg_result).as<ast::element_list>();
-
-         results.push_back(std::move(arg_result));
-      } while (
-         consume_skip_indent(symbols::comma) &&
-         peek_skip_indent().is_not(symbols::right_square_bracket));
-
-      if (peek_skip_indent().is_not(symbols::right_square_bracket))
-         return errs::expected_closing_square_bracket_or_comma(peek_skip_indent());
-      next_skip_indent();
-
-      return exprs::elem_list(std::move(results));
+      return exprs::list(std::move(results));
    }
 
-   rush::parse_result<ast::argument_list> parser::parse_argument_list() {
+   rush::parse_result<ast::expression_list> parser::parse_argument_list() {
       assert(peek_skip_indent().is(symbols::left_parenthesis) && "expected '(' start of argument list.");
 		next_skip_indent(); // consume '(' symbol
 
-      if (peek_skip_indent().is(symbols::right_parenthesis)) {
-			next_skip_indent(); // consume ')' symbol
-         return exprs::arg_list();
-		}
+      // try consume ')' symbol
+      if (consume_skip_indent(symbols::right_parenthesis))
+         return exprs::list();
 
       auto arg_result = parse_argument();
       if (arg_result.failed())
-         return std::move(arg_result).as<ast::argument_list>();
+         return std::move(arg_result).as<ast::expression_list>();
 
       if (peek_skip_indent().is(symbols::comma))
          return parse_argument_list(std::move(arg_result));
 
-      if (peek_skip_indent().is_not(symbols::right_parenthesis))
+      if (!consume_skip_indent(symbols::right_parenthesis))
          return errs::expected_closing_parenthesis(peek_skip_indent());
-      next_skip_indent();
 
-      std::vector<std::unique_ptr<ast::argument>> args;
+      std::vector<std::unique_ptr<ast::expression>> args;
       args.push_back(std::move(arg_result));
-      return exprs::arg_list(std::move(args));
+      return exprs::list(std::move(args));
    }
 
-   rush::parse_result<ast::argument_list> parser::parse_argument_list(rush::parse_result<ast::argument> first) {
+   rush::parse_result<ast::expression_list> parser::parse_argument_list(rush::parse_result<ast::expression> first) {
       assert(peek_skip_indent().is(symbols::comma) && "expected comma to start argument list.");
       next_skip_indent(); // consume ','
 
-      std::vector<std::unique_ptr<ast::argument>> results;
+      std::vector<std::unique_ptr<ast::expression>> results;
       results.push_back(std::move(first));
 
       do {
          auto arg_result = parse_argument();
          if (arg_result.failed())
-            return std::move(arg_result).as<ast::argument_list>();
+            return std::move(arg_result).as<ast::expression_list>();
 
          results.push_back(std::move(arg_result));
       } while (consume_skip_indent(symbols::comma));
 
-      if (peek_skip_indent().is_not(symbols::right_parenthesis))
-         return errs::expected_closing_parenthesis(peek_skip_indent());
-      next_skip_indent();
-
-      return exprs::arg_list(std::move(results));
+      return consume_skip_indent(symbols::right_parenthesis)
+           ? rush::parse_result<ast::expression_list> { exprs::list(std::move(results)) }
+           : errs::expected_closing_parenthesis(peek_skip_indent());
    }
 
    rush::parse_result<ast::expression> parser::parse_invoke_expr(rush::parse_result<ast::expression> expr_result) {

@@ -71,7 +71,7 @@ namespace rush::ast::detail {
          push(ptrn);
       }
 
-      virtual void visit_list_ptrn(ast::list_pattern const& ptrn) override {
+      virtual void visit_ptrn_list(ast::pattern_list const& ptrn) override {
          if (_it._curr == ptrn.parent()) { push(ptrn); return; }
          if (_it._curr == &ptrn.back()) { pop(ptrn); return; }
          if (_it._curr == &ptrn) { push(ptrn.front()); return; }

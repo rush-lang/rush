@@ -24,22 +24,22 @@
 #include <vector>
 
 namespace rush::ast {
-   class list_pattern : public node_list<ast::pattern> {
+   class pattern_list : public node_list<ast::pattern> {
    public:
       using node_list<ast::pattern>::accept;
       using node_list<ast::pattern>::node_list;
       virtual void accept(ast::visitor& v) const override {
-         v.visit_list_ptrn(*this);
+         v.visit_ptrn_list(*this);
       }
    };
 }
 
 namespace rush::ast::ptrns {
-   inline std::unique_ptr<ast::list_pattern> list(
+   inline std::unique_ptr<ast::pattern_list> list(
       std::vector<std::unique_ptr<ast::pattern>> patterns)
-      { return std::make_unique<ast::list_pattern>(std::move(patterns)); }
+      { return std::make_unique<ast::pattern_list>(std::move(patterns)); }
 
-   inline std::unique_ptr<ast::list_pattern> list()
+   inline std::unique_ptr<ast::pattern_list> list()
    { return ptrns::list({}); }
 }
 

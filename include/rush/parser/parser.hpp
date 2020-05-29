@@ -334,13 +334,15 @@ namespace rush {
 
 		// expressions.
 		rush::parse_result<ast::expression> parse_expr();
+      rush::parse_result<ast::expression_list> parse_expr_list();
+
 		rush::parse_result<ast::expression> parse_paren_expr();
 		rush::parse_result<ast::expression> parse_primary_expr();
       rush::parse_result<ast::expression> parse_simple_paren_expr();
       rush::parse_result<ast::expression> parse_complex_paren_expr();
       rush::parse_result<ast::expression> parse_array_literal_expr();
       rush::parse_result<ast::expression> parse_tuple_literal_expr();
-      rush::parse_result<ast::expression> parse_tuple_literal_expr(rush::parse_result<ast::argument>);
+      rush::parse_result<ast::expression> parse_tuple_literal_expr(rush::parse_result<ast::expression>);
       rush::parse_result<ast::expression> parse_lambda_expr();
 
 		rush::parse_result<ast::expression> parse_string_expr();
@@ -357,11 +359,10 @@ namespace rush {
       rush::parse_result<ast::expression> parse_ternary_expr(rush::parse_result<ast::expression>);
       rush::parse_result<ast::expression> parse_invoke_expr(rush::parse_result<ast::expression>);
 
-      rush::parse_result<ast::argument> parse_argument();
-   // rush::parse_result<ast::binding_list> parse_binding_list();
-      rush::parse_result<ast::element_list> parse_element_list();
-      rush::parse_result<ast::argument_list> parse_argument_list();
-      rush::parse_result<ast::argument_list> parse_argument_list(rush::parse_result<ast::argument>);
+      rush::parse_result<ast::expression> parse_argument();
+      rush::parse_result<ast::expression_list> parse_argument_list();
+      rush::parse_result<ast::expression_list> parse_argument_list(rush::parse_result<ast::expression>);
+      
 
 
       rush::parse_result<ast::nominal_declaration> scope_insert(std::unique_ptr<ast::nominal_declaration> decl, rush::lexical_token const& ident);

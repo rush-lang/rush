@@ -37,7 +37,7 @@ namespace ptrns = rush::ast::ptrns;
 
 class linear_printer : public ast::visitor {
 public:
-   virtual void visit_list_ptrn(ast::list_pattern const& ptrn) override {}
+   virtual void visit_ptrn_list(ast::pattern_list const& ptrn) override {}
    virtual void visit_named_ptrn(ast::named_pattern const& ptrn) override {
       std::cout << ptrn.name() << std::endl;
    }

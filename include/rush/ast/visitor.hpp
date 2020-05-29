@@ -41,7 +41,7 @@ namespace rush::ast {
    class function_type;
    class optional_type;
 
-   class list_pattern;
+   class pattern_list;
    class named_pattern;
    class discard_pattern;
    class binding_pattern;
@@ -50,8 +50,7 @@ namespace rush::ast {
    class type_annotation_pattern;
 
 	class expression;
-   class argument;
-   class named_argument;
+   class expression_list;
 	class unary_expression;
 	class binary_expression;
    class ternary_expression;
@@ -116,7 +115,7 @@ namespace rush::ast {
       virtual void visit_optional_type(ast::optional_type const&) {};
 
       // patterns
-      virtual void visit_list_ptrn(ast::list_pattern const&);
+      virtual void visit_ptrn_list(ast::pattern_list const&);
       virtual void visit_named_ptrn(ast::named_pattern const&) {};
       virtual void visit_discard_ptrn(ast::discard_pattern const&) {};
       virtual void visit_binding_ptrn(ast::binding_pattern const&) {};
@@ -156,9 +155,7 @@ namespace rush::ast {
       virtual void visit_result_stmt(result_statement const& stmt);
 
 		// expressions
-      virtual void visit_argument(argument const&) {};
-      virtual void visit_named_argument(named_argument const&) {};
-
+      virtual void visit_expr_list(expression_list const&);
 		virtual void visit_unary_expr(unary_expression const&);
 		virtual void visit_binary_expr(binary_expression const&);
       virtual void visit_ternary_expr(ternary_expression const&) {};

@@ -20,7 +20,7 @@
 
 #include "rush/ast/types/builtin.hpp"
 #include "rush/ast/exprs/expression.hpp"
-#include "rush/ast/exprs/argument.hpp"
+#include "rush/ast/exprs/list.hpp"
 
 #include <algorithm>
 
@@ -29,23 +29,23 @@ namespace rush::ast {
 
 	namespace exprs {
 		std::unique_ptr<ast::tuple_literal_expression> tuple(
-			std::unique_ptr<ast::argument_list> args);
+			std::unique_ptr<ast::expression_list> args);
 	}
 
 	class tuple_literal_expression : public ast::expression {
 		struct factory_tag_t {};
 
 		friend std::unique_ptr<ast::tuple_literal_expression> exprs::tuple(
-			std::unique_ptr<ast::argument_list> args);
+			std::unique_ptr<ast::expression_list> args);
 
 	public:
 		tuple_literal_expression(
-			std::unique_ptr<ast::argument_list> args,
+			std::unique_ptr<ast::expression_list> args,
 			factory_tag_t)
 			: _type { ast::types::undefined }
 			, _args { std::move(args) } {}
 
-		ast::argument_list const& arguments() const noexcept {
+		ast::expression_list const& arguments() const noexcept {
 			return *_args;
 		}
 
@@ -61,24 +61,24 @@ namespace rush::ast {
    protected:
       virtual void attached(ast::node*, ast::context&) override {
 			std::for_each(_args->begin(), _args->end(),
-				[this](auto& a) { attach(*a); });
+				[this](auto& a) { attach(a); });
          _type = context()->tuple_type(*this);
 		}
 
       virtual void detached(ast::node*, ast::context&) override {
 			std::for_each(_args->begin(), _args->end(),
-				[this](auto& a) { detach(*a); });
+				[this](auto& a) { detach(a); });
          _type = types::undefined;
 		}
 
 	private:
 		ast::type_ref _type;
-		std::unique_ptr<ast::argument_list> _args;
+		std::unique_ptr<ast::expression_list> _args;
 	};
 
 	namespace exprs {
 		inline std::unique_ptr<ast::tuple_literal_expression> tuple(
-			std::unique_ptr<ast::argument_list> args) {
+			std::unique_ptr<ast::expression_list> args) {
 				return std::make_unique<ast::tuple_literal_expression>(
 					std::move(args),
 					tuple_literal_expression::factory_tag_t {});

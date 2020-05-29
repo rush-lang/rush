@@ -50,12 +50,12 @@ namespace rush::ast {
       //! \brief Gets the root declaration this named pattern is bound to.
       //!        Possible roots include but are not limited to variable,
       //!        constant, or parameter declarations.
-      ast::declaration const& declaration() const noexcept {
+      ast::declaration const* declaration() const noexcept {
          // resolve the root declaration by traversing the parent
          // patterns until an ancestral declaration has been found.
          return (_decl == nullptr)
-              ? *(_decl = resolve_declaration())
-              : *(_decl);
+              ? (_decl = resolve_declaration())
+              : (_decl);
       }
 
       //! \brief Gets the designated name of the pattern,
@@ -65,7 +65,7 @@ namespace rush::ast {
       //! \brief Gets the kind of declaration this named pattern is bound to.
       //!        Possible kinds include but are not limited to variable,
       //!        constant, or parameter declarations.
-      virtual ast::declaration_kind kind() const noexcept override { return declaration().kind(); }
+      virtual ast::declaration_kind kind() const noexcept override { return declaration()->kind(); }
 
       using node::accept;
       virtual void accept(ast::visitor& v) const override {

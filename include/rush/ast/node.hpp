@@ -74,9 +74,16 @@ namespace rush::ast {
       using reference = typename iterator::reference;
       using const_pointer = typename const_iterator::reference;
       using const_reference = typename const_iterator::reference;
+      using size_type = typename std::vector<std::unique_ptr<NodeT>>::size_type;
+
+      node_list()
+      : _children {} {}
 
       explicit node_list(std::vector<std::unique_ptr<NodeT>> nodes)
       : _children { std::move(nodes) } {}
+
+      bool empty() const noexcept { return _children.empty(); }
+      size_type size() const noexcept { return _children.size(); }
 
       reference front() noexcept { return *_children.front(); }
       reference back() noexcept { return *_children.back(); }
