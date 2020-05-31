@@ -34,7 +34,6 @@
             { "name": "internal_parse_error", "text": "internal error." },
             { "name": "not_supported", "text": "{1} is not supported.", "params": [ "feature" ] },
             { "name": "expected", "text": "expected '{1}' before '{0}'.", "params": [ "expected" ] },
-            { "name": "expected_stmt", "text": "expected '{1}' before '{0}'.", "params": [ "expected" ] },
             { "name": "expected_identifier", "text": "expected an identifier before '{}'." },
             { "name": "expected_primary_expr", "text": "expected primary expression, but found '{}'." },
             { "name": "expected_function_name", "text": "expected function name before '{}'." },

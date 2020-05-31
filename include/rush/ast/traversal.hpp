@@ -71,13 +71,39 @@ namespace rush::ast {
          accept(decl.body());
       }
 
-      virtual void visit_member_decl(ast::member_declaration const& decl) override {
-         accept(decl.declaration());
+      virtual void visit_class_decl(ast::class_declaration const& decl) override {
+         auto sections = decl.sections();
+         std::for_each(sections.begin(), sections.end(),
+            [this](auto& s) { accept(s); });
       }
 
-      virtual void visit_class_decl(ast::class_declaration const& decl) override {
-         for (auto& m : decl.members()) accept(*m);
+      virtual void visit_member_section_decl(ast::member_section_declaration const& decl) override {
+         auto members = decl.members();
+         std::for_each(members.begin(), members.end(),
+            [this](auto& m) { accept(m); });
       }
+
+      virtual void visit_variable_field_decl(ast::variable_field_declaration const& decl) override {
+         accept(decl.pattern());
+      }
+
+      virtual void visit_constant_field_decl(ast::constant_field_declaration const& decl) override {
+         accept(decl.pattern());
+      }
+
+      virtual void visit_method_decl(ast::method_declaration const& decl) override {
+         accept(decl.parameters());
+         accept(decl.body());
+      }
+
+      virtual void visit_property_getter_decl(ast::property_getter_declaration const& decl) override {
+
+      }
+
+      virtual void visit_property_setter_decl(ast::property_setter_declaration const& decl)override {
+
+      }
+
 
 		// statements
 		virtual void visit_block_stmt(ast::statement_block const& stmt) override {

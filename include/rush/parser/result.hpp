@@ -200,11 +200,11 @@ namespace rush {
 
       template <typename NodeU>
       parse_result<NodeU> as() && {
-         if constexpr (!std::is_base_of_v<NodeU, NodeT>) {
+         if constexpr (!std::is_base_of_v<NodeT, NodeU>) {
             return std::move(_errors);
          } else {
             return success()
-               ? parse_result<NodeU> { std::move(_node) }
+               ? parse_result<NodeU> { std::unique_ptr<NodeU> { dynamic_cast<NodeU*>(_node.release()) } }
                : parse_result<NodeU> { std::move(_errors) };
          }
       }

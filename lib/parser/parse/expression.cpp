@@ -229,6 +229,7 @@ namespace rush {
 			case keywords::false_: next_skip_indent(); result = exprs::literal(false, *_context); break;
          case keywords::this_: next_skip_indent(); result = exprs::this_(); break;
          case keywords::base_: next_skip_indent(); result = exprs::base_(); break;
+         case keywords::new_: result = parse_new_expr(); break;
 			} break;
 		case lexical_token_type::symbol:
          if (is_unary_prefix_operator(tok)) result = parse_unary_expr();
@@ -558,5 +559,17 @@ namespace rush {
 		return exprs::invoke(
          std::move(expr_result),
          std::move(result));
+   }
+
+   rush::parse_result<ast::expression> parser::parse_new_expr() {
+      assert(peek_skip_indent().is(keywords::new_) && "expected 'new' keyword.");
+      next_skip_indent(); // consume 'new' keyword.
+      if (!peek_skip_indent().is_identifier())
+         return errs::expected(peek_skip_indent(), "type");
+
+      auto ident = parse_identifier_expr();
+      if (ident.failed()) return std::move(ident);
+
+      return parse_invoke_expr(std::move(ident));
    }
 }

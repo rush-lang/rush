@@ -36,16 +36,20 @@ namespace rush::ast {
       builtin_floating_point,
       array,
       tuple,
+      enum_,
+      class_,
+      struct_,
+      concept,
+      interface,
       function,
-      optional,
       extension,
-      user_type,
+      optional,
    };
 
    template <typename TypeT>
    struct type_traits {};
 
-   class type : public node {
+   class type : public virtual node {
       friend class type_ref;
    public:
       virtual ast::type_kind kind() const = 0;

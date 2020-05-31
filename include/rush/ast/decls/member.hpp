@@ -21,66 +21,121 @@
 #include "rush/ast/node.hpp"
 #include "rush/ast/decls/access.hpp"
 #include "rush/ast/decls/nominal.hpp"
+#include "rush/ast/iterator.hpp"
 
 #include <vector>
 #include <string>
+#include <cassert>
 
 namespace rush::ast {
-   class module;
+   class class_declaration;
+   class member_declaration;
+   class member_section_declaration;
 
    class member_declaration : public ast::nominal_declaration {
    public:
-      member_declaration(
-         ast::nominal_declaration const* owner,
-         std::unique_ptr<ast::nominal_declaration> decl,
-         ast::member_access acc)
-      : _decl { std::move(decl) }
-      , _owner { owner }
-      , _access { acc } {}
+      ast::member_access access() const noexcept;
 
-      ast::declaration const& owner() const noexcept {
-         return *_owner;
+      bool is_public() const noexcept {
+         return access() == ast::member_access::public_;
       }
 
-      ast::declaration const& declaration() const noexcept {
-         return *_decl;
+      bool is_private() const noexcept {
+         return access() == ast::member_access::private_;
       }
 
-      virtual std::string_view name() const override {
-         return _decl->name();
+      bool is_protected() const noexcept {
+         return access() == ast::member_access::protected_;
       }
 
-      virtual ast::type_ref type() const override {
-         return _decl->type();
+      bool is_internal() const noexcept {
+         return access() == ast::member_access::internal;
+      }
+   };
+
+   class member_section_declaration : public declaration {
+   private:
+      ast::member_access _access;
+      std::vector<std::unique_ptr<ast::member_declaration>> _members;
+
+   public:
+      member_section_declaration(
+         ast::member_access acc,
+         std::vector<std::unique_ptr<ast::member_declaration>> mems)
+         : _access { acc }
+         , _members { std::move(mems) } {}
+
+      using member_iterator = decltype(rush::make_deref_iterator(_members.begin()));
+      using member_const_iterator = decltype(rush::make_deref_iterator(_members.cbegin()));
+
+      virtual ast::declaration_kind kind() const noexcept override {
+         return ast::declaration_kind::undefined;
       }
 
-		virtual declaration_kind kind() const override {
-         return _decl->kind();
-      }
-
-      ast::member_access access() const {
+      ast::member_access access() const noexcept {
          return _access;
+      }
+
+      auto empty() const noexcept {
+         return _members.empty();
+      }
+
+      auto size() const noexcept {
+         return _members.size();
+      }
+
+      auto& front() const noexcept {
+         return *_members.front();
+      }
+
+      auto& back() const noexcept {
+         return *_members.back();
+      }
+
+      auto begin() const noexcept {
+         return rush::make_deref_iterator(_members.begin());
+      }
+
+      auto end() const noexcept {
+         return rush::make_deref_iterator(_members.end());
+      }
+
+      rush::iterator_range<member_const_iterator> members() const noexcept {
+         return rush::make_iterator_range(
+            rush::make_deref_iterator(_members.begin()),
+            rush::make_deref_iterator(_members.end()));
       }
 
       using node::accept;
       virtual void accept(ast::visitor& v) const override {
-         v.visit_member_decl(*this);
+         v.visit_member_section_decl(*this);
       }
 
    protected:
       virtual void attached(ast::node*, ast::context&) override {
-         attach(*_decl);
+         std::for_each(_members.begin(), _members.end(),
+            [this](auto& m) { attach(*m); });
       }
-
       virtual void detached(ast::node*, ast::context&) override {
-         detach(*_decl);
+         std::for_each(_members.begin(), _members.end(),
+            [this](auto& m) { detach(*m); });
       }
-
-   private:
-      ast::member_access _access;
-      ast::nominal_declaration const* const _owner;
-      std::unique_ptr<ast::nominal_declaration> _decl;
    };
+
+   inline ast::member_access ast::member_declaration::access() const noexcept {
+      auto sec = ast::find_ancestor<ast::member_section_declaration>(this);
+      return sec != ast::ancestor_iterator()
+           ? sec->access()
+           : ast::member_access::internal;
+   }
 } // rush::ast
+
+namespace rush::ast::decls {
+   inline std::unique_ptr<ast::member_section_declaration> member_section(
+      ast::member_access acc,
+      std::vector<std::unique_ptr<ast::member_declaration>> members) {
+         return std::make_unique<ast::member_section_declaration>(acc, std::move(members));
+      }
+}
 
 #endif // RUSH_AST_DECLS_MEMBER_HPP

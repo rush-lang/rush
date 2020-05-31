@@ -292,7 +292,9 @@ namespace rush {
 
       rush::parse_result<ast::declaration> parse_class_declaration();
       rush::parse_result<ast::declaration> parse_class_decl_body();
-      rush::parse_result<ast::declaration> parse_class_decl_body_section(access_modifier);
+      rush::parse_result<ast::member_declaration> parse_member_decl();
+      rush::parse_result<ast::member_section_declaration> parse_member_section(ast::member_access);
+
 
       rush::parse_result<ast::pattern> parse_storage_pattern(std::string);
       rush::parse_result<ast::pattern> parse_iteration_pattern();
@@ -362,8 +364,8 @@ namespace rush {
       rush::parse_result<ast::expression> parse_argument();
       rush::parse_result<ast::expression_list> parse_argument_list();
       rush::parse_result<ast::expression_list> parse_argument_list(rush::parse_result<ast::expression>);
-      
 
+      rush::parse_result<ast::expression> parse_new_expr();
 
       rush::parse_result<ast::nominal_declaration> scope_insert(std::unique_ptr<ast::nominal_declaration> decl, rush::lexical_token const& ident);
 

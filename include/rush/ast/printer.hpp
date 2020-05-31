@@ -357,6 +357,27 @@ namespace rush::ast {
          indent_traverse(decl);
       }
 
+      virtual void visit_variable_field_decl(ast::variable_field_declaration const& decl) override {
+         print_field_decl("variable", decl);
+      }
+
+      virtual void visit_constant_field_decl(ast::constant_field_declaration const& decl) override {
+         print_field_decl("constant", decl);
+      }
+
+      virtual void visit_method_decl(ast::method_declaration const& decl) override {
+         write("<[decl] method: ");
+         decl.type().accept(*this);
+         write(" (name=\"{}\"", decl.name());
+         switch (decl.access()) {
+         case ast::member_access::internal: writeln(", access=internal)>"); break;
+         case ast::member_access::public_: writeln(", access=public)>"); break;
+         case ast::member_access::private_: writeln(", access=private)>"); break;
+         case ast::member_access::protected_: writeln(", access=protected)>"); break;
+         }
+         indent_traverse(decl);
+      }
+
       virtual void visit_block_stmt(ast::statement_block const& stmt) override {
          writeln("<[stmt] block>");
          indent_traverse(stmt);
@@ -403,6 +424,18 @@ namespace rush::ast {
          writeln(")>");
          indent_traverse(decl);
 		}
+
+      void print_field_decl(std::string kind, ast::field_declaration const& decl) {
+         write("<[decl] field: (kind={}", kind);
+         switch (decl.access()) {
+         case ast::member_access::internal: write(", access=internal"); break;
+         case ast::member_access::public_: write(", access=public"); break;
+         case ast::member_access::private_: write(", access=private"); break;
+         case ast::member_access::protected_: write(", access=protected"); break;
+         }
+         writeln(")>");
+         indent_traverse(decl);
+      }
 	};
 
    using printer = basic_printer<char>;

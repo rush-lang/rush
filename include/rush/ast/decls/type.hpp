@@ -37,9 +37,7 @@ namespace rush::ast {
 
       std::string_view name() const;
 
-      virtual ast::type_kind kind() const final {
-         return ast::type_kind::user_type;
-      }
+      virtual ast::type_kind kind() const final;
 
       ast::type_declaration const& declaration() const noexcept {
          return _decl;
@@ -53,7 +51,7 @@ namespace rush::ast {
       ast::type_declaration const& _decl;
    };
 
-   //! \brief Base class for declarations that are themselves types.
+   //! \brief Base class for declarations that also define types.
    //!        Such declarations include, but are not limited to:
    //!        classes, structs, and enums.
    class type_declaration
@@ -62,7 +60,6 @@ namespace rush::ast {
       type_declaration(std::string name)
          : _name { std::move(name) }
          , _type { *this } {}
-
 
       virtual ast::type_ref type() const noexcept final {
          return { _type };
@@ -79,6 +76,15 @@ namespace rush::ast {
 
    inline std::string_view user_type::name() const {
       return _decl.name();
+   }
+
+   inline ast::type_kind user_type::kind() const {
+      switch (declaration().kind()) {
+      case ast::declaration_kind::enum_: return ast::type_kind::enum_;
+      case ast::declaration_kind::class_: return ast::type_kind::class_;
+      case ast::declaration_kind::struct_: return ast::type_kind::struct_;
+      default: return ast::type_kind::error;
+      }
    }
 
 } // rush::ast

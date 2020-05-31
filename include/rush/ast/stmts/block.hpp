@@ -44,8 +44,29 @@ namespace rush::ast {
 			: statement { ast::statement_kind::block }
          , _stmts(std::move(stmts)) {}
 
-      auto begin() const noexcept { return rush::make_deref_iterator(_stmts.begin()); }
-      auto end() const noexcept { return rush::make_deref_iterator(_stmts.end()); }
+      auto empty() const noexcept {
+         return _stmts.empty();
+      }
+
+      auto size() const noexcept {
+         return _stmts.size();
+      }
+
+      auto& front() const noexcept {
+         return *_stmts.front();
+      }
+
+      auto& back() const noexcept {
+         return *_stmts.back();
+      }
+
+      auto begin() const noexcept {
+         return rush::make_deref_iterator(_stmts.begin());
+      }
+
+      auto end() const noexcept {
+          return rush::make_deref_iterator(_stmts.end());
+      }
 
 		using node::accept;
 		virtual void accept(ast::visitor& v) const override {

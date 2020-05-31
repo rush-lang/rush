@@ -86,12 +86,20 @@ namespace rush::ast {
    class module;
    class import_declaration;
    class module_declaration;
+
 	class constant_declaration;
 	class variable_declaration;
-   class parameter_declaration;
 	class function_declaration;
-   class member_declaration;
+   class parameter_declaration;
+
    class class_declaration;
+   class struct_declaration;
+   class member_section_declaration;
+   class variable_field_declaration;
+   class constant_field_declaration;
+   class property_getter_declaration;
+   class property_setter_declaration;
+   class method_declaration;
 
 	class visitor {
 	public:
@@ -134,10 +142,18 @@ namespace rush::ast {
 
 		virtual void visit_constant_decl(ast::constant_declaration const&) {};
 		virtual void visit_variable_decl(ast::variable_declaration const&) {};
+
       virtual void visit_parameter_decl(ast::parameter_declaration const&) {};
 		virtual void visit_function_decl(ast::function_declaration const&) {};
-      virtual void visit_member_decl(ast::member_declaration const&) {};
+
       virtual void visit_class_decl(ast::class_declaration const&) {};
+      virtual void visit_member_section_decl(ast::member_section_declaration const&) {};
+
+      virtual void visit_variable_field_decl(ast::variable_field_declaration const&) {};
+      virtual void visit_constant_field_decl(ast::constant_field_declaration const&) {};
+      virtual void visit_property_getter_decl(ast::property_getter_declaration const&) {};
+      virtual void visit_property_setter_decl(ast::property_setter_declaration const&) {};
+      virtual void visit_method_decl(ast::method_declaration const&) {};
 
 		// statements
 		virtual void visit_block_stmt(statement_block const&) {};

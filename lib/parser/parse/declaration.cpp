@@ -191,59 +191,104 @@ namespace rush {
       assert(peek_skip_indent().is(keywords::class_) && "expected the 'class' keyword.");
       next_skip_indent(); // consume 'class'
 
+      _scope.push(rush::scope_kind::class_);
+
 		if (!peek_skip_indent().is_identifier())
          return errs::expected_class_name(peek_skip_indent());
 		auto ident = next_skip_indent();
 
-      if (peek_skip_indent().is_not(symbols::colon))
+      if (!consume_skip_indent(symbols::colon))
          return errs::expected(peek_skip_indent(), ":");
-      next_skip_indent(); // consume ':'
 
-      std::vector<std::unique_ptr<ast::declaration>> sections;
-      parse_result<ast::declaration> body;
+      std::vector<std::unique_ptr<ast::member_section_declaration>> sections;
+      parse_result<ast::member_section_declaration> section_result;
 
       auto tok = peek_with_indent();
       if (tok.is(symbols::indent)) {
-         body = parse_class_decl_body_section(access_modifier::private_);
-         if (body.failed()) return std::move(body);
-         sections.push_back(std::move(body));
+         section_result = parse_member_section(ast::member_access::private_);
+         if (section_result.failed()) return std::move(section_result);
+         sections.push_back(std::move(section_result));
       }
 
-      while (peek_with_indent().is_not(symbols::dedent)) {
-         if (tok.is_keyword()) {
+      while (peek_skip_indent().is_any(
+         keywords::public_,
+         keywords::private_,
+         keywords::protected_)) {
+            auto tok = next_skip_indent();
+            if (!consume_skip_indent(symbols::colon))
+               return errs::expected(peek_skip_indent(), ":");
+
+            // empty class section.
+            if (!peek_with_indent().is(symbols::indent))
+               continue;
+
             switch (tok.keyword()) {
             default: break;
-            case keywords::protected_:
-               body = parse_class_decl_body_section(access_modifier::protected_);
-               continue;
-            case keywords::private_:
-               body = parse_class_decl_body_section(access_modifier::private_);
-               continue;
-            case keywords::public_:
-               body = parse_class_decl_body_section(access_modifier::public_);
-               continue;
+            case keywords::public_: section_result = parse_member_section(ast::member_access::public_); break;
+            case keywords::private_: section_result = parse_member_section(ast::member_access::private_); break;
+            case keywords::protected_: section_result = parse_member_section(ast::member_access::protected_); break;
             }
+
+            if (section_result.failed()) return std::move(section_result);
+            sections.push_back(std::move(section_result));
          }
 
-         break;
-      }
 
-
-      // _scope.push(rush::scope_kind::class_);
-      // // auto body = parse_class_decl_body();
-      // // if (body.failed()) return std::move(body);
-      // _scope.pop();
-
-      auto result = decls::class_(ident.text());
+      _scope.pop();
+      auto result = decls::class_(ident.text(), std::move(sections));
       return scope_insert(std::move(result), ident);
    }
 
-   rush::parse_result<ast::declaration> parser::parse_class_decl_body() {
-      return errs::not_supported(peek_skip_indent(), "class body");
+   rush::parse_result<ast::member_section_declaration>
+   parser::parse_member_section(ast::member_access acc) {
+      assert(peek_with_indent().is(symbols::indent) && "expected indentation at start of block.");
+      next_with_indent(); // consume indentation.
+
+      auto results = std::vector<std::unique_ptr<ast::member_declaration>> {};
+      while (peek_skip_indent().is_not(symbols::dedent)) {
+         auto result = parse_member_decl();
+         if (result.failed()) return std::move(result).as<ast::member_section_declaration>();
+         results.push_back(std::move(result));
+      }
+
+      if (!peek_with_indent().is(symbols::dedent))
+         return errs::expected(peek_skip_indent(), "<dedent>");
+      next_with_indent(); // consume '<dedent>'
+
+      return decls::member_section(acc, std::move(results));
    }
 
-   rush::parse_result<ast::declaration> parser::parse_class_decl_body_section(access_modifier) {
-      return errs::not_supported(peek_skip_indent(), "class body section");
+   rush::parse_result<ast::member_declaration> parser::parse_member_decl() {
+      auto tok = peek_skip_indent();
+      if (tok.is_keyword()) {
+         rush::parse_result<ast::declaration> result;
+
+         switch (tok.keyword()) {
+         case keywords::let_: {
+            auto result = terminated(&parser::parse_constant_decl).as<ast::constant_declaration>();
+            if (result.success()) return decls::field(std::move(result));
+            break;
+         }
+         case keywords::var_: {
+            auto result = terminated(&parser::parse_variable_decl).as<ast::variable_declaration>();
+            if (result.success()) return decls::field(std::move(result));
+            break;
+         }
+         case keywords::func_: {
+            auto result = parse_function_decl().as<ast::function_declaration>();
+            if (result.success()) return decls::method(std::move(result));
+            break;
+         }
+         default: break;
+         }
+
+         return std::move(result).as<ast::member_declaration>();
+      }
+
+      return errs::expected_toplevel_decl(tok);
+      // return errs::expected_member_decl(tok);
    }
+
+
 
 }

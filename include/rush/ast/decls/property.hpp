@@ -15,20 +15,36 @@
 *************************************************************************/
 #pragma once
 
-#ifndef RUSH_AST_DECLARATION_HPP
-#define RUSH_AST_DECLARATION_HPP
+#ifndef RUSH_AST_DECLS_PROPERTY_HPP
+#define RUSH_AST_DECLS_PROPERTY_HPP
 
-#include "rush/ast/decls/constant.hpp"
-#include "rush/ast/decls/variable.hpp"
+#include "rush/ast/decls/member.hpp"
 #include "rush/ast/decls/function.hpp"
-#include "rush/ast/decls/field.hpp"
-#include "rush/ast/decls/method.hpp"
-#include "rush/ast/decls/property.hpp"
-#include "rush/ast/decls/class.hpp"
-#include "rush/ast/decls/type.hpp"
-#include "rush/ast/decls/parameter.hpp"
-#include "rush/ast/decls/import.hpp"
-#include "rush/ast/decls/module.hpp"
-#include "rush/ast/decls/undeclared.hpp"
 
-#endif // RUSH_AST_DECLARATION_HPP
+#include <memory>
+
+namespace rush::ast {
+
+   class property_getter_declaration : public ast::member_declaration {
+   public:
+      using node::accept;
+      virtual void accept(ast::visitor& v) {
+         v.visit_property_getter_decl(*this);
+      }
+   private:
+      std::unique_ptr<ast::function_declaration> _func;
+   };
+
+   class property_setter_declaration : public ast::member_declaration {
+   public:
+      using node::accept;
+      virtual void accept(ast::visitor& v) {
+         v.visit_property_setter_decl(*this);
+      }
+   private:
+      std::unique_ptr<ast::function_declaration> _func;
+   };
+
+} // rush::ast
+
+#endif // RUSH_AST_DECLS_PROPERTY_HPP

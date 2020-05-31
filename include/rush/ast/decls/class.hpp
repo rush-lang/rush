@@ -18,26 +18,38 @@
 #ifndef RUSH_AST_DECLS_CLASS_HPP
 #define RUSH_AST_DECLS_CLASS_HPP
 
+#include "rush/extra/iterator_range.hpp"
+#include "rush/extra/dereferencing_iterator.hpp"
+
+#include "rush/ast/types/builtin.hpp"
+#include "rush/ast/types/type_ref.hpp"
+
 #include "rush/ast/decls/type.hpp"
 #include "rush/ast/decls/member.hpp"
-#include "rush/ast/context.hpp"
 
 #include <string>
 #include <string_view>
 
 namespace rush::ast {
+   class context;
 
-   class class_declaration : public ast::type_declaration {
+   class class_declaration
+      : public ast::type_declaration {
    public:
-      class_declaration(std::string name)
-         : ast::type_declaration { std::move(name) } {}
+      class_declaration(
+         std::string name,
+         std::vector<std::unique_ptr<ast::member_section_declaration>> sections)
+         : ast::type_declaration { std::move(name) }
+         , _sections { std::move(sections) } {}
 
-		virtual declaration_kind kind() const noexcept override {
-         return declaration_kind::class_;
+      virtual ast::declaration_kind kind() const noexcept override {
+         return ast::declaration_kind::class_;
       }
 
-      std::vector<std::unique_ptr<ast::member_declaration>> const& members() const noexcept {
-         return _members;
+      auto sections() const noexcept {
+         return rush::make_iterator_range(
+            rush::make_deref_iterator(_sections.begin()),
+            rush::make_deref_iterator(_sections.end()));
       }
 
       using node::accept;
@@ -47,20 +59,27 @@ namespace rush::ast {
 
    protected:
       virtual void attached(ast::node*, ast::context&) override {
+         std::for_each(_sections.begin(), _sections.end(),
+            [this](auto& s) { attach(*s); });
       };
 
       virtual void detached(ast::node*, ast::context&) override {
+         std::for_each(_sections.begin(), _sections.end(),
+            [this](auto& s) { detach(*s); });
       };
 
    private:
-      std::vector<std::unique_ptr<ast::member_declaration>> _members;
+      std::vector<std::unique_ptr<ast::member_section_declaration>> _sections;
    };
 } // rush::ast
 
 namespace rush::ast::decls {
-   inline std::unique_ptr<class_declaration> class_(std::string name) {
-      return std::make_unique<class_declaration>(
-         std::move(name));
+   inline std::unique_ptr<ast::class_declaration> class_(
+      std::string name,
+      std::vector<std::unique_ptr<ast::member_section_declaration>> sections) {
+      return std::make_unique<ast::class_declaration>(
+         std::move(name),
+         std::move(sections));
    }
 }
 
