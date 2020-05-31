@@ -31,6 +31,7 @@ public:
 
    // ultimately we're trying to find these.
    virtual void visit_class_decl(ast::class_declaration const& decl) override { _result = decl.type(); }
+   virtual void visit_struct_decl(ast::struct_declaration const& decl) override { _result = decl.type(); }
    virtual void visit_function_type(ast::function_type const& type) override { _result = type.return_type(); }
 
    virtual void visit_named_ptrn(ast::named_pattern const& ptrn) override { ptrn.type().accept(*this); }

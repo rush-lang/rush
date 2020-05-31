@@ -25,6 +25,7 @@
 #include "rush/ast/decls/method.hpp"
 #include "rush/ast/decls/property.hpp"
 #include "rush/ast/decls/class.hpp"
+#include "rush/ast/decls/struct.hpp"
 #include "rush/ast/decls/type.hpp"
 #include "rush/ast/decls/parameter.hpp"
 #include "rush/ast/decls/import.hpp"

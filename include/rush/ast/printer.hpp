@@ -362,6 +362,15 @@ namespace rush::ast {
          indent_traverse(decl);
       }
 
+      virtual void visit_struct_decl(ast::struct_declaration const& decl) override {
+         write("<[decl] struct: {}", decl.name());
+         switch (_maccess) {
+         case ast::module_access::internal: writeln(" (access=internal)>"); break;
+         case ast::module_access::exported: writeln(" (access=exported)>"); break;
+         }
+         indent_traverse(decl);
+      }
+
       virtual void visit_variable_field_decl(ast::variable_field_declaration const& decl) override {
          print_field_decl("variable", decl);
       }

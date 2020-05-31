@@ -148,6 +148,7 @@ namespace rush::ast {
 		virtual void visit_function_decl(ast::function_declaration const&) {};
 
       virtual void visit_class_decl(ast::class_declaration const&) {};
+      virtual void visit_struct_decl(ast::struct_declaration const&) {};
       virtual void visit_member_section_decl(ast::member_section_declaration const&) {};
 
       virtual void visit_variable_field_decl(ast::variable_field_declaration const&) {};

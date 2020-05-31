@@ -77,6 +77,12 @@ namespace rush::ast {
             [this](auto& s) { accept(s); });
       }
 
+      virtual void visit_struct_decl(ast::struct_declaration const& decl) override {
+         auto sections = decl.sections();
+         std::for_each(sections.begin(), sections.end(),
+            [this](auto& s) { accept(s); });
+      }
+
       virtual void visit_member_section_decl(ast::member_section_declaration const& decl) override {
          auto members = decl.members();
          std::for_each(members.begin(), members.end(),

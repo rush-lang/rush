@@ -41,6 +41,7 @@
             { "name": "expected_function_stmt_body", "text": "expected function statement body before '{}'." },
             { "name": "expected_function_expr_body", "text": "expected function expression body before '{}'." },
             { "name": "expected_class_name", "text": "exepected class name before '{}'." },
+            { "name": "expected_struct_name", "text": "exepected struct name before '{}'." },
             { "name": "unexpected_symbol_expr", "text": "unexpected symbol '{}' parsing primary expression." },
             { "name": "unexpected_keyword_expr", "text": "unexpected keyword '{}' parsing primary expression." },
             { "name": "expected_closing_bracket", "text": "expected a closing '}}' before '{}'." },

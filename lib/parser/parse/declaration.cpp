@@ -45,6 +45,7 @@ namespace rush {
          case keywords::var_: return terminated(&parser::parse_variable_decl);
          case keywords::func_: return parse_function_decl();
          case keywords::class_: return parse_class_declaration();
+         case keywords::struct_: return parse_struct_declaration();
          default: break;
          }
       }
@@ -185,6 +186,58 @@ namespace rush {
          return errs::expected_function_stmt_body(peek_with_indent());
 
       return parse_block_stmt();
+   }
+
+   rush::parse_result<ast::declaration> parser::parse_struct_declaration() {
+      assert(peek_skip_indent().is(keywords::struct_) && "expected the 'struct' keyword.");
+      next_skip_indent(); // consume 'struct'
+
+      _scope.push(rush::scope_kind::struct_);
+
+      if (!peek_skip_indent().is_identifier())
+         return errs::expected_struct_name(peek_skip_indent());
+		auto ident = next_skip_indent();
+
+      if (!consume_skip_indent(symbols::colon))
+         return errs::expected(peek_skip_indent(), ":");
+
+      std::vector<std::unique_ptr<ast::member_section_declaration>> sections;
+      parse_result<ast::member_section_declaration> section_result;
+
+      auto tok = peek_with_indent();
+      if (tok.is(symbols::indent)) {
+         section_result = parse_member_section(ast::member_access::public_);
+         if (section_result.failed()) return std::move(section_result);
+         sections.push_back(std::move(section_result));
+      }
+
+      while (peek_skip_indent().is_any(
+         keywords::public_,
+         keywords::private_,
+         keywords::protected_)) {
+            auto tok = next_skip_indent();
+            if (!consume_skip_indent(symbols::colon))
+               return errs::expected(peek_skip_indent(), ":");
+
+            // empty struct section.
+            if (!peek_with_indent().is(symbols::indent))
+               continue;
+
+            switch (tok.keyword()) {
+            default: break;
+            case keywords::public_: section_result = parse_member_section(ast::member_access::public_); break;
+            case keywords::private_: section_result = parse_member_section(ast::member_access::private_); break;
+            case keywords::protected_: section_result = parse_member_section(ast::member_access::protected_); break;
+            }
+
+            if (section_result.failed()) return std::move(section_result);
+            sections.push_back(std::move(section_result));
+         }
+
+
+      _scope.pop();
+      auto result = decls::struct_(ident.text(), std::move(sections));
+      return scope_insert(std::move(result), ident);
    }
 
    rush::parse_result<ast::declaration> parser::parse_class_declaration() {

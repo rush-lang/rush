@@ -291,7 +291,7 @@ namespace rush {
       rush::parse_result<ast::pattern> parse_parameter_list();
 
       rush::parse_result<ast::declaration> parse_class_declaration();
-      rush::parse_result<ast::declaration> parse_class_decl_body();
+      rush::parse_result<ast::declaration> parse_struct_declaration();
       rush::parse_result<ast::member_declaration> parse_member_decl();
       rush::parse_result<ast::member_section_declaration> parse_member_section(ast::member_access);
 

@@ -28,7 +28,6 @@
 #include <cassert>
 
 namespace rush::ast {
-   class class_declaration;
    class member_declaration;
    class member_section_declaration;
 
