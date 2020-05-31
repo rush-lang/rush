@@ -345,6 +345,8 @@ namespace rush {
       rush::parse_result<ast::expression> parse_array_literal_expr();
       rush::parse_result<ast::expression> parse_tuple_literal_expr();
       rush::parse_result<ast::expression> parse_tuple_literal_expr(rush::parse_result<ast::expression>);
+      rush::parse_result<ast::expression> parse_tuple_element_expr();
+      rush::parse_result<ast::expression_list> parse_tuple_element_list(rush::parse_result<ast::expression>);
       rush::parse_result<ast::expression> parse_lambda_expr();
 
 		rush::parse_result<ast::expression> parse_string_expr();
