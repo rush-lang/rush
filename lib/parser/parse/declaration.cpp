@@ -260,23 +260,27 @@ namespace rush {
 
    rush::parse_result<ast::member_declaration> parser::parse_member_decl() {
       auto tok = peek_skip_indent();
+
       if (tok.is_keyword()) {
          rush::parse_result<ast::declaration> result;
 
          switch (tok.keyword()) {
          case keywords::let_: {
-            auto result = terminated(&parser::parse_constant_decl).as<ast::constant_declaration>();
-            if (result.success()) return decls::field(std::move(result));
+            result = terminated(&parser::parse_constant_decl);
+            if (result.success()) return decls::field(
+               std::move(result).as<ast::constant_declaration>());
             break;
          }
          case keywords::var_: {
-            auto result = terminated(&parser::parse_variable_decl).as<ast::variable_declaration>();
-            if (result.success()) return decls::field(std::move(result));
+            result = terminated(&parser::parse_variable_decl);
+            if (result.success()) return decls::field(
+               std::move(result).as<ast::variable_declaration>());
             break;
          }
          case keywords::func_: {
-            auto result = parse_function_decl().as<ast::function_declaration>();
-            if (result.success()) return decls::method(std::move(result));
+            result = parse_function_decl();
+            if (result.success()) return decls::method(
+               std::move(result).as<ast::function_declaration>());
             break;
          }
          default: break;
