@@ -33,11 +33,12 @@ namespace rush::ast {
 	class lambda_expression : public ast::expression {
 	public:
 		lambda_expression(
+         ast::type_ref return_type,
          std::unique_ptr<ast::pattern> params,
 			std::unique_ptr<ast::statement> body)
 			: _params { decls::parameter(std::move(params)) }
          , _type { ast::types::undefined }
-         , _explicit_return_type { ast::types::undefined }
+         , _explicit_return_type { return_type }
 			, _body { std::move(body) } {}
 
 		ast::pattern const& parameters() const noexcept {
@@ -102,10 +103,21 @@ namespace rush::ast {
 	};
 
 	namespace exprs {
-		inline std::unique_ptr<lambda_expression> lambda(
+      inline std::unique_ptr<lambda_expression> lambda(
+			ast::type_ref return_type,
 			std::unique_ptr<ast::pattern> params,
 			std::unique_ptr<ast::statement> body) {
             return std::make_unique<ast::lambda_expression>(
+               std::move(return_type),
+               std::move(params),
+					std::move(body));
+			}
+
+		inline std::unique_ptr<lambda_expression> lambda(
+			std::unique_ptr<ast::pattern> params,
+			std::unique_ptr<ast::statement> body) {
+            return lambda(
+               ast::types::undefined,
                std::move(params),
 					std::move(body));
 			}

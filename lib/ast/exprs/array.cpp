@@ -13,9 +13,8 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *************************************************************************/
-#include "rush/ast/exprs/nil.hpp"
+#include "rush/ast/exprs/array.hpp"
 #include "rush/ast/exprs/lambda.hpp"
-#include "rush/ast/types/optional.hpp"
 #include "rush/ast/ptrns/type_annotation.hpp"
 #include "rush/ast/decls/function.hpp"
 #include "rush/ast/stmts/result.hpp"
@@ -24,17 +23,17 @@
 
 using namespace rush;
 
-class nil_type_resolver : public ast::visitor {
+class array_literal_type_resolver : public ast::visitor {
 public:
-   nil_type_resolver(ast::node const* nil, ast::context& context)
+   array_literal_type_resolver(ast::node const* arr, ast::context& context)
       : _result { ast::types::undefined }
-      , _nil { nil }
+      , _array { arr }
       , _context { context } {}
 
 
    ast::type_ref result() const {
-      return !_result.is<ast::optional_type>()
-           ? _context.optional_type(_result)
+      return !_result.is<ast::array_type>()
+           ? _context.array_type(_result)
            : _result;
    }
 
@@ -57,7 +56,7 @@ public:
    }
 
    virtual void visit_binary_expr(ast::binary_expression const& expr) override {
-      if (_nil != &expr.left_operand()) {
+      if (_array != &expr.left_operand()) {
          switch (expr.opkind()) {
          default: return;
          case ast::binary_operator::assignment:
@@ -68,14 +67,14 @@ public:
 
 private:
    ast::type_ref _result;
-   ast::node const* _nil;
+   ast::node const* _array;
    ast::context& _context;
 };
 
 namespace rush::ast {
-   ast::type_ref nil_expression::resolve_type() const {
+   ast::type_ref array_literal_expression::resolve_type() const {
       return parent()
-           ? rush::visit(*parent(), nil_type_resolver { this, *context() }).result()
+           ? rush::visit(*parent(), array_literal_type_resolver { this, *context() }).result()
            : ast::types::undeclared;
    }
 }

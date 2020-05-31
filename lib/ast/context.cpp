@@ -285,7 +285,7 @@ namespace rush::ast {
    ast::type_ref context::array_type(ast::array_literal_expression& expr) {
       auto types = expr.elements().result_types();
       return types.empty()
-           ? array_type(types::undefined)
+           ? types::undefined
            : types.size() == 1
            ? array_type(types.front())
            : array_type(std::accumulate(

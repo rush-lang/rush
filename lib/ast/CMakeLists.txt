@@ -2,6 +2,7 @@ project(ast VERSION ${RUSH_VERSION} LANGUAGES CXX)
 
 rush_add_library(ast
    exprs/nil.cpp
+   exprs/array.cpp
 	exprs/literal.cpp
 	exprs/binary.cpp
 	exprs/unary.cpp

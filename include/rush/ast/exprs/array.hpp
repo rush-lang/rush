@@ -41,9 +41,10 @@ namespace rush::ast {
 
 	public:
 		array_literal_expression(
+         ast::type_ref type,
 			std::unique_ptr<ast::expression_list> elems,
 			factory_tag_t)
-			: _type { ast::types::undefined }
+			: _type { type }
 			, _elems { std::move(elems) } {}
 
 		ast::expression_list const& elements() const noexcept {
@@ -51,7 +52,9 @@ namespace rush::ast {
 		}
 
       virtual ast::type_ref result_type() const override {
-			return _type;
+			return _type == ast::types::undefined
+              ? _type = resolve_type()
+              : _type;
 		}
 
 		using node::accept;
@@ -73,14 +76,17 @@ namespace rush::ast {
 		}
 
 	private:
-		ast::type_ref _type;
+		mutable ast::type_ref _type;
 		std::unique_ptr<ast::expression_list> _elems;
+
+      ast::type_ref resolve_type() const;
 	};
 
 	namespace exprs {
 		inline std::unique_ptr<ast::array_literal_expression> array(
 			std::unique_ptr<ast::expression_list> elems) {
 				return std::make_unique<ast::array_literal_expression>(
+               ast::types::undefined,
 					std::move(elems),
 					array_literal_expression::factory_tag_t {});
 			}

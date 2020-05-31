@@ -194,6 +194,13 @@ namespace rush {
          params = std::move(result);
       }
 
+      auto return_type = rush::parse_type_result {};
+      if (consume_skip_indent(symbols::thin_arrow)) {
+         return_type = parse_type();
+         if (return_type.failed())
+            return std::move(return_type).errors();
+      }
+
       if (!peek_skip_indent().is(symbols::thick_arrow))
          return errs::expected_function_expr_body(peek_skip_indent());
 
@@ -202,9 +209,10 @@ namespace rush {
          return std::move(body_result).as<ast::expression>();
 
       _scope.pop();
-      return exprs::lambda(
-         std::move(params),
-         std::move(body_result));
+      return return_type.failed()
+           ? exprs::lambda(std::move(params), std::move(body_result))
+           : exprs::lambda(return_type.type(), std::move(params), std::move(body_result));
+
    }
 
 	rush::parse_result<ast::expression> parser::parse_primary_expr() {
