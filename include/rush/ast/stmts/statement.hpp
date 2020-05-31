@@ -26,18 +26,11 @@ namespace rush::ast {
 #  define RUSH_STATEMENT_KIND_ENUM
 #  include "rush/ast/stmts/_statements.hpp"
 
-	class statement : public node {
+	class statement : public virtual node {
 	public:
-		statement_kind kind() const noexcept {
-         return _kind;
-      };
-
+		virtual ast::statement_kind kind() const = 0;
    protected:
-      statement(statement_kind kind)
-         : _kind { kind } {}
-
-   private:
-      statement_kind _kind;
+      statement() = default;
 	};
 } // rush::ast
 

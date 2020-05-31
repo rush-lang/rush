@@ -47,7 +47,6 @@ namespace rush::ast {
          : simple_statement { kind, simple_statement::factory_tag_t {} }
          , _expr { std::move(expr) } {}
 
-
       ast::expression const& expression() const noexcept {
          return *_expr;
       }

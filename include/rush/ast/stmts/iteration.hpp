@@ -52,10 +52,14 @@ namespace rush::ast {
          std::unique_ptr<ast::expression> expr,
          std::unique_ptr<ast::statement> body,
          factory_tag_t)
-         : statement { kind }
-         , _decl { decls::constant(std::move(ptrn)) }
+         : _decl { decls::constant(std::move(ptrn)) }
          , _expr { std::move(expr) }
-         , _body { std::move(body) } {}
+         , _body { std::move(body) }
+         , _kind { kind } {}
+
+      virtual ast::statement_kind kind() const noexcept override {
+         return _kind;
+      }
 
       ast::pattern const& pattern() const noexcept {
          return _decl->pattern();
@@ -89,6 +93,7 @@ namespace rush::ast {
       std::unique_ptr<ast::storage_declaration> _decl;
       std::unique_ptr<ast::expression> _expr;
 		std::unique_ptr<ast::statement> _body;
+      ast::statement_kind _kind;
    };
 } // rush::ast
 

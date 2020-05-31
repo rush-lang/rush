@@ -60,9 +60,13 @@ namespace rush::ast {
          std::unique_ptr<expression> cond,
          std::unique_ptr<statement> body,
          factory_tag_t)
-         : statement { kind }
-         , _cond { std::move(cond) }
-         , _body { std::move(body) } {}
+         : _cond { std::move(cond) }
+         , _body { std::move(body) }
+         , _kind { kind } {}
+
+      virtual ast::statement_kind kind() const noexcept override {
+         return _kind;
+      }
 
       ast::expression const& condition() const noexcept {
          return *_cond;
@@ -91,6 +95,7 @@ namespace rush::ast {
    private:
       std::unique_ptr<expression> _cond;
 		std::unique_ptr<statement> _body;
+      ast::statement_kind _kind;
    };
 
 
@@ -108,9 +113,13 @@ namespace rush::ast {
          std::unique_ptr<ast::statement> primary,
          std::unique_ptr<ast::statement> alternate,
          factory_tag_t)
-         : statement { kind }
-         , _primary { std::move(primary) }
-         , _alternate { std::move(alternate) } {}
+         : _primary { std::move(primary) }
+         , _alternate { std::move(alternate) }
+         , _kind { kind } {}
+
+      virtual ast::statement_kind kind() const noexcept override {
+         return _kind;
+      }
 
       ast::statement const& primary() const noexcept {
          return *_primary;
@@ -139,6 +148,7 @@ namespace rush::ast {
    private:
       std::unique_ptr<ast::statement> _primary;
       std::unique_ptr<ast::statement> _alternate;
+      ast::statement_kind _kind;
    };
 }
 

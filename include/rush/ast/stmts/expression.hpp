@@ -30,8 +30,11 @@ namespace rush::ast {
 	class expression_statement : public statement {
 	public:
 		expression_statement(std::unique_ptr<expression> expr)
-			: statement { ast::statement_kind::expression }
-         , _expr(std::move(expr)) {}
+         : _expr(std::move(expr)) {}
+
+      virtual ast::statement_kind kind() const noexcept override {
+         return ast::statement_kind::expression;
+      }
 
 		using node::accept;
 		virtual void accept(ast::visitor& v) const override {

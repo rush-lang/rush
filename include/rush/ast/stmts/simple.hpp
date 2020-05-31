@@ -48,7 +48,11 @@ namespace rush::ast {
 
    public:
       simple_statement(statement_kind kind, factory_tag_t)
-         : statement { kind } {}
+         : _kind { kind } {}
+
+      virtual ast::statement_kind kind() const noexcept override {
+         return _kind;
+      }
 
 		using node::accept;
 		virtual void accept(ast::visitor& v) const override {
@@ -58,6 +62,9 @@ namespace rush::ast {
    protected:
       virtual void attached(ast::node*, ast::context&) override {}
       virtual void detached(ast::node*, ast::context&) override {}
+
+   private:
+      ast::statement_kind _kind;
    };
 } // rush::ast
 

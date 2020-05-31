@@ -26,69 +26,25 @@
 #include <vector>
 
 namespace rush::ast {
-	class statement_block;
-	namespace stmts {
-      std::unique_ptr<statement_block> block(std::vector<std::unique_ptr<ast::statement>> stmts);
-   }
-}
-
-namespace rush::ast {
-	class statement_block : public statement {
-      friend std::unique_ptr<statement_block> stmts::block(std::vector<std::unique_ptr<ast::statement>> stmts);
+	class statement_block : public ast::node_list<ast::statement> {
 	public:
-      using container_type = std::vector<std::unique_ptr<ast::statement>>;
+      using node_list<ast::statement>::accept;
+      using node_list<ast::statement>::node_list;
 
-      using const_iterator = typename container_type::const_iterator;
-
-		statement_block(std::vector<std::unique_ptr<ast::statement>> stmts)
-			: statement { ast::statement_kind::block }
-         , _stmts(std::move(stmts)) {}
-
-      auto empty() const noexcept {
-         return _stmts.empty();
+      virtual ast::statement_kind kind() const noexcept override {
+         return ast::statement_kind::block;
       }
 
-      auto size() const noexcept {
-         return _stmts.size();
-      }
-
-      auto& front() const noexcept {
-         return *_stmts.front();
-      }
-
-      auto& back() const noexcept {
-         return *_stmts.back();
-      }
-
-      auto begin() const noexcept {
-         return rush::make_deref_iterator(_stmts.begin());
-      }
-
-      auto end() const noexcept {
-          return rush::make_deref_iterator(_stmts.end());
-      }
-
-		using node::accept;
 		virtual void accept(ast::visitor& v) const override {
 			v.visit_block_stmt(*this);
 		}
-
-   protected:
-      virtual void attached(ast::node*, ast::context&) override {
-         std::for_each(_stmts.begin(), _stmts.end(),
-            [this](auto& stmt) { attach(*stmt); });
-      }
-
-      virtual void detached(ast::node*, ast::context&) override {
-         std::for_each(_stmts.begin(), _stmts.end(),
-            [this](auto& stmt) { detach(*stmt); });
-      }
-
-	private:
-		std::vector<std::unique_ptr<statement>> _stmts;
 	};
 
 	namespace stmts {
+      inline std::unique_ptr<statement_block> block() {
+         return std::make_unique<ast::statement_block>();
+      }
+
       inline std::unique_ptr<statement_block> block(std::vector<std::unique_ptr<ast::statement>> stmts) {
          return std::make_unique<statement_block>(std::move(stmts));
       }
