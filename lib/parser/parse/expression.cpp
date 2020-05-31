@@ -564,12 +564,19 @@ namespace rush {
    rush::parse_result<ast::expression> parser::parse_new_expr() {
       assert(peek_skip_indent().is(keywords::new_) && "expected 'new' keyword.");
       next_skip_indent(); // consume 'new' keyword.
+
       if (!peek_skip_indent().is_identifier())
          return errs::expected(peek_skip_indent(), "type");
 
       auto ident = parse_identifier_expr();
       if (ident.failed()) return std::move(ident);
 
-      return parse_invoke_expr(std::move(ident));
+      if (!peek_skip_indent().is(symbols::left_parenthesis))
+         return errs::expected(peek_skip_indent(), "(");
+
+      auto expr = parse_invoke_expr(std::move(ident));
+      if (expr.failed()) return std::move(expr);
+
+      return exprs::new_(std::move(expr));
    }
 }

@@ -321,6 +321,11 @@ namespace rush::ast {
 			print_expression("nil", expr);
 		}
 
+      virtual void visit_new_expr(ast::new_expression const& expr) override {
+			print_expression("new", expr);
+         indent_traverse(expr);
+		}
+
       virtual void visit_this_expr(ast::this_expression const& expr) override {
 			print_expression("this", expr);
 		}

@@ -150,6 +150,9 @@ namespace rush::ast {
          accept(expr.arguments());
       }
 
+      virtual void visit_new_expr(ast::new_expression const& expr) override {
+         accept(expr.expression());
+      }
 
 #     define RUSH_TRAVERSAL_RESULT_STMT_FUNC_IMPLS
 #     define RUSH_TRAVERSAL_ITERATION_STMT_FUNC_IMPLS

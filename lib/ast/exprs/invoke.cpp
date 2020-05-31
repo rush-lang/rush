@@ -29,12 +29,12 @@ public:
 
    ast::type_ref result() const noexcept { return _result; }
 
-   // ultimately we're trying to find this.
+   // ultimately we're trying to find these.
+   virtual void visit_class_decl(ast::class_declaration const& decl) override { _result = decl.type(); }
    virtual void visit_function_type(ast::function_type const& type) override { _result = type.return_type(); }
 
    virtual void visit_named_ptrn(ast::named_pattern const& ptrn) override { ptrn.type().accept(*this); }
    virtual void visit_function_decl(ast::function_declaration const& decl) override { decl.type().accept(*this); }
-
    virtual void visit_unary_expr(ast::unary_expression const& expr) override { expr.result_type().accept(*this); }
    virtual void visit_binary_expr(ast::binary_expression const& expr) override { expr.result_type().accept(*this); }
    virtual void visit_ternary_expr(ast::ternary_expression const& expr) override { expr.result_type().accept(*this); }

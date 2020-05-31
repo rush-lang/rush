@@ -61,6 +61,7 @@ namespace rush::ast {
    class invoke_expression;
    class lambda_expression;
 	class nil_expression;
+   class new_expression;
    class this_expression;
    class base_expression;
 
@@ -185,6 +186,7 @@ namespace rush::ast {
       virtual void visit_invoke_expr(invoke_expression const&) {};
       virtual void visit_lambda_expr(lambda_expression const&) {};
 		virtual void visit_nil_expr(nil_expression const&) {};
+		virtual void visit_new_expr(new_expression const&) {};
 		virtual void visit_this_expr(this_expression const&) {};
 		virtual void visit_base_expr(base_expression const&) {};
 
