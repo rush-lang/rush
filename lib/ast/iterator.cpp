@@ -88,6 +88,28 @@ namespace rush::ast::detail {
          else pop(ptrn);
       }
 
+      virtual void visit_member_section_decl(ast::member_section_declaration const& decl) override {
+         if (_it._curr == &decl) { pop(decl); return; }
+         push(decl);
+      }
+
+      virtual void visit_constant_field_decl(ast::constant_field_declaration const& decl) override {
+         if (_it._curr == &decl.storage()) { pop(decl); return; }
+         if (_it._curr == &decl) { push(decl.storage()); return; }
+         push(decl);
+      }
+
+      virtual void visit_variable_field_decl(ast::variable_field_declaration const& decl) override {
+         if (_it._curr == &decl.storage()) { pop(decl); return; }
+         if (_it._curr == &decl) { push(decl.storage()); return; }
+         push(decl);
+      }
+
+      virtual void visit_method_decl(ast::method_declaration const& decl) override {
+         if (_it._curr == &decl) { pop(decl); return; }
+         push(decl);
+      }
+
       virtual void visit_parameter_decl(ast::parameter_declaration const& decl) override {
          if (_it._curr == &decl.pattern()) { pop(decl); return; }
          if (_it._curr == &decl) { push(decl.pattern()); return; }
@@ -115,11 +137,11 @@ namespace rush::ast::detail {
 
       void pop(ast::node const& node) {
          _it._curr = &node;
-         if (node.parent()) {
-            node.parent()->accept(*this);
-         } else {
-            _it._curr = nullptr;
-         }
+         if (node.parent())
+         {
+            if (_it._curr != _it._end)
+               node.parent()->accept(*this);
+         } else { _it._curr = nullptr; }
       }
    };
 }

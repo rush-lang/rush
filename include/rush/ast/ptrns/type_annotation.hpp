@@ -27,9 +27,9 @@ namespace rush::ast {
    class type_annotation_pattern : public pattern {
    public:
       type_annotation_pattern(
-         std::unique_ptr<ast::pattern> pattern,
+         std::unique_ptr<ast::pattern> ptrn,
          ast::type_ref type)
-         : _pattern { std::move(pattern) }
+         : _ptrn { std::move(ptrn) }
          , _type { std::move(type) } {}
 
       ast::type_ref type() const noexcept {
@@ -37,7 +37,7 @@ namespace rush::ast {
       }
 
       ast::pattern const& pattern() const noexcept {
-         return *_pattern;
+         return *_ptrn;
       }
 
       virtual void accept(ast::visitor& v) const override {
@@ -46,25 +46,25 @@ namespace rush::ast {
 
    protected:
       virtual void attached(ast::node*, ast::context&) override {
-         attach(*_pattern);
+         attach(*_ptrn);
       };
 
       virtual void detached(ast::node*, ast::context&) override {
-         detach(*_pattern);
+         detach(*_ptrn);
       };
 
    private:
       ast::type_ref _type;
-      std::unique_ptr<ast::pattern> _pattern;
+      std::unique_ptr<ast::pattern> _ptrn;
    };
 } // rush::ast
 
 namespace rush::ast::ptrns {
    inline std::unique_ptr<ast::type_annotation_pattern> annotation(
-      std::unique_ptr<ast::pattern> pattern,
+      std::unique_ptr<ast::pattern> ptrn,
       ast::type_ref type) {
          return std::make_unique<ast::type_annotation_pattern>(
-            std::move(pattern),
+            std::move(ptrn),
             std::move(type));
       }
 } // rush::ast::ptrns

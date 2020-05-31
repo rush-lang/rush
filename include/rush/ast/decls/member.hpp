@@ -100,6 +100,8 @@ namespace rush::ast {
          return rush::make_deref_iterator(_members.end());
       }
 
+      ast::typed_node_iterator<ast::member_declaration> find(std::string_view name) const;
+
       rush::iterator_range<member_const_iterator> members() const noexcept {
          return rush::make_iterator_range(
             rush::make_deref_iterator(_members.begin()),

@@ -41,9 +41,10 @@ namespace rush::ast {
    public:
       using pointer = typename base_iterator::pointer;
 
-      explicit node_iterator(pointer n = nullptr)
+      explicit node_iterator(pointer n = nullptr, pointer e = nullptr)
          : _curr { n }
-         , _last { n } {}
+         , _last { n }
+         , _end { e } {}
 
       ast::node const& operator *() const noexcept { return *_curr; }
       ast::node const* operator ->() const noexcept { return _curr; }
@@ -96,6 +97,7 @@ namespace rush::ast {
    private:
       pointer _curr;
       pointer _last;
+      pointer _end;
    };
 
    class ancestor_node_iterator {
@@ -133,23 +135,23 @@ namespace rush::ast {
 
    public:
       typed_node_iterator()
-         : _it { node_iterator {} } {}
+         : _it { node_iterator {} }
+         , _end { node_iterator {} } {}
 
-      explicit typed_node_iterator(ast::node_iterator it)
-         : _it { it } {}
+      explicit typed_node_iterator(ast::node_iterator it, ast::node_iterator end)
+         : _it { it }
+         , _end { end } {}
 
       NodeT const& operator *() const noexcept { return dynamic_cast<NodeT const&>(_it.operator *()); }
       NodeT const* operator ->() const noexcept { return dynamic_cast<NodeT const*>(_it.operator ->()); }
 
       ast::typed_node_iterator<NodeT>& operator ++() {
-         while ((_it.operator ->() != nullptr)
-            && (!dynamic_cast<NodeT const*>((++_it).operator ->())));
+         while (_it != _end && !dynamic_cast<NodeT const*>((++_it).operator ->()));
          return *this;
       }
 
       ast::typed_node_iterator<NodeT>& operator --() {
-         while ((_it.operator ->() != nullptr)
-            && (!dynamic_cast<NodeT const*>((--_it).operator ->())));
+         while (_it != _end && !dynamic_cast<NodeT const*>((--_it).operator ->()));
          return *this;
       }
 
@@ -181,6 +183,7 @@ namespace rush::ast {
 
    private:
       ast::node_iterator _it;
+      ast::node_iterator _end;
    };
 
    template <typename NodeT>
@@ -242,14 +245,18 @@ namespace rush::ast {
 
 
    inline node_iterator iterator(ast::node const* node = nullptr)
-   { return node_iterator { node }; }
+   { return node_iterator { node, node ? node->parent() : nullptr }; }
 
    inline ancestor_node_iterator ancestor_iterator(ast::node const* node = nullptr)
    { return ancestor_node_iterator { node }; }
 
    template <typename NodeT>
    inline typed_node_iterator<NodeT> iterator()
-   { return typed_node_iterator<NodeT> { iterator() }; }
+   { return typed_node_iterator<NodeT> { iterator(), iterator() }; }
+
+   template <typename NodeT>
+   inline typed_node_iterator<NodeT> iterator(ast::node const* node)
+   { return typed_node_iterator<NodeT> { iterator(node), iterator(node ? node->parent() : nullptr) }; }
 
    template <typename NodeT>
    inline typed_ancestor_node_iterator<NodeT> ancestor_iterator()
@@ -257,7 +264,7 @@ namespace rush::ast {
 
    template <typename NodeT>
    inline typed_node_iterator<NodeT> find_child(ast::node const* node = nullptr) {
-      auto it = typed_node_iterator<NodeT> { iterator(node) };
+      auto it = typed_node_iterator<NodeT> { iterator(node), iterator(node ? node->parent() : nullptr) };
       if (node != nullptr && !dynamic_cast<NodeT const*>(node)) ++it;
       return it;
    }
@@ -274,7 +281,7 @@ namespace rush::ast {
 
    template <typename NodeT>
    inline rush::iterator_range<typed_node_iterator<NodeT>> iterator_range(ast::node const* node = nullptr)
-   { return { find_child<NodeT>(node), node ? typed_node_iterator<NodeT> { iterator(node->parent()) } : iterator<NodeT>() }; }
+   { return { find_child<NodeT>(node), node ? iterator<NodeT>(node->parent()) : iterator<NodeT>() }; }
 } // rush::ast
 
 #endif // RUSH_AST_ITERATOR_HPP

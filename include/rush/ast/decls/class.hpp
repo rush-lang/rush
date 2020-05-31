@@ -46,6 +46,15 @@ namespace rush::ast {
          return ast::declaration_kind::class_;
       }
 
+      ast::typed_node_iterator<ast::member_declaration> find(std::string_view name) const {
+         for (auto& s : _sections) {
+            auto it = s->find(std::move(name));
+            if (it != ast::iterator()) return it;
+         }
+
+         return ast::iterator<ast::member_declaration>();
+      }
+
       auto sections() const noexcept {
          return rush::make_iterator_range(
             rush::make_deref_iterator(_sections.begin()),

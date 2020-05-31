@@ -12,6 +12,7 @@ rush_add_library(ast
    ptrns/named.cpp
    ptrns/binding.cpp
    decls/storage.cpp
+   decls/member.cpp
    identifier.cpp
    traversal.cpp
    iterator.cpp

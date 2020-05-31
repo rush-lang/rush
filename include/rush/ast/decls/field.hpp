@@ -53,6 +53,10 @@ namespace rush::ast {
 			return declaration_kind::field;
 		}
 
+      ast::storage_declaration const& storage() const noexcept {
+         return *_decl;
+      }
+
       ast::pattern& pattern() const noexcept {
          return _decl->pattern();
       }

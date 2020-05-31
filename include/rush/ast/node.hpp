@@ -101,9 +101,9 @@ namespace rush::ast {
       const_iterator end() const noexcept { return make_deref_iterator(_children.end()); }
 
    protected:
-      virtual void attached(ast::node* parent, ast::context&) override {
+      virtual void attached(ast::node*, ast::context&) override {
          std::for_each(_children.begin(), _children.end(),
-            [this, &parent](auto& p) { attach(*p); });
+            [this](auto& p) { attach(*p); });
       }
 
       virtual void detached(ast::node*, ast::context&) override {
