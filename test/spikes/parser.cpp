@@ -24,64 +24,12 @@ char const* src = R"(
 import std.io;
 
 func main(args: string[]):
-   println("hello world!");
-   return 0;
+   let msg = "hello, world!"
+   println(msg)
 )";
 
-namespace ast = rush::ast;
-namespace exprs = rush::ast::exprs;
-namespace decls = rush::ast::decls;
-namespace stmts = rush::ast::stmts;
-namespace types = rush::ast::types;
-namespace ptrns = rush::ast::ptrns;
-
-class linear_printer : public ast::visitor {
-public:
-   virtual void visit_ptrn_list(ast::pattern_list const& ptrn) override {}
-   virtual void visit_named_ptrn(ast::named_pattern const& ptrn) override {
-      std::cout << ptrn.name() << std::endl;
-   }
-   virtual void visit_nil_expr(ast::nil_expression const& expr) override {
-      std::cout << "nil" << std::endl;
-   }
-   virtual void visit_binary_expr(ast::binary_expression const& expr) override {
-      switch (expr.opkind()) {
-      case ast::binary_operator::addition: std::cout << "addition" << std::endl; break;
-      case ast::binary_operator::subtraction: std::cout << "subtraction" << std::endl; break;
-      case ast::binary_operator::multiplication: std::cout << "multiplication" << std::endl; break;
-      case ast::binary_operator::division: std::cout << "division" << std::endl; break;
-      default: std::cout << "<unknown>" << std::endl; break;
-      }
-   }
-};
-
 int main() {
-   std::vector<std::unique_ptr<ast::pattern>> ps;
-
-   ps.push_back(ptrns::destructure_object(ptrns::name("x")));
-   ps.push_back(ptrns::name("y"));
-   auto l1 = ptrns::list(std::move(ps));
-
-   ps.clear();
-   ps.push_back(ptrns::destructure_object(std::move(l1)));
-   ps.push_back(ptrns::name("z"));
-   ps.push_back(ptrns::destructure_object(ptrns::name("w")));
-   auto l2 = ptrns::list(std::move(ps));
-
-
-   auto c = ast::context {};
-   auto p = decls::constant(std::move(l2));
-   p->attach(c);
-
-   auto range = ast::iterator_range(p.get());
-
-   auto b = range.end() == range.end();
-
-   std::for_each(range.begin(), range.end(), [](auto& n) {
-      rush::visit(n, linear_printer {});
-   });
-
-	// std::cout << src << std::endl;
-	// std::cout << "--------------------" << std::endl;
-	// rush::dump(src);
+	std::cout << src << std::endl;
+	std::cout << "--------------------" << std::endl;
+	rush::dump(src);
 }

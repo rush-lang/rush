@@ -379,6 +379,32 @@ namespace rush::ast {
          print_field_decl("constant", decl);
       }
 
+      virtual void visit_property_getter_decl(ast::property_getter_declaration const& decl) override {
+         write("<[decl] property-get: ");
+         decl.type().accept(*this);
+         write(" (name=\"{}\"", decl.name());
+         switch (decl.access()) {
+         case ast::member_access::internal: writeln(", access=internal)>"); break;
+         case ast::member_access::public_: writeln(", access=public)>"); break;
+         case ast::member_access::private_: writeln(", access=private)>"); break;
+         case ast::member_access::protected_: writeln(", access=protected)>"); break;
+         }
+         indent_traverse(decl);
+      }
+
+      virtual void visit_property_setter_decl(ast::property_setter_declaration const& decl) override {
+         write("<[decl] property-set: ");
+         decl.type().accept(*this);
+         write(" (name=\"{}\"", decl.name());
+         switch (decl.access()) {
+         case ast::member_access::internal: writeln(", access=internal)>"); break;
+         case ast::member_access::public_: writeln(", access=public)>"); break;
+         case ast::member_access::private_: writeln(", access=private)>"); break;
+         case ast::member_access::protected_: writeln(", access=protected)>"); break;
+         }
+         indent_traverse(decl);
+      }
+
       virtual void visit_method_decl(ast::method_declaration const& decl) override {
          write("<[decl] method: ");
          decl.type().accept(*this);

@@ -97,17 +97,17 @@ namespace rush::ast {
          accept(decl.pattern());
       }
 
-      virtual void visit_method_decl(ast::method_declaration const& decl) override {
-         accept(decl.parameters());
+      virtual void visit_property_getter_decl(ast::property_getter_declaration const& decl) override {
          accept(decl.body());
       }
 
-      virtual void visit_property_getter_decl(ast::property_getter_declaration const& decl) override {
-
+      virtual void visit_property_setter_decl(ast::property_setter_declaration const& decl) override {
+         accept(decl.body());
       }
 
-      virtual void visit_property_setter_decl(ast::property_setter_declaration const& decl)override {
-
+      virtual void visit_method_decl(ast::method_declaration const& decl) override {
+         accept(decl.parameters());
+         accept(decl.body());
       }
 
 

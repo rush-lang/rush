@@ -50,7 +50,7 @@ namespace rush::ast {
 
    protected:
       virtual void attached(ast::node*, ast::context&) override {
-         auto it = ast::find_ancestor<ast::type_declaration>();
+         auto it = ast::find_ancestor<ast::type_declaration>(this);
          if (it != ast::ancestor_iterator()) _decl = &*it;
       }
 

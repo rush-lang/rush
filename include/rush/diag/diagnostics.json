@@ -36,6 +36,7 @@
             { "name": "expected", "text": "expected '{1}' before '{0}'.", "params": [ "expected" ] },
             { "name": "expected_identifier", "text": "expected an identifier before '{}'." },
             { "name": "expected_primary_expr", "text": "expected primary expression, but found '{}'." },
+            { "name": "expected_property_name", "text": "expected property name before '{}'." },
             { "name": "expected_function_name", "text": "expected function name before '{}'." },
             { "name": "expected_signature_or_body", "text": "expected function signature, or ':', or '=>' and subsequent body." },
             { "name": "expected_function_stmt_body", "text": "expected function statement body before '{}'." },

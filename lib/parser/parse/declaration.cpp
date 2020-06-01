@@ -330,6 +330,18 @@ namespace rush {
                std::move(result).as<ast::variable_declaration>());
             break;
          }
+         case keywords::get_: {
+            auto r = parse_property_getter();
+            if (r.success()) return std::move(r);
+            result = std::move(r).as<ast::declaration>();
+            break;
+         }
+         case keywords::set_: {
+            auto r = parse_property_setter();
+            if (r.success()) return std::move(r);
+            result = std::move(r).as<ast::declaration>();
+            break;
+         }
          case keywords::func_: {
             result = parse_function_decl();
             if (result.success()) return decls::method(
@@ -346,6 +358,40 @@ namespace rush {
       // return errs::expected_member_decl(tok);
    }
 
+   rush::parse_result<ast::member_declaration> parser::parse_property_getter() {
+      assert(peek_skip_indent().is(keywords::get_) && "expected the 'get' keyword.");
+      next_skip_indent(); // consume 'get'
+      _scope.push(rush::scope_kind::function);
 
+      if (!peek_skip_indent().is_identifier())
+         return errs::expected_property_name(peek_skip_indent());
 
+      auto ident = next_skip_indent();
+
+      auto type_result = rush::parse_type_result {};
+      if (consume_skip_indent(symbols::thin_arrow)) {
+         type_result = parse_type();
+         if (type_result.failed())
+            return std::move(type_result).errors();
+      }
+
+      auto body_result = parse_function_body();
+      if (body_result.failed())
+         return std::move(body_result).as<ast::member_declaration>();
+
+      auto result = type_result.failed()
+           ? decls::property_get(ident.text(), std::move(body_result))
+           : decls::property_get(ident.text(), type_result.type(), std::move(body_result));
+
+      _scope.pop();
+      return scope_insert(std::move(result), ident)
+         .as<ast::member_declaration>();
+   }
+
+   rush::parse_result<ast::member_declaration> parser::parse_property_setter() {
+      assert(peek_skip_indent().is(keywords::set_) && "expected the 'set' keyword.");
+      // todo: add symbol overloading to scopes in order to support
+      //       getters and setters with the same name.
+      return errs::not_supported(next_skip_indent(), "property setter");
+   }
 }

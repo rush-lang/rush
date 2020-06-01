@@ -294,6 +294,8 @@ namespace rush {
       rush::parse_result<ast::declaration> parse_struct_declaration();
       rush::parse_result<ast::member_declaration> parse_member_decl();
       rush::parse_result<ast::member_section_declaration> parse_member_section(ast::member_access);
+      rush::parse_result<ast::member_declaration> parse_property_getter();
+      rush::parse_result<ast::member_declaration> parse_property_setter();
 
 
       rush::parse_result<ast::pattern> parse_storage_pattern(std::string);
