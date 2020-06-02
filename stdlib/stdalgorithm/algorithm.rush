@@ -1,0 +1,44 @@
+import std.collections.iterable
+
+func each<T>(src: @iterable<T>, fn: T -> void):
+   for e in src: fn(e)
+
+func any<T>(src: @iterable<T>, pred = (_: T) => true):
+   for e in src:
+      if pred(e): return true
+   return false;
+
+func all<T>(src: @iterable<T>, pred: int -> bool):
+   for e in src:
+      if !pred(e): return false
+   return true
+
+func concat<T>(fst, snd: @iterable<T>):
+   for e in fst: yield e
+   for e in snd: yield e
+
+func map<T, R>(src: @iterable<T>, fn: T -> R):
+   for e in src:
+      yield fn(e)
+
+func filter<T>(src: @iterable<T>, pred: T -> bool):
+   for e in src:
+      if pred(e): yield e
+
+func reduce<T>(src: @iterable<T>, fn: (T, T) -> T):
+   return reduce(
+      src.tail(),
+      src.head(),
+      fn)
+
+func reduce<T, R>(src: @iterable<T>, init: R, fn: (R, T) -> R):
+   if !any(src):
+      yield init
+   else for e in src:
+      yield init = fn(init, e)
+
+func lpad(s: @string, pad = " ", len = 1) => "${str(pad, max(1, len))}$s"
+func rpad(s: @string, pad = " ", len = 1) => "$s${str(pad, max(1, len))}"
+
+func lpad<T>(src: @iterable<T>, pad: T, len = 1) => concat([pad: len], src)
+func rpad<T>(src: @iterable<T>, pad: T, len = 1) => concat(src, [pad: len])
