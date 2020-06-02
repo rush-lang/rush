@@ -49,7 +49,9 @@ namespace rush {
 
    rush::parse_result<ast::expression> parser::parse_paren_expr() {
       assert(peek_skip_indent().is(symbols::left_parenthesis) && "expected token to be \'(\'");
-      if (peek_skip_indent(1).is_identifier()) {
+      if (peek_skip_indent(1).is(symbols::underscore)) {
+         return parse_lambda_expr();
+      } else if (peek_skip_indent(1).is_identifier()) {
          auto next = peek_skip_indent(2);
          if (next.is_symbol()) {
             switch (next.symbol()) {
@@ -306,6 +308,10 @@ namespace rush {
 		case lexical_token_type::symbol:
          if (is_unary_prefix_operator(tok)) result = parse_unary_expr();
          else switch (tok.symbol()) {
+         case symbols::underscore:
+            if (peek_skip_indent(1).is(symbols::thick_arrow))
+               result = parse_lambda_expr();
+            break;
          case symbols::left_parenthesis: result = parse_paren_expr(); break;
          case symbols::left_square_bracket: result = parse_array_literal_expr(); break;
          default: return errs::unexpected_symbol_expr(tok);
@@ -437,6 +443,10 @@ namespace rush {
 		assert(is_binary_operator(peek_skip_indent()) && "expected binary operator.");
 
 		auto tok = peek_skip_indent();
+      auto next = tok.is(symbols::ellipses)
+         ? peek_skip_indent(1)
+         : tok;
+
       if (tok.is(symbols::question_mark))
          return parse_ternary_expr(std::move(lhs));
 
@@ -482,7 +492,11 @@ namespace rush {
       case symbols::double_right_chevron_equals: result = exprs::compound_right_shift(std::move(lhs), std::move(rhs)); break;
 
       // special operators
-      case symbols::ellipses: result = exprs::range(std::move(lhs), std::move(rhs)); break;
+      case symbols::ellipses: result =
+         next.is(symbols::left_chevron)
+         ? exprs::exclusive_range(std::move(lhs), std::move(rhs))
+         : exprs::inclusive_range(std::move(lhs), std::move(rhs));
+      break;
 
       // logical binary operators
 		case symbols::double_pipe: result = exprs::logical_or(std::move(lhs), std::move(rhs)); break;
@@ -509,6 +523,10 @@ namespace rush {
 		assert(is_binary_operator(peek_skip_indent()) && "expected binary operator.");
 
 		auto prev = next_skip_indent(); // consume binary operator symbol.
+
+      if (prev.is(symbols::ellipses)) {
+         consume_skip_indent(symbols::left_chevron);
+      }
 
       auto rhs_result = parse_primary_expr();
 		if (rhs_result.success()) {

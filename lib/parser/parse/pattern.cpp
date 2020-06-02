@@ -74,6 +74,8 @@ namespace rush {
             auto tok = peek_skip_indent();
             if (tok.is_identifier()) {
                return parse_named_pattern("parameter");
+            } else if (tok.is(symbols::underscore)) {
+               return parse_discard_pattern();
             } else if (tok.is(symbols::left_square_bracket)) {
                return parse_array_destructure_pattern();
             } else if (tok.is(symbols::left_bracket)) {

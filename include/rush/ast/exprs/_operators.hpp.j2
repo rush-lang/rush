@@ -89,7 +89,9 @@ int unary_precedence(lexical_token const& tok) {
 	switch (tok.symbol()) {
 	default: return 0;
 ## for operator in prefix
+## if existsIn(operator, "symbol_token")
 	case rush::symbols::{{ operator/symbol_token }}: return {{ operator/precedence }};
+## endif
 ## endfor
 	}
 }
@@ -99,7 +101,9 @@ int binary_precedence(lexical_token const& tok) {
 	switch (tok.symbol()) {
 	default: return 0;
 ## for operator in binary
+## if existsIn(operator, "symbol_token")
 	case rush::symbols::{{ operator/symbol_token }}: return {{ operator/precedence }};
+## endif
 ## endfor
 	}
 }
@@ -113,7 +117,9 @@ int binary_associativity(lexical_token const& tok) {
    switch (tok.symbol()) {
    default: return 0;
 ## for operator in binary
+## if existsIn(operator, "symbol_token")
    case rush::symbols::{{ operator/symbol_token }}: return {{ operator/associativity }};
+## endif
 ## endfor
    }
 }
