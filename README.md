@@ -1,6 +1,15 @@
-# The Rush Programming Language
+<img alt="Rush Logo" height="64" src="https://raw.githubusercontent.com/rush-lang/rush/develop/docs/rush-logo.svg">
 
-[![rushlang](https://circleci.com/gh/rush-lang/rush.svg?style=svg)](https://app.circleci.com/pipelines/github/rush-lang/rush)
+A general purpose programming language.
+
+---
+
+| | **Architecture** | **Status** |
+|---|:---:|:---:|
+| **Ubuntu 20.04** | x86_64 | [![rushlang](https://circleci.com/gh/rush-lang/rush.svg?style=shield)](https://app.circleci.com/pipelines/github/rush-lang/rush) |
+| **Windows (VS 2019)** | x86_64 | Coming Soon |
+
+# Welcome to Rush
 
 Rush is a new programming language that builds atop many of today's most popular languages. It is intended to be a general purpose, strongly typed, multi-paradigm, and expressive language, rich with features that promote best practices and the convergence of Object Oriented and Functional programming techniques.
 
