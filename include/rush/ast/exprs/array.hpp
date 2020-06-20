@@ -63,13 +63,13 @@ namespace rush::ast {
 		}
 
    protected:
-      virtual void attached(ast::node*, ast::context&) override {
+      virtual void attached(ast::scope& scope, ast::context&) override {
 			std::for_each(_elems->begin(), _elems->end(),
-				[this](auto& a) { attach(a); });
+				[this, &scope](auto& a) { attach(scope, a); });
          _type = context()->array_type(*this);
 		}
 
-      virtual void detached(ast::node*, ast::context&) override {
+      virtual void detached(ast::context&) override {
 			std::for_each(_elems->begin(), _elems->end(),
 				[this](auto& a) { detach(a); });
 			_type = ast::types::undefined;

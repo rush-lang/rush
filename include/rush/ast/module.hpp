@@ -83,12 +83,12 @@ namespace rush::ast {
       }
 
    protected:
-      virtual void attached(ast::node*, ast::context&) override {
-         std::for_each(_imports.begin(), _imports.end(), [this](auto& imp) { attach(*imp); });
-         std::for_each(_decls.begin(), _decls.end(), [this](auto& decl) { attach(*decl); });
+      virtual void attached(ast::scope& scope, ast::context&) override {
+         std::for_each(_imports.begin(), _imports.end(), [this, &scope](auto& imp) { attach(scope, *imp); });
+         std::for_each(_decls.begin(), _decls.end(), [this, &scope](auto& decl) { attach(scope, *decl); });
       }
 
-      virtual void detached(ast::node*, ast::context&) override {
+      virtual void detached(ast::context&) override {
          std::for_each(_imports.begin(), _imports.end(), [this](auto& imp) { detach(*imp); });
          std::for_each(_decls.begin(), _decls.end(), [this](auto& decl) { detach(*decl); });
       }

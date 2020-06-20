@@ -68,12 +68,12 @@ namespace rush::ast {
       }
 
    protected:
-      virtual void attached(ast::node*, ast::context&) override {
-         attach(*_callable);
-         attach(*_args);
+      virtual void attached(ast::scope& scope, ast::context&) override {
+         attach(scope, *_callable);
+         attach(scope, *_args);
       }
 
-      virtual void detached(ast::node*, ast::context&) override {
+      virtual void detached(ast::context&) override {
          detach(*_callable);
          detach(*_args);
       }

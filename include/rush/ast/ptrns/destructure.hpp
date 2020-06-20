@@ -42,11 +42,11 @@ namespace rush::ast {
       }
 
    protected:
-      virtual void attached(ast::node*, ast::context&) override {
-         attach(*_pattern);
+      virtual void attached(ast::scope& scope, ast::context&) override {
+         attach(scope, *_pattern);
       }
 
-      virtual void detached(ast::node*, ast::context&) override {
+      virtual void detached(ast::context&) override {
          detach(*_pattern);
       }
 

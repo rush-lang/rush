@@ -51,11 +51,11 @@ namespace rush::ast {
       virtual void accept(ast::visitor&& v) const { accept(v); }
 
    protected:
-      void attach(ast::node& child, ast::node* parent = nullptr);
+      void attach(ast::scope&, ast::node& child, ast::node* parent = nullptr);
       void detach(ast::node& child);
 
-      virtual void attached(ast::node*, ast::context&) = 0;
-      virtual void detached(ast::node*, ast::context&) = 0;
+      virtual void attached(ast::scope&, ast::context&) = 0;
+      virtual void detached(ast::context&) = 0;
 
    private:
       ast::node* _parent;
@@ -106,12 +106,12 @@ namespace rush::ast {
       const_iterator end() const noexcept { return make_deref_iterator(_children.end()); }
 
    protected:
-      virtual void attached(ast::node*, ast::context&) override {
+      virtual void attached(ast::scope& scope, ast::context&) override {
          std::for_each(_children.begin(), _children.end(),
-            [this](auto& p) { attach(*p); });
+            [this, &scope](auto& p) { attach(scope, *p); });
       }
 
-      virtual void detached(ast::node*, ast::context&) override {
+      virtual void detached(ast::context&) override {
          std::for_each(_children.begin(), _children.end(),
             [this](auto& p) { detach(*p); });
       }

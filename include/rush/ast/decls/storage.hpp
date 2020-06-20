@@ -43,11 +43,11 @@ namespace rush::ast {
       storage_declaration(std::unique_ptr<ast::pattern> patt)
          : _patt { std::move(patt) } {}
 
-      virtual void attached(ast::node*, ast::context&) override {
-         attach(*_patt);
+      virtual void attached(ast::scope& scope, ast::context&) override {
+         attach(scope, *_patt);
       }
 
-      virtual void detached(ast::node*, ast::context&) override {
+      virtual void detached(ast::context&) override {
          detach(*_patt);
       }
 

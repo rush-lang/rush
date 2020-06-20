@@ -53,8 +53,8 @@ namespace rush::ast {
       template <typename T>
       T const& value() const { return std::get<T>(_val); }
 
-      virtual void attached(ast::node*, ast::context&) override {}
-      virtual void detached(ast::node*, ast::context&) override {}
+      virtual void attached(ast::scope&, ast::context&) override {}
+      virtual void detached(ast::context&) override {}
 
    private:
       variant_type _val;

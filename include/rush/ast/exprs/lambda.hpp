@@ -62,13 +62,13 @@ namespace rush::ast {
 		}
 
    protected:
-      virtual void attached(ast::node*, ast::context&) override {
-         attach(*_params);
-			attach(*_body);
+      virtual void attached(ast::scope& scope, ast::context&) override {
+         attach(scope, *_params);
+			attach(scope, *_body);
          _type = context()->function_type(*this);
 		}
 
-      virtual void detached(ast::node*, ast::context&) override {
+      virtual void detached(ast::context&) override {
          detach(*_params);
 			detach(*_body);
          _type = types::undefined;

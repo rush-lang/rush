@@ -66,8 +66,8 @@ namespace rush::ast {
 		}
 
    protected:
-      virtual void attached(ast::node*, ast::context&) override {}
-      virtual void detached(ast::node*, ast::context&) override {}
+      virtual void attached(ast::scope&, ast::context&) override {}
+      virtual void detached(ast::context&) override {}
 
    private:
       floating_point_kind _fpkind;

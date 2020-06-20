@@ -50,8 +50,8 @@ namespace rush::ast {
 		}
 
    protected:
-      virtual void attached(ast::node*, ast::context&) override {}
-      virtual void detached(ast::node*, ast::context&) override {}
+      virtual void attached(ast::scope&, ast::context&) override {}
+      virtual void detached(ast::context&) override {}
    private:
       std::string _msg;
    };
@@ -68,8 +68,8 @@ namespace rush::ast {
 		}
 
    protected:
-      virtual void attached(ast::node*, ast::context&) override {}
-      virtual void detached(ast::node*, ast::context&) override {}
+      virtual void attached(ast::scope&, ast::context&) override {}
+      virtual void detached(ast::context&) override {}
    };
 
    class builtin_bool_type : public builtin_type {
@@ -84,8 +84,8 @@ namespace rush::ast {
 		}
 
    protected:
-      virtual void attached(ast::node*, ast::context&) override {}
-      virtual void detached(ast::node*, ast::context&) override {}
+      virtual void attached(ast::scope&, ast::context&) override {}
+      virtual void detached(ast::context&) override {}
    };
 
    namespace types {

@@ -136,6 +136,8 @@ namespace rush::ast {
 
    class scope {
    public:
+      scope();
+
       //! \brief Pops the current scope frame from the stack.
       void pop();
 
@@ -153,6 +155,7 @@ namespace rush::ast {
 
    private:
       std::stack<ast::scope_frame> _frames;
+      void _push_global();
    };
 }
 
