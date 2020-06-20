@@ -19,6 +19,7 @@ rush_add_library(ast
    iterator.cpp
    visitor.cpp
    context.cpp
+   scope.cpp
    node.cpp
 )
 

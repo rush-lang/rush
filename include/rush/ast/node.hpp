@@ -27,18 +27,23 @@
 namespace rush::ast {
    class visitor;
    class context;
+   class scope;
 
    class node {
    public:
       node() = default;
       virtual ~node() = default;
 
-      ast::node const* parent() const noexcept {
+      ast::context* context() const noexcept {
+         return _context;
+      }
+
+      ast::node* parent() noexcept {
          return _parent;
       }
 
-      ast::context* context() const noexcept {
-         return _context;
+      ast::node const* parent() const noexcept {
+         return _parent;
       }
 
       void attach(ast::context& context);

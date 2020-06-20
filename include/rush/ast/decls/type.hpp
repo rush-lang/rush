@@ -27,9 +27,8 @@ namespace rush::ast {
    class type_declaration;
 
    //! \brief Wraps a type_declaration and provides convenience functions
-   //!        that proxy to the declaration. This enables making for
-   //!        a distinction between visitation of a type or declaration
-   //!        for algorithmic purposes.
+   //!        that proxy to the declaration. This enables makinga distinction
+   //!        between visitation of a type or declaration for algorithmic purposes.
    class user_type : public type {
    public:
       user_type(ast::type_declaration const& decl)

@@ -14,6 +14,8 @@
 * limitations under the License.
 *************************************************************************/
 #include "rush/ast/node.hpp"
+#include "rush/ast/scope.hpp"
+#include "rush/ast/context.hpp"
 
 namespace rush::ast {
    void node::attach(ast::context& context) {

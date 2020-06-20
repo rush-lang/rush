@@ -1,0 +1,4 @@
+# Causing an error in the lexer exclaiming
+# that the following is not a valid number
+
+let x = 1.foo()
