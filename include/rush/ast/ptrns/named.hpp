@@ -22,6 +22,7 @@
 #include "rush/ast/decls/nominal.hpp"
 #include "rush/ast/types/builtin.hpp"
 #include "rush/ast/types/type_ref.hpp"
+#include "rush/ast/scope.hpp"
 
 #include <string>
 #include <string_view>
@@ -73,7 +74,10 @@ namespace rush::ast {
       }
 
    protected:
-      virtual void attached(ast::scope&, ast::context&) override {}
+      virtual void attached(ast::scope& scope, ast::context&) override {
+         scope.insert(*this);
+      }
+
       virtual void detached(ast::context&) override {
          _type = ast::types::undefined;
          _decl = nullptr;

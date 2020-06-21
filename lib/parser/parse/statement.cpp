@@ -96,7 +96,6 @@ namespace rush {
    rush::parse_result<ast::statement> parser::parse_if_stmt() {
       assert(peek_skip_indent().is(keywords::if_) && "expected 'if' keyword.");
       next_skip_indent(); // consume 'if' keyword.
-      _scope.push(scope_kind::block);
 
       auto cond_result = parse_expr();
       if (cond_result.failed())
@@ -113,7 +112,6 @@ namespace rush {
          : errs::expected_if_stmt_body(tok_colon);
       if (then_result.failed())
          return std::move(then_result);
-      _scope.pop();
 
       if (!peek_skip_indent().is(keywords::else_)) {
          return ast::stmts::if_(
@@ -142,15 +140,12 @@ namespace rush {
          return errs::expected_compound_stmt(tok);
       } else if (tok.is(symbols::colon)) {
          auto tok_colon = next_skip_indent(); // consume ':' symbol.
-         _scope.push(scope_kind::block);
-
          auto result = (peek_with_indent().is(symbols::indent))
             ? parse_block_stmt()
             : peek_with_lbreak().is_not(symbols::lbreak)
             ? parse_inline_stmt()
             : errs::expected_else_stmt_body(tok_colon);
 
-         _scope.pop();
          return std::move(result);
       }
 
@@ -160,8 +155,6 @@ namespace rush {
    rush::parse_result<ast::statement> parser::parse_for_stmt() {
       assert(peek_skip_indent().is(keywords::for_) && "expected 'for' keyword.");
       next_skip_indent(); // consume 'for' keyword.
-
-      _scope.push(scope_kind::block);
 
       auto ptrn_result = peek_skip_indent().is_not(keywords::in_)
          ? parse_iteration_pattern()
@@ -188,7 +181,6 @@ namespace rush {
       if (then_result.failed())
          return std::move(then_result);
 
-      _scope.pop();
       return ast::stmts::for_(
          std::move(ptrn_result),
          std::move(expr_result),
@@ -198,7 +190,6 @@ namespace rush {
    rush::parse_result<ast::statement> parser::parse_while_stmt() {
       assert(peek_skip_indent().is(keywords::while_) && "expected 'while' keyword.");
       next_skip_indent(); // consume 'while' keyword.
-      _scope.push(scope_kind::block);
 
       auto cond_result = parse_expr();
       if (cond_result.failed())
@@ -217,7 +208,6 @@ namespace rush {
       if (then_result.failed())
          return std::move(then_result);
 
-      _scope.pop();
       return ast::stmts::while_(
          std::move(cond_result),
          std::move(then_result));

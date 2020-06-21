@@ -40,7 +40,10 @@ namespace rush::ast {
          std::string name,
          std::vector<std::unique_ptr<ast::member_section_declaration>> sections)
          : ast::type_declaration { std::move(name) }
-         , _sections { std::move(sections) } {}
+         , _sections { std::move(sections) } {
+            std::for_each(_sections.begin(), _sections.end(),
+               [this](auto& s) { this->adopt(*s); });
+         }
 
       virtual ast::declaration_kind kind() const noexcept override {
          return ast::declaration_kind::class_;
@@ -67,15 +70,8 @@ namespace rush::ast {
       };
 
    protected:
-      virtual void attached(ast::scope& scope, ast::context&) override {
-         std::for_each(_sections.begin(), _sections.end(),
-            [this, &scope](auto& s) { attach(scope, *s); });
-      };
-
-      virtual void detached(ast::context&) override {
-         std::for_each(_sections.begin(), _sections.end(),
-            [this](auto& s) { detach(*s); });
-      };
+      virtual void attached(ast::scope& scope, ast::context&) override;
+      virtual void detached(ast::context&) override;
 
    private:
       std::vector<std::unique_ptr<ast::member_section_declaration>> _sections;

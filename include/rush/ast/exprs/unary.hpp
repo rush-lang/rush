@@ -36,7 +36,8 @@ namespace rush::ast {
 			std::unique_ptr<expression> operand,
 			unary_operator opkind, factory_tag_t)
 			: _operand(std::move(operand))
-			, _opkind(opkind) {}
+			, _opkind(opkind)
+         { adopt(*_operand); }
 
 		unary_operator opkind() const noexcept { return _opkind; }
 		expression const& operand() const noexcept { return *_operand; }

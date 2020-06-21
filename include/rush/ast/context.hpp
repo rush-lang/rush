@@ -29,6 +29,7 @@
 #include <unordered_map>
 #include <algorithm>
 
+
 namespace rush::ast::detail {
    struct array_type_key_t {
       std::size_t rank;
@@ -124,6 +125,8 @@ namespace rush::ast {
       ast::type_ref unsigned_integral_type(integral_kind);
       ast::type_ref floating_point_type(floating_point_kind);
 
+      ast::type_ref named_type(std::string name);
+
       ast::type_ref array_type(ast::type_ref, size_type = 1);
       ast::type_ref array_type(ast::array_literal_expression&);
 
@@ -140,6 +143,8 @@ namespace rush::ast {
 
    private:
       std::unordered_map<ast::node const*, std::unique_ptr<ast::type_resolver>> _type_resolvers;
+
+      std::unordered_map<std::string_view, std::unique_ptr<ast::named_type>> _named_types;
       std::unordered_map<ast::type_ref, std::unique_ptr<ast::optional_type>> _optional_types;
       std::unordered_map<ast::type_ref, std::unique_ptr<ast::type_extension>> _type_extensions;
       std::unordered_map<detail::array_type_key_t, std::unique_ptr<ast::array_type>> _array_types;

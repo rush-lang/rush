@@ -24,6 +24,7 @@
 #include "rush/ast/ptrns/pattern.hpp"
 #include "rush/ast/ptrns/discard.hpp"
 #include "rush/ast/decls/constant.hpp"
+#include "rush/ast/scope.hpp"
 
 #include <memory>
 
@@ -55,7 +56,11 @@ namespace rush::ast {
          : _decl { decls::constant(std::move(ptrn)) }
          , _expr { std::move(expr) }
          , _body { std::move(body) }
-         , _kind { kind } {}
+         , _kind { kind } {
+            adopt(*_decl);
+            adopt(*_expr);
+            adopt(*_body);
+         }
 
       virtual ast::statement_kind kind() const noexcept override {
          return _kind;
@@ -80,12 +85,16 @@ namespace rush::ast {
 
    protected:
       virtual void attached(ast::scope& scope, ast::context&) override {
+         scope.push(ast::scope_kind::block);
          attach(scope, *_decl);
+         attach(scope, *_expr);
          attach(scope, *_body);
+         scope.pop();
       }
 
       virtual void detached(ast::context&) override {
          detach(*_decl);
+         detach(*_expr);
          detach(*_body);
       }
 

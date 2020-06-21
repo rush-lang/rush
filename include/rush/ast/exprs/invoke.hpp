@@ -50,7 +50,10 @@ namespace rush::ast {
          std::unique_ptr<ast::expression_list> args,
          factory_tag_t)
          : _callable { std::move(callable) }
-         , _args { std::move(args) } {}
+         , _args { std::move(args) } {
+            adopt(*_callable);
+            adopt(*_args);
+         }
 
       ast::expression const& callable() const noexcept {
          return *_callable;

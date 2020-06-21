@@ -31,7 +31,7 @@ namespace rush::ast {
 	class declaration_statement : public statement {
 	public:
 		declaration_statement(std::unique_ptr<declaration> decl)
-			: _decl(std::move(decl)) {}
+			: _decl(std::move(decl)) { adopt(*_decl); }
 
       virtual ast::statement_kind kind() const noexcept override {
          return ast::statement_kind::declaration;

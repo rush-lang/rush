@@ -27,7 +27,7 @@ namespace rush::ast {
    class new_expression : public ast::expression {
    public:
       new_expression(std::unique_ptr<ast::expression> expr)
-         : _expr { std::move(expr) } {}
+         : _expr { std::move(expr) } { adopt(*_expr); }
 
       virtual ast::type_ref result_type() const override {
          return _expr->result_type();

@@ -120,13 +120,8 @@ namespace rush {
                std::move(expr_result)));
          case symbols::right_parenthesis: // assignment expression
             next_skip_indent(); // consume ')'
-            auto sym = _scope.current().lookup(ident.text());
-            auto ident_expr = !sym.is_undefined()
-               ? exprs::identifier(sym.declaration()->identifier())
-               : exprs::identifier(_scope.resolver(ident.text()));
-
             return exprs::assignment(
-               std::move(ident_expr),
+               exprs::identifier(ident.text()),
                std::move(expr_result));
          }
       }
@@ -236,7 +231,6 @@ namespace rush {
    }
 
    rush::parse_result<ast::expression> parser::parse_lambda_expr() {
-      _scope.push(rush::scope_kind::function);
       auto params = std::unique_ptr<ast::pattern> {};
       if (peek_skip_indent().is_identifier()) {
          auto result = parse_named_pattern("parameter");
@@ -274,11 +268,9 @@ namespace rush {
       if (body_result.failed())
          return std::move(body_result).as<ast::expression>();
 
-      _scope.pop();
       return return_type.failed()
            ? exprs::lambda(std::move(params), std::move(body_result))
            : exprs::lambda(return_type.type(), std::move(params), std::move(body_result));
-
    }
 
 	rush::parse_result<ast::expression> parser::parse_primary_expr() {
@@ -360,13 +352,8 @@ namespace rush {
 
 	rush::parse_result<ast::expression> parser::parse_identifier_expr() {
 		assert(peek_skip_indent().is_identifier() && "expected token to be an identifier.");
-
 		auto tok = next_skip_indent();
-      auto sym = _scope.current().lookup(tok.text());
-
-      return !sym.is_undefined()
-         ? exprs::identifier(sym.declaration()->identifier())
-         : exprs::identifier(_scope.resolver(tok.text()));
+      return exprs::identifier(tok.text());
 	}
 
    rush::parse_result<ast::expression> parser::parse_member_access_expr(rush::parse_result<ast::expression> expr) {

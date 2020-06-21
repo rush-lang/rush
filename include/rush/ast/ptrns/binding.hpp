@@ -37,11 +37,14 @@ namespace rush::ast {
       , public ast::expression {
    public:
       binding_pattern(
-         std::unique_ptr<ast::pattern> patt,
+         std::unique_ptr<ast::pattern> ptrn,
          std::unique_ptr<ast::expression> expr)
-         : _pattern { std::move(patt) }
-         , _expression { std::move(expr) }
-         , _kind { binding_kind::unknown } {}
+         : _ptrn { std::move(ptrn) }
+         , _expr { std::move(expr) }
+         , _kind { binding_kind::unknown } {
+            adopt(*_ptrn);
+            adopt(*_expr);
+         }
 
       binding_kind kind() const noexcept {
          return _kind == binding_kind::unknown
@@ -50,15 +53,15 @@ namespace rush::ast {
       }
 
       virtual ast::type_ref result_type() const override {
-         return _expression->result_type();
+         return _expr->result_type();
       }
 
       ast::pattern const& pattern() const noexcept {
-         return *_pattern;
+         return *_ptrn;
       }
 
       ast::expression const& expression() const noexcept {
-         return *_expression;
+         return *_expr;
       }
 
       using node::accept;
@@ -68,18 +71,18 @@ namespace rush::ast {
 
    protected:
       virtual void attached(ast::scope& scope, ast::context&) override {
-         attach(scope, *_pattern);
-         attach(scope, *_expression);
+         attach(scope, *_ptrn);
+         attach(scope, *_expr);
       }
 
       virtual void detached(ast::context&) override {
-         detach(*_pattern);
-         detach(*_expression);
+         detach(*_ptrn);
+         detach(*_expr);
       }
 
    private:
-      std::unique_ptr<ast::pattern> _pattern;
-      std::unique_ptr<ast::expression> _expression;
+      std::unique_ptr<ast::pattern> _ptrn;
+      std::unique_ptr<ast::expression> _expr;
       mutable binding_kind _kind;
 
       binding_kind resolve_binding_kind() const;

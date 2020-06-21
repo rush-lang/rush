@@ -24,8 +24,8 @@
 #include "rush/ast/types/function.hpp"
 #include "rush/ast/stmts/statement.hpp"
 #include "rush/ast/decls/nominal.hpp"
-
 #include "rush/ast/context.hpp"
+#include "rush/ast/scope.hpp"
 
 
 namespace rush::ast::decls {
@@ -57,7 +57,10 @@ namespace rush::ast {
          , _type { types::undefined }
          , _explicit_return_type { std::move(return_type) }
          , _params { decls::parameter(std::move(params)) }
-			, _body { std::move(body) } {}
+			, _body { std::move(body) } {
+            adopt(*_params);
+            adopt(*_body);
+         }
 
       virtual std::string_view name() const noexcept override {
          return _name;
@@ -90,8 +93,12 @@ namespace rush::ast {
 
    protected:
       virtual void attached(ast::scope& scope, ast::context&) override {
+         scope.insert(*this);
+         scope.push(ast::scope_kind::function);
          attach(scope, *_params);
          attach(scope, *_body);
+         scope.pop();
+
          _type = context()->function_type(*this);
       }
 

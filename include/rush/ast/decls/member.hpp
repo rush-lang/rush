@@ -27,6 +27,7 @@
 #include <string>
 #include <cassert>
 
+
 namespace rush::ast {
    class member_declaration;
    class member_section_declaration;
@@ -62,7 +63,10 @@ namespace rush::ast {
          ast::member_access acc,
          std::vector<std::unique_ptr<ast::member_declaration>> mems)
          : _access { acc }
-         , _members { std::move(mems) } {}
+         , _members { std::move(mems) } {
+            std::for_each(_members.begin(), _members.end(),
+               [this](auto& m) { adopt(*m); });
+         }
 
       using member_iterator = decltype(rush::make_deref_iterator(_members.begin()));
       using member_const_iterator = decltype(rush::make_deref_iterator(_members.cbegin()));

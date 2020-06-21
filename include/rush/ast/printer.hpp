@@ -84,6 +84,10 @@ namespace rush::ast {
          traverse(decl);
       }
 
+      virtual void visit_named_type(ast::named_type const& type) override {
+         write("\"{}\"", type.name());
+      };
+
       virtual void visit_type_extension(ast::type_extension const& type) override {
          write("@");
          type.underlying_type().accept(*this);

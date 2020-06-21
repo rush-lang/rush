@@ -282,6 +282,16 @@ namespace rush::ast {
       }
    }
 
+   ast::type_ref context::named_type(std::string name) {
+      auto it = _named_types.find(name);
+      if (it == _named_types.end()) {
+         auto p = std::make_unique<ast::named_type>(std::move(name));
+         it = _named_types.insert({ p->name(), std::move(p) }).first;
+      }
+
+      return *it->second;
+   }
+
    ast::type_ref context::array_type(ast::array_literal_expression& expr) {
       auto types = expr.elements().result_types();
       return types.empty()
@@ -299,7 +309,9 @@ namespace rush::ast {
       auto key = detail::array_type_key_t { rank, type };
       auto it = _array_types.find(key);
       if (it == _array_types.end()) {
-         auto p = std::make_unique<ast::array_type>(type, std::vector<array_type_dim> {});
+         auto dims = std::vector<array_type_dim> {};
+         while (rank-- > 0) dims.emplace_back(-1);
+         auto p = std::make_unique<ast::array_type>(type, std::move(dims));
          it = _array_types.insert({ key, std::move(p) }).first;
       }
       return *it->second;

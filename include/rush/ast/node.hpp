@@ -22,6 +22,7 @@
 
 #include <vector>
 #include <memory>
+#include <cassert>
 
 
 namespace rush::ast {
@@ -54,6 +55,16 @@ namespace rush::ast {
       void attach(ast::scope&, ast::node& child, ast::node* parent = nullptr);
       void detach(ast::node& child);
 
+      void adopt(ast::node& child) {
+         // assert(child._parent == nullptr);
+         child._parent = this;
+      }
+
+      void orphan(ast::node& child) {
+         assert(child._parent == this);
+         child._parent = nullptr;
+      }
+
       virtual void attached(ast::scope&, ast::context&) = 0;
       virtual void detached(ast::context&) = 0;
 
@@ -85,7 +96,10 @@ namespace rush::ast {
       : _children {} {}
 
       explicit node_list(std::vector<std::unique_ptr<NodeT>> nodes)
-      : _children { std::move(nodes) } {}
+         : _children { std::move(nodes) } {
+            std::for_each(_children.begin(), _children.end(),
+               [this](auto& p) { this->adopt(*p); });
+         }
 
       bool empty() const noexcept { return _children.empty(); }
       size_type size() const noexcept { return _children.size(); }

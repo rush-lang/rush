@@ -91,30 +91,11 @@ namespace rush {
 
    rush::parse_type_result parser::parse_simple_type() {
       auto tok = next_skip_indent();
-
-      if (tok.is_keyword())
-         return builtin_type_from_keyword(tok.keyword(), *_context);
-
-      if (tok.is_identifier()) {
-         auto sym = _scope.current().lookup(tok.text());
-         if (sym.is_undefined()) return ast::types::undefined; // type_resolver
-
-         auto decl = sym.declaration();
-         switch (decl->kind()) {
-            case ast::declaration_kind::alias:
-            case ast::declaration_kind::enum_:
-            case ast::declaration_kind::class_:
-            case ast::declaration_kind::struct_:
-            case ast::declaration_kind::concept:
-            case ast::declaration_kind::interface: return decl->type();
-            case ast::declaration_kind::constant: return errs::constant_used_like_type(tok);
-            case ast::declaration_kind::variable: return errs::variable_used_like_type(tok);
-            case ast::declaration_kind::function: return errs::function_used_like_type(tok);
-            default: return errs::not_supported(tok, "parsed type");
-         }
-      }; // todo: implement.
-
-      return ast::types::undefined;
+      return tok.is_keyword()
+           ? builtin_type_from_keyword(tok.keyword(), *_context)
+           : tok.is_identifier()
+           ? _context->named_type(tok.text())
+           : ast::types::undefined;
    }
 
    rush::parse_type_result parser::parse_type_annotation() {

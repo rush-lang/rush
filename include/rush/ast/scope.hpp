@@ -32,6 +32,7 @@ namespace rush::ast {
    class scope_frame;
 
    enum class scope_kind {
+      pseudo,
       global,
       function,
       struct_,
@@ -74,6 +75,11 @@ namespace rush::ast {
             rush::make_deref_iterator(_decls.begin()),
             rush::make_deref_iterator(_decls.end()));
       }
+
+      auto begin() { return _decls.begin(); }
+      auto end() { return _decls.end(); }
+      auto begin() const { return _decls.begin(); }
+      auto end() const { return _decls.end(); }
 
    public:
       explicit symbol(std::string name)
@@ -157,6 +163,6 @@ namespace rush::ast {
       std::stack<ast::scope_frame> _frames;
       void _push_global();
    };
-}
+} // rush::ast
 
 #endif // RUSH_AST_SCOPE_HPP

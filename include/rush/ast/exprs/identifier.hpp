@@ -19,19 +19,18 @@
 #define RUSH_AST_EXPRS_IDENTIFIER_HPP
 
 #include "rush/ast/exprs/expression.hpp"
-#include "rush/ast/decls/declaration.hpp"
-#include "rush/ast/identifier.hpp"
+#include "rush/ast/decls/nominal.hpp"
 #include "rush/ast/visitor.hpp"
+#include "rush/ast/scope.hpp"
 
 #include <string>
-#include <variant>
+#include <vector>
 #include <cassert>
 
 namespace rush::ast {
 	class identifier_expression;
 	namespace exprs {
-      std::unique_ptr<identifier_expression> identifier(ast::identifier ident);
-      std::unique_ptr<identifier_expression> identifier(ast::identifier::resolver&);
+      std::unique_ptr<identifier_expression> identifier(std::string name);
    }
 }
 
@@ -42,28 +41,36 @@ namespace rush::ast {
    //        or function within an expression.
 	class identifier_expression : public expression {
 		struct factory_tag_t {};
-		friend std::unique_ptr<identifier_expression> exprs::identifier(ast::identifier ident);
-      friend std::unique_ptr<identifier_expression> exprs::identifier(ast::identifier::resolver&);
-
+		friend std::unique_ptr<identifier_expression> exprs::identifier(std::string name);
 
 	public:
-		identifier_expression(ast::identifier ident, factory_tag_t) noexcept
-			: _ident { std::move(ident) } {}
+		identifier_expression(std::string name, factory_tag_t) noexcept
+			: _name { std::move(name) } {}
 
       bool is_unresolved() const noexcept {
-         return _ident.is_unresolved();
+         return _decls.empty();
+      }
+
+      bool is_overloaded() const noexcept {
+         return _decls.size() > 1;
       }
 
 		std::string_view name() const {
-         return _ident.name();
+         return _name;
 		}
 
       virtual ast::type_ref result_type() const noexcept override {
-         return _ident.type();
+         return !is_unresolved()
+              ? !is_overloaded()
+              ? _decls.front()->type()
+              : ast::types::ambiguous
+              : ast::types::undefined;
       };
 
       ast::nominal_declaration const& declaration() const noexcept {
-         return _ident.declaration();
+         assert(!is_unresolved());
+         assert(!is_overloaded());
+         return *_decls.front();
       }
 
 		using node::accept;
@@ -72,21 +79,26 @@ namespace rush::ast {
 		}
 
    protected:
-      virtual void attached(ast::scope&, ast::context&) override {}
-      virtual void detached(ast::context&) override {}
+      virtual void attached(ast::scope& scope, ast::context&) override {
+         auto& sym = scope.lookup(_name);
+         std::copy(sym.begin(), sym.end(),
+            std::back_inserter(_decls));
+      }
+      virtual void detached(ast::context&) override {
+         _decls.clear();
+      }
 
 	private:
-   	ast::identifier _ident;
+      std::string _name;
+      std::vector<ast::nominal_declaration const*> _decls;
 	};
 
 	namespace exprs {
-		inline std::unique_ptr<identifier_expression> identifier(ast::identifier ident) {
-			return std::make_unique<identifier_expression>(std::move(ident), identifier_expression::factory_tag_t {});
+		inline std::unique_ptr<identifier_expression> identifier(std::string name) {
+			return std::make_unique<identifier_expression>(
+            std::move(name),
+            identifier_expression::factory_tag_t {});
 		}
-
-      inline std::unique_ptr<identifier_expression> identifier(ast::identifier::resolver& res) {
-         return std::make_unique<identifier_expression>(ast::identifier { res }, identifier_expression::factory_tag_t {});
-      }
 	} // rush::ast::exprs
 } // rush::ast
 

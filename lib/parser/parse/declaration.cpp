@@ -29,14 +29,6 @@ namespace errs = rush::diag::errs;
 
 namespace rush {
 
-   rush::parse_result<ast::nominal_declaration> parser::scope_insert(
-      std::unique_ptr<ast::nominal_declaration> decl,
-      rush::lexical_token const& ident) {
-         return (!_scope.insert({ *decl }))
-            ? errs::definition_already_exists(ident)
-            : rush::parse_result<ast::nominal_declaration> { std::move(decl) };
-      }
-
    rush::parse_result<ast::declaration> parser::parse_toplevel_decl() {
 		auto tok = peek_skip_indent();
       if (tok.is_keyword()) {
@@ -100,7 +92,6 @@ namespace rush {
 	rush::parse_result<ast::declaration> parser::parse_function_decl() {
 		assert(peek_skip_indent().is(keywords::func_) && "expected the 'func' keyword.");
 		next_skip_indent(); // consume func keyword.
-      _scope.push(rush::scope_kind::function);
 
 		if (!peek_skip_indent().is_identifier())
          return errs::expected_function_name(peek_skip_indent());
@@ -135,8 +126,7 @@ namespace rush {
          ? decls::function(ident.text(), type_result.type(), std::move(plist_result), std::move(body_result))
          : decls::function(ident.text(), std::move(plist_result), std::move(body_result));
 
-      _scope.pop();
-      return scope_insert(std::move(decl), ident);
+      return std::move(decl);
 	}
 
    rush::parse_result<ast::statement> parser::parse_function_body() {
@@ -192,8 +182,6 @@ namespace rush {
       assert(peek_skip_indent().is(keywords::struct_) && "expected the 'struct' keyword.");
       next_skip_indent(); // consume 'struct'
 
-      _scope.push(rush::scope_kind::struct_);
-
       if (!peek_skip_indent().is_identifier())
          return errs::expected_struct_name(peek_skip_indent());
 		auto ident = next_skip_indent();
@@ -234,17 +222,12 @@ namespace rush {
             sections.push_back(std::move(section_result));
          }
 
-
-      _scope.pop();
-      auto result = decls::struct_(ident.text(), std::move(sections));
-      return scope_insert(std::move(result), ident);
+      return decls::struct_(ident.text(), std::move(sections));
    }
 
    rush::parse_result<ast::declaration> parser::parse_class_declaration() {
       assert(peek_skip_indent().is(keywords::class_) && "expected the 'class' keyword.");
       next_skip_indent(); // consume 'class'
-
-      _scope.push(rush::scope_kind::class_);
 
 		if (!peek_skip_indent().is_identifier())
          return errs::expected_class_name(peek_skip_indent());
@@ -286,10 +269,7 @@ namespace rush {
             sections.push_back(std::move(section_result));
          }
 
-
-      _scope.pop();
-      auto result = decls::class_(ident.text(), std::move(sections));
-      return scope_insert(std::move(result), ident);
+      return decls::class_(ident.text(), std::move(sections));
    }
 
    rush::parse_result<ast::member_section_declaration>
@@ -361,7 +341,6 @@ namespace rush {
    rush::parse_result<ast::member_declaration> parser::parse_property_getter() {
       assert(peek_skip_indent().is(keywords::get_) && "expected the 'get' keyword.");
       next_skip_indent(); // consume 'get'
-      _scope.push(rush::scope_kind::function);
 
       if (!peek_skip_indent().is_identifier())
          return errs::expected_property_name(peek_skip_indent());
@@ -383,9 +362,7 @@ namespace rush {
            ? decls::property_get(ident.text(), std::move(body_result))
            : decls::property_get(ident.text(), type_result.type(), std::move(body_result));
 
-      _scope.pop();
-      return scope_insert(std::move(result), ident)
-         .as<ast::member_declaration>();
+      return std::move(result);
    }
 
    rush::parse_result<ast::member_declaration> parser::parse_property_setter() {

@@ -43,7 +43,8 @@ namespace rush::ast {
 			std::unique_ptr<ast::expression_list> args,
 			factory_tag_t)
 			: _type { ast::types::undefined }
-			, _args { std::move(args) } {}
+			, _args { std::move(args) }
+         { adopt(*_args); }
 
 		ast::expression_list const& arguments() const noexcept {
 			return *_args;

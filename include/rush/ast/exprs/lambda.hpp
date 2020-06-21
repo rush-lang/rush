@@ -25,8 +25,10 @@
 #include "rush/ast/stmts/statement.hpp"
 #include "rush/ast/decls/parameter.hpp"
 #include "rush/ast/context.hpp"
+#include "rush/ast/scope.hpp"
 
 #include <memory>
+
 
 namespace rush::ast {
 
@@ -39,7 +41,10 @@ namespace rush::ast {
 			: _params { decls::parameter(std::move(params)) }
          , _type { ast::types::undefined }
          , _explicit_return_type { return_type }
-			, _body { std::move(body) } {}
+			, _body { std::move(body) } {
+            adopt(*_params);
+            adopt(*_body);
+         }
 
 		ast::pattern const& parameters() const noexcept {
 			return _params->pattern();
@@ -63,8 +68,11 @@ namespace rush::ast {
 
    protected:
       virtual void attached(ast::scope& scope, ast::context&) override {
+         scope.push(ast::scope_kind::function);
          attach(scope, *_params);
 			attach(scope, *_body);
+         scope.pop();
+
          _type = context()->function_type(*this);
 		}
 

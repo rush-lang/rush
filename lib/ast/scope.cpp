@@ -24,6 +24,9 @@ class scope_inserter_visitor : public ast::traversal {
 
 namespace rush::ast {
    void scope_frame::insert(ast::nominal_declaration const& decl) {
+      if (kind() == ast::scope_kind::pseudo)
+         return;
+
       auto it = _symbols.find(decl.name());
       if (it != _symbols.end()) {
          it->second->insert(decl); // insert overload.
@@ -38,9 +41,11 @@ namespace rush::ast {
    }
 
    ast::symbol const& scope_frame::lookup(std::string_view name) const {
-      auto it = _symbols.find(name);
-      if (it != _symbols.end())
-         return *it->second;
+      if (kind() != ast::scope_kind::pseudo) {
+         auto it = _symbols.find(name);
+         if (it != _symbols.end())
+            return *it->second;
+      }
 
       if (auto p = parent())
          return p->lookup(name);

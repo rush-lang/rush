@@ -41,7 +41,8 @@ namespace rush::ast {
       property_getter_declaration(
          std::unique_ptr<ast::function_declaration> func,
          factory_tag_t)
-         : _func { std::move(func) } {}
+         : _func { std::move(func) }
+         { adopt(*_func); }
 
       ast::function_declaration const& func() const noexcept {
          return *_func;
@@ -70,7 +71,10 @@ namespace rush::ast {
 
    protected:
       virtual void attached(ast::scope& scope, ast::context&) override {
+         scope.insert(*this);
+         scope.push(ast::scope_kind::pseudo);
          attach(scope, *_func);
+         scope.pop();
       }
 
       virtual void detached(ast::context&) override {
@@ -90,7 +94,8 @@ namespace rush::ast {
       property_setter_declaration(
          std::unique_ptr<ast::function_declaration> func,
          factory_tag_t)
-         : _func { std::move(func) } {}
+         : _func { std::move(func) }
+         { adopt(*_func); }
 
       ast::function_declaration const& func() const noexcept {
          return *_func;
@@ -119,7 +124,10 @@ namespace rush::ast {
 
    protected:
       virtual void attached(ast::scope& scope, ast::context&) override {
+         scope.insert(*this);
+         scope.push(ast::scope_kind::pseudo);
          attach(scope, *_func);
+         scope.pop();
       }
 
       virtual void detached(ast::context&) override {

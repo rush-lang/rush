@@ -27,7 +27,10 @@ namespace rush::ast {
          std::unique_ptr<ast::expression> expr,
          std::unique_ptr<ast::expression> member)
          : _expr { std::move(expr) }
-         , _member { std::move(member) } {}
+         , _member { std::move(member) } {
+            adopt(*_expr);
+            adopt(*_member);
+         }
 
       bool is_unresolved() const noexcept {
          return true;

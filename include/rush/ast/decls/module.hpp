@@ -35,7 +35,8 @@ namespace rush::ast {
          std::unique_ptr<ast::declaration> decl,
          ast::module_access acc)
       : _decl { std::move(decl) }
-      , _access { acc } {}
+      , _access { acc }
+      { adopt(*_decl); }
 
       ast::declaration const& declaration() const noexcept {
          return *_decl;

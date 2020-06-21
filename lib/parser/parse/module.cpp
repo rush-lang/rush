@@ -21,7 +21,6 @@ namespace errs = rush::diag::errs;
 
 namespace rush {
    rush::parse_result<ast::module> parser::parse_module() {
-      _scope.push(rush::scope_kind::module);
       while (peek_skip_indent().is(keywords::import_)) {
          auto import_result = terminated(&parser::parse_import_decl);
          if (import_result.failed())
@@ -48,13 +47,6 @@ namespace rush {
          _module->push_back(std::move(decl_result), acc);
       }
 
-      // mark remaining identifiers as undeclared.
-      auto resolvers = _scope.resolvers();
-      std::for_each(resolvers.begin(), resolvers.end(), [this](auto r) {
-         r->resolve(_module->undeclared_identifier(std::string { r->name() }));
-      });
-
-      _scope.pop();
       return std::move(_module);
    }
 

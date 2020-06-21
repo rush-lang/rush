@@ -22,6 +22,7 @@
 #include "rush/ast/types/array.hpp"
 #include "rush/ast/types/tuple.hpp"
 #include "rush/ast/types/string.hpp"
+#include "rush/ast/types/nominal.hpp"
 #include "rush/ast/types/builtin.hpp"
 #include "rush/ast/types/integral.hpp"
 #include "rush/ast/types/floating.hpp"

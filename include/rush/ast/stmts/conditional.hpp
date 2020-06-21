@@ -20,8 +20,10 @@
 
 #include "rush/ast/exprs/expression.hpp"
 #include "rush/ast/stmts/statement.hpp"
+#include "rush/ast/scope.hpp"
 
 #include <memory>
+
 
 namespace rush::ast {
 
@@ -62,7 +64,10 @@ namespace rush::ast {
          factory_tag_t)
          : _cond { std::move(cond) }
          , _body { std::move(body) }
-         , _kind { kind } {}
+         , _kind { kind } {
+            adopt(*_cond);
+            adopt(*_body);
+         }
 
       virtual ast::statement_kind kind() const noexcept override {
          return _kind;
@@ -83,8 +88,10 @@ namespace rush::ast {
 
    protected:
       virtual void attached(ast::scope& scope, ast::context&) override {
+         scope.push(ast::scope_kind::block);
          attach(scope, *_cond);
          attach(scope, *_body);
+         scope.pop();
       }
 
       virtual void detached(ast::context&) override {
@@ -115,7 +122,10 @@ namespace rush::ast {
          factory_tag_t)
          : _primary { std::move(primary) }
          , _alternate { std::move(alternate) }
-         , _kind { kind } {}
+         , _kind { kind } {
+            adopt(*_primary);
+            adopt(*_alternate);
+         }
 
       virtual ast::statement_kind kind() const noexcept override {
          return _kind;
@@ -136,8 +146,13 @@ namespace rush::ast {
 
    protected:
       virtual void attached(ast::scope& scope, ast::context&) override {
+         scope.push(ast::scope_kind::block);
          attach(scope, *_primary);
+         scope.pop();
+
+         scope.push(ast::scope_kind::block);
          attach(scope, *_alternate);
+         scope.pop();
       }
 
       virtual void detached(ast::context&) override {

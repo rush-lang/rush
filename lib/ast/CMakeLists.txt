@@ -12,8 +12,12 @@ rush_add_library(ast
    types/type_reducer.cpp
    ptrns/named.cpp
    ptrns/binding.cpp
+   ptrns/type_annotation.cpp
    decls/storage.cpp
    decls/member.cpp
+   decls/module.cpp
+   decls/struct.cpp
+   decls/class.cpp
    identifier.cpp
    traversal.cpp
    iterator.cpp

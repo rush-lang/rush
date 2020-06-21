@@ -22,14 +22,14 @@
 namespace rush::ast {
 
    auto storage_declaration::names() const -> decltype(ast::iterator_range<ast::named_pattern>()) {
-      return ast::iterator_range<ast::named_pattern>(_patt.get());
+      return ast::iterator_range<ast::named_pattern>(_ptrn.get());
    }
 
    auto storage_declaration::annotations() const -> decltype(ast::iterator_range<ast::type_annotation_pattern>()) {
-      return ast::iterator_range<ast::type_annotation_pattern>(_patt.get());
+      return ast::iterator_range<ast::type_annotation_pattern>(_ptrn.get());
    }
 
    auto storage_declaration::initializers() const -> decltype(ast::iterator_range<ast::binding_pattern>()) {
-      return ast::iterator_range<ast::binding_pattern>(_patt.get());
+      return ast::iterator_range<ast::binding_pattern>(_ptrn.get());
    }
 } // rush::ast

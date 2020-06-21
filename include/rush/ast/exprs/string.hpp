@@ -51,7 +51,10 @@ namespace rush::ast {
          factory_tag_t)
          : _template { std::move(original) }
          , _parts { std::move(parts) }
-         , _type { ast::types::undefined } {}
+         , _type { ast::types::undefined } {
+            std::for_each(_parts.begin(), _parts.end(),
+               [this](auto& elem) { adopt(*elem); });
+         }
 
       std::string_view original() const noexcept {
          return _template;

@@ -45,7 +45,8 @@ namespace rush::ast {
 			std::unique_ptr<ast::expression_list> elems,
 			factory_tag_t)
 			: _type { type }
-			, _elems { std::move(elems) } {}
+			, _elems { std::move(elems) }
+         { adopt(*_elems); }
 
 		ast::expression_list const& elements() const noexcept {
 			return *_elems;

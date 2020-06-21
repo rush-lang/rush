@@ -32,7 +32,7 @@ namespace rush::ast {
    class storage_declaration : public declaration {
    public:
       ast::pattern& pattern() const noexcept {
-         return *_patt;
+         return *_ptrn;
       }
 
       auto names() const -> decltype(ast::iterator_range<ast::named_pattern>());
@@ -40,19 +40,20 @@ namespace rush::ast {
       auto initializers() const -> decltype(ast::iterator_range<ast::binding_pattern>());
 
    protected:
-      storage_declaration(std::unique_ptr<ast::pattern> patt)
-         : _patt { std::move(patt) } {}
+      storage_declaration(std::unique_ptr<ast::pattern> ptrn)
+         : _ptrn { std::move(ptrn) }
+         { adopt(*_ptrn); }
 
       virtual void attached(ast::scope& scope, ast::context&) override {
-         attach(scope, *_patt);
+         attach(scope, *_ptrn);
       }
 
       virtual void detached(ast::context&) override {
-         detach(*_patt);
+         detach(*_ptrn);
       }
 
    private:
-      std::unique_ptr<ast::pattern> _patt;
+      std::unique_ptr<ast::pattern> _ptrn;
    };
 } // rush::ast
 

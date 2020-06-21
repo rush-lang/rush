@@ -21,19 +21,16 @@ namespace rush::ast {
    void node::attach(ast::context& context) {
       if (_context != nullptr) detach(*this);
       auto scope = ast::scope {};
-      _parent = nullptr;
       attached(scope, *(_context = &context));
    }
 
    void node::attach(ast::scope& scope, ast::node& child, ast::node* parent) {
       child._context = _context;
-      child._parent = parent != nullptr ? parent : this;
       child.attached(scope, *child._context);
    }
 
    void node::detach(ast::node& child) {
       child.detached(*child._context);
-      child._parent = nullptr;
       child._context = nullptr;
    }
 }

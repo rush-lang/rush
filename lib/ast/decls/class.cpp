@@ -13,38 +13,21 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *************************************************************************/
-#pragma once
-
-#ifndef RUSH_AST_TYPES_NOMINAL_HPP
-#define RUSH_AST_TYPES_NOMINAL_HPP
-
-#include "rush/ast/types/type.hpp"
-#include "rush/ast/visitor.hpp"
-
-#include <string>
+#include "rush/ast/decls/class.hpp"
+#include "rush/ast/scope.hpp"
+#include "rush/ast/scope_inserter.hpp"
 
 namespace rush::ast {
-   class named_type : public ast::type {
-   public:
-      named_type(std::string name)
-         : _name { std::move(name) } {}
+   void class_declaration::attached(ast::scope& scope, ast::context&) {
+      scope.insert(*this);
+      scope.push(ast::scope_kind::class_);
+      std::for_each(_sections.begin(), _sections.end(), [this, &scope](auto& s) { rush::visit(*s, ast::scope_inserter { scope }); });
+      std::for_each(_sections.begin(), _sections.end(), [this, &scope](auto& s) { attach(scope, *s); });
+      scope.pop();
+   };
 
-      std::string_view name() const noexcept {
-         return _name;
-      }
-
-      virtual ast::type_kind kind() const override {
-         return ast::type_kind::error;
-      }
-
-      using node::accept;
-      virtual void accept(ast::visitor& v) const override {
-         v.visit_named_type(*this);
-		}
-
-   private:
-      std::string _name;
+   void class_declaration::detached(ast::context&) {
+      std::for_each(_sections.begin(), _sections.end(),
+         [this](auto& s) { detach(*s); });
    };
 } // rush::ast
-
-#endif // RUSH_AST_TYPES_NOMINAL_HPP

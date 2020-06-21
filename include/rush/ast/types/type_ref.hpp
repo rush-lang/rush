@@ -51,7 +51,7 @@ namespace rush::ast {
       template <typename T>
       T const* as() const noexcept {
          static_assert(std::is_base_of_v<ast::type, T>, "T is not a derived rush::ast::type");
-         return reinterpret_cast<T const*>(_ptr);
+         return dynamic_cast<T const*>(_ptr);
       }
 
       void accept(ast::visitor& v) const {

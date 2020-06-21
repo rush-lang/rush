@@ -47,7 +47,11 @@ namespace rush::ast {
          factory_tag_t)
          : _cond { std::move(cond) }
          , _true { std::move(true_) }
-         , _false { std::move(false_) } {}
+         , _false { std::move(false_) } {
+            adopt(*_cond);
+            adopt(*_true);
+            adopt(*_false);
+         }
 
       ast::expression const& condition() const {
          return *_cond;

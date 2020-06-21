@@ -30,7 +30,8 @@ namespace rush::ast {
          std::unique_ptr<ast::pattern> ptrn,
          ast::type_ref type)
          : _ptrn { std::move(ptrn) }
-         , _type { std::move(type) } {}
+         , _type { std::move(type) }
+         { adopt(*_ptrn); }
 
       ast::type_ref type() const noexcept {
          return _type;
@@ -45,13 +46,8 @@ namespace rush::ast {
       }
 
    protected:
-      virtual void attached(ast::scope& scope, ast::context&) override {
-         attach(scope, *_ptrn);
-      };
-
-      virtual void detached(ast::context&) override {
-         detach(*_ptrn);
-      };
+      virtual void attached(ast::scope& scope, ast::context&) override;
+      virtual void detached(ast::context&) override;
 
    private:
       ast::type_ref _type;

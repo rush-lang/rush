@@ -20,6 +20,7 @@
 
 #include "rush/ast/decls/member.hpp"
 #include "rush/ast/decls/function.hpp"
+#include "rush/ast/decls/type.hpp"
 #include "rush/ast/visitor.hpp"
 
 #include <memory>
@@ -42,7 +43,16 @@ namespace rush::ast {
       method_declaration(
          std::unique_ptr<ast::function_declaration> func,
          factory_tag_t)
-         : _decl { std::move(func) } {}
+         : _decl { std::move(func) }
+         { adopt(*_decl); }
+
+      bool is_constructor() const {
+         assert(parent());
+         auto it = ast::find_ancestor<ast::type_declaration>(this);
+         return it != ast::ancestor_iterator()
+              ? it->name() == name()
+              : false;
+      }
 
       virtual ast::declaration_kind kind() const noexcept override {
          return ast::declaration_kind::method;
@@ -75,7 +85,10 @@ namespace rush::ast {
 
    protected:
       virtual void attached(ast::scope& scope, ast::context&) override {
+         if (!is_constructor()) scope.insert(*this);
+         scope.push(ast::scope_kind::pseudo);
          attach(scope, *_decl);
+         scope.pop();
       }
 
       virtual void detached(ast::context&) override {

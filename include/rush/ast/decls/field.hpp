@@ -47,7 +47,8 @@ namespace rush::ast {
       field_declaration(
          std::unique_ptr<ast::storage_declaration> decl,
          factory_tag_t)
-         : _decl { std::move(decl) } {}
+         : _decl { std::move(decl) }
+         { adopt(*_decl); }
 
       virtual declaration_kind kind() const noexcept override {
 			return declaration_kind::field;

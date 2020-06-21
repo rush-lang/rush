@@ -23,6 +23,7 @@
 
 namespace rush::ast {
    class type;
+   class named_type;
    class type_extension;
    class builtin_error_type;
    class builtin_void_type;
@@ -108,6 +109,7 @@ namespace rush::ast {
 
 		// types
 		virtual void visit_type(ast::type const&) {};
+      virtual void visit_named_type(ast::named_type const&) {};
       virtual void visit_type_extension(ast::type_extension const&) {};
       virtual void visit_builtin_error_type(ast::builtin_error_type const&) {};
       virtual void visit_builtin_void_type(ast::builtin_void_type const&) {};

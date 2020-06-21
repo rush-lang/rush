@@ -26,6 +26,8 @@
 #include "rush/ast/decls/declaration.hpp"
 #include "rush/ast/decls/undeclared.hpp"
 
+#include "rush/ast/scope.hpp"
+
 #include <vector>
 #include <algorithm>
 
@@ -46,10 +48,12 @@ namespace rush::ast {
       }
 
       void push_back(std::unique_ptr<ast::import_declaration> imp) {
+         adopt(*imp);
          _imports.push_back(std::move(imp));
       }
 
       void push_back(std::unique_ptr<ast::declaration> decl, ast::module_access access) {
+         adopt(*decl);
          _decls.push_back(std::make_unique<ast::module_declaration>(std::move(decl), access));
       }
 
@@ -83,15 +87,8 @@ namespace rush::ast {
       }
 
    protected:
-      virtual void attached(ast::scope& scope, ast::context&) override {
-         std::for_each(_imports.begin(), _imports.end(), [this, &scope](auto& imp) { attach(scope, *imp); });
-         std::for_each(_decls.begin(), _decls.end(), [this, &scope](auto& decl) { attach(scope, *decl); });
-      }
-
-      virtual void detached(ast::context&) override {
-         std::for_each(_imports.begin(), _imports.end(), [this](auto& imp) { detach(*imp); });
-         std::for_each(_decls.begin(), _decls.end(), [this](auto& decl) { detach(*decl); });
-      }
+      virtual void attached(ast::scope& scope, ast::context&) override;
+      virtual void detached(ast::context&) override;
    };
 } // rush::ast
 
