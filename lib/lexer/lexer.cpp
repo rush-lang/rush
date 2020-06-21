@@ -175,6 +175,17 @@ namespace rush {
          return std::move(result);
       }
 
+      std::string scan_digits(function_ref<bool(codepoint_t)> pred = is_digit) {
+         std::string result;
+         while (!eof() && pred(peek())) {
+            result.push_back(_lab->next().elem());
+            skip_while([this, &pred](auto cp) {
+               return cp == '`' && (check_if(pred, 1) || check('`', 1)); });
+         }
+
+         return std::move(result);
+      }
+
       lexical_token next_token() {
          auto indent = scan_whitespace();
          if (indent.has_value()) return *indent;
@@ -318,7 +329,7 @@ namespace rush {
       }
 
       lexical_token scan_integer_literal(function_ref<bool(codepoint_t)> predicate, int base) {
-         auto value = scan_while(predicate);
+         auto value = scan_digits(predicate);
          auto suffix = scan_integer_literal_suffix();
          return is_ident_body(peek())
               ? tok::make_error_token("invalid number", skip_while(is_ident_body), source())
@@ -338,7 +349,7 @@ namespace rush {
 
             if (check('.') && !check("..", 1)) {
                skip(); // consume decimal point.
-               auto value = scan_while(is_digit);
+               auto value = scan_digits();
                auto suffix = scan_floating_literal_suffix();
                return is_ident_body(peek())
                     ? tok::make_error_token("invalid number", skip_while(is_ident_body), source())
@@ -351,10 +362,10 @@ namespace rush {
                  : tok::suffixed_integer_literal(0, suffix, location(), source());
          }
 
-         auto integer_part = scan_while(is_digit);
+         auto integer_part = scan_digits();
          if (check('.') && !check("..", 1)) {
             skip(); // consume decimal point.
-            auto fractional_part = scan_while(is_digit);
+            auto fractional_part = scan_digits();
             auto suffix = scan_floating_literal_suffix();
             return is_ident_body(peek())
                  ? tok::make_error_token("invalid number", skip_while(is_ident_body), source())
