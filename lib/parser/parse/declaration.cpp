@@ -354,13 +354,19 @@ namespace rush {
             return std::move(type_result).errors();
       }
 
-      auto body_result = parse_function_body();
-      if (body_result.failed())
-         return std::move(body_result).as<ast::member_declaration>();
+      if (peek_skip_indent().is_any(symbols::thick_arrow, symbols::colon)) {
+         auto body_result = parse_function_body();
+         if (body_result.failed())
+            return std::move(body_result).as<ast::member_declaration>();
+
+         return type_result.failed()
+            ? decls::property_get(ident.text(), std::move(body_result))
+            : decls::property_get(ident.text(), type_result.type(), std::move(body_result));
+      }
 
       return type_result.failed()
-           ? decls::property_get(ident.text(), std::move(body_result))
-           : decls::property_get(ident.text(), type_result.type(), std::move(body_result));
+         ? decls::auto_property_get(ident.text())
+         : decls::auto_property_get(ident.text(), type_result.type());
    }
 
    rush::parse_result<ast::member_declaration> parser::parse_property_setter() {
@@ -379,12 +385,18 @@ namespace rush {
             return std::move(type_result).errors();
       }
 
-      auto body_result = parse_function_body();
-      if (body_result.failed())
-         return std::move(body_result).as<ast::member_declaration>();
+      if (peek_skip_indent().is_any(symbols::thick_arrow, symbols::colon)) {
+         auto body_result = parse_function_body();
+         if (body_result.failed())
+            return std::move(body_result).as<ast::member_declaration>();
+
+         return type_result.failed()
+            ? decls::property_set(ident.text(), std::move(body_result))
+            : decls::property_set(ident.text(), type_result.type(), std::move(body_result));
+      }
 
       return type_result.failed()
-           ? decls::property_set(ident.text(), std::move(body_result))
-           : decls::property_set(ident.text(), type_result.type(), std::move(body_result));
+         ? decls::auto_property_set(ident.text())
+         : decls::auto_property_set(ident.text(), type_result.type());
    }
 }

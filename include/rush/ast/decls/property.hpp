@@ -20,6 +20,7 @@
 
 #include "rush/ast/decls/member.hpp"
 #include "rush/ast/decls/function.hpp"
+#include "rush/ast/stmts/simple.hpp"
 
 #include <memory>
 
@@ -158,6 +159,22 @@ namespace rush::ast {
             ast::property_getter_declaration::factory_tag_t {});
       }
 
+      inline std::unique_ptr<ast::property_getter_declaration>
+      auto_property_get(std::string name) {
+         return property_get(
+            std::move(name),
+            ast::types::undefined,
+            stmts::pass());
+      }
+
+      inline std::unique_ptr<ast::property_getter_declaration>
+      auto_property_get(std::string name, ast::type_ref type) {
+         return property_get(
+            std::move(name),
+            std::move(type),
+            stmts::pass());
+      }
+
       inline std::unique_ptr<ast::property_setter_declaration>
       property_set(std::string name, std::unique_ptr<ast::statement> body) {
          return property_set(
@@ -176,8 +193,23 @@ namespace rush::ast {
                std::move(body)),
             ast::property_setter_declaration::factory_tag_t {});
       }
-   }
 
+      inline std::unique_ptr<ast::property_setter_declaration>
+      auto_property_set(std::string name) {
+         return property_set(
+            std::move(name),
+            ast::types::undefined,
+            stmts::pass());
+      }
+
+      inline std::unique_ptr<ast::property_setter_declaration>
+      auto_property_set(std::string name, ast::type_ref type) {
+         return property_set(
+            std::move(name),
+            std::move(type),
+            stmts::pass());
+      }
+   }
 } // rush::ast
 
 #endif // RUSH_AST_DECLS_PROPERTY_HPP
