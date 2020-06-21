@@ -237,16 +237,13 @@ namespace rush::ast {
    ast::declaration const* named_pattern::resolve_declaration() const {
       if (parent()) {
          auto result = rush::visit(*parent(),
-                       named_pattern_declaration_resolver { *this })
-                      .result();
+            named_pattern_declaration_resolver { *this }).result();
          if (result != nullptr) return result;
       }
 
-      auto miter = ast::find_ancestor<ast::module>(this);
-      if (miter != ast::ancestor_iterator<ast::module>())
-         return &miter->undeclared_declaration();
-
-      return nullptr;
+      return context()
+         ? context()->undeclared_declaration(std::string { name() })
+         : nullptr;
    }
 
    ast::type_ref destructure_pattern::resolve_type() const {

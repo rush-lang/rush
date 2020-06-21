@@ -27,6 +27,7 @@ namespace rush::ast {
 	enum class declaration_kind : std::uint8_t {
       undefined,
       undeclared,
+      overloaded,
 		alias,
       module,
 		constant,

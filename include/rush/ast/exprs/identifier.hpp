@@ -48,11 +48,11 @@ namespace rush::ast {
 			: _name { std::move(name) } {}
 
       bool is_unresolved() const noexcept {
-         return _decls.empty();
+         return _decl->kind() == ast::declaration_kind::undeclared;
       }
 
       bool is_overloaded() const noexcept {
-         return _decls.size() > 1;
+         return _decl->kind() == ast::declaration_kind::overloaded;
       }
 
 		std::string_view name() const {
@@ -60,17 +60,11 @@ namespace rush::ast {
 		}
 
       virtual ast::type_ref result_type() const noexcept override {
-         return !is_unresolved()
-              ? !is_overloaded()
-              ? _decls.front()->type()
-              : ast::types::ambiguous
-              : ast::types::undeclared;
+         return _decl->type();
       };
 
       ast::nominal_declaration const& declaration() const noexcept {
-         assert(!is_unresolved());
-         assert(!is_overloaded());
-         return *_decls.front();
+         return *_decl;
       }
 
 		using node::accept;
@@ -79,18 +73,12 @@ namespace rush::ast {
 		}
 
    protected:
-      virtual void attached(ast::scope& scope, ast::context&) override {
-         auto& sym = scope.lookup(_name);
-         std::copy(sym.begin(), sym.end(),
-            std::back_inserter(_decls));
-      }
-      virtual void detached(ast::context&) override {
-         _decls.clear();
-      }
+      virtual void attached(ast::scope& scope, ast::context& context) override;
+      virtual void detached(ast::context&) override;
 
 	private:
       std::string _name;
-      std::vector<ast::nominal_declaration const*> _decls;
+      ast::nominal_declaration const* _decl;
 	};
 
 	namespace exprs {

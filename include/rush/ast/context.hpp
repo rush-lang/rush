@@ -22,6 +22,8 @@
 #include "rush/extra/hash_combine.hpp"
 #include "rush/ast/types/type_resolver.hpp"
 #include "rush/ast/types.hpp"
+#include "rush/ast/decls/undeclared.hpp"
+#include "rush/ast/decls/overloaded.hpp"
 
 #include <vector>
 #include <numeric>
@@ -142,10 +144,35 @@ namespace rush::ast {
       ast::type_ref optional_type(ast::type_ref);
       ast::type_ref type_extension(ast::type_ref);
 
+      ast::undeclared_identifier const* undeclared_declaration(std::string name) {
+         auto it = _undeclared_decls.find(name);
+         if (it == _undeclared_decls.end()) {
+            auto decl = std::make_unique<ast::undeclared_identifier>(std::move(name));
+            it = _undeclared_decls.insert({ decl->name(), std::move(decl) }).first;
+         }
+
+         return it->second.get();
+      }
+
+      template <typename InIter>
+      ast::overloaded_declaration const* overloaded_declaration(std::string name, InIter first, InIter last) {
+         auto it = _overloaded_decls.find(name);
+         if (it == _overloaded_decls.end()) {
+            auto decl = std::make_unique<ast::overloaded_declaration>(std::move(name), first, last);
+            it = _overloaded_decls.insert({ decl->name(), std::move(decl) }).first;
+         }
+
+         return it->second.get();
+      }
+
    private:
       std::unordered_map<ast::node const*, std::unique_ptr<ast::type_resolver>> _type_resolvers;
 
+      std::unordered_map<std::string_view, std::unique_ptr<ast::undeclared_identifier>> _undeclared_decls;
+      std::unordered_map<std::string_view, std::unique_ptr<ast::overloaded_declaration>> _overloaded_decls;
+
       std::unordered_map<std::string_view, std::unique_ptr<ast::named_type>> _named_types;
+
       std::unordered_map<ast::type_ref, std::unique_ptr<ast::optional_type>> _optional_types;
       std::unordered_map<ast::type_ref, std::unique_ptr<ast::type_extension>> _type_extensions;
       std::unordered_map<detail::array_type_key_t, std::unique_ptr<ast::array_type>> _array_types;

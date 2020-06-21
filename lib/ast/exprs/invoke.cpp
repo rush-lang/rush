@@ -29,31 +29,9 @@ public:
 
    ast::type_ref result() const noexcept { return _result; }
 
-   // ultimately we're trying to find these.
-   virtual void visit_class_decl(ast::class_declaration const& decl) override { _result = decl.type(); }
-   virtual void visit_struct_decl(ast::struct_declaration const& decl) override { _result = decl.type(); }
+   virtual void visit_user_type(ast::user_type const& type) override { _result = type; }
    virtual void visit_function_type(ast::function_type const& type) override { _result = type.return_type(); }
-
-   virtual void visit_named_ptrn(ast::named_pattern const& ptrn) override { ptrn.type().accept(*this); }
-   virtual void visit_function_decl(ast::function_declaration const& decl) override { decl.type().accept(*this); }
-   virtual void visit_unary_expr(ast::unary_expression const& expr) override { expr.result_type().accept(*this); }
-   virtual void visit_binary_expr(ast::binary_expression const& expr) override { expr.result_type().accept(*this); }
-   virtual void visit_ternary_expr(ast::ternary_expression const& expr) override { expr.result_type().accept(*this); }
-   virtual void visit_lambda_expr(ast::lambda_expression const& expr) override { expr.result_type().accept(*this); }
-   virtual void visit_invoke_expr(ast::invoke_expression const& expr) override { expr.result_type().accept(*this); }
-
-   virtual void visit_identifier_expr(ast::identifier_expression const& expr) override {
-      _result = !expr.is_unresolved()
-              ? rush::visit(expr.declaration(), *this).result()
-              : ast::types::undeclared;
-   }
-
-   virtual void visit_member_access_expr(ast::member_access_expression const& expr) override {
-      _result = !expr.is_unresolved()
-              ? rush::visit(expr.result_type(), *this).result()
-              : ast::types::undeclared;
-   }
-
+   virtual void visit_builtin_error_type(ast::builtin_error_type const& type) override { _result = type; }
 private:
    ast::type_ref _result;
 };
@@ -61,6 +39,6 @@ private:
 namespace rush::ast {
    ast::type_ref invoke_expression::result_type() const {
       auto v = invoke_result_type_resolver {};
-      return rush::visit(callable(), v).result();
+      return rush::visit(callable().result_type(), v).result();
    }
 }

@@ -85,6 +85,9 @@ namespace rush::ast {
    class simple_statement;
    class result_statement;
 
+   class undeclared_identifier;
+   class overloaded_declaration;
+
    class module;
    class import_declaration;
    class module_declaration;
@@ -139,6 +142,9 @@ namespace rush::ast {
       virtual void visit_type_annotation_ptrn(ast::type_annotation_pattern const&) {};
 
 		// declarations
+      virtual void visit_undeclared_decl(ast::undeclared_identifier const&) {};
+      virtual void visit_overloaded_decl(ast::overloaded_declaration const&) {};
+
       virtual void visit_module(ast::module const&) {};
       virtual void visit_import_decl(ast::import_declaration const&) {};
       virtual void visit_module_decl(ast::module_declaration const&) {};

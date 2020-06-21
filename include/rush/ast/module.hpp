@@ -69,18 +69,6 @@ namespace rush::ast {
             make_deref_iterator(_decls.end()));
       }
 
-      ast::declaration const& undeclared_declaration() const {
-         return _undecl == nullptr
-              ? *(_undecl = std::make_unique<ast::undeclared_identifier>("$$no-name$$"))
-              : *(_undecl);
-      }
-
-      ast::nominal_declaration const* undeclared_identifier(std::string name) {
-         auto udid = std::make_unique<ast::undeclared_identifier>(std::move(name));
-         push_back(std::move(udid), ast::module_access::internal);
-         return static_cast<ast::nominal_declaration const*>(&_decls.back()->declaration());
-      }
-
       using node::accept;
       virtual void accept(ast::visitor& v) const override {
          v.visit_module(*this);

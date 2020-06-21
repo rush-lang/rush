@@ -310,11 +310,11 @@ namespace rush {
          } break;
 		}
 
-      if (result.success() && peek_skip_indent().is(symbols::period))
-         result = parse_member_access_expr(std::move(result));
-
       if (result.success() && is_unary_postfix_operator(peek_skip_indent()))
          result = parse_unary_postfix_expr(std::move(result));
+
+      if (result.success() && peek_skip_indent().is(symbols::period))
+         result = parse_member_access_expr(std::move(result));
 
       return std::move(result);
 	}
@@ -360,17 +360,12 @@ namespace rush {
       assert(peek_skip_indent().is(symbols::period) && "expected token to be a '.'.");
       next_skip_indent(); // consume period.
 
-      if (!peek_skip_indent().is_identifier())
-         return errs::expected_identifier(peek_skip_indent());
-
-      auto ident_result = parse_identifier_expr();
+      auto ident_result = parse_primary_expr();
       auto ma_expr = exprs::member_access(
          std::move(expr),
          std::move(ident_result));
 
-      return peek_skip_indent().is(symbols::period)
-         ? parse_member_access_expr(std::move(ma_expr))
-         : rush::parse_result<ast::expression> { std::move(ma_expr) };
+      return std::move(ma_expr);
 	}
 
    rush::parse_result<ast::expression> parser::parse_unary_expr() {

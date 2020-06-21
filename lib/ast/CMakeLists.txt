@@ -7,6 +7,7 @@ rush_add_library(ast
 	exprs/binary.cpp
 	exprs/unary.cpp
 	exprs/invoke.cpp
+	exprs/identifier.cpp
    types/builtin.cpp
    types/type_matcher.cpp
    types/type_reducer.cpp

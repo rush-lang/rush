@@ -15,8 +15,8 @@
 *************************************************************************/
 #pragma once
 
-#ifndef RUSH_DECLS_UNDECLARED_HPP
-#define RUSH_DECLS_UNDECLARED_HPP
+#ifndef RUSH_DECLS_OVERLOADED_HPP
+#define RUSH_DECLS_OVERLOADED_HPP
 
 
 #include "rush/ast/types/builtin.hpp"
@@ -27,26 +27,28 @@ namespace rush::ast {
    //! \brief Sentinel type that is used as a substitute for
    //         identifiers that were not resolved after parsing,
    //         and the scope chain has been destroyed.
-   class undeclared_identifier : public ast::nominal_declaration {
+   class overloaded_declaration : public ast::nominal_declaration {
    public:
-      undeclared_identifier(std::string name)
-         : _name { std::move(name) } {}
+      template <typename InIter>
+      overloaded_declaration(std::string name, InIter first, InIter last)
+         : _name { std::move(name) }
+         , _decls { first, last } {}
 
       virtual std::string_view name() const override {
          return _name;
       };
 
       virtual ast::type_ref type() const override {
-         return ast::types::undeclared;
+         return ast::types::ambiguous;
       }
 
       virtual ast::declaration_kind kind() const override {
-         return ast::declaration_kind::undeclared;
+         return ast::declaration_kind::overloaded;
       }
 
       using node::accept;
       virtual void accept(ast::visitor& v) const override {
-         v.visit_undeclared_decl(*this);
+         v.visit_overloaded_decl(*this);
       }
 
    protected:
@@ -55,7 +57,8 @@ namespace rush::ast {
 
    private:
       std::string _name;
+      std::vector<ast::nominal_declaration const*> _decls;
    };
 }
 
-#endif // RUSH_DECLS_UNDECLARED_HPP
+#endif // RUSH_DECLS_OVERLOADED_HPP
