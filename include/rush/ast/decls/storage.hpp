@@ -40,8 +40,7 @@ namespace rush::ast {
 
    protected:
       storage_declaration(std::unique_ptr<ast::pattern> ptrn)
-         : _ptrn { std::move(ptrn) }
-         { adopt(*_ptrn); }
+         : _ptrn { std::move(ptrn) } { adopt(*_ptrn); }
 
       virtual void attached(ast::scope& scope, ast::context&) override {
          attach(scope, *_ptrn);

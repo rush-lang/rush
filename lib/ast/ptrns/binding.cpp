@@ -27,8 +27,8 @@ using namespace rush::ast;
 class binding_kind_resolver : public ast::visitor {
 public:
    binding_kind result() { return _result; }
-   virtual void visit_ptrn_list(ast::pattern_list const& ptrn) override { ptrn.parent()->accept(*this); }
-   virtual void visit_expr_list(ast::expression_list const& expr) override { expr.parent()->accept(*this); }
+   virtual void visit_ptrn_list(ast::pattern_list const& ptrn) override { if (auto p = ptrn.parent()) p->accept(*this); }
+   virtual void visit_expr_list(ast::expression_list const& expr) override { if (auto p = expr.parent()) p->accept(*this); }
    virtual void visit_invoke_expr(ast::invoke_expression const&) override { _result = binding_kind::parameter; }
    virtual void visit_constant_decl(ast::constant_declaration const&) override { _result = binding_kind::initializer; }
    virtual void visit_variable_decl(ast::variable_declaration const&) override { _result = binding_kind::initializer; }

@@ -64,7 +64,7 @@ namespace rush::ast {
               ? !is_overloaded()
               ? _decls.front()->type()
               : ast::types::ambiguous
-              : ast::types::undefined;
+              : ast::types::undeclared;
       };
 
       ast::nominal_declaration const& declaration() const noexcept {

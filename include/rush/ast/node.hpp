@@ -32,7 +32,10 @@ namespace rush::ast {
 
    class node {
    public:
-      node() = default;
+      node()
+      : _parent { nullptr }
+      , _context { nullptr } {}
+
       virtual ~node() = default;
 
       ast::context* context() const noexcept {
@@ -103,6 +106,8 @@ namespace rush::ast {
 
       bool empty() const noexcept { return _children.empty(); }
       size_type size() const noexcept { return _children.size(); }
+
+      ptrdiff_t index_of(const_reference) const noexcept;
 
       reference front() noexcept { return *_children.front(); }
       reference back() noexcept { return *_children.back(); }

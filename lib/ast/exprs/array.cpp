@@ -33,7 +33,10 @@ public:
 
    ast::type_ref result() const {
       return !_result.is<ast::array_type>()
-           ? _context.array_type(_result)
+           ? _context.array_type(
+               _result == ast::types::undefined
+               ? ast::types::inference_fail
+               : _result)
            : _result;
    }
 

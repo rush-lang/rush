@@ -571,14 +571,20 @@ namespace rush {
    }
 
    rush::parse_result<ast::expression_list> parser::parse_expr_list() {
-      std::vector<std::unique_ptr<ast::expression>> results; do {
+      std::vector<std::unique_ptr<ast::expression>> results;
+      do {
          auto result = parse_expr();
          if (result.failed())
             return std::move(result)
                .as<ast::expression_list>();
 
          results.push_back(std::move(result));
-      } while (consume_skip_indent(symbols::comma));
+      } while (
+         consume_skip_indent(symbols::comma) &&
+         peek_skip_indent().is_not_any(
+            symbols::right_square_bracket,
+            symbols::right_parenthesis,
+            symbols::right_bracket));
 
       return exprs::list(std::move(results));
    }

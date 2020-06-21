@@ -35,7 +35,8 @@ namespace rush::ast {
       };
 
       type_resolver(std::unique_ptr<callback> cb)
-         : _callback { std::move(cb) } {}
+         : _callback { std::move(cb) }
+         , _resolving { false } {}
 
       ast::type_ref resolve() {
          if (_resolving)
