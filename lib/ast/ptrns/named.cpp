@@ -28,6 +28,7 @@
 #include "rush/ast/ptrns/named.hpp"
 #include "rush/ast/ptrns/binding.hpp"
 #include "rush/ast/ptrns/type_annotation.hpp"
+#include "rush/ast/decls/property.hpp"
 #include "rush/ast/iterator.hpp"
 #include "rush/ast/module.hpp"
 
@@ -53,6 +54,7 @@ public:
       public:
          std::string_view _name;
          ast::type_ref result = ast::types::undefined;
+
          virtual void visit_named_ptrn(ast::named_pattern const& ptrn) override {
             // if name is empty this is just the first node to accept this visitor, the node we're trying to resolve.
             if (_name.empty()) { _name = ptrn.name(); ptrn.declaration()->accept(*this); }
@@ -101,7 +103,14 @@ public:
 
 	virtual void visit_constant_decl(ast::constant_declaration const& decl) override { _type = ast::types::inference_fail; }
 	virtual void visit_variable_decl(ast::variable_declaration const& decl) override { _type = ast::types::inference_fail; }
-   virtual void visit_parameter_decl(ast::parameter_declaration const& decl) override { _type = ast::types::inference_fail; }
+   virtual void visit_parameter_decl(ast::parameter_declaration const& decl) override {
+      _type = ast::types::inference_fail;
+      auto it = ast::find_ancestor<ast::property_setter_declaration>(&decl);
+      if (it != ast::ancestor_iterator()) {
+         // if (auto getter = it->type_declaration().find_property_getter(it->name()))
+         //    _type = getter->type();
+      }
+   }
 
 private:
    ast::type_ref _type;

@@ -358,17 +358,33 @@ namespace rush {
       if (body_result.failed())
          return std::move(body_result).as<ast::member_declaration>();
 
-      auto result = type_result.failed()
+      return type_result.failed()
            ? decls::property_get(ident.text(), std::move(body_result))
            : decls::property_get(ident.text(), type_result.type(), std::move(body_result));
-
-      return std::move(result);
    }
 
    rush::parse_result<ast::member_declaration> parser::parse_property_setter() {
       assert(peek_skip_indent().is(keywords::set_) && "expected the 'set' keyword.");
-      // todo: add symbol overloading to scopes in order to support
-      //       getters and setters with the same name.
-      return errs::not_supported(next_skip_indent(), "property setter");
+      next_skip_indent(); // consume 'set'
+
+      if (!peek_skip_indent().is_identifier())
+         return errs::expected_property_name(peek_skip_indent());
+
+      auto ident = next_skip_indent();
+
+      auto type_result = rush::parse_type_result {};
+      if (consume_skip_indent(symbols::thin_arrow)) {
+         type_result = parse_type();
+         if (type_result.failed())
+            return std::move(type_result).errors();
+      }
+
+      auto body_result = parse_function_body();
+      if (body_result.failed())
+         return std::move(body_result).as<ast::member_declaration>();
+
+      return type_result.failed()
+           ? decls::property_set(ident.text(), std::move(body_result))
+           : decls::property_set(ident.text(), type_result.type(), std::move(body_result));
    }
 }

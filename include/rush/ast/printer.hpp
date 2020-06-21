@@ -384,7 +384,7 @@ namespace rush::ast {
       }
 
       virtual void visit_property_getter_decl(ast::property_getter_declaration const& decl) override {
-         write("<[decl] property-get: ");
+         write("<[decl] get-property: ");
          decl.type().accept(*this);
          write(" (name=\"{}\"", decl.name());
          switch (decl.access()) {
@@ -397,7 +397,7 @@ namespace rush::ast {
       }
 
       virtual void visit_property_setter_decl(ast::property_setter_declaration const& decl) override {
-         write("<[decl] property-set: ");
+         write("<[decl] set-property: ");
          decl.type().accept(*this);
          write(" (name=\"{}\"", decl.name());
          switch (decl.access()) {

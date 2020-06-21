@@ -157,6 +157,25 @@ namespace rush::ast {
                std::move(body)),
             ast::property_getter_declaration::factory_tag_t {});
       }
+
+      inline std::unique_ptr<ast::property_setter_declaration>
+      property_set(std::string name, std::unique_ptr<ast::statement> body) {
+         return property_set(
+            std::move(name),
+            ast::types::undefined,
+            std::move(body));
+      }
+
+      inline std::unique_ptr<ast::property_setter_declaration>
+      property_set(std::string name, ast::type_ref type, std::unique_ptr<ast::statement> body) {
+         return std::make_unique<ast::property_setter_declaration>(
+            decls::function(
+               std::move(name),
+               std::move(type),
+               ptrns::name("value"),
+               std::move(body)),
+            ast::property_setter_declaration::factory_tag_t {});
+      }
    }
 
 } // rush::ast
