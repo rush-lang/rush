@@ -65,6 +65,7 @@ namespace rush::ast {
    class new_expression;
    class this_expression;
    class base_expression;
+   class subscript_expression;
 
 	class literal_expression;
    class array_literal_expression;
@@ -198,6 +199,8 @@ namespace rush::ast {
 		virtual void visit_new_expr(new_expression const&) {};
 		virtual void visit_this_expr(this_expression const&) {};
 		virtual void visit_base_expr(base_expression const&) {};
+      virtual void visit_subscript_expr(subscript_expression const&) {};
+
 
 		virtual void visit_literal_expr(string_literal_expression const&) {};
 		virtual void visit_literal_expr(boolean_literal_expression const&) {};

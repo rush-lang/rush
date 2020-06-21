@@ -160,6 +160,11 @@ namespace rush::ast {
          accept(expr.expression());
       }
 
+      virtual void visit_subscript_expr(subscript_expression const& expr) override {
+         accept(expr.operand());
+         accept(expr.subscript());
+      }
+
 #     define RUSH_TRAVERSAL_RESULT_STMT_FUNC_IMPLS
 #     define RUSH_TRAVERSAL_ITERATION_STMT_FUNC_IMPLS
 #     define RUSH_TRAVERSAL_CONDITIONAL_STMT_FUNC_IMPLS

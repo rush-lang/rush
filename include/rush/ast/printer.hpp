@@ -334,6 +334,11 @@ namespace rush::ast {
 			print_expression("this", expr);
 		}
 
+      virtual void visit_subscript_expr(subscript_expression const& expr) override {
+         print_expression("subscript", expr);
+         indent_traverse(expr);
+      }
+
 		virtual void visit_constant_decl(ast::constant_declaration const& decl) override {
 			print_storage_decl("constant", decl);
 		}

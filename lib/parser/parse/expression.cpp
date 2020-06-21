@@ -133,7 +133,6 @@ namespace rush {
 
    rush::parse_result<ast::expression> parser::parse_array_literal_expr() {
       assert(peek_skip_indent().is(symbols::left_square_bracket) && "expected left square bracket to start array expression.");
-      assert(peek_skip_indent().is(symbols::left_square_bracket) && "expected '[' start of element list.");
       next_skip_indent(); // consume '[' symbol
 
       if (consume_skip_indent(symbols::right_square_bracket))
@@ -310,11 +309,14 @@ namespace rush {
          } break;
 		}
 
-      if (result.success() && is_unary_postfix_operator(peek_skip_indent()))
+      while (result.success() && is_unary_postfix_operator(peek_skip_indent()))
          result = parse_unary_postfix_expr(std::move(result));
 
-      if (result.success() && peek_skip_indent().is(symbols::period))
+      while (result.success() && peek_skip_indent().is(symbols::period))
          result = parse_member_access_expr(std::move(result));
+
+      while (result.success() && peek_skip_indent().is(symbols::left_square_bracket))
+         result = parse_subscript_expr(std::move(result));
 
       return std::move(result);
 	}
@@ -355,6 +357,23 @@ namespace rush {
 		auto tok = next_skip_indent();
       return exprs::identifier(tok.text());
 	}
+
+   rush::parse_result<ast::expression> parser::parse_subscript_expr(rush::parse_result<ast::expression> operand_expr) {
+      assert(peek_skip_indent().is(symbols::left_square_bracket) && "expected token to be a '['.");
+      next_skip_indent(); // consume '['.
+
+      auto subscript_expr = parse_expr();
+      if (subscript_expr.failed())
+         return std::move(subscript_expr).as<ast::expression>();
+
+      auto expr_result = exprs::subscript(
+         std::move(operand_expr),
+         std::move(subscript_expr));
+
+      return consume_skip_indent(symbols::right_square_bracket)
+           ? rush::parse_result<ast::expression> { std::move(expr_result) }
+           : errs::expected_closing_square_bracket_or_comma(peek_skip_indent());
+   }
 
    rush::parse_result<ast::expression> parser::parse_member_access_expr(rush::parse_result<ast::expression> expr) {
       assert(peek_skip_indent().is(symbols::period) && "expected token to be a '.'.");

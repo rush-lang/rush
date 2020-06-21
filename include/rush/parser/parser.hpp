@@ -352,6 +352,7 @@ namespace rush {
 		rush::parse_result<ast::expression> parse_integer_expr();
 		rush::parse_result<ast::expression> parse_floating_expr();
 		rush::parse_result<ast::expression> parse_identifier_expr();
+      rush::parse_result<ast::expression> parse_subscript_expr(rush::parse_result<ast::expression>);
       rush::parse_result<ast::expression> parse_member_access_expr(rush::parse_result<ast::expression>);
 
 		rush::parse_result<ast::expression> parse_unary_expr();

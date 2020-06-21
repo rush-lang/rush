@@ -10,7 +10,6 @@
 
    "postfix": [
       { "precedence": 20, "name": "invoke", "symbol_token": "left_parenthesis", "exclude_func": true },
-      { "precedence": 20, "name": "subscript", "symbol_token": "left_square_bracket", "exclude_func": true },
       { "precedence": 20, "name": "post_increment", "symbol_token": "plus_plus", "display": "post-increment" },
       { "precedence": 20, "name": "post_decrement", "symbol_token": "minus_minus", "display": "post-decrement" }
    ],
