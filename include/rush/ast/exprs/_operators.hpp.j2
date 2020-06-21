@@ -154,8 +154,8 @@ switch (expr.opkind()) {
 #ifdef RUSH_UNARY_EXPRESSION_PRINT_VISIT_SWITCH
 switch (expr.opkind()) {
 default: assert("unreachable");
-{% for operator in prefix %}case ast::unary_operator::{{ operator/name }}: print_expression("{{ operator/name }}", expr); break;
-{% endfor %}{% for operator in postfix %}case ast::unary_operator::{{ operator/name }}: print_expression("{{ operator/name }}", expr); break;
+{% for operator in prefix %}case ast::unary_operator::{{ operator/name }}: print_expression("{{ default(operator/display, operator/name) }}", expr); break;
+{% endfor %}{% for operator in postfix %}case ast::unary_operator::{{ operator/name }}: print_expression("{{ default(operator/display, operator/name) }}", expr); break;
 {% endfor %}
 }
 #undef RUSH_UNARY_EXPRESSION_PRINT_VISIT_SWITCH
@@ -164,7 +164,7 @@ default: assert("unreachable");
 #ifdef RUSH_BINARY_EXPRESSION_PRINT_VISIT_SWITCH
 switch (expr.opkind()) {
 default: assert("unreachable");
-{% for operator in binary %}{% if default(operator/binary_expression, true) %}case ast::binary_operator::{{ operator/name }}: print_expression("{{ operator/name }}", expr); break;
+{% for operator in binary %}{% if default(operator/binary_expression, true) %}case ast::binary_operator::{{ operator/name }}: print_expression("{{ default(operator/display, operator/name) }}", expr); break;
 {% endif %}{% endfor %}
 }
 #undef RUSH_BINARY_EXPRESSION_PRINT_VISIT_SWITCH
