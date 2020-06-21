@@ -36,8 +36,6 @@
 
 #include "rush/parser/result.hpp"
 #include "rush/parser/options.hpp"
-#include "rush/parser/symbol.hpp"
-#include "rush/parser/scope.hpp"
 
 #include "rush/diag/syntax_error.hpp"
 
@@ -69,7 +67,6 @@ namespace rush {
 		}
 
 	private:
-      rush::scope_chain _scope;
 		rush::lexical_token _eof;
 		rush::parser_options _opts;
 

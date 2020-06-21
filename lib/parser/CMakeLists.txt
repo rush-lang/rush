@@ -9,8 +9,6 @@ rush_add_library(parser
    parse/type.cpp
 	parse.cpp
    dump.cpp
-   symbol.cpp
-   scope.cpp
 )
 
 target_include_directories(parser PUBLIC

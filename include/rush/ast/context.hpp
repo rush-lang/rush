@@ -28,6 +28,7 @@
 #include <functional>
 #include <unordered_map>
 #include <algorithm>
+#include <variant>
 
 
 namespace rush::ast::detail {

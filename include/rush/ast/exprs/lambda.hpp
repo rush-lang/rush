@@ -28,6 +28,7 @@
 #include "rush/ast/scope.hpp"
 
 #include <memory>
+#include <variant>
 
 
 namespace rush::ast {

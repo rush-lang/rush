@@ -18,7 +18,6 @@
 #ifndef RUSH_AST_DECLS_STORAGE_HPP
 #define RUSH_AST_DECLS_STORAGE_HPP
 
-#include "rush/ast/identifier.hpp"
 #include "rush/ast/exprs/expression.hpp"
 #include "rush/ast/decls/declaration.hpp"
 #include "rush/ast/ptrns/pattern.hpp"

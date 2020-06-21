@@ -18,7 +18,6 @@ rush_add_library(ast
    decls/module.cpp
    decls/struct.cpp
    decls/class.cpp
-   identifier.cpp
    traversal.cpp
    iterator.cpp
    visitor.cpp

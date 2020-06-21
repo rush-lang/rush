@@ -45,6 +45,10 @@ namespace rush::ast {
       block,
    };
 
+   /*! \brief A value type that holds references to zero or more declarations
+    *         in an AST. This type tracks declarations within lexical scopes
+    *         and is returned on lookup during parsing.
+	 */
    class symbol {
       friend class scope_frame;
 
@@ -93,6 +97,11 @@ namespace rush::ast {
       }
    };
 
+
+   /*! \brief Represents a lexical scope of a particular kind (e.g. block, function, class).
+    *         Each scope maintains a table of symbols and a pointer to its parent scope which
+    *         enables a chained lookup of symbols while isolating symbol lookup from
+    *         unrelated scopes. */
    class scope_frame {
       friend class scope;
 
@@ -136,10 +145,18 @@ namespace rush::ast {
       //! \brief Inserts the specified declaration as a symbol into the scope frame.
       void insert(ast::nominal_declaration const&);
 
-      //! \brief Performs lookup of symbols with the specified name within the scope chain.
+      /*! \brief Performs lookup for a symbol with the specified name.
+       *         This is a chained lookup, starting at the scope the method
+       *         is invoked on and then performing lookup against its the parent
+       *         scope recursively until either the root/global scope has been reached
+       *         or a symbol entry for the specified name is found.
+       */
       ast::symbol const& lookup(std::string_view name) const;
    };
 
+   /*! \brief Maintains a stack of lexical scopes and provides
+    *         accessors for the current scope on top of the stack.
+    */
    class scope {
    public:
       scope();
@@ -156,7 +173,12 @@ namespace rush::ast {
       //! \brief Inserts the declaration into the current scope frame.
       void insert(ast::nominal_declaration const&);
 
-      //! \brief Performs lookup of symbols with the specified name within the scope chain.
+      /*! \brief Performs lookup for a symbol with the specified name.
+       *         This is a chained lookup, starting at the scope the method
+       *         is invoked on and then performing lookup against its the parent
+       *         scope recursively until either the root/global scope has been reached
+       *         or a symbol entry for the specified name is found.
+       */
       ast::symbol const& lookup(std::string_view name) const;
 
    private:
