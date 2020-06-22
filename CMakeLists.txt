@@ -53,7 +53,6 @@ install(TARGETS
    lexer
    parser
    crush
-   rush-dump
    RUNTIME DESTINATION ${RUNTIME_DEST}
    LIBRARY DESTINATION ${LIBRARY_DEST})
 
