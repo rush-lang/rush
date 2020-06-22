@@ -59,6 +59,20 @@ namespace rush::ast {
          case binary_operator::greater_than:
          case binary_operator::greater_equals:
             return context()->bool_type();
+
+         case binary_operator::assignment:
+         case binary_operator::compound_modulo:
+         case binary_operator::compound_division:
+         case binary_operator::compound_addition:
+         case binary_operator::compound_subtraction:
+         case binary_operator::compound_multiplication:
+         case binary_operator::compound_bitwise_or:
+         case binary_operator::compound_bitwise_and:
+         case binary_operator::compound_bitwise_xor:
+         case binary_operator::compound_left_shift:
+         case binary_operator::compound_right_shift:
+            return _left->result_type();
+
          default: return types::reduce(
             _left->result_type(),
             _right->result_type());
