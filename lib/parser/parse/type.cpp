@@ -147,16 +147,15 @@ namespace rush {
       next_skip_indent(); // consume '(' symbol.
 
       std::vector<ast::type_ref> types;
-      do {
+      while (!consume_skip_indent(symbols::right_parenthesis)) {
          auto result = parse_type();
          if (result.failed())
             return std::move(result);
 
          types.push_back(result.type());
          consume_skip_indent(symbols::comma);
-      } while (peek_skip_indent().is_not(symbols::right_parenthesis));
+      }
 
-      next_skip_indent();
       return types.size() == 1
          ? types.front()
          : _context->tuple_type(types);
