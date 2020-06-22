@@ -23,7 +23,7 @@ namespace rush {
       switch (kw) {
          case keywords::void_: return ast::types::void_type;
          case keywords::bool_: return ctx.bool_type();
-         case keywords::byte_: return ctx.int8_type();
+         case keywords::byte_: return ctx.uint8_type();
          case keywords::sbyte_: return ctx.int8_type();
          case keywords::short_: return ctx.int16_type();
          case keywords::ushort_: return ctx.uint16_type();
