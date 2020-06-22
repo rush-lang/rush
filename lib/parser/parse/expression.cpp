@@ -232,7 +232,7 @@ namespace rush {
    rush::parse_result<ast::expression> parser::parse_lambda_expr() {
       auto params = std::unique_ptr<ast::pattern> {};
       if (peek_skip_indent().is_identifier()) {
-         auto result = parse_named_pattern("parameter");
+         auto result = parse_named_pattern();
          if (result.failed()) return std::move(result).as<ast::expression>();
          params = std::move(result);
       } else if (peek_skip_indent().is(symbols::underscore)) {

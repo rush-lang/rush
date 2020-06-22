@@ -45,27 +45,22 @@ namespace rush {
       return errs::expected_toplevel_decl(tok);
    }
 
-	rush::parse_result<ast::declaration> parser::_parse_storage_decl(std::string storage_type,
+	rush::parse_result<ast::declaration> parser::_parse_storage_decl(
 		rush::function_ref<std::unique_ptr<ast::declaration>(std::unique_ptr<ast::pattern>)> fn) {
-		auto patt = parse_storage_pattern(storage_type);
-      if (patt.failed()) return std::move(patt).as<ast::declaration>();
-      return fn(std::move(patt));
+		auto ptrn = parse_storage_pattern();
+      return ptrn.failed()
+           ? std::move(ptrn).as<ast::declaration>()
+           : rush::parse_result<ast::declaration> { fn(std::move(ptrn)) };
 	}
 
 	rush::parse_result<ast::declaration> parser::parse_constant_decl() {
-		assert(peek_skip_indent().is(keywords::let_) && "expected the 'let' keyword.");
-		next_skip_indent(); // consume let token
-		return _parse_storage_decl("constant", [](std::unique_ptr<ast::pattern> patt) {
-         return decls::constant(std::move(patt));
-      });
+		assert(consume_skip_indent(keywords::let_) && "expected the 'let' keyword.");
+		return _parse_storage_decl([](auto ptrn) { return decls::constant(std::move(ptrn)); });
 	}
 
 	rush::parse_result<ast::declaration> parser::parse_variable_decl() {
-		assert(peek_skip_indent().is(keywords::var_) && "expected the 'var' keyword.");
-		next_skip_indent(); // consume var token
-		return _parse_storage_decl("variable", [](std::unique_ptr<ast::pattern> patt) {
-         return decls::variable(std::move(patt));
-      });
+		assert(consume_skip_indent(keywords::var_) && "expected the 'var' keyword.");
+		return _parse_storage_decl([](auto ptrn) { return decls::variable(std::move(ptrn)); });
 	}
 
 	rush::parse_result<ast::pattern> parser::parse_parameter_list() {

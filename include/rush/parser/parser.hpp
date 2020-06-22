@@ -274,7 +274,7 @@ namespace rush {
 		// declarations.
       rush::parse_result<ast::declaration> parse_toplevel_decl();
 
-		rush::parse_result<ast::declaration> _parse_storage_decl(std::string,
+		rush::parse_result<ast::declaration> _parse_storage_decl(
          rush::function_ref<std::unique_ptr<ast::declaration>(std::unique_ptr<ast::pattern>)>);
 
 		rush::parse_result<ast::declaration> parse_constant_decl();
@@ -295,19 +295,21 @@ namespace rush {
       rush::parse_result<ast::member_declaration> parse_property_setter();
 
 
-      rush::parse_result<ast::pattern> parse_storage_pattern(std::string);
+      rush::parse_result<ast::pattern> parse_pattern();
+      rush::parse_result<ast::pattern> parse_storage_pattern();
       rush::parse_result<ast::pattern> parse_iteration_pattern();
-      rush::parse_result<ast::pattern> parse_argument_pattern();
       rush::parse_result<ast::pattern> parse_parameter_pattern();
-      rush::parse_result<ast::pattern> parse_pattern_list(
-         rush::function_ref<rush::parse_result<ast::pattern>()> parseFn);
 
-      rush::parse_result<ast::pattern> parse_named_pattern(std::string);
+      rush::parse_result<ast::pattern> parse_named_pattern();
       rush::parse_result<ast::pattern> parse_discard_pattern();
-      rush::parse_result<ast::pattern> parse_binding_pattern(rush::parse_result<ast::pattern> lhs);
+      rush::parse_result<ast::pattern> parse_destructure_pattern();
       rush::parse_result<ast::pattern> parse_array_destructure_pattern();
       rush::parse_result<ast::pattern> parse_object_destructure_pattern();
       rush::parse_result<ast::pattern> parse_type_annotation_pattern(rush::parse_result<ast::pattern> lhs);
+      rush::parse_result<ast::pattern> parse_binding_pattern(rush::parse_result<ast::pattern> lhs);
+
+      rush::parse_result<ast::pattern> parse_pattern_list(
+         rush::function_ref<rush::parse_result<ast::pattern>()> parseFn);
 
 		// statements.
       rush::parse_result<ast::statement> parse_stmt();
