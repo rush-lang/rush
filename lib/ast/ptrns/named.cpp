@@ -13,40 +13,62 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *************************************************************************/
-#include "rush/ast/ptrns/destructure.hpp"
-#include "rush/ast/ptrns/type_annotation.hpp"
 #include "rush/ast/types/extension.hpp"
+
 #include "rush/ast/decls/parameter.hpp"
 #include "rush/ast/decls/constant.hpp"
 #include "rush/ast/decls/variable.hpp"
 #include "rush/ast/decls/function.hpp"
+#include "rush/ast/decls/property.hpp"
+
 #include "rush/ast/exprs/invoke.hpp"
 #include "rush/ast/exprs/lambda.hpp"
 #include "rush/ast/exprs/list.hpp"
+
+#include "rush/ast/patterns.hpp"
+
 #include "rush/ast/visitor.hpp"
-#include "rush/ast/ptrns/list.hpp"
-#include "rush/ast/ptrns/named.hpp"
-#include "rush/ast/ptrns/binding.hpp"
-#include "rush/ast/ptrns/type_annotation.hpp"
-#include "rush/ast/decls/property.hpp"
 #include "rush/ast/iterator.hpp"
 #include "rush/ast/module.hpp"
+#include "rush/ast/context.hpp"
+
 
 using namespace rush;
 
 class pattern_type_resolver : public ast::visitor {
+private:
+   ast::type_ref _type;
+   ast::context& _context;
+   ast::pattern const& _ptrn;
+
 public:
-   pattern_type_resolver()
-      : _type { ast::types::undefined } {}
+   pattern_type_resolver(ast::pattern const& ptrn, ast::context& context)
+      : _type { ast::types::undefined }
+      , _context { context }
+      , _ptrn { ptrn } {}
 
    ast::type_ref result() const noexcept { return _type; }
 
    virtual void visit_ptrn_list(ast::pattern_list const& ptrn) override {
-      if (ptrn.parent()) ptrn.parent()->accept(*this);
+      if (auto p = ptrn.parent()) p->accept(*this);
    }
 
    virtual void visit_expr_list(ast::expression_list const& expr) override {
-      if (expr.parent()) expr.parent()->accept(*this);
+      if (auto p = expr.parent()) p->accept(*this);
+   }
+
+   virtual void visit_rest_ptrn(ast::rest_pattern const& ptrn) override {
+      struct find_last_pattern : public ast::visitor {
+         ast::pattern const* result;
+         virtual void visit_ptrn_list(ast::pattern_list const& ptrn) override { result = &ptrn.back(); }
+         virtual void visit_named_ptrn(ast::named_pattern const& ptrn) override { result = &ptrn; }
+      };
+
+      if (auto p = ptrn.parent()) {
+         p->accept(*this);
+         if (&_ptrn == rush::visit(ptrn.pattern(), find_last_pattern {}).result)
+            _type = _context.array_type(_type);
+      }
    }
 
    virtual void visit_binding_ptrn(ast::binding_pattern const& ptrn) override {
@@ -111,9 +133,6 @@ public:
          //    _type = getter->type();
       }
    }
-
-private:
-   ast::type_ref _type;
 };
 
 class named_pattern_declaration_resolver : public ast::visitor {
@@ -224,7 +243,7 @@ namespace rush::ast {
 
       _resolving_type = true;
       auto result_type = parent()
-         ? rush::visit(*parent(), pattern_type_resolver {}).result()
+         ? rush::visit(*parent(), pattern_type_resolver { *this, *context() }).result()
          : ast::types::undeclared;
       _resolving_type = false;
 
@@ -248,7 +267,7 @@ namespace rush::ast {
 
    ast::type_ref destructure_pattern::resolve_type() const {
       return parent()
-           ? rush::visit(*parent(), pattern_type_resolver {}).result()
+           ? rush::visit(*parent(), pattern_type_resolver { *this, *context() }).result()
            : ast::types::undeclared;
    }
 } // rush::ast

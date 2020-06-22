@@ -48,6 +48,10 @@ namespace rush::ast {
          accept(ptrn.pattern());
       }
 
+      virtual void visit_rest_ptrn(ast::rest_pattern const& ptrn) override {
+         accept(ptrn.pattern());
+      }
+
       virtual void visit_module(ast::module const& mdl) override {
          std::for_each(mdl.imports().begin(), mdl.imports().end(), [this](auto& decl) { accept(decl); });
          std::for_each(mdl.declarations().begin(), mdl.declarations().end(), [this](auto& decl) { accept(decl); });
@@ -157,6 +161,10 @@ namespace rush::ast {
       }
 
       virtual void visit_new_expr(ast::new_expression const& expr) override {
+         accept(expr.expression());
+      }
+
+      virtual void visit_spread_expr(ast::spread_expression const& expr) override {
          accept(expr.expression());
       }
 

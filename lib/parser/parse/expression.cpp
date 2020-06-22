@@ -303,6 +303,7 @@ namespace rush {
             if (peek_skip_indent(1).is(symbols::thick_arrow))
                result = parse_lambda_expr();
             break;
+         case symbols::ellipses: result = parse_spread_expr(); break;
          case symbols::left_parenthesis: result = parse_paren_expr(); break;
          case symbols::left_square_bracket: result = parse_array_literal_expr(); break;
          default: return errs::unexpected_symbol_expr(tok);
@@ -675,5 +676,15 @@ namespace rush {
       if (expr.failed()) return std::move(expr);
 
       return exprs::new_(std::move(expr));
+   }
+
+   rush::parse_result<ast::expression> parser::parse_spread_expr() {
+      assert(consume_skip_indent(symbols::ellipses) && "expected '...' symbol.");
+
+      auto expr_result = parse_primary_expr();
+      if (expr_result.failed())
+         return std::move(expr_result);
+
+      return exprs::spread(std::move(expr_result));
    }
 }

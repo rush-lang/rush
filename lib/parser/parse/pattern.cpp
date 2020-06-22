@@ -15,6 +15,7 @@
 *************************************************************************/
 #include "rush/parser/parser.hpp"
 #include "rush/diag/syntax_error.hpp"
+#include "rush/ast/patterns.hpp"
 
 #include <vector>
 
@@ -195,7 +196,12 @@ namespace rush {
    }
 
    rush::parse_result<ast::pattern> parser::parse_type_annotation_pattern(rush::parse_result<ast::pattern> lhs) {
-      auto type_result = parse_type_annotation();
+      assert(consume_skip_indent(symbols::colon) && "expected a type annotation symbol ':'");
+
+      if (consume_skip_indent(symbols::ellipses))
+         lhs = ptrns::rest(std::move(lhs));
+
+      auto type_result = parse_type();
       if (type_result.failed())
          return std::move(type_result).errors();
       if (type_result.is_undefined())

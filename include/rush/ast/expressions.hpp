@@ -33,6 +33,7 @@
 #include "rush/ast/exprs/string.hpp"
 #include "rush/ast/exprs/this.hpp"
 #include "rush/ast/exprs/new.hpp"
+#include "rush/ast/exprs/spread.hpp"
 #include "rush/ast/exprs/subscript.hpp"
 
 #endif // RUSH_AST_EXPRESSION_HPP

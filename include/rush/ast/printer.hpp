@@ -220,6 +220,11 @@ namespace rush::ast {
          indent_traverse(ptrn);
       }
 
+      virtual void visit_rest_ptrn(ast::rest_pattern const& ptrn) override {
+         writeln("<[ptrn] rest>");
+         indent_traverse(ptrn);
+      }
+
 		virtual void visit_unary_expr(ast::unary_expression const& expr) override {
 #        define RUSH_UNARY_EXPRESSION_PRINT_VISIT_SWITCH
 #        include "rush/ast/exprs/_operators.hpp"
@@ -332,6 +337,11 @@ namespace rush::ast {
 
       virtual void visit_this_expr(ast::this_expression const& expr) override {
 			print_expression("this", expr);
+		}
+
+      virtual void visit_spread_expr(ast::spread_expression const& expr) override {
+			print_expression("spread", expr);
+         indent_traverse(expr);
 		}
 
       virtual void visit_subscript_expr(subscript_expression const& expr) override {

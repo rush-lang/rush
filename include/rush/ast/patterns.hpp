@@ -24,6 +24,7 @@
 #include "rush/ast/ptrns/binding.hpp"
 #include "rush/ast/ptrns/destructure.hpp"
 #include "rush/ast/ptrns/type_annotation.hpp"
+#include "rush/ast/ptrns/rest.hpp"
 #include "rush/ast/ptrns/list.hpp"
 
 #endif // RUSH_AST_PATTERNS_HPP

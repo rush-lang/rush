@@ -368,6 +368,7 @@ namespace rush {
       rush::parse_result<ast::expression_list> parse_argument_list(rush::parse_result<ast::expression>);
 
       rush::parse_result<ast::expression> parse_new_expr();
+      rush::parse_result<ast::expression> parse_spread_expr();
 
       rush::parse_result<ast::nominal_declaration> scope_insert(std::unique_ptr<ast::nominal_declaration> decl, rush::lexical_token const& ident);
 

@@ -50,6 +50,7 @@ namespace rush::ast {
    class array_destructure_pattern;
    class object_destructure_pattern;
    class type_annotation_pattern;
+   class rest_pattern;
 
 	class expression;
    class expression_list;
@@ -65,6 +66,7 @@ namespace rush::ast {
    class new_expression;
    class this_expression;
    class base_expression;
+   class spread_expression;
    class subscript_expression;
 
 	class literal_expression;
@@ -141,6 +143,7 @@ namespace rush::ast {
       virtual void visit_array_destructure_ptrn(ast::array_destructure_pattern const&) {};
       virtual void visit_object_destructure_ptrn(ast::object_destructure_pattern const&) {};
       virtual void visit_type_annotation_ptrn(ast::type_annotation_pattern const&) {};
+      virtual void visit_rest_ptrn(ast::rest_pattern const&) {};
 
 		// declarations
       virtual void visit_undeclared_decl(ast::undeclared_identifier const&) {};
@@ -199,6 +202,7 @@ namespace rush::ast {
 		virtual void visit_new_expr(new_expression const&) {};
 		virtual void visit_this_expr(this_expression const&) {};
 		virtual void visit_base_expr(base_expression const&) {};
+		virtual void visit_spread_expr(spread_expression const&) {};
       virtual void visit_subscript_expr(subscript_expression const&) {};
 
 

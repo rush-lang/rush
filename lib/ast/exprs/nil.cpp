@@ -16,6 +16,8 @@
 #include "rush/ast/exprs/nil.hpp"
 #include "rush/ast/exprs/lambda.hpp"
 #include "rush/ast/types/optional.hpp"
+#include "rush/ast/ptrns/rest.hpp"
+#include "rush/ast/ptrns/binding.hpp"
 #include "rush/ast/ptrns/type_annotation.hpp"
 #include "rush/ast/decls/function.hpp"
 #include "rush/ast/stmts/result.hpp"
@@ -36,6 +38,10 @@ public:
       return !_result.is<ast::optional_type>()
            ? _context.optional_type(_result)
            : _result;
+   }
+
+   virtual void visit_rest_ptrn(ast::rest_pattern const& ptrn) override {
+      ptrn.pattern().accept(*this);
    }
 
    virtual void visit_binding_ptrn(ast::binding_pattern const& ptrn) override {
