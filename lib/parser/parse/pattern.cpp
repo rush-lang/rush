@@ -82,6 +82,8 @@ namespace rush {
             auto result = rush::parse_result<ast::pattern> {};
             if (tok.is_identifier()) {
                result = parse_named_pattern();
+            } else if (tok.is(symbols::ellipses)) {
+               result = parse_rest_pattern();
             } else if (tok.is(symbols::underscore)) {
                result = parse_discard_pattern();
             } else if (tok.is(symbols::left_square_bracket)) {
@@ -139,6 +141,26 @@ namespace rush {
       return ptrns::binding(
          std::move(lhs),
          std::move(expr_result));
+   }
+
+   rush::parse_result<ast::pattern> parser::parse_rest_pattern() {
+      assert(consume_skip_indent(symbols::ellipses) && "expected a type annotation symbol ':'");
+      auto tok = peek_skip_indent();
+      auto result = rush::parse_result<ast::pattern> {};
+      if (tok.is_identifier()) {
+         result = parse_named_pattern();
+      } else if (tok.is(symbols::underscore)) {
+         result = parse_discard_pattern();
+      } else if (tok.is(symbols::left_square_bracket)) {
+         result = parse_array_destructure_pattern();
+      } else if (tok.is(symbols::left_bracket)) {
+         result = parse_object_destructure_pattern();
+      } else return errs::expected(tok, "pattern");
+
+      if (result.failed())
+         return std::move(result);
+
+      return ptrns::rest(std::move(result));
    }
 
    rush::parse_result<ast::pattern> parser::parse_pattern_list(

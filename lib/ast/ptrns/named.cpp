@@ -157,6 +157,10 @@ public:
       if (ptrn.parent()) ptrn.parent()->accept(*this);
    }
 
+   virtual void visit_rest_ptrn(ast::rest_pattern const& ptrn) override {
+      if (ptrn.parent()) ptrn.parent()->accept(*this);
+   }
+
    virtual void visit_binding_ptrn(ast::binding_pattern const& ptrn) override {
       if (ptrn.parent()) ptrn.parent()->accept(*this);
    }
