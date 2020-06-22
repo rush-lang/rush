@@ -22,6 +22,8 @@
 #include "rush/ast/decls/function.hpp"
 #include "rush/ast/stmts/result.hpp"
 #include "rush/ast/exprs/binary.hpp"
+#include "rush/ast/exprs/array.hpp"
+#include "rush/ast/exprs/list.hpp"
 #include "rush/ast/context.hpp"
 
 using namespace rush;
@@ -38,6 +40,10 @@ public:
       return !_result.is<ast::optional_type>()
            ? _context.optional_type(_result)
            : _result;
+   }
+
+   virtual void visit_expr_list(ast::expression_list const& expr) override {
+      if (auto p = expr.parent()) p->accept(*this);
    }
 
    virtual void visit_rest_ptrn(ast::rest_pattern const& ptrn) override {
@@ -59,6 +65,18 @@ public:
       else {
          auto it = ast::find_ancestor<ast::function_declaration>(&stmt);
          if (it != ast::ancestor_iterator()) _result = it->return_type();
+      }
+   }
+
+   virtual void visit_literal_expr(ast::array_literal_expression const& expr) override {
+      if (auto p = expr.parent()) {
+         p->accept(*this);
+         if (auto type = _result.as<ast::optional_type>()) {
+            _result = type->underlying_type();
+         }
+         if (auto type = _result.as<ast::array_type>()) {
+            _result = type->underlying_type();
+         }
       }
    }
 
