@@ -12,7 +12,8 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-*************************************************************************/#include "rush/ast/ptrns/type_annotation.hpp"
+*************************************************************************/
+#include "rush/ast/ptrns/type_annotation.hpp"
 #include "rush/ast/types/builtin.hpp"
 #include "rush/ast/decls/nominal.hpp"
 #include "rush/ast/types.hpp"
