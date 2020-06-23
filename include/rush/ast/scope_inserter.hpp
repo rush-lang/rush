@@ -53,7 +53,6 @@ namespace rush::ast {
 
       void visit_method_decl(ast::method_declaration const& decl) {
          if (!decl.is_constructor()) {
-            std::cout << decl.name() << std::endl;
             _scope.insert(decl); }
       }
 

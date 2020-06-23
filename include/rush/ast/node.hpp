@@ -58,9 +58,9 @@ namespace rush::ast {
       void attach(ast::scope&, ast::node& child, ast::node* parent = nullptr);
       void detach(ast::node& child);
 
-      void adopt(ast::node& child) {
+      void adopt(ast::node& child, ast::node* parent = nullptr) {
          // assert(child._parent == nullptr);
-         child._parent = this;
+         child._parent = parent != nullptr ? parent : this;
       }
 
       void orphan(ast::node& child) {

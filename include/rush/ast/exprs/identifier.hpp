@@ -45,7 +45,8 @@ namespace rush::ast {
 
 	public:
 		identifier_expression(std::string name, factory_tag_t) noexcept
-			: _name { std::move(name) } {}
+			: _name { std::move(name) }
+         , _decl { nullptr } {}
 
       bool is_unresolved() const noexcept {
          return _decl->kind() == ast::declaration_kind::undeclared;
@@ -60,11 +61,11 @@ namespace rush::ast {
 		}
 
       virtual ast::type_ref result_type() const noexcept override {
-         return _decl->type();
-      };
+         return resolve_declaration().type();
+      }
 
       ast::nominal_declaration const& declaration() const noexcept {
-         return *_decl;
+         return resolve_declaration();
       }
 
 		using node::accept;
@@ -78,7 +79,9 @@ namespace rush::ast {
 
 	private:
       std::string _name;
-      ast::nominal_declaration const* _decl;
+      mutable ast::nominal_declaration const* _decl;
+
+      ast::nominal_declaration const& resolve_declaration() const;
 	};
 
 	namespace exprs {

@@ -16,6 +16,8 @@
 #include "rush/ast/ptrns/type_annotation.hpp"
 #include "rush/ast/types/builtin.hpp"
 #include "rush/ast/decls/nominal.hpp"
+#include "rush/ast/decls/class.hpp"
+#include "rush/ast/decls/struct.hpp"
 #include "rush/ast/types.hpp"
 #include "rush/ast/scope.hpp"
 #include "rush/ast/context.hpp"
@@ -41,13 +43,20 @@ public:
    }
 
    virtual void visit_named_type(ast::named_type const& type) override {
+      struct named_type_resolver : ast::visitor {
+         ast::type_ref result;
+         named_type_resolver(ast::named_type const& type) : result { type } {}
+         virtual void visit_class_decl(ast::class_declaration const& decl) override { result = decl.type(); }
+         virtual void visit_struct_decl(ast::struct_declaration const& decl) override { result = decl.type(); }
+      };
+
       // TODO: lookup type declaration symbols only.
       auto sym = _scope.lookup(type.name());
       _result = sym.is_undefined()
               ? ast::types::undeclared
               : sym.is_overloaded()
               ? ast::types::ambiguous
-              : (*sym.begin())->type();
+              : rush::visit(**sym.begin(), named_type_resolver { type }).result;
    };
 
    virtual void visit_type_extension(ast::type_extension const& type) override {

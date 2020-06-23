@@ -43,7 +43,8 @@ namespace rush::ast {
 
    protected:
       virtual void attached(ast::scope& scope, ast::context&) override {
-         attach(scope, *_expr, parent());
+         adopt(*_expr, parent());
+         attach(scope, *_expr);
       }
 
       virtual void detached(ast::context&) override {
