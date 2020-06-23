@@ -210,11 +210,26 @@ namespace rush {
          return _unwind_indentation();
       }
 
-      int indent_diff = 0;
+      lexical_token make_dedent() {
+         _break = true;
+         _indent_diff += 1;
+         _indent.decrement();
+         return tok::dedent(location(), source());
+      }
+
+      lexical_token make_indent() {
+         _break = true;
+         _indent_diff -= 1;
+         _indent.increment();
+         return tok::indent(location(), source());
+      }
+
+      bool _break = true;
+      indentation::difference_type _indent_diff = 0;
       std::optional<lexical_token> scan_whitespace() {
          if (_indent.style() != indentation_style::unknown) {
-            if (indent_diff < 0) { indent_diff += 1; _indent.decrement(); return tok::dedent(location(), source()); }
-            if (indent_diff > 0) { indent_diff -= 1; _indent.increment(); return tok::indent(location(), source()); }
+            if (_indent_diff < 0) { return make_dedent(); }
+            if (_indent_diff > 0) { return make_indent(); }
          }
          while (!eof()) {
             skip_while(is_vspace);
@@ -228,25 +243,20 @@ namespace rush {
 
                if (!is_newline(peek())) {
                   auto indent = _indent.measure(wspace.begin(), wspace.end());
-                  if (_indent.style() != indentation_style::unknown) {
-                     indent_diff = ((int)indent.depth() - (int)_indent.depth());
-                     // The check if we actually scanned any white-space
-                     // prevents this function falling into an infinite loop
-                     // of producing lbreak symbols. It means that lbreak
-                     // symbols won't be produced for indent depth == 0 lines
-                     // but it should suffice for where lbreaks are actually used.
-                     // i.e. differentiating between inline statements such as
-                     // those parsed as the body if, for, while, etc. from statements
-                     // on new lines.
-                     if (indent_diff == 0 && !wspace.empty())
-                        return tok::lbreak(location(), source());
+                  if (_indent.style() != indentation_style::unknown)
+                     _indent_diff = indentation::difference(indent, _indent);
+
+                  if (_indent_diff == 0 && !_break) {
+                     _break = true;
+                     return tok::lbreak(location(), source());
                   }
 
-                  if (indent < _indent) { indent_diff += 1; _indent.decrement(); return tok::dedent(location(), source()); }
-                  if (indent > _indent) { indent_diff -= 1; _indent.increment(); return tok::indent(location(), source()); }
+                  if (indent < _indent) { return make_dedent(); }
+                  if (indent > _indent) { return make_indent(); }
                   break;
                }
             } else {
+               _break = false;
                skip_while(is_hspace);
                if (eof() || !is_vspace(peek()))
                   break;

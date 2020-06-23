@@ -105,6 +105,7 @@ TEST_CASE( "rush::lex" ) {
 		tok::identifier("std"),
 		tok::period(),
 		tok::identifier("io"),
+      tok::lbreak(),
 		tok::func_keyword(),
 		tok::identifier("main"),
 		tok::left_parenthesis(),

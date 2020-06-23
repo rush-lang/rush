@@ -41,12 +41,15 @@ namespace rush {
 			, _style { style } {}
 
 	public:
+      using size_type = std::size_t;
+      using difference_type = std::ptrdiff_t;
+
 		constexpr indentation() noexcept
 			: _depth { 0 }
 			, _inlen { 0 }
 			, _style { indentation_style::unknown } {}
 
-		std::size_t depth() const noexcept {
+		size_type depth() const noexcept {
 			return _depth;
 		}
 
@@ -63,6 +66,11 @@ namespace rush {
 			--_depth;
 			return *this;
 		}
+
+      static difference_type difference(indentation const& lhs, indentation const& rhs) {
+         return static_cast<difference_type>(lhs.depth())
+              - static_cast<difference_type>(rhs.depth());
+      }
 
 		template <typename InIter>
 		indentation measure(InIter first, InIter last) {
