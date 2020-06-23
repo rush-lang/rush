@@ -164,11 +164,12 @@ namespace rush {
    }
 
    rush::parse_result<ast::statement> parser::parse_function_stmt_body() {
-		assert(peek_skip_indent().is(symbols::colon) && "expected a ':' symbol.");
-      next_skip_indent(); // consume ':'
-
-      if (peek_with_indent().is_not(symbols::indent))
-         return errs::expected_function_stmt_body(peek_with_indent());
+		assert(consume_skip_indent(symbols::colon) && "expected a ':' symbol.");
+      if (peek_with_indent().is_not(symbols::indent)) {
+         return peek_with_lbreak().is_any(symbols::lbreak, symbols::dedent, symbols::eof)
+              ? rush::parse_result<ast::statement> { stmts::block() }
+              : errs::expected_function_stmt_body(peek_with_indent());
+      }
 
       return parse_block_stmt();
    }
@@ -329,8 +330,7 @@ namespace rush {
          return std::move(result).as<ast::member_declaration>();
       }
 
-      return errs::expected_toplevel_decl(tok);
-      // return errs::expected_member_decl(tok);
+      return errs::expected_member_decl(tok);
    }
 
    rush::parse_result<ast::member_declaration> parser::parse_property_getter() {

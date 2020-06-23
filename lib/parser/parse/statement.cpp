@@ -107,9 +107,10 @@ namespace rush {
 
       auto then_result = (peek_with_indent().is(symbols::indent))
          ? parse_block_stmt()
-         : peek_with_lbreak().is_not(symbols::lbreak)
+         : peek_with_lbreak().is_not_any(symbols::lbreak, symbols::dedent)
          ? parse_inline_stmt()
-         : errs::expected_if_stmt_body(tok_colon);
+         : ast::stmts::block();
+
       if (then_result.failed())
          return std::move(then_result);
 
@@ -142,9 +143,9 @@ namespace rush {
          auto tok_colon = next_skip_indent(); // consume ':' symbol.
          auto result = (peek_with_indent().is(symbols::indent))
             ? parse_block_stmt()
-            : peek_with_lbreak().is_not(symbols::lbreak)
+            : peek_with_lbreak().is_not_any(symbols::lbreak, symbols::dedent)
             ? parse_inline_stmt()
-            : errs::expected_else_stmt_body(tok_colon);
+            : ast::stmts::block();
 
          return std::move(result);
       }
@@ -175,9 +176,9 @@ namespace rush {
 
       auto then_result = (peek_with_indent().is(symbols::indent))
          ? parse_block_stmt()
-         : peek_with_lbreak().is_not(symbols::lbreak)
+         : peek_with_lbreak().is_not_any(symbols::lbreak, symbols::dedent)
          ? parse_inline_stmt()
-         : errs::expected_for_stmt_body(tok_colon);
+         : ast::stmts::block();
       if (then_result.failed())
          return std::move(then_result);
 
@@ -202,9 +203,10 @@ namespace rush {
 
       auto then_result = (peek_with_indent().is(symbols::indent))
          ? parse_block_stmt()
-         : peek_with_lbreak().is_not(symbols::lbreak)
+         : peek_with_lbreak().is_not_any(symbols::lbreak, symbols::dedent)
          ? parse_inline_stmt()
-         : errs::expected_while_stmt_body(tok_colon);
+         : ast::stmts::block();
+
       if (then_result.failed())
          return std::move(then_result);
 

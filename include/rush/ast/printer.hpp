@@ -428,7 +428,11 @@ namespace rush::ast {
       }
 
       virtual void visit_method_decl(ast::method_declaration const& decl) override {
-         write("<[decl] method: ");
+         auto decl_str = decl.is_constructor()
+            ? "<[decl] constructor: "
+            : "<[decl] method: ";
+
+         write(decl_str);
          decl.type().accept(*this);
          write(" (name=\"{}\"", decl.name());
          switch (decl.access()) {
