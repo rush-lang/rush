@@ -82,6 +82,15 @@ namespace rush::ast {
          return _decl->initializers();
       }
 
+      auto find(std::string_view name) const {
+         auto names = this->names();
+         auto it = std::find_if(names.begin(), names.end(),
+            [&name](auto& n) { return n.name() == name; });
+         return it == ast::iterator()
+              ? nullptr
+              : &(*it);
+      }
+
    protected:
       virtual void attached(ast::scope& scope, ast::context&) override {
          attach(scope, *_decl);

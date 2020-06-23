@@ -160,33 +160,24 @@ public:
    }
 
    virtual void visit_constant_field_decl(ast::constant_field_declaration const& decl) override {
-      _prev = &decl;
-      auto names = decl.names();
-      auto it = std::find_if(names.begin(), names.end(),
-         [this](auto& n) { return n.name() == _ident->name(); });
-      _result = &(*it);
+      if (auto p = decl.find(_ident->name()))
+         _result = p;
    }
 
    virtual void visit_variable_field_decl(ast::variable_field_declaration const& decl) override {
-      _prev = &decl;
-      auto names = decl.names();
-      auto it = std::find_if(names.begin(), names.end(),
-         [this](auto& n) { return n.name() == _ident->name(); });
-      _result = &(*it);
+      if (auto p = decl.find(_ident->name()))
+         _result = p;
    }
 
    virtual void visit_property_getter_decl(ast::property_getter_declaration const& decl) override {
-      _prev = &decl;
       _result = &decl;
    }
 
    virtual void visit_property_setter_decl(ast::property_setter_declaration const& decl) override {
-      _prev = &decl;
       _result = &decl;
    }
 
    virtual void visit_method_decl(ast::method_declaration const& decl) override {
-      _prev = &decl;
       _result = &decl;
    }
 };

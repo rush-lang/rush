@@ -15,6 +15,11 @@
 *************************************************************************/
 #include "rush/ast/types/extension.hpp"
 
+#include "rush/ast/decls/class.hpp"
+#include "rush/ast/decls/struct.hpp"
+#include "rush/ast/decls/field.hpp"
+#include "rush/ast/decls/method.hpp"
+#include "rush/ast/decls/property.hpp"
 #include "rush/ast/decls/parameter.hpp"
 #include "rush/ast/decls/constant.hpp"
 #include "rush/ast/decls/variable.hpp"
@@ -106,8 +111,53 @@ public:
    }
 
    virtual void visit_object_destructure_ptrn(ast::object_destructure_pattern const& ptrn) override {
+      struct find_member : ast::visitor {
+         ast::type_ref result;
+         std::string_view name;
+
+         find_member(std::string_view name)
+            : result { ast::types::undefined }
+            , name { name } {}
+
+         virtual void visit_user_type(ast::user_type const& type) override {
+            type.declaration().accept(*this);
+         }
+
+         virtual void visit_class_decl(ast::class_declaration const& decl) override {
+            auto it = decl.find(name);
+            if (it != ast::iterator()) it->accept(*this);
+         }
+
+         virtual void visit_struct_decl(ast::struct_declaration const& decl) override {
+            auto it = decl.find(name);
+            if (it != ast::iterator()) it->accept(*this);
+         }
+
+         virtual void visit_constant_field_decl(ast::constant_field_declaration const& decl) override {
+            if (auto p = decl.find(name)) result = p->type();
+         }
+
+         virtual void visit_variable_field_decl(ast::variable_field_declaration const& decl) override {
+            if (auto p = decl.find(name)) result = p->type();
+         }
+
+         virtual void visit_property_getter_decl(ast::property_getter_declaration const& decl) override {
+            result = decl.type();
+         }
+
+         virtual void visit_property_setter_decl(ast::property_setter_declaration const& decl) override {
+            result = decl.type();
+         }
+
+         virtual void visit_method_decl(ast::method_declaration const& decl) override {
+            result = decl.type();
+         }
+      };
+
       // todo: find and extract types of the destructured member.
-      _type = ptrn.type();
+      if (auto p = dynamic_cast<ast::named_pattern const*>(&_ptrn)) {
+         _type = rush::visit(ptrn.type(), find_member { p->name() }).result;
+      }
    }
 
    virtual void visit_type_annotation_ptrn(ast::type_annotation_pattern const& ptrn) override {
