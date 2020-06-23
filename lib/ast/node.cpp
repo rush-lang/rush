@@ -24,7 +24,7 @@ namespace rush::ast {
       attached(scope, *(_context = &context));
    }
 
-   void node::attach(ast::scope& scope, ast::node& child, ast::node* parent) {
+   void node::attach(ast::scope& scope, ast::node& child) {
       child._context = _context;
       child.attached(scope, *child._context);
    }
@@ -32,5 +32,17 @@ namespace rush::ast {
    void node::detach(ast::node& child) {
       child.detached(*child._context);
       child._context = nullptr;
+   }
+
+   void node::adopt(ast::node& child, ast::node* parent) {
+      // assert(child._parent == nullptr);
+      child._parent = parent != nullptr ? parent : this;
+      child.adopted(*child._parent);
+   }
+
+   void node::orphan(ast::node& child) {
+      assert(child._parent == this);
+      child.orphaned(*child._parent);
+      child._parent = nullptr;
    }
 }

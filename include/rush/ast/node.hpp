@@ -55,18 +55,14 @@ namespace rush::ast {
       virtual void accept(ast::visitor&& v) const { accept(v); }
 
    protected:
-      void attach(ast::scope&, ast::node& child, ast::node* parent = nullptr);
+      void adopt(ast::node& child, ast::node* parent = nullptr);
+      void orphan(ast::node& child);
+
+      void attach(ast::scope&, ast::node& child);
       void detach(ast::node& child);
 
-      void adopt(ast::node& child, ast::node* parent = nullptr) {
-         // assert(child._parent == nullptr);
-         child._parent = parent != nullptr ? parent : this;
-      }
-
-      void orphan(ast::node& child) {
-         assert(child._parent == this);
-         child._parent = nullptr;
-      }
+      virtual void adopted(ast::node& parent) {}
+      virtual void orphaned(ast::node& parent) {}
 
       virtual void attached(ast::scope&, ast::context&) = 0;
       virtual void detached(ast::context&) = 0;

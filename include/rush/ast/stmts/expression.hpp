@@ -42,8 +42,12 @@ namespace rush::ast {
 		}
 
    protected:
+      virtual void adopted(ast::node& parent) override {
+         orphan(*_expr);
+         adopt(*_expr, &parent);
+      }
+
       virtual void attached(ast::scope& scope, ast::context&) override {
-         adopt(*_expr, parent());
          attach(scope, *_expr);
       }
 
