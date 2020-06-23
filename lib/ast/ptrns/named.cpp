@@ -279,7 +279,7 @@ public:
          virtual void visit_parameter_decl(ast::parameter_declaration const& decl) override { decl.pattern().accept(*this); }
 
          virtual void visit_identifier_expr(ast::identifier_expression const& expr) override {
-            if (!expr.is_unresolved())
+            if (!expr.is_undeclared())
                expr.declaration().accept(*this);
          }
       };

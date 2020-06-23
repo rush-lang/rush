@@ -144,7 +144,7 @@ private:
       }
 
       void visit_identifier_expr(ast::identifier_expression const& expr) override {
-         if (!expr.is_unresolved()
+         if (!expr.is_undeclared()
            && expr.declaration().kind() == rush::ast::declaration_kind::function)
             { _results.push_back(expr.declaration().type()); } else
             { _results.push_back(expr.result_type()); }

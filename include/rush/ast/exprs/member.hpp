@@ -32,7 +32,7 @@ namespace rush::ast {
             adopt(*_member);
          }
 
-      bool is_unresolved() const noexcept {
+      bool is_undeclared() const noexcept {
          return true;
       }
 

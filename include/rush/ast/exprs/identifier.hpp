@@ -48,7 +48,7 @@ namespace rush::ast {
 			: _name { std::move(name) }
          , _decl { nullptr } {}
 
-      bool is_unresolved() const noexcept {
+      bool is_undeclared() const noexcept {
          return _decl->kind() == ast::declaration_kind::undeclared;
       }
 
