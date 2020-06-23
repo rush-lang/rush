@@ -314,10 +314,8 @@ namespace rush::ast {
          print_expression("invoke", expr);
          indent();
          expr.callable().accept(*this);
-         if (!expr.arguments().empty()) {
-            writeln("<arguments>");
-            indent_accept(expr.arguments());
-         }
+         writeln("<[expr] argument-list>");
+         indent_accept(expr.arguments());
          dedent();
       }
 
@@ -369,7 +367,12 @@ namespace rush::ast {
          case ast::module_access::internal: writeln(", access=internal)>"); break;
          case ast::module_access::exported: writeln(", access=exported)>"); break;
          }
-         indent_traverse(decl);
+
+         indent();
+         writeln("<[ptrn] parameter-list>");
+         indent_accept(decl.parameters());
+         dedent();
+         indent_accept(decl.body());
       }
 
       virtual void visit_class_decl(ast::class_declaration const& decl) override {
@@ -434,7 +437,12 @@ namespace rush::ast {
          case ast::member_access::private_: writeln(", access=private)>"); break;
          case ast::member_access::protected_: writeln(", access=protected)>"); break;
          }
-         indent_traverse(decl);
+
+         indent();
+         writeln("<[ptrn] parameter-list>");
+         indent_accept(decl.parameters());
+         dedent();
+         indent_accept(decl.body());
       }
 
       virtual void visit_block_stmt(ast::statement_block const& stmt) override {
