@@ -23,6 +23,7 @@
 #include "rush/ast/decls/struct.hpp"
 #include "rush/ast/decls/field.hpp"
 #include "rush/ast/decls/method.hpp"
+#include "rush/ast/decls/property.hpp"
 #include "rush/ast/exprs/member.hpp"
 #include "rush/ast/exprs/invoke.hpp"
 
@@ -172,6 +173,16 @@ public:
       auto it = std::find_if(names.begin(), names.end(),
          [this](auto& n) { return n.name() == _ident->name(); });
       _result = &(*it);
+   }
+
+   virtual void visit_property_getter_decl(ast::property_getter_declaration const& decl) override {
+      _prev = &decl;
+      _result = &decl;
+   }
+
+   virtual void visit_property_setter_decl(ast::property_setter_declaration const& decl) override {
+      _prev = &decl;
+      _result = &decl;
    }
 
    virtual void visit_method_decl(ast::method_declaration const& decl) override {

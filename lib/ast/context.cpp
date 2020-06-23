@@ -155,7 +155,7 @@ private:
          struct unwrap_function_type : ast::visitor {
             ast::type_ref result;
             unwrap_function_type(ast::type_ref start) : result { start } {}
-            void visit_function_type(ast::function_type const& type) {
+            virtual void visit_function_type(ast::function_type const& type) override {
                result = type.return_type();
             }
          };
@@ -168,7 +168,7 @@ private:
       }
 
       void visit_ternary_expr(ast::ternary_expression const& expr) override {
-      // treat ternary expressions as if they were two individual return statements.
+         // treat ternary expressions as if they were two individual return statements.
          auto tt = expr.true_expr().result_type().kind() == rush::ast::type_kind::error
                  ? rush::visit(expr.true_expr(), result_statement_traversal {
                    expr.true_expr().result_type() }).result()

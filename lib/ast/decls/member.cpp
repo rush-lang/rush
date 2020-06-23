@@ -48,6 +48,14 @@ namespace rush::ast {
             _result = it != names.end();
          }
 
+         virtual void visit_property_getter_decl(ast::property_getter_declaration const& decl) override {
+            _result = decl.name() == _name;
+         }
+
+         virtual void visit_property_setter_decl(ast::property_setter_declaration const& decl) override {
+            _result = decl.name() == _name;
+         }
+
          virtual void visit_method_decl(ast::method_declaration const& decl) override {
             _result = decl.name() == _name;
          }
