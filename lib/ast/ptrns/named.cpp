@@ -30,6 +30,8 @@
 #include "rush/ast/exprs/lambda.hpp"
 #include "rush/ast/exprs/list.hpp"
 
+#include "rush/ast/stmts/iteration.hpp"
+
 #include "rush/ast/patterns.hpp"
 
 #include "rush/ast/visitor.hpp"
@@ -173,8 +175,18 @@ public:
          strip_type_extension { ptrn.type() }).result;
    }
 
-	virtual void visit_constant_decl(ast::constant_declaration const& decl) override { _type = ast::types::inference_fail; }
 	virtual void visit_variable_decl(ast::variable_declaration const& decl) override { _type = ast::types::inference_fail; }
+	virtual void visit_constant_decl(ast::constant_declaration const& decl) override {
+      _type = ast::types::inference_fail;
+      auto it = ast::find_ancestor<ast::iteration_statement>(&decl);
+      if (it != ast::ancestor_iterator()) {
+         auto expr_type = it->expression().result_type();
+         if (auto t = expr_type.as<ast::array_type>()) {
+            _type = t->underlying_type();
+         }
+      }
+   }
+
    virtual void visit_parameter_decl(ast::parameter_declaration const& decl) override {
       _type = ast::types::inference_fail;
       auto it = ast::find_ancestor<ast::property_setter_declaration>(&decl);

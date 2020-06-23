@@ -189,7 +189,7 @@ namespace rush::ast {
 
       virtual void visit_binding_ptrn(ast::binding_pattern const& ptrn) override {
          switch (ptrn.kind()) {
-         case ast::binding_kind::unknown: write("<binding: "); break;
+         case ast::binding_kind::unknown: write("<[ptrn] binding: "); break;
          case ast::binding_kind::parameter: write("<[expr] parameter-binding: "); break;
          case ast::binding_kind::initializer: write("<[expr] initializer-binding: "); break;
          case ast::binding_kind::default_value: write("<[expr] default-value-binding: "); break;
@@ -221,7 +221,7 @@ namespace rush::ast {
       }
 
       virtual void visit_rest_ptrn(ast::rest_pattern const& ptrn) override {
-         writeln("<[ptrn] rest>");
+         writeln("<[ptrn] rest-annotation>");
          indent_traverse(ptrn);
       }
 
