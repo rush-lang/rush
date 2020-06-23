@@ -20,6 +20,7 @@
 
 #include "rush/ast/ptrns/pattern.hpp"
 #include "rush/ast/types/type_ref.hpp"
+#include "rush/ast/types/nominal.hpp"
 
 #include <memory>
 
@@ -46,8 +47,14 @@ namespace rush::ast {
       }
 
    protected:
-      virtual void attached(ast::scope& scope, ast::context&) override;
-      virtual void detached(ast::context&) override;
+      virtual void attached(ast::scope& scope, ast::context& context) override {
+         _type = ast::resolve_named_types(_type, scope, context);
+         attach(scope, *_ptrn);
+      };
+
+      virtual void detached(ast::context&) override {
+         detach(*_ptrn);
+      };
 
    private:
       ast::type_ref _type;

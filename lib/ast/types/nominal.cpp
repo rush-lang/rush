@@ -13,27 +13,24 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *************************************************************************/
-#include "rush/ast/ptrns/type_annotation.hpp"
-#include "rush/ast/types/builtin.hpp"
-#include "rush/ast/decls/nominal.hpp"
+#include "rush/ast/types/nominal.hpp"
 #include "rush/ast/decls/class.hpp"
 #include "rush/ast/decls/struct.hpp"
 #include "rush/ast/types.hpp"
 #include "rush/ast/scope.hpp"
 #include "rush/ast/context.hpp"
-
-#include <iostream>
+#include "rush/ast/visitor.hpp"
 
 using namespace rush;
 
-class type_annotation_resolver : public ast::visitor {
+class named_type_resolver : public ast::visitor {
 private:
    ast::scope& _scope;
    ast::context& _context;
    ast::type_ref _result;
 
 public:
-   type_annotation_resolver(ast::scope& scope, ast::context& context, ast::type_ref type)
+   named_type_resolver(ast::type_ref type, ast::scope& scope, ast::context& context)
       : _scope { scope }
       , _context { context }
       , _result { type } {}
@@ -98,13 +95,8 @@ public:
 };
 
 namespace rush::ast {
-   void type_annotation_pattern::attached(ast::scope& scope, ast::context& context) {
-      auto resolver = type_annotation_resolver { scope, context, _type };
-      _type = rush::visit(_type, resolver).result();
-      attach(scope, *_ptrn);
-   };
-
-   void type_annotation_pattern::detached(ast::context&) {
-      detach(*_ptrn);
-   };
-} // rush::ast
+   ast::type_ref resolve_named_types(ast::type_ref type, ast::scope& scope, ast::context& context) {
+      auto resolver = named_type_resolver { type, scope, context };
+      return rush::visit(type, resolver).result();
+   }
+}

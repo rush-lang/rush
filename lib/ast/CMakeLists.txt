@@ -9,11 +9,11 @@ rush_add_library(ast
 	exprs/invoke.cpp
 	exprs/identifier.cpp
    types/builtin.cpp
+   types/nominal.cpp
    types/type_matcher.cpp
    types/type_reducer.cpp
    ptrns/named.cpp
    ptrns/binding.cpp
-   ptrns/type_annotation.cpp
    decls/storage.cpp
    decls/member.cpp
    decls/module.cpp

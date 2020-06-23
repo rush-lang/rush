@@ -19,11 +19,15 @@
 #define RUSH_AST_TYPES_NOMINAL_HPP
 
 #include "rush/ast/types/type.hpp"
+#include "rush/ast/types/type_ref.hpp"
 #include "rush/ast/visitor.hpp"
 
 #include <string>
 
 namespace rush::ast {
+   class scope;
+   class context;
+
    class named_type : public ast::type {
    public:
       named_type(std::string name)
@@ -45,6 +49,8 @@ namespace rush::ast {
    private:
       std::string _name;
    };
+
+   ast::type_ref resolve_named_types(ast::type_ref, ast::scope&, ast::context&);
 } // rush::ast
 
 #endif // RUSH_AST_TYPES_NOMINAL_HPP

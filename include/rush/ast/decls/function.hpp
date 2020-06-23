@@ -24,6 +24,7 @@
 #include "rush/ast/types/function.hpp"
 #include "rush/ast/stmts/statement.hpp"
 #include "rush/ast/decls/nominal.hpp"
+#include "rush/ast/types/nominal.hpp"
 #include "rush/ast/context.hpp"
 #include "rush/ast/scope.hpp"
 
@@ -92,14 +93,16 @@ namespace rush::ast {
       }
 
    protected:
-      virtual void attached(ast::scope& scope, ast::context&) override {
+      virtual void attached(ast::scope& scope, ast::context& context) override {
          scope.insert(*this);
          scope.push(ast::scope_kind::function);
          attach(scope, *_params);
          attach(scope, *_body);
          scope.pop();
 
-         _type = context()->function_type(*this);
+         _type = context.function_type(*this);
+         if (auto type = std::get_if<ast::type_ref>(&_type))
+            _type = ast::resolve_named_types(*type, scope, context);
       }
 
       virtual void detached(ast::context&) override {
