@@ -102,7 +102,7 @@ private:
       void visit_literal_expr(ast::array_literal_expression const& expr) override { /* can safely ignore */ }
 
       void visit_conditional_stmt(ast::conditional_statement const& stmt) override { stmt.body().accept(*this); }
-      void visit_iteration_stmt(ast::iteration_statement const& stmt) override { /*stmt.body().accept(*this);*/ }
+      void visit_iteration_stmt(ast::iteration_statement const& stmt) override { stmt.body().accept(*this); }
       void visit_switch_stmt(ast::switch_statement const& stmt) override { /*stmt.body().accept(*this);*/ }
 
       void visit_result_stmt(ast::result_statement const& stmt) override {
