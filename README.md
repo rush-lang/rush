@@ -62,3 +62,52 @@ In this way we're being explicit that the variable or parameter may not contain 
 
 Currently, the easiest way to build the project is through the [docker images](https://hub.docker.com/repository/docker/rushlang/rush-ci-x86-64-linux-gnu) hosted on Docker Hub. If you want to build Rush outside of docker you can also follow the instructions laid out by the Dockerfiles found in this repository and the [rush-lang/docker](https://github.com/rush-lang/docker) repository hosted here on Github. Full documentation and instructions for building and contributing to Rush will be available soon.
 
+### Sample
+
+```
+import std.io
+import std.math
+
+struct vector2:
+public:
+   let x, y: float
+   get length => sqrt(dot(this, this))
+
+   func vector2(x, y: float):
+      this.x = x
+      this.y = y
+
+   func add(u: vector2) => new vector2(x + u.x, y + u.y)
+   func sub(u: vector2) => new vector2(x - u.x, y - u.y)
+
+func to_string({x, y}: @vector2) => "($x, $y)"
+
+func dot(u, v: @vector2):
+   let dx = u.x * v.x
+   let dy = u.y * v.y
+   return dx + dy
+
+func idiv(a, b: int) => (
+   a / b,
+   a % b
+)
+
+func main:
+   let u = new vector2(1, 0)
+   if u.length == 1:
+      println("$u is unit length.")
+
+   for x in [1, 2, 3]:
+      println(x)
+
+   let vs = [
+      new vector2(0, 2),
+      new vector2(1, 1),
+      new vector2(2, 0),
+   ]
+
+   for {x, y} in vs:
+      println("[$x, $y]")
+
+   return u.add(u).sub(u)
+```
