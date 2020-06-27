@@ -46,6 +46,11 @@ add_subdirectory(tools)
 install(DIRECTORY include/rush
    DESTINATION ${INCLUDE_DEST}
    FILES_MATCHING PATTERN "*.h??")
+
+install(DIRECTORY ${CMAKE_BINARY_DIR}/include/rush
+   DESTINATION ${INCLUDE_DEST}
+   FILES_MATCHING PATTERN "*.h??")
+
 install(TARGETS
    ast
    core
