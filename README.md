@@ -35,7 +35,7 @@ func add(a: int, b: int) -> int:
 
 But why repeat yourself when the compiler already knows what you intended?
 
-#### Initialized by default
+#### Definitive Initialization
 All variables, constants, and parameters, within Rush, collectively known as storage, must be initialized. Initialization must occur during declaration for locals or globals, invocation for function parameters, or in the case of member fields, the body of a type's constructor. This simple compiler enforced rule means that all named storage entities are guaranteed to have a value. Alleviating the need for what's known as null-checking, or worse, null reference exceptions; a common source of serious bugs in the software industry, eliminated.
 
 Take for example, the definition of the `map` function, which takes as it's parameters a source collection `src`, and a transformative function `fn` to apply to each element of the collection.
