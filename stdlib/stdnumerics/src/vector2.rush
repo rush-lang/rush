@@ -1,0 +1,31 @@
+## 2-Dimensional Vector
+struct vector2f:
+public:
+   let x, y: float
+
+   get length
+      => sqrt(dot(this, this))
+
+   func vector2f(x, y: float):
+      this.x = x
+      this.y = y
+
+struct vector2:
+public:
+   let x, y: double
+
+   get length
+      => sqrt(dot(this, this))
+
+   func vector2(x, y: double):
+      this.x = x
+      this.y = y
+
+
+func dot(u, v: @vector2f)
+   => u.x * v.x
+    + u.y * v.y
+
+func dot(u, v: @vector2)
+   => u.x * v.x
+    + u.y * v.y

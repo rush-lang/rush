@@ -1,0 +1,35 @@
+export class <K, V> hashmap:
+requires hashable<K>
+public:
+   get keys => pass
+   get values => pass
+
+   get [key: K] => pass
+   set [key: K] => pass
+
+   func hashmap => this(iterable.empty<(K, V)>())
+   func hashmap(src: iterable<(K, V)>) => pass
+
+   func clear() => pass
+
+   func remove(key: K) => pass
+   func insert(key: K, value: V) -> bool => pass
+
+
+export class <K, V> multimap:
+requires hashable<K>
+public:
+   get keys => pass
+   get values => pass
+
+   get [key: K] => pass
+
+   func hashmap => this(iterable.empty<(K, V)>())
+   func hashmap(src: iterable<(K, V)>) => pass
+
+   func clear() => pass
+
+   func remove(key: K) => pass
+   func remove(key: K, value: V) requires equatable<V> => pass
+
+   func insert(key: K, value: V) => pass

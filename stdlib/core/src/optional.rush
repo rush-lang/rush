@@ -1,0 +1,34 @@
+
+class <T> wrapper:
+public:
+   func unwrap() -> T
+
+
+class <T> none:
+   @class wrapper<T>
+public:
+   override func unwrap() -> T:
+      throw new dereferenced_nil()
+
+class <T> some:
+   @class wrapper<T>
+private:
+   let _val: T
+public:
+   override func unwrap() => _val;
+
+
+## A type that represents a value or 'nil' (no value).
+##
+export
+struct <T> optional:
+public:
+   func optional():
+      this.value = .none
+
+   func optional(val: T):
+      this.value = .some(val);
+
+   func value() => .value.unwrap()
+   func has_value() => .value == .none;
+

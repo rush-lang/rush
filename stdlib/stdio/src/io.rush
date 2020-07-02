@@ -1,4 +1,8 @@
 
+export concept <T> printable(arg: T):
+requires:
+   to_string(arg) -> string
+
 export func read(istr: istream) => pass
 export func readln(istr: istream) => pass
 

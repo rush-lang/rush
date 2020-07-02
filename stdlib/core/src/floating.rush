@@ -1,0 +1,14 @@
+
+## Represents an IEEE-754 32-bit floating point value
+## and is the underlying type of the built-in 'float' type.
+export struct float32:
+public:
+   static func parse(val: string):
+      pass
+
+## Represents an IEEE-754 64-bit floating point value
+## and is the underlying type of the built-in 'double' type.
+export struct float64:
+public:
+   static func parse(val: string):
+      pass

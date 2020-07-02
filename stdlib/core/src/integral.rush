@@ -1,0 +1,50 @@
+
+## Represents an 8 bit integer and is the
+## underlying type of the built-in 'sbyte' type.
+export struct int8:
+public:
+   static func parse(val: string, b = 10) => pass
+
+## Represents a 64-bit integer and is the
+## underlying type of the built-in 'short' type.
+export struct int16:
+public:
+   static func parse(val: string, b = 10) => pass
+
+## Represents a 32-bit integer and is the
+## underlying type of the built-in 'int' type.
+export struct int32:
+public:
+   static func parse(val: string, b = 10) => pass
+
+## Represents a 64-bit integer and is the
+## underlying type of the built-in 'long' type.
+export struct int64:
+public:
+   static func parse(val: string, b = 10) => pass
+
+
+## Represents an 8 bit unsigned integer and is the
+## underlying type of the built-in 'byte' type.
+export struct uint8:
+public:
+   static func parse(val: string, b = 10) => pass
+
+## Represents a 64-bit unsigned integer and is the
+## underlying type of the built-in 'ushort' type.
+export struct uint16:
+public:
+   static func parse(val: string, b = 10) => pass
+
+## Represents a 32-bit unsigned integer and is the
+## underlying type of the built-in 'uint' type.
+export struct uint32:
+public:
+   static func parse(val: string, b = 10) => pass
+
+## Represents a 64-bit unsigned integer and is the
+## underlying type of the built-in 'ulong' type.
+export struct uint64:
+public:
+   static func parse(val: string, b = 10) => pass
+

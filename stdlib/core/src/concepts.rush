@@ -1,0 +1,66 @@
+
+export concept <T> any(a: T):
+# the any concept does not have any constraints
+# and as such all types are considered 'any'
+
+export concept <T, U = T> equatable(lhs: T, rhs: U):
+requires:
+   lhs == rhs -> bool
+
+export concept <T, U = T> orderable(lhs: T, rhs: U):
+requires:
+   lhs < rhs -> bool
+
+export concept <T, U = T> comparable(lhs: T, rhs: U):
+requires equatable<T, U>
+requires orderable<T, U>
+
+export concept <T> hashable(arg: T):
+requires:
+   hash(arg) -> uint
+
+export concept <T> signable(val: T):
+requires:
+   +val -> T
+   -val -> T
+
+export concept <T, U = T> numerical(lhs: T, rhs: U):
+requires signable<T>
+requires comparable<T, U>
+requires:
+   lhs + rhs -> T
+   lhs - rhs -> T
+   lhs * rhs -> T
+   lhs / rhs -> T
+
+   lhs += rhs -> T
+   lhs -= rhs -> T
+   lhs *= rhs -> T
+   lhs /= rhs -> T
+
+export concept <T, U = T> integral(lhs: T, rhs: U):
+requires numerical<T, U>
+requires:
+   ++lhs -> T
+   --lhs -> T
+
+   lhs % rhs -> T
+   lhs %= rhs -> T
+
+export concept <T, U = T> floating(lhs: T, rhs: U):
+requires numerical<T, U>
+requires:
+   pow(lhs, rhs) -> T
+   sqrt(lhs) -> T
+
+   sin(lhs) -> T
+   cos(lhs) -> T
+   tan(lhs) -> T
+
+   asin(lhs) -> T
+   acos(lhs) -> T
+   atan(lhs) -> T
+
+   sinh(lhs) -> T
+   cosh(lhs) -> T
+   tanh(lhs) -> T

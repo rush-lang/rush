@@ -1,0 +1,61 @@
+import std.collections.iterable
+
+func <T> each(src: @iterable<T>, fn: T -> any):
+   for elem in src: fn(elem)
+
+func <T> take(count: int, src: @iterable<T>) => take(src, _ => count-- > 0)
+func <T> take(count: long, src: @iterable<T>) => take(src, _ => count-- > 0)
+func <T> take(count: int, src: @iterable<T>, fn: T -> bool): pass
+func <T> take(count: long, src: @iterable<T>, fn: T -> bool): pass
+func <T> take(src: @iterable<T>, fn: T -> bool):
+   let iter = src.iterator()
+   while iter.next() && fn(iter.value):
+      yield iter.value;
+
+func <T> skip(count: int, src: @iterable<T>): skip(src, _ => count-- > 0)
+func <T> skip(count: long, src: @iterable<T>): skip(src, _ => count-- > 0)
+func <T> skip(src: @iterable<T>, fn: T -> bool):
+   let iter = src.iterator()
+   var flag = false
+   while iter.next():
+      if !flag && fn(iter.value):
+         flag = true
+      if flag:
+         yield iter.value
+
+func <T> any(src: @iterable<T>, pred = (_: T) => true):
+   for elem in src:
+      if pred(elem): return true
+   return false;
+
+func <T> all(src: @iterable<T>, pred: int -> bool):
+   for elem in src:
+      if !pred(elem): return false
+   return true
+
+func <T> concat() -> iterable<T> => []
+
+func <T> concat(fst, rest: ...@iterable<T>):
+   for elem in fst: yield elem
+   for elem in concat(rest...): yield elem
+
+func <T, R> map(src: @iterable<T>, fn: T -> R):
+   for elem in src:
+      yield fn(elem)
+
+func <T> filter(src: @iterable<T>, pred: T -> bool):
+   for elem in src:
+      if pred(elem): yield elem
+
+func <T> reduce(src: @iterable<T>, fn: (T, T) -> T):
+   return reduce(
+      src.tail(),
+      src.head(),
+      fn)
+
+func <T, R> reduce(src: @iterable<T>, init: R, fn: (R, T) -> R):
+   if !any(src):
+      yield init
+   else for elem in src:
+      yield init = fn(init, elem)
+

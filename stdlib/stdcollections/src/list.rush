@@ -1,0 +1,33 @@
+export class <T> list:
+private:
+   var _items: [T]
+   var _len: int
+
+   func resize(count: int):
+      if _items.length < count:
+         _items = new [T : _items.length * 2] (_items, count);
+      _len = count;
+
+public:
+   func list => this(iterable.empty<T>())
+   func list(src: iterable<T>):
+      _items = [...src]
+      _len = _items.length
+
+   get count => _len
+
+   get [index: int] => _items[index]
+   set [index: int] => _items[index] = value
+
+   func clear() => pass
+
+   func insert(index: int, item: T) => pass
+
+   func append(item: T) => insert(-1, item)
+   func prepend(item: T) => insert(0, item)
+
+   func remove(index: int) => pass
+   func remove(item: T) requires equatable<T> => pass
+
+   func sort() requires orderable<T> => pass
+   func sort(cmp: (T, T) -> bool) => pass

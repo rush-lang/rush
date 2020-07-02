@@ -15,6 +15,14 @@ export extern func acos(x: double) -> double
 export extern func asin(x: double) -> double
 export extern func atan(x: double) -> double
 
+export extern func cosh(x: float) -> float
+export extern func sinh(x: float) -> float
+export extern func tanh(x: float) -> float
+
+export extern func cosh(x: double) -> double
+export extern func sinh(x: double) -> double
+export extern func tanh(x: double) -> double
+
 export extern func pow(b: float, exp: int) -> float
 export extern func pow(b: float, exp: float) -> float
 export extern func pow(b: double, exp: double) -> double
@@ -26,9 +34,14 @@ export extern func exp(x: float) -> float
 export extern func exp(x: double) -> double
 
 export let pi = acos(-1.0)
+export let pi_f = acos(-1.0f)
 
 func min(a: orderable) => a
 func max(a: orderable) => a
 
 export func min(a, b, rest: ...orderable) => min(a < b ? a : b, rest...)
 export func max(a, b, rest: ...orderable) => max(a < b ? b : a, rest...)
+
+func lerp(v0, v1, t: float) => (1 - t) * v0 + t * v1
+func lerp(v0, v1, t: double) => (1 - t) * v0 + t * v1
+

@@ -1,0 +1,11 @@
+export class <T> hashset:
+requires hashable<T>
+public:
+   func insert(item: T) => pass
+   func remove(item: T) => pass
+
+export class <T> multiset:
+requires hashable<T>
+public:
+   func insert(item: T) => pass
+   func remove(item: T) => pass

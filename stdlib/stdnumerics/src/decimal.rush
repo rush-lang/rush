@@ -1,0 +1,3 @@
+## Arbitrary precision decimal numbers
+struct decimal:
+public:

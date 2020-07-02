@@ -1,0 +1,37 @@
+import std.math
+
+## 2-Dimensional Vector
+struct vector3f:
+public:
+   let x, y, z: float
+
+   get length
+      => sqrt(dot(this, this))
+
+   func vector3f(x, y: float):
+      this.x = x
+      this.y = y
+      this.z = z
+
+struct vector3:
+public:
+   let x, y, z: double
+
+   get length
+      => sqrt(dot(this, this))
+
+   func vector3(x, y: double):
+      this.x = x
+      this.y = y
+      this.z = z
+
+
+func dot(u, v: @vector3f)
+   => u.x * v.x
+    + u.y * v.y
+    + u.z * v.z
+
+func dot(u, v: @vector3)
+   => u.x * v.x
+    + u.y * v.y
+    + u.z * v.z

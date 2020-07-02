@@ -1,0 +1,8 @@
+
+## Represents a UTF-8 codepoint and is the
+## underlying type of the built in 'char' type.
+class u8char:
+
+## Represents a UTF-8 string and is the
+## underlying type of the built in 'string' type.
+class u8string:

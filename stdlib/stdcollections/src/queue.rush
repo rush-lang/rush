@@ -1,0 +1,13 @@
+export class <T> queue:
+private:
+   var _list: list<T>
+
+public:
+   get top => _list[_list.count - 1];
+
+   func push(item: T):
+      _list.append(item)
+
+   func pop():
+      if _list.count > 0:
+         _list.remove(_list.count - 1);

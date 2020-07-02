@@ -1,0 +1,4 @@
+## Arbitrary precision integer
+
+struct integer:
+public:
