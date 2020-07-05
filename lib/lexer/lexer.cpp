@@ -357,13 +357,13 @@ namespace rush {
             if (icheck('b')) { skip(); return scan_integer_literal(is_bin_digit, 2); }
             if (icheck('o')) { skip(); return scan_integer_literal(is_oct_digit, 8); }
 
-            if (check('.') && !check("..", 1)) {
+            if (check('.') && check_if(is_digit, 1)) {
                skip(); // consume decimal point.
-               auto value = scan_digits();
+               auto fractional_part = scan_digits();
                auto suffix = scan_floating_literal_suffix();
                return is_ident_body(peek())
                     ? tok::make_error_token("invalid number", skip_while(is_ident_body), source())
-                    : tok::suffixed_floating_literal(std::stod("0." + value), suffix, location(), source());
+                    : tok::suffixed_floating_literal(std::stod("0." + fractional_part), suffix, location(), source());
             }
 
             auto suffix = scan_integer_literal_suffix();
@@ -373,19 +373,25 @@ namespace rush {
          }
 
          auto integer_part = scan_digits();
-         if (check('.') && !check("..", 1)) {
+
+         if (check('.') && check_if(is_digit, 1)) {
             skip(); // consume decimal point.
             auto fractional_part = scan_digits();
             auto suffix = scan_floating_literal_suffix();
             return is_ident_body(peek())
                  ? tok::make_error_token("invalid number", skip_while(is_ident_body), source())
-                 : tok::suffixed_floating_literal(
-                      std::stod(integer_part + "." + fractional_part),
-                      suffix, location(), source());
+                 : tok::suffixed_floating_literal(std::stod(integer_part + "." + fractional_part), suffix, location(), source());
          }
 
          assert(!integer_part.empty() && "expected an integer digit");
-         auto suffix = scan_integer_literal_suffix();
+         auto suffix = scan_floating_literal_suffix();
+         if (suffix != lexical_token_suffix::none) {
+            return is_ident_body(peek())
+                 ? tok::make_error_token("invalid number", skip_while(is_ident_body), source())
+                 : tok::suffixed_floating_literal(std::stod(integer_part), suffix, location(), source());
+         }
+
+         suffix = scan_integer_literal_suffix();
          return is_ident_body(peek())
               ? tok::make_error_token("invalid number", skip_while(is_ident_body), source())
               : tok::suffixed_integer_literal(
