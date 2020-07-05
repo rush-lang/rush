@@ -305,7 +305,16 @@ namespace rush {
             break;
          case symbols::ellipses: result = parse_spread_expr(); break;
          case symbols::left_parenthesis: result = parse_paren_expr(); break;
-         case symbols::left_square_bracket: result = parse_array_literal_expr(); break;
+         case symbols::left_bracket:
+            result = is_lambda_expr_ahead()
+                   ? parse_lambda_expr()
+                   : errs::unexpected_symbol_expr(tok);
+            break;
+         case symbols::left_square_bracket:
+            result = is_lambda_expr_ahead()
+                   ? parse_lambda_expr()
+                   : parse_array_literal_expr();
+            break;
          default: return errs::unexpected_symbol_expr(tok);
          } break;
 		}

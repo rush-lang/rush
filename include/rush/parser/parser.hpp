@@ -239,16 +239,24 @@ namespace rush {
          auto indent_stack = _indent_stack;
 
          // skip opening '('
-         next_skip_indent(temp, last, indent_stack);
+         auto opening = next_skip_indent(temp, last, indent_stack);
          auto parens = 1;
+
+         symbols::symbol_token_t closing;
+         switch (opening.symbol()) {
+         case symbols::left_parenthesis: closing = symbols::right_parenthesis; break;
+         case symbols::left_square_bracket: closing = symbols::right_square_bracket; break;
+         case symbols::left_bracket: closing = symbols::right_bracket; break;
+         default: assert("unreachable!");
+         }
 
          // skip all tokens until last closing parenthesis.
          // (it may be less error-prone and more efficient to
          // try and parse the tokens than simply skipping
          // all tokens until the last closing parens is found).
          while (temp != last && parens >= 1) {
-            if (temp->is(symbols::left_parenthesis)) { ++parens; }
-            else if (temp->is(symbols::right_parenthesis)) { --parens; }
+            if (temp->is(opening.symbol())) { ++parens; }
+            else if (temp->is(closing)) { --parens; }
             next_skip_indent(temp, last, indent_stack);
          }
 
