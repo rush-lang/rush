@@ -92,16 +92,9 @@ namespace rush {
          return errs::expected_function_name(peek_skip_indent());
 		auto ident = next_skip_indent();
 
-      auto plist_result = parse_result<ast::pattern>();
-      if (peek_skip_indent().is_not(symbols::left_parenthesis)) {
-         plist_result = (peek_skip_indent().is_any(
-                           symbols::colon,
-                           symbols::thin_arrow,
-                           symbols::thick_arrow))
-                      ? parse_result<ast::pattern> { ptrns::list() }
-                      : parse_result<ast::pattern> { errs::expected_signature_or_body(peek_skip_indent()) };
-      } else { plist_result = parse_parameter_list(); }
-
+      auto plist_result = peek_skip_indent().is(symbols::left_parenthesis)
+                        ? parse_parameter_list()
+                        : ptrns::list();
       if (plist_result.failed())
          return std::move(plist_result).as<ast::declaration>();
 
@@ -125,12 +118,9 @@ namespace rush {
 	}
 
    rush::parse_result<ast::statement> parser::parse_function_body() {
-      if (peek_skip_indent().is(symbols::thick_arrow))
-         return terminated(&parser::parse_function_expr_body);
-      if (peek_skip_indent().is(symbols::colon))
-         return parse_function_stmt_body();
-
-      return nullptr; // todo: assert should never reach here.
+      return peek_skip_indent().is(symbols::thick_arrow)
+           ? terminated(&parser::parse_function_expr_body)
+           : parse_function_stmt_body();
    }
 
    rush::parse_result<ast::statement> parser::parse_function_expr_body() {
@@ -165,7 +155,7 @@ namespace rush {
    }
 
    rush::parse_result<ast::statement> parser::parse_function_stmt_body() {
-		assert(consume_skip_indent(symbols::colon) && "expected a ':' symbol.");
+      consume_skip_indent(symbols::colon); // consume optional ':'
       if (peek_with_indent().is_not(symbols::indent)) {
          return peek_with_lbreak().is_any(symbols::lbreak, symbols::dedent, symbols::eof)
               ? rush::parse_result<ast::statement> { stmts::block() }
@@ -183,9 +173,7 @@ namespace rush {
          return errs::expected_struct_name(peek_skip_indent());
 		auto ident = next_skip_indent();
 
-      if (!consume_skip_indent(symbols::colon))
-         return errs::expected(peek_skip_indent(), ":");
-
+      consume_skip_indent(symbols::colon); // consume optional ':'
       std::vector<std::unique_ptr<ast::member_section_declaration>> sections;
       parse_result<ast::member_section_declaration> section_result;
 
@@ -201,8 +189,7 @@ namespace rush {
          keywords::private_,
          keywords::protected_)) {
             auto tok = next_skip_indent();
-            if (!consume_skip_indent(symbols::colon))
-               return errs::expected(peek_skip_indent(), ":");
+            consume_skip_indent(symbols::colon); // consume optional ':'
 
             // empty struct section.
             if (!peek_with_indent().is(symbols::indent))
@@ -230,9 +217,7 @@ namespace rush {
          return errs::expected_class_name(peek_skip_indent());
 		auto ident = next_skip_indent();
 
-      if (!consume_skip_indent(symbols::colon))
-         return errs::expected(peek_skip_indent(), ":");
-
+      consume_skip_indent(symbols::colon); // skip optional ':'
       std::vector<std::unique_ptr<ast::member_section_declaration>> sections;
       parse_result<ast::member_section_declaration> section_result;
 
@@ -248,8 +233,7 @@ namespace rush {
          keywords::private_,
          keywords::protected_)) {
             auto tok = next_skip_indent();
-            if (!consume_skip_indent(symbols::colon))
-               return errs::expected(peek_skip_indent(), ":");
+            consume_skip_indent(symbols::colon); // skip optional ':'
 
             // empty class section.
             if (!peek_with_indent().is(symbols::indent))
@@ -364,7 +348,8 @@ namespace rush {
             return std::move(type_result).errors();
       }
 
-      if (peek_skip_indent().is_any(symbols::thick_arrow, symbols::colon)) {
+      if (peek_skip_indent().is_any(symbols::thick_arrow, symbols::colon)
+       || peek_with_indent().is(symbols::indent)) {
          auto body_result = parse_function_body();
          if (body_result.failed())
             return std::move(body_result).as<ast::member_declaration>();
@@ -395,7 +380,8 @@ namespace rush {
             return std::move(type_result).errors();
       }
 
-      if (peek_skip_indent().is_any(symbols::thick_arrow, symbols::colon)) {
+      if (peek_skip_indent().is_any(symbols::thick_arrow, symbols::colon)
+       || peek_with_indent().is(symbols::indent)) {
          auto body_result = parse_function_body();
          if (body_result.failed())
             return std::move(body_result).as<ast::member_declaration>();

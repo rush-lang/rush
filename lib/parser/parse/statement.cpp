@@ -101,10 +101,7 @@ namespace rush {
       if (cond_result.failed())
          return std::move(cond_result).as<ast::statement>();
 
-      if (!peek_skip_indent().is(symbols::colon))
-         return errs::expected_if_stmt_body(peek_skip_indent());
-      auto tok_colon = next_skip_indent(); // consume ':' symbol.
-
+      consume_skip_indent(symbols::colon); // consume optional ':'.
       auto then_result = (peek_with_indent().is(symbols::indent))
          ? parse_block_stmt()
          : peek_with_lbreak().is_not_any(symbols::lbreak, symbols::dedent)
@@ -137,13 +134,15 @@ namespace rush {
       auto tok = peek_skip_indent();
       if (tok.is_keyword()) {
          auto result = parse_compound_stmt(tok.keyword());
-         if (result.second) return std::move(result.first);
-         return errs::expected_compound_stmt(tok);
-      } else if (tok.is(symbols::colon)) {
-         auto tok_colon = next_skip_indent(); // consume ':' symbol.
+         return result.second
+            ? std::move(result.first)
+            : errs::expected_compound_stmt(tok);
+      } else if (consume_skip_indent(symbols::colon)
+             ||  peek_with_indent().is(symbols::indent)) {
+
          auto result = (peek_with_indent().is(symbols::indent))
             ? parse_block_stmt()
-            : peek_with_lbreak().is_not_any(symbols::lbreak, symbols::dedent)
+            : peek_with_lbreak().is_not_any(symbols::lbreak, symbols::dedent, symbols::eof)
             ? parse_inline_stmt()
             : ast::stmts::block();
 
@@ -170,10 +169,7 @@ namespace rush {
       if (expr_result.failed())
          return std::move(expr_result).as<ast::statement>();
 
-      if (!peek_skip_indent().is(symbols::colon))
-         return errs::expected_for_stmt_body(peek_skip_indent());
-      auto tok_colon = next_skip_indent();
-
+      consume_skip_indent(symbols::colon); // consume optional ':'.
       auto then_result = (peek_with_indent().is(symbols::indent))
          ? parse_block_stmt()
          : peek_with_lbreak().is_not_any(symbols::lbreak, symbols::dedent)
@@ -196,11 +192,7 @@ namespace rush {
       if (cond_result.failed())
          return std::move(cond_result).as<ast::statement>();
 
-      // consume ':' symbol.
-      if (!peek_skip_indent().is(symbols::colon))
-         return errs::expected_while_stmt_body(peek_skip_indent());
-      auto tok_colon = next_skip_indent();
-
+      consume_skip_indent(symbols::colon); // consume optional ':'.
       auto then_result = (peek_with_indent().is(symbols::indent))
          ? parse_block_stmt()
          : peek_with_lbreak().is_not_any(symbols::lbreak, symbols::dedent)
