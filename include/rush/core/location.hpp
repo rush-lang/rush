@@ -67,6 +67,32 @@ namespace rush {
 		source_index_t _column;
 	};
 
+   class location_range {
+   public:
+      location_range(
+         rush::location start,
+         rush::location end)
+         : _start { start }
+         , _end { end } {}
+
+      bool is_undefined() const noexcept {
+         return _start.is_undefined()
+             || _end.is_undefined();
+      }
+
+      rush::location const& start() const noexcept {
+         return _start;
+      }
+
+      rush::location const& end() const noexcept {
+         return _end;
+      }
+
+   private:
+      rush::location _start;
+      rush::location _end;
+   };
+
    template <typename CharT, typename TraitsT>
    std::basic_ostream<CharT, TraitsT>& operator << (std::basic_ostream<CharT, TraitsT>& os, location loc) {
       if (loc == location::undefined) { os << "[line: undefined, col: undefined]"; }

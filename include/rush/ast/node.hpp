@@ -19,6 +19,7 @@
 #define RUSH_AST_NODE_HPP
 
 #include "rush/extra/dereferencing_iterator.hpp"
+#include "rush/core/location.hpp"
 
 #include <vector>
 #include <memory>
