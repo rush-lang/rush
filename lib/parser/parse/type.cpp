@@ -61,7 +61,7 @@ namespace rush {
             result = parse_tuple_type();
             istuple = true;
             break;
-         case symbols::left_square_bracket:
+         case symbols::left_bracket:
             result = parse_array_type();
             break;
          default: return errs::expected_type_annotation(tok);
@@ -81,7 +81,7 @@ namespace rush {
             return parse_function_type(!istuple
                  ? _context->tuple_type(result.type())
                  : result.type());
-         // case symbols::left_square_bracket: return parse_array_type(result.type());
+         // case symbols::left_bracket: return parse_array_type(result.type());
          default: return std::move(result);
          }
       }
@@ -113,7 +113,7 @@ namespace rush {
    }
 
    rush::parse_type_result parser::parse_array_type() {
-      assert(peek_skip_indent().is(symbols::left_square_bracket) && "expected array type symbol '['.");
+      assert(peek_skip_indent().is(symbols::left_bracket) && "expected array type symbol '['.");
       next_skip_indent(); // consume '['
 
       auto tok = peek_skip_indent();
@@ -135,7 +135,7 @@ namespace rush {
 
 
       tok = peek_skip_indent();
-      if (tok.is_not(symbols::right_square_bracket))
+      if (tok.is_not(symbols::right_bracket))
          return errs::expected_closing_square_bracket(tok);
       next_skip_indent(); // skip closing ']'
 

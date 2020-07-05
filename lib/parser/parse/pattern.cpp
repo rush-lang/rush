@@ -33,9 +33,9 @@ namespace rush {
             return parse_named_pattern();
             } else if (tok.is(symbols::underscore)) {
                return parse_discard_pattern();
-            } else if (tok.is(symbols::left_square_bracket)) {
-               return parse_array_destructure_pattern();
             } else if (tok.is(symbols::left_bracket)) {
+               return parse_array_destructure_pattern();
+            } else if (tok.is(symbols::left_brace)) {
                return parse_object_destructure_pattern();
             }
 
@@ -86,9 +86,9 @@ namespace rush {
                result = parse_rest_pattern();
             } else if (tok.is(symbols::underscore)) {
                result = parse_discard_pattern();
-            } else if (tok.is(symbols::left_square_bracket)) {
-               result = parse_array_destructure_pattern();
             } else if (tok.is(symbols::left_bracket)) {
+               result = parse_array_destructure_pattern();
+            } else if (tok.is(symbols::left_brace)) {
                result = parse_object_destructure_pattern();
             } else return errs::expected(tok, "pattern");
 
@@ -100,17 +100,17 @@ namespace rush {
    }
 
    rush::parse_result<ast::pattern> parser::parse_array_destructure_pattern() {
-      assert(consume_skip_indent(symbols::left_square_bracket) && "expected '{' parsing destructure pattern.");
+      assert(consume_skip_indent(symbols::left_bracket) && "expected '{' parsing destructure pattern.");
       auto result = parse_destructure_pattern();
-      return !consume_skip_indent(symbols::right_square_bracket)
+      return !consume_skip_indent(symbols::right_bracket)
            ? errs::expected_closing_bracket(peek_skip_indent())
            : rush::parse_result<ast::pattern> { ptrns::destructure_array(std::move(result)) };
    }
 
    rush::parse_result<ast::pattern> parser::parse_object_destructure_pattern() {
-      assert(consume_skip_indent(symbols::left_bracket) && "expected '{' parsing destructure pattern.");
+      assert(consume_skip_indent(symbols::left_brace) && "expected '{' parsing destructure pattern.");
       auto result = parse_destructure_pattern();
-      return !consume_skip_indent(symbols::right_bracket)
+      return !consume_skip_indent(symbols::right_brace)
            ? errs::expected_closing_bracket(peek_skip_indent())
            : rush::parse_result<ast::pattern> { ptrns::destructure_object(std::move(result)) };
    }
@@ -151,9 +151,9 @@ namespace rush {
          result = parse_named_pattern();
       } else if (tok.is(symbols::underscore)) {
          result = parse_discard_pattern();
-      } else if (tok.is(symbols::left_square_bracket)) {
-         result = parse_array_destructure_pattern();
       } else if (tok.is(symbols::left_bracket)) {
+         result = parse_array_destructure_pattern();
+      } else if (tok.is(symbols::left_brace)) {
          result = parse_object_destructure_pattern();
       } else return errs::expected(tok, "pattern");
 

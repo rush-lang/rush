@@ -245,8 +245,8 @@ namespace rush {
          symbols::symbol_token_t closing;
          switch (opening.symbol()) {
          case symbols::left_parenthesis: closing = symbols::right_parenthesis; break;
-         case symbols::left_square_bracket: closing = symbols::right_square_bracket; break;
          case symbols::left_bracket: closing = symbols::right_bracket; break;
+         case symbols::left_brace: closing = symbols::right_brace; break;
          default: assert("unreachable!");
          }
 
