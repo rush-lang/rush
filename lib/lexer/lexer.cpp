@@ -418,6 +418,10 @@ namespace rush {
                if (check_skip('=', 1)) return tok::minus_equals(location(), source());
             } break;
 
+            case symbols::colon: {
+               if (check_skip(':', 1)) return tok::double_colon(location(), source());
+            } break;
+
             case symbols::caret: {
                if (check_skip('=', 1)) return tok::caret_equals(location(), source());
             } break;
@@ -460,6 +464,25 @@ namespace rush {
                      : tok::double_right_chevron(location(), source());
                }
             } break;
+
+            case symbols::tilde: {
+               if (check_skip("!", 1))
+                  return check_skip("=")
+                       ? tok::tilde_exclamation_equals(location(), source())
+                       : tok::tilde_exclamation(location(), source());
+               if (check_skip("&", 1))
+                  return check_skip("=")
+                       ? tok::tilde_ampersand_equals(location(), source())
+                       : tok::tilde_ampersand(location(), source());
+               if (check_skip("^", 1))
+                  return check_skip("=")
+                       ? tok::tilde_caret_equals(location(), source())
+                       : tok::tilde_caret(location(), source());
+               if (check_skip("|", 1))
+                  return check_skip("=")
+                       ? tok::tilde_pipe_equals(location(), source())
+                       : tok::tilde_pipe(location(), source());
+            }
 
             case symbols::period: {
                if (check("..", 1)) { skip(3); return tok::ellipses(location(), source()); }

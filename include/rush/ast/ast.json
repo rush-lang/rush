@@ -1,11 +1,11 @@
 {
 	"prefix": [
-		{ "precedence": 30, "name": "positive", "symbol_token": "plus" },
-		{ "precedence": 30, "name": "negative", "symbol_token": "minus" },
-		{ "precedence": 30, "name": "pre_increment", "symbol_token": "plus_plus", "display": "pre-increment" },
-		{ "precedence": 30, "name": "pre_decrement", "symbol_token": "minus_minus", "display": "pre-decrement" },
-		{ "precedence": 30, "name": "logical_negation", "symbol_token": "exclamation_mark", "display": "logical-negation" },
-      { "precedence": 30, "name": "bitwise_negation", "symbol_token": "tilde", "display": "bitwise-negation" }
+		{ "precedence": 40, "name": "positive", "symbol_token": "plus" },
+		{ "precedence": 40, "name": "negative", "symbol_token": "minus" },
+		{ "precedence": 40, "name": "pre_increment", "symbol_token": "plus_plus", "display": "pre-increment" },
+		{ "precedence": 40, "name": "pre_decrement", "symbol_token": "minus_minus", "display": "pre-decrement" },
+		{ "precedence": 40, "name": "logical_negation", "symbol_token": "exclamation_mark", "display": "logical-negation" },
+      { "precedence": 40, "name": "bitwise_negation", "symbol_token": "tilde_exclamation", "display": "bitwise-negation" }
    ],
 
    "postfix": [
@@ -15,6 +15,7 @@
    ],
 
 	"binary": [
+      { "associativity": -1, "precedence": 30, "name": "exponentiation", "symbol_token": "caret" },
       { "associativity": -1, "precedence": 50, "name": "multiplication", "symbol_token": "asterisk" },
 		{ "associativity": -1, "precedence": 50, "name": "division", "symbol_token": "forward_slash" },
 		{ "associativity": -1, "precedence": 50, "name": "modulo", "symbol_token": "percent" },
@@ -28,25 +29,25 @@
 		{ "associativity": -1, "precedence": 90, "name": "greater_equals", "symbol_token": "right_chevron_equals", "display": "greater-equals" },
       { "associativity": -1, "precedence": 100, "name": "equal", "symbol_token": "equals_equals" },
 		{ "associativity": -1, "precedence": 100, "name": "not_equal", "symbol_token": "exclamation_mark_equals", "display": "not-equal" },
-		{ "associativity": -1, "precedence": 110, "name": "bitwise_and", "symbol_token": "ampersand", "display": "bitwise-and" },
-		{ "associativity": -1, "precedence": 120, "name": "bitwise_xor", "symbol_token": "caret", "display": "bitwise-xor" },
-		{ "associativity": -1, "precedence": 130, "name": "bitwise_or", "symbol_token": "pipe" , "display": "bitwise-or" },
+		{ "associativity": -1, "precedence": 110, "name": "bitwise_and", "symbol_token": "tilde_ampersand", "display": "bitwise-and" },
+		{ "associativity": -1, "precedence": 120, "name": "bitwise_xor", "symbol_token": "tilde_caret", "display": "bitwise-xor" },
+		{ "associativity": -1, "precedence": 130, "name": "bitwise_or", "symbol_token": "tilde_pipe" , "display": "bitwise-or" },
       { "associativity": -1, "precedence": 140, "name": "inclusive_range", "symbol_token": "ellipses", "display": "inclusive-range" },
       { "associativity": -1, "precedence": 140, "name": "exclusive_range", "display": "exclusive-range" },
 		{ "associativity": -1, "precedence": 150, "name": "logical_and", "symbol_token": "double_ampersand", "display": "logical-and" },
       { "associativity": -1, "precedence": 160, "name": "logical_or", "symbol_token": "double_pipe", "display": "logical-or" },
       { "associativity": 1, "precedence": 170, "name": "ternary", "symbol_token": "question_mark", "binary_expression": false },
       { "associativity": 1, "precedence": 170, "name": "assignment", "symbol_token": "equals" },
-      { "associativity": 1, "precedence": 170, "name": "compound_addition", "symbol_token": "plus_equals", "display": "compound-addition" },
-      { "associativity": 1, "precedence": 170, "name": "compound_subtraction", "symbol_token": "minus_equals" , "display": "compound-subtraction" },
       { "associativity": 1, "precedence": 170, "name": "compound_multiplication", "symbol_token": "asterisk_equals" , "display": "compound-multiplication" },
+      { "associativity": 1, "precedence": 170, "name": "compound_subtraction", "symbol_token": "minus_equals" , "display": "compound-subtraction" },
       { "associativity": 1, "precedence": 170, "name": "compound_division", "symbol_token": "forward_slash_equals" , "display": "compound-division" },
+      { "associativity": 1, "precedence": 170, "name": "compound_addition", "symbol_token": "plus_equals", "display": "compound-addition" },
       { "associativity": 1, "precedence": 170, "name": "compound_modulo", "symbol_token": "percent_equals" , "display": "compound-modulo" },
-      { "associativity": 1, "precedence": 170, "name": "compound_left_shift", "symbol_token": "double_left_chevron_equals" , "display": "compound-left_shift" },
-      { "associativity": 1, "precedence": 170, "name": "compound_right_shift", "symbol_token": "double_right_chevron_equals" , "display": "compound-right_shift" },
-      { "associativity": 1, "precedence": 170, "name": "compound_bitwise_or", "symbol_token": "pipe_equals" , "display": "compound-bitwise_or" },
-      { "associativity": 1, "precedence": 170, "name": "compound_bitwise_xor", "symbol_token": "caret_equals" , "display": "compound-bitwise_xor" },
-      { "associativity": 1, "precedence": 170, "name": "compound_bitwise_and", "symbol_token": "ampersand_equals", "display": "compound-bitwise_and"  }
+      { "associativity": 1, "precedence": 170, "name": "compound_left_shift", "symbol_token": "double_left_chevron_equals" , "display": "compound-left-shift" },
+      { "associativity": 1, "precedence": 170, "name": "compound_right_shift", "symbol_token": "double_right_chevron_equals" , "display": "compound-right-shift" },
+      { "associativity": 1, "precedence": 170, "name": "compound_bitwise_or", "symbol_token": "tilde_pipe_equals" , "display": "compound-bitwise-or" },
+      { "associativity": 1, "precedence": 170, "name": "compound_bitwise_xor", "symbol_token": "tilde_caret_equals" , "display": "compound-bitwise-xor" },
+      { "associativity": 1, "precedence": 170, "name": "compound_bitwise_and", "symbol_token": "tilde_ampersand_equals", "display": "compound-bitwise-and"  }
    ],
 
    "statements": {

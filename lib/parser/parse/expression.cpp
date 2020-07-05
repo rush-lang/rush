@@ -405,8 +405,12 @@ namespace rush {
       if (operand_result.failed())
          return std::move(operand_result);
 
-      if (is_unary_postfix_operator(peek_skip_indent())) {
+      auto next = peek_skip_indent();
+      if (is_unary_postfix_operator(next)) {
          operand_result = parse_unary_postfix_expr(std::move(operand_result));
+         if (operand_result.failed()) return std::move(operand_result);
+      } else if (is_binary_operator(next) && unary_precedence(tok) > binary_precedence(next)) {
+         operand_result = parse_binary_expr(std::move(operand_result));
          if (operand_result.failed()) return std::move(operand_result);
       }
 
@@ -417,13 +421,12 @@ namespace rush {
       case symbols::plus_plus: return exprs::pre_increment(std::move(operand_result));
       case symbols::minus_minus: return exprs::pre_decrement(std::move(operand_result));
       case symbols::exclamation_mark: return exprs::logical_negation(std::move(operand_result));
-      case symbols::tilde: return exprs::bitwise_negation(std::move(operand_result));
+      case symbols::tilde_exclamation: return exprs::bitwise_negation(std::move(operand_result));
       }
    }
 
    rush::parse_result<ast::expression> parser::parse_unary_postfix_expr(rush::parse_result<ast::expression> operand_result) {
       assert(is_unary_postfix_operator(peek_skip_indent()) && "expected unary postfix operator.");
-      if (operand_result.failed()) return nullptr;
 
       auto tok = peek_skip_indent();
       switch (tok.symbol()) {
@@ -479,6 +482,7 @@ namespace rush {
 		case symbols::minus: result = exprs::subtraction(std::move(lhs), std::move(rhs)); break;
 		case symbols::percent: result = exprs::modulo(std::move(lhs), std::move(rhs)); break;
 		case symbols::asterisk: result = exprs::multiplication(std::move(lhs), std::move(rhs)); break;
+		case symbols::caret: result = exprs::exponentiation(std::move(lhs), std::move(rhs)); break;
 		case symbols::forward_slash: result = exprs::division(std::move(lhs), std::move(rhs)); break;
 
       // compound arithmetic binary operators
@@ -489,16 +493,16 @@ namespace rush {
       case symbols::forward_slash_equals: result = exprs::compound_division(std::move(lhs), std::move(rhs)); break;
 
       // bit-wise binary operators
-      case symbols::pipe: result = exprs::bitwise_or(std::move(lhs), std::move(rhs)); break;
-      case symbols::caret: result = exprs::bitwise_xor(std::move(lhs), std::move(rhs)); break;
-      case symbols::ampersand: result = exprs::bitwise_and(std::move(lhs), std::move(rhs)); break;
+      case symbols::tilde_pipe: result = exprs::bitwise_or(std::move(lhs), std::move(rhs)); break;
+      case symbols::tilde_caret: result = exprs::bitwise_xor(std::move(lhs), std::move(rhs)); break;
+      case symbols::tilde_ampersand: result = exprs::bitwise_and(std::move(lhs), std::move(rhs)); break;
       case symbols::double_left_chevron: result = exprs::left_shift(std::move(lhs), std::move(rhs)); break;
       case symbols::double_right_chevron: result = exprs::right_shift(std::move(lhs), std::move(rhs)); break;
 
       // compound bit-wise binary operators
-      case symbols::pipe_equals: result = exprs::compound_bitwise_or(std::move(lhs), std::move(rhs)); break;
-      case symbols::caret_equals: result = exprs::compound_bitwise_xor(std::move(lhs), std::move(rhs)); break;
-      case symbols::ampersand_equals: result = exprs::compound_bitwise_and(std::move(lhs), std::move(rhs)); break;
+      case symbols::tilde_pipe_equals: result = exprs::compound_bitwise_or(std::move(lhs), std::move(rhs)); break;
+      case symbols::tilde_caret_equals: result = exprs::compound_bitwise_xor(std::move(lhs), std::move(rhs)); break;
+      case symbols::tilde_ampersand_equals: result = exprs::compound_bitwise_and(std::move(lhs), std::move(rhs)); break;
       case symbols::double_left_chevron_equals: result = exprs::compound_left_shift(std::move(lhs), std::move(rhs)); break;
       case symbols::double_right_chevron_equals: result = exprs::compound_right_shift(std::move(lhs), std::move(rhs)); break;
 
