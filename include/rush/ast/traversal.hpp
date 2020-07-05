@@ -168,6 +168,10 @@ namespace rush::ast {
          accept(expr.expression());
       }
 
+      virtual void visit_parenthesis_expr(parenthesis_expression const& expr) override {
+         accept(expr.expression());
+      }
+
       virtual void visit_subscript_expr(subscript_expression const& expr) override {
          accept(expr.operand());
          accept(expr.subscript());

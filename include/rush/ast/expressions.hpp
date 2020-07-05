@@ -35,5 +35,6 @@
 #include "rush/ast/exprs/new.hpp"
 #include "rush/ast/exprs/spread.hpp"
 #include "rush/ast/exprs/subscript.hpp"
+#include "rush/ast/exprs/parenthesis.hpp"
 
 #endif // RUSH_AST_EXPRESSION_HPP

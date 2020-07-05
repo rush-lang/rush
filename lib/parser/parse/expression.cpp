@@ -82,14 +82,14 @@ namespace rush {
 
       auto next = peek_skip_indent();
       if (next.is(symbols::comma)) {
-         result = parse_tuple_literal_expr(std::move(result));
+         return parse_tuple_literal_expr(std::move(result));
       } else {
          if (next.is_not(symbols::right_parenthesis))
             return errs::expected_closing_parenthesis(next);
          next_skip_indent(); // consume ')'
       }
 
-      return std::move(result);
+      return exprs::parens(std::move(result));
    }
 
    rush::parse_result<ast::expression> parser::parse_complex_paren_expr() {
@@ -120,9 +120,10 @@ namespace rush {
                std::move(expr_result)));
          case symbols::right_parenthesis: // assignment expression
             next_skip_indent(); // consume ')'
-            return exprs::assignment(
-               exprs::identifier(ident.text()),
-               std::move(expr_result));
+            return exprs::parens(
+               exprs::assignment(
+                  exprs::identifier(ident.text()),
+                  std::move(expr_result)));
          }
       }
 

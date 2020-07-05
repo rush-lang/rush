@@ -347,6 +347,11 @@ namespace rush::ast {
          indent_traverse(expr);
       }
 
+      virtual void visit_parenthesis_expr(parenthesis_expression const& expr) override {
+         print_expression("parenthesis", expr);
+         indent_traverse(expr);
+      }
+
 		virtual void visit_constant_decl(ast::constant_declaration const& decl) override {
 			print_storage_decl("constant", decl);
 		}
