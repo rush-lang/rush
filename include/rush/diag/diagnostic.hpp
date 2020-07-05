@@ -44,6 +44,8 @@ namespace rush {
    public:
       using code_type = std::size_t;
 
+      virtual ~diagnostic() = default;
+
       code_type code() const noexcept { return _code; }
       std::string const& message() const noexcept { return _msg; }
       rush::source const& source() const noexcept { return *_src; }

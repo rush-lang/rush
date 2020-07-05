@@ -18,11 +18,33 @@
 #ifndef RUSH_SEMA_ANALYZER_HPP
 #define RUSH_SEMA_ANALYZER_HPP
 
+#include "rush/ast/node.hpp"
 #include "rush/ast/visitor.hpp"
 
-namespace rush::sema {
-   class analyzer : public ast::visitor {
+#include "rush/diag/semantic_error.hpp"
+#include "rush/diag/semantic_warning.hpp"
 
+#include <vector>
+#include <memory>
+
+namespace rush::sema {
+   class engine;
+
+   class analyzer : public virtual ast::visitor {
+      friend class engine;
+
+      std::vector<std::unique_ptr<rush::diagnostic>> results() {
+         return std::move(_diags);
+      }
+
+   protected:
+      void log(std::unique_ptr<rush::diagnostic>);
+      void run(analyzer&, ast::node const&);
+
+   private:
+      std::vector<std::unique_ptr<rush::diagnostic>> _diags;
+
+      void initialize(sema::engine&);
    };
 }
 

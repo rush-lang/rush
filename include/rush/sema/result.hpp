@@ -18,9 +18,40 @@
 #ifndef RUSH_SEMA_RESULT_HPP
 #define RUSH_SEMA_RESULT_HPP
 
-namespace rush {
-   class semantic_analysis {
+#include "rush/diag/diagnostic.hpp"
+#include "rush/extra/iterator_range.hpp"
+#include "rush/extra/dereferencing_iterator.hpp"
 
+#include "rush/ast/node.hpp"
+
+#include <vector>
+
+namespace rush {
+   namespace sema { class engine; }
+
+   class semantic_analysis {
+      friend class sema::engine;
+
+   public:
+      auto const& ast() const noexcept {
+         return *_ast;
+      }
+
+      auto diagnostics() const noexcept {
+         return rush::make_iterator_range(
+            rush::make_deref_iterator(_diags.begin()),
+            rush::make_deref_iterator(_diags.end()));
+      }
+
+   private:
+      std::unique_ptr<ast::node> _ast;
+      std::vector<std::unique_ptr<rush::diagnostic>> _diags;
+
+      semantic_analysis(
+         std::unique_ptr<ast::node> ast,
+         std::vector<std::unique_ptr<rush::diagnostic>> diags)
+         : _ast { std::move(ast) }
+         , _diags { std::move(diags) } {}
    };
 } // rush
 

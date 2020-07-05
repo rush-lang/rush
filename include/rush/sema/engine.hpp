@@ -13,19 +13,24 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *************************************************************************/
-#include "rush/sema/analyze.hpp"
-#include "rush/sema/engine.hpp"
-#include "rush/parser/parse.hpp"
+#pragma once
 
-namespace rush {
-   semantic_analysis analyze(std::string src) {
-      return analyze(rush::parse(std::move(src)));
-   }
+#ifndef RUSH_SEMA_ENGINE_HPP
+#define RUSH_SEMA_ENGINE_HPP
 
-   semantic_analysis analyze(rush::syntax_analysis const& syn) {
-      auto eng = sema::engine {};
-      auto& p = eng.analyze(syn).ast();
+#include "rush/parser/result.hpp"
+#include "rush/sema/analyzer.hpp"
+#include "rush/sema/result.hpp"
 
-      return eng.analyze(syn);
-   }
+namespace rush::sema {
+   /*! \brief The Semantic Analysis Engine component is responsible
+    *         for running semantic analyzers against an AST,
+    *         and producing a semantic analysis result object.
+    */
+   class engine {
+   public:
+      rush::semantic_analysis analyze(rush::syntax_analysis const&);
+   };
 }
+
+#endif // RUSH_SEMA_ENGINE_HPP

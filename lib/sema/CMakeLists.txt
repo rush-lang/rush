@@ -1,7 +1,9 @@
 project(sema VERSION ${RUSH_VERSION} LANGUAGES CXX)
 
 rush_add_library(sema
+   engine.cpp
    analyze.cpp
+   analyzer.cpp
 )
 
 target_include_directories(sema PUBLIC
@@ -11,5 +13,5 @@ target_include_directories(sema PUBLIC
 
 target_compile_features(sema PUBLIC cxx_std_17)
 
-target_link_libraries(sema PUBLIC diag parser lexer ast)
+target_link_libraries(sema PUBLIC diag parser ast)
 

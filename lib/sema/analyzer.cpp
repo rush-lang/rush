@@ -13,19 +13,22 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *************************************************************************/
-#include "rush/sema/analyze.hpp"
 #include "rush/sema/engine.hpp"
-#include "rush/parser/parse.hpp"
+#include "rush/sema/analyzer.hpp"
 
-namespace rush {
-   semantic_analysis analyze(std::string src) {
-      return analyze(rush::parse(std::move(src)));
+namespace rush::sema {
+   void analyzer::log(std::unique_ptr<rush::diagnostic> diag) {
+      _diags.push_back(std::move(diag));
    }
 
-   semantic_analysis analyze(rush::syntax_analysis const& syn) {
-      auto eng = sema::engine {};
-      auto& p = eng.analyze(syn).ast();
+   void analyzer::run(analyzer& a, ast::node const& n) {
+      auto results = rush::visit(n, a).results();
+      std::move(
+         results.begin(),
+         results.end(),
+         std::back_inserter(_diags));
+   }
 
-      return eng.analyze(syn);
+   void analyzer::initialize(sema::engine&) {
    }
 }
