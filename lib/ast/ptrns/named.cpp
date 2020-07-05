@@ -115,14 +115,22 @@ public:
    virtual void visit_object_destructure_ptrn(ast::object_destructure_pattern const& ptrn) override {
       struct find_member : ast::visitor {
          ast::type_ref result;
+         std::size_t index;
          std::string_view name;
 
-         find_member(std::string_view name)
+         find_member(std::size_t pos, std::string_view name)
             : result { ast::types::undefined }
+            , index { pos }
             , name { name } {}
 
          virtual void visit_user_type(ast::user_type const& type) override {
             type.declaration().accept(*this);
+         }
+
+         virtual void visit_tuple_type(ast::tuple_type const& type) override {
+            auto types = type.types();
+            if (index < types.size())
+               result = types[index];
          }
 
          virtual void visit_class_decl(ast::class_declaration const& decl) override {
@@ -158,7 +166,7 @@ public:
 
       // todo: find and extract types of the destructured member.
       if (auto p = dynamic_cast<ast::named_pattern const*>(&_ptrn)) {
-         _type = rush::visit(ptrn.type(), find_member { p->name() }).result;
+         _type = rush::visit(ptrn.type(), find_member { ast::index_of(*p, ptrn), p->name() }).result;
       }
    }
 

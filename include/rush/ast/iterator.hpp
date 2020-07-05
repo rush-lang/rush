@@ -282,6 +282,21 @@ namespace rush::ast {
    template <typename NodeT>
    inline rush::iterator_range<typed_node_iterator<NodeT>> iterator_range(ast::node const* node = nullptr)
    { return { find_child<NodeT>(node), node ? iterator<NodeT>(node->parent()) : iterator<NodeT>() }; }
+
+
+   template <typename NodeT>
+   inline std::size_t index_of(NodeT const& node, ast::node const& list) {
+      static const std::size_t npos = static_cast<std::size_t>(-1);
+      auto it = ast::iterator_range<NodeT>(&list);
+      if (it.empty()) return npos;
+
+      auto res = std::find_if(it.begin(), it.end(),
+         [&node](auto& other) { return &node == &other; });
+
+      return res != it.end()
+           ? std::distance(it.begin(), res)
+           : npos;
+   }
 } // rush::ast
 
 #endif // RUSH_AST_ITERATOR_HPP
