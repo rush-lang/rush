@@ -36,7 +36,6 @@ namespace rush::ast {
    private:
       std::vector<std::unique_ptr<ast::import_declaration>> _imports;
       std::vector<std::unique_ptr<ast::module_declaration>> _decls;
-      mutable std::unique_ptr<ast::declaration> _undecl;
       std::string _id;
 
    public:

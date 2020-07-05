@@ -158,9 +158,10 @@ namespace rush {
          stmt_result = stmts::return_(std::move(expr));
       }
 
-      std::vector<std::unique_ptr<ast::statement>> stmts;
-      stmts.push_back(std::move(stmt_result));
-      return stmts::block(std::move(stmts));
+      // std::vector<std::unique_ptr<ast::statement>> stmts;
+      // stmts.push_back(std::move(stmt_result));
+      // return stmts::block(std::move(stmts));
+      return std::move(stmt_result);
    }
 
    rush::parse_result<ast::statement> parser::parse_function_stmt_body() {
@@ -324,7 +325,21 @@ namespace rush {
                std::move(result).as<ast::function_declaration>());
             break;
          }
-         default: break;
+         case keywords::class_: {
+            result = parse_class_declaration();
+            if (result.success()) return decls::nested(
+               std::move(result).as<ast::type_declaration>());
+            break;
+         }
+         case keywords::struct_: {
+            result = parse_struct_declaration();
+            if (result.success()) return decls::nested(
+               std::move(result).as<ast::type_declaration>());
+            break;
+         }
+         default:
+            result = errs::expected_member_decl(peek_skip_indent());
+            break;
          }
 
          return std::move(result).as<ast::member_declaration>();
