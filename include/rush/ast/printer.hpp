@@ -99,7 +99,7 @@ namespace rush::ast {
       }
 
       virtual void visit_builtin_error_type(ast::builtin_error_type const& type) override {
-         write("<error-type: \"{}\">", type.message());
+         write("<error: \"{}\">", type.message());
       }
 
       virtual void visit_builtin_void_type(ast::builtin_void_type const& type) override {
@@ -190,9 +190,9 @@ namespace rush::ast {
       virtual void visit_binding_ptrn(ast::binding_pattern const& ptrn) override {
          switch (ptrn.kind()) {
          case ast::binding_kind::unknown: write("<[ptrn] binding: "); break;
-         case ast::binding_kind::parameter: write("<[expr] parameter-binding: "); break;
-         case ast::binding_kind::initializer: write("<[expr] initializer-binding: "); break;
-         case ast::binding_kind::default_value: write("<[expr] default-value-binding: "); break;
+         case ast::binding_kind::parameter: write("<[ptrn] parameter-binding: "); break;
+         case ast::binding_kind::initializer: write("<[ptrn] initializer-binding: "); break;
+         case ast::binding_kind::default_value: write("<[ptrn] default-value-binding: "); break;
          }
          ptrn.result_type().accept(*this);
          writeln(">");

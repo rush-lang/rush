@@ -381,8 +381,6 @@ namespace rush {
       rush::parse_result<ast::expression> parse_new_expr();
       rush::parse_result<ast::expression> parse_spread_expr();
 
-      rush::parse_result<ast::nominal_declaration> scope_insert(std::unique_ptr<ast::nominal_declaration> decl, rush::lexical_token const& ident);
-
 
       std::unique_ptr<diag::syntax_error> parse_terminator() {
          auto tok = peek_with_indent();
