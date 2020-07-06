@@ -131,25 +131,13 @@ namespace rush {
       assert(peek_skip_indent().is(keywords::else_) && "expected 'else' keyword");
       next_skip_indent(); // consume 'else' keyword
 
-      auto tok = peek_skip_indent();
-      if (tok.is_keyword()) {
-         auto result = parse_compound_stmt(tok.keyword());
-         return result.second
-            ? std::move(result.first)
-            : errs::expected_compound_stmt(tok);
-      } else if (consume_skip_indent(symbols::colon)
-             ||  peek_with_indent().is(symbols::indent)) {
-
-         auto result = (peek_with_indent().is(symbols::indent))
-            ? parse_block_stmt()
-            : peek_with_lbreak().is_not_any(symbols::lbreak, symbols::dedent, symbols::eof)
-            ? parse_inline_stmt()
-            : ast::stmts::block();
-
-         return std::move(result);
-      }
-
-      return errs::expected_else_stmt_body(tok);
+      consume_skip_indent(symbols::colon); // consume optional ':'.
+      auto result = peek_with_indent().is(symbols::indent)
+         ? parse_block_stmt()
+         : peek_with_lbreak().is_not_any(symbols::lbreak, symbols::dedent, symbols::eof)
+         ? parse_inline_stmt()
+         : ast::stmts::block();
+      return std::move(result);
    }
 
    rush::parse_result<ast::statement> parser::parse_for_stmt() {
