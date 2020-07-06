@@ -120,11 +120,13 @@ namespace rush {
    rush::parse_result<ast::statement> parser::parse_function_body() {
       return peek_skip_indent().is(symbols::thick_arrow)
            ? terminated(&parser::parse_function_expr_body)
+           : peek_skip_indent().is(symbols::colon_equals)
+           ? terminated(&parser::parse_function_expr_body) // todo: change to parse math expression body.
            : parse_function_stmt_body();
    }
 
    rush::parse_result<ast::statement> parser::parse_function_expr_body() {
-		assert(peek_skip_indent().is(symbols::thick_arrow) && "expected an '=>' symbol.");
+		assert(peek_skip_indent().is_any(symbols::thick_arrow, symbols::colon_equals) && "expected an '=>' or ':=' symbol.");
       next_skip_indent();
 
       auto stmt_result = rush::parse_result<ast::statement> {};
@@ -348,7 +350,7 @@ namespace rush {
             return std::move(type_result).errors();
       }
 
-      if (peek_skip_indent().is_any(symbols::thick_arrow, symbols::colon)
+      if (peek_skip_indent().is_any(symbols::thick_arrow, symbols::colon_equals, symbols::colon)
        || peek_with_indent().is(symbols::indent)) {
          auto body_result = parse_function_body();
          if (body_result.failed())
@@ -380,7 +382,7 @@ namespace rush {
             return std::move(type_result).errors();
       }
 
-      if (peek_skip_indent().is_any(symbols::thick_arrow, symbols::colon)
+      if (peek_skip_indent().is_any(symbols::thick_arrow, symbols::colon_equals, symbols::colon)
        || peek_with_indent().is(symbols::indent)) {
          auto body_result = parse_function_body();
          if (body_result.failed())

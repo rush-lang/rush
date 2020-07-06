@@ -61,7 +61,7 @@ namespace rush {
             case symbols::equals:
                return parse_complex_paren_expr();
             case symbols::right_parenthesis:
-               if (peek_skip_indent(3).is_any(symbols::thick_arrow, symbols::thin_arrow))
+               if (peek_skip_indent(3).is_any(symbols::thick_arrow, symbols::colon_equals, symbols::thin_arrow))
                   return parse_lambda_expr();
             }
          }
@@ -261,7 +261,7 @@ namespace rush {
             return std::move(return_type).errors();
       }
 
-      if (!peek_skip_indent().is(symbols::thick_arrow))
+      if (!peek_skip_indent().is_any(symbols::thick_arrow, symbols::colon_equals))
          return errs::expected_function_expr_body(peek_skip_indent());
 
       auto body_result = parse_function_expr_body();
@@ -478,6 +478,7 @@ namespace rush {
 		switch (tok.symbol()) {
       default: return errs::not_supported(tok, fmt::format("binary operator '{}'", tok.text()));
       case symbols::equals: result = exprs::assignment(std::move(lhs), std::move(rhs)); break;
+      case symbols::colon_equals: result = exprs::assignment(std::move(lhs), std::move(rhs)); break;
       // arithmetic binary operators
 		case symbols::plus: result = exprs::addition(std::move(lhs), std::move(rhs)); break;
 		case symbols::minus: result = exprs::subtraction(std::move(lhs), std::move(rhs)); break;

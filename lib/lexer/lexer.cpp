@@ -426,6 +426,7 @@ namespace rush {
 
             case symbols::colon: {
                if (check_skip(':', 1)) return tok::double_colon(location(), source());
+               if (check_skip('=', 1)) return tok::colon_equals(location(), source());
             } break;
 
             case symbols::caret: {

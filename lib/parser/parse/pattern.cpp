@@ -45,7 +45,7 @@ namespace rush {
       if (result.success() && peek_skip_indent().is(symbols::colon))
          result = parse_type_annotation_pattern(std::move(result));
 
-      if (result.success() && peek_skip_indent().is(symbols::equals))
+      if (result.success() && peek_skip_indent().is_any(symbols::equals, symbols::colon_equals))
          result = parse_binding_pattern(std::move(result));
 
       return std::move(result);
@@ -131,8 +131,8 @@ namespace rush {
    }
 
    rush::parse_result<ast::pattern> parser::parse_binding_pattern(rush::parse_result<ast::pattern> lhs) {
-      assert(peek_skip_indent().is_any(symbols::equals, symbols::colon) && "expected '=' or ':'.");
-      next_skip_indent(); // skip '=' or ':'
+      assert(peek_skip_indent().is_any(symbols::equals, symbols::colon, symbols::colon_equals) && "expected '=', ':', or ':='.");
+      next_skip_indent(); // skip '=', ':', ':='
 
       auto expr_result = parse_expr();
       if (expr_result.failed())
