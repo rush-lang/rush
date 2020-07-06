@@ -263,6 +263,7 @@ namespace rush {
          // we have a lambda expression if the last closing
          // parenthesis is immediatley followed by a thin or thick arrow.
          return peek_skip_indent(temp, last).is(symbols::thick_arrow)
+             || peek_skip_indent(temp, last).is(symbols::colon_equals)
              || peek_skip_indent(temp, last).is(symbols::thin_arrow);
       }
 

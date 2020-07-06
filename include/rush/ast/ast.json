@@ -38,6 +38,7 @@
       { "associativity": -1, "precedence": 160, "name": "logical_or", "symbol_token": "double_pipe", "display": "logical-or" },
       { "associativity": 1, "precedence": 170, "name": "ternary", "symbol_token": "question_mark", "binary_expression": false },
       { "associativity": 1, "precedence": 170, "name": "assignment", "symbol_token": "equals" },
+      { "associativity": 1, "precedence": 170, "name": "mathexp_assignment", "symbol_token": "colon_equals" },
       { "associativity": 1, "precedence": 170, "name": "compound_multiplication", "symbol_token": "asterisk_equals" , "display": "compound-multiplication" },
       { "associativity": 1, "precedence": 170, "name": "compound_subtraction", "symbol_token": "minus_equals" , "display": "compound-subtraction" },
       { "associativity": 1, "precedence": 170, "name": "compound_division", "symbol_token": "forward_slash_equals" , "display": "compound-division" },
