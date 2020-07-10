@@ -42,6 +42,10 @@ namespace rush::ast {
       }
 
       virtual ast::type_ref result_type() const override {
+         if (auto type = _operand->result_type().as<ast::array_type>()) {
+            return type->underlying_type();
+         }
+
          return ast::types::undefined;
       }
 
