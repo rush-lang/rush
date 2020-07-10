@@ -6,7 +6,7 @@ add_executable(crush
 )
 
 target_include_directories(crush PRIVATE include)
-target_link_libraries(crush PRIVATE cxxopts parser)
+target_link_libraries(crush PRIVATE tclr fmt cxxopts parser)
 
 set_target_properties(crush PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})

@@ -145,7 +145,7 @@ void render(options::options& opts) {
 	}
 }
 
-int main(int argc, char const** argv) {
+int main(int argc, char** argv) {
 
 	auto opts = options::parse(argc, argv);
 

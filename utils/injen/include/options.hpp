@@ -24,7 +24,7 @@
 namespace options {
 
 	class options {
-		friend options parse(int&, char const**&);
+		friend options parse(int&, char**&);
 
 	public:
 		options(options const&) = delete;
@@ -58,11 +58,11 @@ namespace options {
 		cxxopts::Options _options;
 		cxxopts::ParseResult _result;
 
-		options(int& argc, char const**& argv, cxxopts::Options options)
+		options(int& argc, char**& argv, cxxopts::Options options)
 			: _options { std::move(options) }, _result { _options.parse(argc, argv) } { }
 	};
 
-	options parse(int& argc, char const**& argv) {
+	options parse(int& argc, char**& argv) {
 		auto options = cxxopts::Options { "injen", "Source code generation tool" };
 		options.add_options()
 			("h,help", "Print usage information and exit.")

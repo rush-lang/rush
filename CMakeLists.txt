@@ -58,6 +58,7 @@ install(TARGETS
    lexer
    parser
    crush
+   rupl
    RUNTIME DESTINATION ${RUNTIME_DEST}
    LIBRARY DESTINATION ${LIBRARY_DEST})
 
