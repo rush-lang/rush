@@ -32,9 +32,8 @@ namespace rush {
             if (tok.is_identifier()) {
                auto named = parse_named_pattern();
                return peek_skip_indent().is(symbols::left_parenthesis)
-                    ? is_lambda_expr_ahead()
+                   && is_lambda_expr_ahead()
                     ? ptrns::binding(std::move(named), parse_lambda_expr())
-                    : rush::parse_result<ast::pattern> { errs::expected_function_expr_body(peek_skip_indent(1)) }
                     : std::move(named);
             } else if (tok.is(symbols::underscore)) {
                return parse_discard_pattern();
