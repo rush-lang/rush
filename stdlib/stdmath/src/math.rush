@@ -1,4 +1,3 @@
-
 export extern func cos(x: float) -> float
 export extern func sin(x: float) -> float
 export extern func tan(x: float) -> float
@@ -25,7 +24,14 @@ export extern func tanh(x: double) -> double
 
 export extern func pow(b: float, exp: int) -> float
 export extern func pow(b: float, exp: float) -> float
+export extern func pow(b: double, exp: int) -> double
 export extern func pow(b: double, exp: double) -> double
+
+export extern func sqrt(x: float) -> float
+export extern func sqrt(x: double) -> double
+
+export extern func cbrt(x: float) -> float
+export extern func cbrt(x: double) -> double
 
 export extern func log(x: float) -> float
 export extern func log(x: double) -> double

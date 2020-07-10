@@ -1,29 +1,46 @@
 export class <T> list:
 private:
-   var _items: [T]
-   var _len: int
+   var _items: [unsafe T]
+   var _size: int
 
-   func resize(count: int):
+   func resize(count, offset: int):
       if _items.length < count:
-         _items = new [T : _items.length * 2] (_items, count);
-      _len = count;
+         let cap = _items.length * 2
+         _items = new [unsafe T : cap] (_items);
+      _size = count;
+
+   func _check_range(index: int):
+      if _size <= index:
+         throw new argument_out_of_range(nameof(index))
 
 public:
-   func list => this(iterable.empty<T>())
+   func list => this(5)
+
+   func list(cap: int):
+      _items = new [unsafe T : cap]
+      _size = 0
+
    func list(src: iterable<T>):
-      _items = [...src]
-      _len = _items.length
+      _items = new [unsafe T] (src)
+      _size = _items.length
 
-   get count => _len
+   get count => _size
 
-   get [index: int] => _items[index]
-   set [index: int] => _items[index] = value
+   get capacity => _items.length
+
+   get [index: int]:
+      _check_range(index)
+      return _items[index]
+
+   set [index: int]:
+      _check_range(index)
+      _items[index] = value
 
    func clear() => pass
 
    func insert(index: int, item: T) => pass
 
-   func append(item: T) => insert(-1, item)
+   func append(item: T) => insert(_size, item)
    func prepend(item: T) => insert(0, item)
 
    func remove(index: int) => pass
