@@ -1,4 +1,3 @@
 ## Arbitrary precision integer
-
-struct integer:
+export struct integer:
 public:

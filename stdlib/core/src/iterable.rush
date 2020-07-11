@@ -3,4 +3,4 @@ interface <T> iterator:
    func next -> bool
 
 interface <T> iterable:
-   func iterator -> iterator<T>
+   func iterator() -> iterator<T>

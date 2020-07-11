@@ -1,3 +1,3 @@
-## Arbitrary precision decimal numbers
-struct decimal:
+## Arbitrary precision decimal number
+export struct decimal:
 public:

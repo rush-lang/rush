@@ -1,66 +1,77 @@
 
-export concept <T> any(a: T):
-# the any concept does not have any constraints
-# and as such all types are considered 'any'
+# The only constraint of the 'any' concept is that the parameter
+# be of it's type, this is true for all parameters and as such all
+# types satisfy the 'any' constraint.
+export concept <T> any(val: T) => val -> T
 
-export concept <T, U = T> equatable(lhs: T, rhs: U):
+export concept equatable(lhs: any, rhs = lhs):
+requires equatable(rhs, lhs)
 requires:
    lhs == rhs -> bool
 
-export concept <T, U = T> orderable(lhs: T, rhs: U):
+export concept orderable(lhs: any, rhs = lhs)
+requires orderable(rhs, lhs)
 requires:
    lhs < rhs -> bool
 
-export concept <T, U = T> comparable(lhs: T, rhs: U):
-requires equatable<T, U>
-requires orderable<T, U>
+export concept comparable(lhs: any, rhs = lhs)
+requires orderable(lhs, rhs)
+       & equatable(lhs, rhs)
 
-export concept <T> hashable(arg: T):
+export concept hashable(arg: any) => hash(arg) -> uint
+
+export concept signable(val: any):
 requires:
-   hash(arg) -> uint
+   +val -> typeof val
+   -val -> typeof val
 
-export concept <T> signable(val: T):
+export concept numerical(lhs: any, rhs = lhs)
+requires signable(lhs)
+       & numerical(rhs, lhs)
+       & comparable(lhs, rhs)
 requires:
-   +val -> T
-   -val -> T
+   lhs + rhs -> numerical
+   lhs - rhs -> numerical
+   lhs * rhs -> numerical
+   lhs / rhs -> numerical
 
-export concept <T, U = T> numerical(lhs: T, rhs: U):
-requires signable<T>
-requires comparable<T, U>
+   lhs += rhs -> ref typeof lhs
+   lhs -= rhs -> ref typeof lhs
+   lhs *= rhs -> ref typeof lhs
+   lhs /= rhs -> ref typeof lhs
+
+export concept integral(lhs: numerical, rhs = lhs):
+requires numerical(lhs, rhs)
+       & integral(rhs, lhs)
 requires:
-   lhs + rhs -> T
-   lhs - rhs -> T
-   lhs * rhs -> T
-   lhs / rhs -> T
+   ++lhs -> ref typeof lhs
+   --lhs -> ref typeof lhs
 
-   lhs += rhs -> T
-   lhs -= rhs -> T
-   lhs *= rhs -> T
-   lhs /= rhs -> T
+   lhs % rhs -> integral
+   lhs %= rhs -> ref typeof lhs
 
-export concept <T, U = T> integral(lhs: T, rhs: U):
-requires numerical<T, U>
+export concept floating(lhs: numerical, rhs = lhs):
+requires numerical(lhs, rhs)
+       & floating(rhs, lhs)
 requires:
-   ++lhs -> T
-   --lhs -> T
+   pow(lhs, rhs) -> floating
 
-   lhs % rhs -> T
-   lhs %= rhs -> T
+   sin(lhs) -> floating
+   cos(lhs) -> floating
+   tan(lhs) -> floating
 
-export concept <T, U = T> floating(lhs: T, rhs: U):
-requires numerical<T, U>
-requires:
-   pow(lhs, rhs) -> T
-   sqrt(lhs) -> T
+   asin(lhs) -> floating
+   acos(lhs) -> floating
+   atan(lhs) -> floating
 
-   sin(lhs) -> T
-   cos(lhs) -> T
-   tan(lhs) -> T
+   sinh(lhs) -> floating
+   cosh(lhs) -> floating
+   tanh(lhs) -> floating
 
-   asin(lhs) -> T
-   acos(lhs) -> T
-   atan(lhs) -> T
+   sqrt(lhs) -> floating
+   cbrt(lhs) -> floating
 
-   sinh(lhs) -> T
-   cosh(lhs) -> T
-   tanh(lhs) -> T
+   log(lhs) -> floating
+   log(lhs) -> floating
+   exp(lhs) -> floating
+   exp(lhs) -> floating

@@ -1,0 +1,28 @@
+concept addable(a, b: any) => a + b -> typeof a
+concept divisible(a, b: any) => a / b -> typeof a
+concept subtractable(a, b: any) => a - b -> typeof a
+concept multiplicable(a, b: any) => a * b -> typeof a
+concept modulable(a, b: any) => a % b -> typeof a
+
+concept bitwise_orable(a, b: any) => a ~| b -> typeof a
+concept bitwise_andable(a, b: any) => a ~& b -> typeof a
+concept bitwise_xorable(a, b: any) => a ~^ b -> typeof a
+concept bitwise_rshiftable(a, b: any) => a >> b -> typeof a
+concept bitwise_lshiftable(a, b: any) => a << b -> typeof a
+
+export operator += (a, b: ref addable) => a = a + b
+export operator /= (a, b: ref divisible) => a = a / b
+export operator -= (a, b: ref subtractable) => a = a - b
+export operator *= (a, b: ref multiplicable) => a = a * b
+export operator %= (a, b: ref modulable) => a = a % b
+
+export operator ~|= (a, b: ref bitwise_orable) => a = a ~| b
+export operator ~&= (a, b: ref bitwise_andable) => a = a ~& b
+export operator ~^= (a, b: ref bitwise_xorable) => a = a ~^ b
+export operator <<= (a, b: ref bitwise_lshiftable) => a = a << b
+export operator >>= (a, b: ref bitwise_rshiftable) => a = a >> b
+
+export operator != (a, b: equatable) => !(a == b)
+export operator <= (a, b: orderable) => !(b < a)
+export operator >= (a, b: orderable) => !(a < b)
+export operator  > (a, b: orderable) => b < a

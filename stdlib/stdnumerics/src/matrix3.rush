@@ -1,0 +1,15 @@
+export struct matrix3f:
+private:
+   let _vals: [float]
+
+public:
+   let static identity: const = new matrix3f()
+
+   get [row, _: int] -> vector3f ## ??? maybe?
+
+   get [_, col: int] -> vector3f ## ??? maybe?
+
+   get [row, col: int]:
+      let index = row + col * 3
+      _check_index(index)
+      return _vals[index]

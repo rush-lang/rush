@@ -1,0 +1,9 @@
+# Represents the built in Array type.
+export class <T> array
+public:
+   func array() -> void:
+   func array(cap: int) -> void:
+   func array(src: iterable<T>) -> void:
+   func array(repeat: T, count: int) -> void:
+
+   get length -> int:
