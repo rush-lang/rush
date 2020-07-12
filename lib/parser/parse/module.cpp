@@ -13,6 +13,8 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *************************************************************************/
+#include "rush/ast/source.hpp"
+#include "rush/ast/module.hpp"
 #include "rush/parser/parser.hpp"
 #include "rush/diag/syntax_error.hpp"
 
@@ -20,34 +22,36 @@ namespace decls = rush::ast::decls;
 namespace errs = rush::diag::errs;
 
 namespace rush {
-   rush::parse_result<ast::module> parser::parse_module() {
-      while (peek_skip_indent().is(keywords::import_)) {
-         auto import_result = terminated(&parser::parse_import_decl);
-         if (import_result.failed())
-            return std::move(import_result).as<ast::module>();
-         _module->push_back(std::move(import_result));
+   rush::parse_result<ast::module_node> parser::parse_module() {
+      std::vector<std::unique_ptr<ast::source_node>> results;
+      while (peek_skip_indent().is_not(symbols::eof)) {
+         auto result = parse_source();
+         if (result.failed())
+            return std::move(result).as<ast::module_node>();
+         results.push_back(std::move(result));
       }
 
-      while (peek_skip_indent().is_not(symbols::eof)) {
-         // ignore stray semi-colons
-         if (peek_with_indent().is(symbols::semi_colon)) {
-            next_with_indent();
-            continue;
-         }
+      return ast::module_("main", std::move(results));
+   }
 
-         ast::module_access acc = ast::module_access::internal;
-         if (peek_skip_indent().is(keywords::export_)) {
-            next_skip_indent(); // consume 'export' keyword.
-            acc = ast::module_access::exported;
-         }
-
+   rush::parse_result<ast::source_node> parser::parse_source() {
+      auto tok = peek_skip_indent();
+      auto& source = tok.source();
+      std::vector<std::unique_ptr<ast::node>> results;
+      while (tok.is_not(symbols::eof) && &source == &tok.source()) {
+         consume_skip_indent(symbols::semi_colon); // ignore stray semi-colons
+         auto exported = consume_skip_indent(keywords::export_);
          auto decl_result = parse_toplevel_decl();
          if (decl_result.failed())
-            return std::move(decl_result).as<ast::module>();
-         _module->push_back(std::move(decl_result), acc);
+            return std::move(decl_result).as<ast::source_node>();
+
+         results.push_back(exported
+            ? decls::exported(std::move(decl_result))
+            : decls::internal(std::move(decl_result)));
+         tok = peek_skip_indent();
       }
 
-      return std::move(_module);
+      return ast::source(source, std::move(results));
    }
 
    rush::parse_result<ast::import_declaration> parser::parse_import_decl() {

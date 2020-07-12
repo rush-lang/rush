@@ -26,7 +26,8 @@ namespace ast = rush::ast;
 namespace exprs = ast::exprs;
 
 bool valid_parse(std::string input, std::unique_ptr<ast::node> root) {
-	auto ast = rush::parse(input);
+   auto ctx = ast::context {};
+	auto ast = rush::parse(input, ctx);
 	return true;
 }
 

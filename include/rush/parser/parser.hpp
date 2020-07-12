@@ -25,6 +25,7 @@
 
 #include "rush/ast/types.hpp"
 #include "rush/ast/module.hpp"
+#include "rush/ast/source.hpp"
 #include "rush/ast/expressions.hpp"
 #include "rush/ast/declarations.hpp"
 #include "rush/ast/statements.hpp"
@@ -55,28 +56,25 @@ namespace rush {
          , _eof { tokens::eof() }
          , _indent_stack { } {}
 
-		rush::syntax_analysis parse(lexical_analysis const& lxa) {
-         initialize(lxa);
-         parse_result<ast::module> result;
+		rush::syntax_analysis parse(lexical_analysis const& lxa, ast::context& ctx) {
+         initialize(lxa, ctx);
+
+         parse_result<ast::module_node> result;
          try { result = parse_module(); }
          catch (...) { result = diag::errs::internal_parse_error(_eof); }
-         return rush::syntax_analysis {
-            std::move(_context),
-            std::move(result)
-         };
+         return rush::syntax_analysis { std::move(result) };
 		}
 
 	private:
-		rush::lexical_token _eof;
 		rush::parser_options _opts;
+		rush::lexical_token _eof;
 
       // tracks the current level of indentation along with whether not it was skipped.
       // false = unskipped indentation.
       // true =  skipped indentation.
       std::vector<bool> _indent_stack;
 
-      std::unique_ptr<ast::module> _module;
-      std::unique_ptr<ast::context> _context;
+      ast::context* _context;
 		std::pair<lxa_iterator, lxa_iterator> _range;
 
 
@@ -87,15 +85,12 @@ namespace rush {
          return temp;
       }
 
-		void initialize(lexical_analysis const& lxa) {
+		void initialize(lexical_analysis const& lxa, ast::context& ctx) {
          if (!lxa.empty()) {
             auto loc = lxa.back().location();
             _eof = tokens::eof(loc.next_column(lxa.back().size()), lxa.source());
-            _range = { lxa.begin(), lxa.end() };
-         }
-
-         _context = std::make_unique<ast::context>();
-         _module = std::make_unique<ast::module>(std::string { lxa.id() });
+            _range = { lxa.begin(), lxa.end() }; }
+         _context = &ctx;
 		}
 
       bool is_indent_skipped(std::size_t offset = 0) {
@@ -268,7 +263,8 @@ namespace rush {
       }
 
       // modules.
-      rush::parse_result<ast::module> parse_module();
+      rush::parse_result<ast::module_node> parse_module();
+      rush::parse_result<ast::source_node> parse_source();
       rush::parse_result<ast::import_declaration> parse_import_decl();
 
       // types.
@@ -296,8 +292,8 @@ namespace rush {
       rush::parse_result<ast::statement> parse_function_stmt_body();
       rush::parse_result<ast::pattern> parse_parameter_list();
 
-      rush::parse_result<ast::declaration> parse_class_declaration();
-      rush::parse_result<ast::declaration> parse_struct_declaration();
+      rush::parse_result<ast::declaration> parse_class_decl();
+      rush::parse_result<ast::declaration> parse_struct_decl();
       rush::parse_result<ast::member_declaration> parse_member_decl();
       rush::parse_result<ast::member_section_declaration> parse_member_section(ast::member_access);
       rush::parse_result<ast::member_declaration> parse_property_getter();

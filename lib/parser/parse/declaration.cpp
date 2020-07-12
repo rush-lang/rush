@@ -36,8 +36,9 @@ namespace rush {
          case keywords::let_: return terminated(&parser::parse_constant_decl);
          case keywords::var_: return terminated(&parser::parse_variable_decl);
          case keywords::func_: return parse_function_decl();
-         case keywords::class_: return parse_class_declaration();
-         case keywords::struct_: return parse_struct_declaration();
+         case keywords::class_: return parse_class_decl();
+         case keywords::struct_: return parse_struct_decl();
+         case keywords::import_: return parse_import_decl();
          default: break;
          }
       }
@@ -167,7 +168,7 @@ namespace rush {
       return parse_block_stmt();
    }
 
-   rush::parse_result<ast::declaration> parser::parse_struct_declaration() {
+   rush::parse_result<ast::declaration> parser::parse_struct_decl() {
       assert(peek_skip_indent().is(keywords::struct_) && "expected the 'struct' keyword.");
       next_skip_indent(); // consume 'struct'
 
@@ -211,7 +212,7 @@ namespace rush {
       return decls::struct_(ident.text(), std::move(sections));
    }
 
-   rush::parse_result<ast::declaration> parser::parse_class_declaration() {
+   rush::parse_result<ast::declaration> parser::parse_class_decl() {
       assert(peek_skip_indent().is(keywords::class_) && "expected the 'class' keyword.");
       next_skip_indent(); // consume 'class'
 
@@ -312,13 +313,13 @@ namespace rush {
             break;
          }
          case keywords::class_: {
-            result = parse_class_declaration();
+            result = parse_class_decl();
             if (result.success()) return decls::nested(
                std::move(result).as<ast::type_declaration>());
             break;
          }
          case keywords::struct_: {
-            result = parse_struct_declaration();
+            result = parse_struct_decl();
             if (result.success()) return decls::nested(
                std::move(result).as<ast::type_declaration>());
             break;

@@ -21,6 +21,7 @@
 #include "rush/ast/node.hpp"
 #include "rush/ast/types.hpp"
 #include "rush/ast/module.hpp"
+#include "rush/ast/source.hpp"
 #include "rush/ast/statements.hpp"
 #include "rush/ast/declarations.hpp"
 #include "rush/ast/expressions.hpp"
@@ -70,9 +71,14 @@ namespace rush::ast {
 			, _indent { 0 }
 			, _current_indent { 0 } {}
 
-      virtual void visit_module(ast::module const& mdl) override {
-         writeln("<module: \"{}\">", mdl.id());
+      virtual void visit_module(ast::module_node const& mdl) override {
+         writeln("<[meta] module: (name=\"{}\")>", mdl.name());
          indent_traverse(mdl);
+      }
+
+      virtual void visit_source(ast::source_node const& src) override {
+         writeln("<[meta] source: (path=\"{}\")>", src.id());
+         indent_traverse(src);
       }
 
       virtual void visit_import_decl(ast::import_declaration const& decl) override {

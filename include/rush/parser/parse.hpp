@@ -27,9 +27,9 @@
 namespace rush {
    class source;
 
-	syntax_analysis parse(std::string const&, parser_options const& = {});
-   syntax_analysis parse(rush::source const&, parser_options const& = {});
-	syntax_analysis parse(std::istream&, parser_options const& = {});
+	rush::syntax_analysis parse(std::string const&, ast::context&, parser_options const& opts = {});
+   rush::syntax_analysis parse(rush::source const&, ast::context&, parser_options const& opts = {});
+	rush::syntax_analysis parse(std::istream&, ast::context&, parser_options const& opts = {});
 
 } // rush
 

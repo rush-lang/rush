@@ -34,14 +34,15 @@ namespace rush::ast {
    enum class scope_kind {
       pseudo,
       global,
+      module_,
+      source,
       function,
       struct_,
       class_,
       enum_,
-      concept,
+      concept_,
       interface,
       extension,
-      module,
       block,
    };
 

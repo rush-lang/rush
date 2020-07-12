@@ -15,6 +15,8 @@
 *************************************************************************/
 #include "rush/ast/visitor.hpp"
 
+#include "rush/ast/module.hpp"
+#include "rush/ast/source.hpp"
 #include "rush/ast/types.hpp"
 #include "rush/ast/patterns.hpp"
 #include "rush/ast/expressions.hpp"
@@ -22,6 +24,16 @@
 #include "rush/ast/statements.hpp"
 
 namespace rush::ast {
+   void visitor::visit_module(ast::module_node const& mdl) {
+      std::for_each(mdl.begin(), mdl.end(),
+         [this](auto& p) { p.accept(*this); });
+   }
+
+   void visitor::visit_source(ast::source_node const& src) {
+      std::for_each(src.begin(), src.end(),
+         [this](auto& p) { p.accept(*this); });
+   }
+
    void visitor::visit_ptrn_list(ast::pattern_list const& ptrn) {
       std::for_each(ptrn.begin(), ptrn.end(),
          [this](auto& p) { p.accept(*this); });

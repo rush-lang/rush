@@ -20,6 +20,7 @@
 
 #include "rush/ast/visitor.hpp"
 #include "rush/ast/module.hpp"
+#include "rush/ast/source.hpp"
 #include "rush/ast/statements.hpp"
 #include "rush/ast/expressions.hpp"
 #include "rush/ast/declarations.hpp"
@@ -52,9 +53,12 @@ namespace rush::ast {
          accept(ptrn.pattern());
       }
 
-      virtual void visit_module(ast::module const& mdl) override {
-         std::for_each(mdl.imports().begin(), mdl.imports().end(), [this](auto& decl) { accept(decl); });
-         std::for_each(mdl.declarations().begin(), mdl.declarations().end(), [this](auto& decl) { accept(decl); });
+      virtual void visit_module(ast::module_node const& mdl) override {
+         std::for_each(mdl.begin(), mdl.end(), [this](auto& n) { accept(n); });
+      }
+
+      virtual void visit_source(ast::source_node const& src) override {
+         std::for_each(src.begin(), src.end(), [this](auto& n) { accept(n); });
       }
 
       virtual void visit_module_decl(ast::module_declaration const& exp) override {

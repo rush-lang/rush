@@ -13,20 +13,21 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *************************************************************************/
-#include "rush/sema/analyze.hpp"
-#include "rush/sema/engine.hpp"
-#include "rush/parser/parse.hpp"
+#include "rush/ast/source.hpp"
+#include "rush/ast/context.hpp"
+#include "rush/ast/scope.hpp"
+#include "rush/ast/scope_inserter.hpp"
 
-namespace rush {
-   semantic_analysis analyze(std::string src) {
-      ast::context ctx {};
-      return analyze(rush::parse(std::move(src), ctx));
+namespace rush::ast {
+   void source_node::attached(ast::scope& scope, ast::context& ctx) {
+      scope.push(ast::scope_kind::source);
+      std::for_each(begin(), end(), [this, &scope](auto& node) {
+         rush::visit(node, ast::scope_inserter { scope }); });
+      ast::node_list<ast::node>::attached(scope, ctx);
+      scope.pop();
    }
 
-   semantic_analysis analyze(rush::syntax_analysis const& syn) {
-      auto eng = sema::engine {};
-      auto& p = eng.analyze(syn).ast();
-
-      return eng.analyze(syn);
+   void source_node::detached(ast::context& ctx) {
+      ast::node_list<ast::node>::detached(ctx);
    }
-}
+} // rush::ast

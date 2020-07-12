@@ -18,65 +18,44 @@
 #ifndef RUSH_AST_MODULE_HPP
 #define RUSH_AST_MODULE_HPP
 
-#include "rush/extra/iterator_range.hpp"
-#include "rush/extra/dereferencing_iterator.hpp"
-
-#include "rush/ast/decls/import.hpp"
-#include "rush/ast/decls/module.hpp"
-#include "rush/ast/decls/declaration.hpp"
-#include "rush/ast/decls/undeclared.hpp"
-
+#include "rush/ast/source.hpp"
 #include "rush/ast/scope.hpp"
 
 #include <vector>
-#include <algorithm>
 
 namespace rush::ast {
-   class module : public ast::node {
-   private:
-      std::vector<std::unique_ptr<ast::import_declaration>> _imports;
-      std::vector<std::unique_ptr<ast::module_declaration>> _decls;
-      std::string _id;
-
+   class module_node : public ast::node_list<ast::source_node, ast::node> {
    public:
-      module(std::string id)
-         : _id { std::move(id) } {}
+      module_node(std::string name)
+         : ast::node_list<ast::source_node, ast::node> {}
+         , _name { std::move(name) } {}
 
-      std::string const& id() const noexcept {
-         return _id;
-      }
+      module_node(std::string name, std::vector<std::unique_ptr<ast::source_node>> srcs)
+         : ast::node_list<ast::source_node, ast::node> { std::move(srcs) }
+         , _name { std::move(name) } {}
 
-      void push_back(std::unique_ptr<ast::import_declaration> imp) {
-         adopt(*imp);
-         _imports.push_back(std::move(imp));
-      }
+      std::string_view name() const { return _name; }
 
-      void push_back(std::unique_ptr<ast::declaration> decl, ast::module_access access) {
-         adopt(*decl);
-         _decls.push_back(std::make_unique<ast::module_declaration>(std::move(decl), access));
-      }
-
-      auto imports() const noexcept {
-         return rush::make_iterator_range(
-            make_deref_iterator(_imports.begin()),
-            make_deref_iterator(_imports.end()));
-      }
-
-      auto declarations() const noexcept {
-         return rush::make_iterator_range(
-            make_deref_iterator(_decls.begin()),
-            make_deref_iterator(_decls.end()));
-      }
-
-      using node::accept;
+      using node_list<ast::source_node, ast::node>::accept;
       virtual void accept(ast::visitor& v) const override {
          v.visit_module(*this);
       }
 
    protected:
-      virtual void attached(ast::scope& scope, ast::context&) override;
-      virtual void detached(ast::context&) override;
+      virtual void attached(ast::scope& scope, ast::context& ctx) override;
+      virtual void detached(ast::context& ctx) override;
+
+   private:
+      std::string _name;
    };
+
+   inline std::unique_ptr<ast::module_node> module_(std::string name) {
+      return std::make_unique<ast::module_node>(std::move(name));
+   }
+
+   inline std::unique_ptr<ast::module_node> module_(std::string name, std::vector<std::unique_ptr<ast::source_node>> srcs) {
+      return std::make_unique<ast::module_node>(std::move(name), std::move(srcs));
+   }
 } // rush::ast
 
 #endif // RUSH_AST_MODULE_HPP

@@ -38,7 +38,7 @@ namespace rush::ast {
       }
 
 		virtual declaration_kind kind() const override {
-         return ast::declaration_kind::module;
+         return ast::declaration_kind::module_;
       }
 
       using node::accept;

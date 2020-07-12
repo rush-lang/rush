@@ -17,6 +17,7 @@ rush_add_library(ast
    decls/storage.cpp
    decls/member.cpp
    decls/module.cpp
+   decls/source.cpp
    decls/struct.cpp
    decls/class.cpp
    traversal.cpp

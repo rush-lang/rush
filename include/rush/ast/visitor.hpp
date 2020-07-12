@@ -22,6 +22,10 @@
 #include <utility>
 
 namespace rush::ast {
+   class node;
+   class module_node;
+   class source_node;
+
    class type;
    class named_type;
    class type_extension;
@@ -92,7 +96,6 @@ namespace rush::ast {
    class undeclared_identifier;
    class overloaded_declaration;
 
-   class module;
    class import_declaration;
    class module_declaration;
 
@@ -113,6 +116,10 @@ namespace rush::ast {
 	class visitor {
 	public:
 		virtual ~visitor() = default;
+
+      // meta
+      virtual void visit_module(ast::module_node const&);
+      virtual void visit_source(ast::source_node const&);
 
 		// types
 		virtual void visit_type(ast::type const&) {};
@@ -150,7 +157,6 @@ namespace rush::ast {
       virtual void visit_undeclared_decl(ast::undeclared_identifier const&) {};
       virtual void visit_overloaded_decl(ast::overloaded_declaration const&) {};
 
-      virtual void visit_module(ast::module const&) {};
       virtual void visit_import_decl(ast::import_declaration const&) {};
       virtual void visit_module_decl(ast::module_declaration const&) {};
 

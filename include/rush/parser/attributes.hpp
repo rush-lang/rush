@@ -35,9 +35,9 @@ namespace rush {
       struct_,
       class_,
       enum_,
-      concept,
+      concept_,
       interface,
-      module,
+      module_,
    };
 
 	// \brief An enumeration of mutually exclusive access modifiers.

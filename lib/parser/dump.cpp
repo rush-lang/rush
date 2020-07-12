@@ -24,27 +24,33 @@
 namespace rush {
 
    void dump(std::string const& input, std::ostream& out) {
-      dump(parse(input), out);
+      ast::context ctx {};
+      dump(parse(input, ctx), out);
    }
 
    void dump(rush::source const& input, std::ostream& out) {
-      dump(parse(input), out);
+      ast::context ctx {};
+      dump(parse(input, ctx), out);
    }
 
    void dump(std::istream& input, std::ostream& out) {
-      dump(parse(input), out);
+      ast::context ctx {};
+      dump(parse(input, ctx), out);
    }
 
    void dump(std::string input, parser_options const& opts, std::ostream& out) {
-      dump(parse(input, opts), out);
+      ast::context ctx {};
+      dump(parse(input, ctx, opts), out);
    }
 
    void dump(std::istream& input, parser_options const& opts, std::ostream& out) {
-      dump(parse(input, opts), out);
+      ast::context ctx {};
+      dump(parse(input, ctx, opts), out);
    }
 
    void dump(rush::source const& input, parser_options const& opts, std::ostream& out) {
-      dump(parse(input, opts), out);
+      ast::context ctx {};
+      dump(parse(input, ctx, opts), out);
    }
 
    void dump(rush::syntax_analysis const& sxa, std::ostream& out) {

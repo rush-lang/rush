@@ -24,24 +24,25 @@
 #include <string>
 
 namespace rush {
-	syntax_analysis parse(lexical_analysis const& lxa, parser_options const& opts) {
+	syntax_analysis parse(lexical_analysis const& lxa, ast::context& ctx, parser_options const& opts) {
 		auto p = parser { opts };
-		auto root = p.parse(lxa);
+		auto root = p.parse(lxa, ctx);
+      root.attach(ctx);
       return { std::move(root) };
 	}
 
-	syntax_analysis parse(std::string const& input, parser_options const& opts) {
+	syntax_analysis parse(std::string const& input, ast::context& ctx, parser_options const& opts) {
 		auto lxa = rush::lex(input);
-		return parse(lxa, opts);
+		return parse(lxa, ctx, opts);
 	}
 
-   syntax_analysis parse(rush::source const& input, parser_options const& opts) {
+   syntax_analysis parse(rush::source const& input, ast::context& ctx, parser_options const& opts) {
 		auto lxa = rush::lex(input);
-		return parse(lxa, opts);
+		return parse(lxa, ctx, opts);
 	}
 
-	syntax_analysis parse(std::istream& input, parser_options const& opts) {
+	syntax_analysis parse(std::istream& input, ast::context& ctx, parser_options const& opts) {
 		auto lxa = rush::lex(input);
-		return parse(lxa, opts);
+		return parse(lxa, ctx, opts);
 	}
 } // rush

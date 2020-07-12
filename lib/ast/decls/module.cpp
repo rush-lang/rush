@@ -19,17 +19,15 @@
 #include "rush/ast/scope_inserter.hpp"
 
 namespace rush::ast {
-   void module::attached(ast::scope& scope, ast::context&) {
-      std::for_each(_imports.begin(), _imports.end(), [this, &scope](auto& imp) { attach(scope, *imp); });
-
-      scope.push(ast::scope_kind::module);
-      std::for_each(_decls.begin(), _decls.end(), [this, &scope](auto& decl) { rush::visit(*decl, ast::scope_inserter { scope }); });
-      std::for_each(_decls.begin(), _decls.end(), [this, &scope](auto& decl) { attach(scope, *decl); });
+   void module_node::attached(ast::scope& scope, ast::context& ctx) {
+      scope.push(ast::scope_kind::module_);
+      std::for_each(begin(), end(), [this, &scope](auto& src) {
+         rush::visit(src, ast::scope_inserter { scope }); });
+      ast::node_list<ast::source_node, ast::node>::attached(scope, ctx);
       scope.pop();
    }
 
-   void module::detached(ast::context&) {
-      std::for_each(_imports.begin(), _imports.end(), [this](auto& imp) { detach(*imp); });
-      std::for_each(_decls.begin(), _decls.end(), [this](auto& decl) { detach(*decl); });
+   void module_node::detached(ast::context& ctx) {
+      ast::node_list<ast::source_node, ast::node>::detached(ctx);
    }
 } // rush::ast

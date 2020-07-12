@@ -26,7 +26,6 @@
 #include <string>
 
 namespace rush::ast {
-   class module;
    class declaration;
 
    class module_declaration : public ast::declaration {
@@ -68,6 +67,16 @@ namespace rush::ast {
       ast::module_access _access;
       std::unique_ptr<ast::declaration> _decl;
    };
+
+   namespace decls {
+      inline std::unique_ptr<ast::module_declaration> internal(std::unique_ptr<ast::declaration> decl) {
+         return std::make_unique<ast::module_declaration>(std::move(decl), ast::module_access::internal);
+      }
+
+      inline std::unique_ptr<ast::module_declaration> exported(std::unique_ptr<ast::declaration> decl) {
+         return std::make_unique<ast::module_declaration>(std::move(decl), ast::module_access::exported);
+      }
+   } // rush::ast::decls
 } // rush::ast
 
 #endif // RUSH_AST_DECLS_MODULE_HPP

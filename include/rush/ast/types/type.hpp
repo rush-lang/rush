@@ -39,7 +39,7 @@ namespace rush::ast {
       enum_,
       class_,
       struct_,
-      concept,
+      concept_,
       interface,
       function,
       extension,

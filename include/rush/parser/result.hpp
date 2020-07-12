@@ -200,7 +200,7 @@ namespace rush {
 
       template <typename NodeU>
       parse_result<NodeU> as() && {
-         if constexpr (!std::is_base_of_v<NodeT, NodeU>) {
+         if constexpr (!std::is_base_of_v<NodeU, NodeT> && !std::is_base_of_v<NodeT, NodeU>) {
             return std::move(_errors);
          } else {
             return success()
@@ -248,21 +248,14 @@ namespace rush {
          _result.accept(std::move(v));
       }
 
+      void attach(ast::context& ctx) {
+         _result.attach(ctx);
+      }
+
 	private:
 		rush::parse_result<ast::node> _result;
-      std::unique_ptr<ast::context> _context;
-
-		syntax_analysis(std::unique_ptr<ast::context> ctx)
-			: _context { std::move(ctx) }
-         , _result { nullptr } {}
-
-		syntax_analysis(std::unique_ptr<ast::context> ctx, rush::parse_result<ast::node> ast)
-			: _context { std::move(ctx) }
-			, _result { std::move(ast) } {
-            if (!_context) throw std::invalid_argument(
-               "null argument std::unique_ptr<ast::context> 'ctx'");
-            _result.attach(*_context);
-         }
+		syntax_analysis(rush::parse_result<ast::node> ast = nullptr)
+			: _result { std::move(ast) } { }
 	};
 } // rush
 
