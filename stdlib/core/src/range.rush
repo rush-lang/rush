@@ -1,0 +1,12 @@
+func incrange(start, end: integral):
+   while start <= end:
+      yield start++
+
+func decrange(start, end: integral):
+   while end <= start:
+      yield start--
+
+export func range(start, end: integral):
+   return start < end
+        ? incrange(start, end)
+        : decrange(start, end)

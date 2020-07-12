@@ -33,7 +33,7 @@
 		{ "associativity": -1, "precedence": 120, "name": "bitwise_xor", "symbol_token": "tilde_caret", "display": "bitwise-xor" },
 		{ "associativity": -1, "precedence": 130, "name": "bitwise_or", "symbol_token": "tilde_pipe" , "display": "bitwise-or" },
       { "associativity": -1, "precedence": 140, "name": "inclusive_range", "symbol_token": "ellipses", "display": "inclusive-range" },
-      { "associativity": -1, "precedence": 140, "name": "exclusive_range", "display": "exclusive-range" },
+      { "associativity": -1, "precedence": 140, "name": "exclusive_range", "symbol_token": "ellipses_caret", "display": "exclusive-range" },
 		{ "associativity": -1, "precedence": 150, "name": "logical_and", "symbol_token": "double_ampersand", "display": "logical-and" },
       { "associativity": -1, "precedence": 160, "name": "logical_or", "symbol_token": "double_pipe", "display": "logical-or" },
       { "associativity": 1, "precedence": 170, "name": "ternary", "symbol_token": "question_mark", "binary_expression": false },

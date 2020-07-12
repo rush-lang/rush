@@ -493,6 +493,7 @@ namespace rush {
 
             case symbols::period: {
                if (check("..", 1)) { skip(3); return tok::ellipses(location(), source()); }
+               if (check(".^", 1)) { skip(3); return tok::ellipses_caret(location(), source()); }
                if (check_if(is_digit, 1)) return scan_numeric_literal();
             } break;
 
