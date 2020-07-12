@@ -62,12 +62,14 @@ int main(int argc, char** argv) {
    auto opts = cxxopts::Options { "crush", COMPILER_TITLE(RUSH_VERSION) };
    opts.add_options()
       ("h,help", "Print usage information.")
+      ("version", "Print version information.")
       ("dump-lex", "Display the results of lexical analysis as a list of tokens.")
       ("dump-parse", "Display the results of syntax analysis as a hierachical AST structure.")
       ("dump-llvm-ir", "Display the results of generating LLVM IR.")
       ("indent", "Indentation style [ spaces | tabs | auto ] and width separated by a colon \':\'.", cxxopts::value<std::string>(), "style[:n]")
       ("files", "Source files to be compiled.", cxxopts::value<std::vector<std::string>>())
-      ("version", "Print version information.");
+      ("fno-core", "Compile without the core module.")
+      ("fno-builtin-aliases", "Compile without the built-in type aliases.");
    opts.parse_positional({ "files" });
    opts.positional_help("\"files...\"");
    opts.allow_unrecognised_options();

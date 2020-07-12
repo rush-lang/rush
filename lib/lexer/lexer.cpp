@@ -343,7 +343,7 @@ namespace rush {
          auto suffix = scan_integer_literal_suffix();
          return is_ident_body(peek())
               ? tok::make_error_token("invalid number", skip_while(is_ident_body), source())
-              : tok::suffixed_integer_literal(std::stoll(value, 0, base), suffix, location(), source());
+              : tok::suffixed_integer_literal(std::stoul(value, 0, base), suffix, location(), source());
       }
 
       lexical_token scan_numeric_literal() {

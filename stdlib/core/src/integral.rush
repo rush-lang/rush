@@ -2,24 +2,36 @@
 ## Represents an 8 bit integer and is the
 ## underlying type of the built-in 'sbyte' type.
 export struct int8:
+private:
+   var _val: sbyte
+
 public:
    static func parse(val: string, b = 10) => pass
 
 ## Represents a 64-bit integer and is the
 ## underlying type of the built-in 'short' type.
 export struct int16:
+private:
+   var _val: short
+
 public:
    static func parse(val: string, b = 10) => pass
 
 ## Represents a 32-bit integer and is the
 ## underlying type of the built-in 'int' type.
 export struct int32:
+private:
+   var _val: int
+
 public:
    static func parse(val: string, b = 10) => pass
 
 ## Represents a 64-bit integer and is the
 ## underlying type of the built-in 'long' type.
 export struct int64:
+private:
+   var _val: long
+
 public:
    static func parse(val: string, b = 10) => pass
 
@@ -27,24 +39,48 @@ public:
 ## Represents an 8 bit unsigned integer and is the
 ## underlying type of the built-in 'byte' type.
 export struct uint8:
+private:
+   var _val: byte
+
 public:
+   static let max: byte = 0xff
+   static let min: byte = 0x00
+
    static func parse(val: string, b = 10) => pass
 
 ## Represents a 64-bit unsigned integer and is the
 ## underlying type of the built-in 'ushort' type.
 export struct uint16:
+private:
+   var _val: ushort
+
 public:
+   static let max: ushort = 0xffff
+   static let min: ushort = 0x0000
+
    static func parse(val: string, b = 10) => pass
 
 ## Represents a 32-bit unsigned integer and is the
 ## underlying type of the built-in 'uint' type.
 export struct uint32:
+private:
+   var _val: uint
+
 public:
+   static let max = 0xffff`ffffu
+   static let min = 0x0000`0000u
+
    static func parse(val: string, b = 10) => pass
 
 ## Represents a 64-bit unsigned integer and is the
 ## underlying type of the built-in 'ulong' type.
 export struct uint64:
+private:
+   var _val: ulong
+
 public:
+   static let max = 0xffff`ffff`ffff`fffful
+   static let min = 0x0000`0000`0000`0000ul
+
    static func parse(val: string, b = 10) => pass
 
