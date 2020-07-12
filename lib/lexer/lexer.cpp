@@ -547,9 +547,6 @@ namespace rush {
       auto first = src.begin();
       auto last = src.end();
       auto impl = basic_lexer<decltype(first)> { src, _opts };
-      return lexical_analysis {
-         std::string { src.id() },
-         impl.tokenize(first, last)
-      };
+      return lexical_analysis { impl.tokenize(first, last) };
    }
 }

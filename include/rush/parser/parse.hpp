@@ -20,6 +20,7 @@
 
 #include "rush/parser/result.hpp"
 #include "rush/parser/options.hpp"
+#include "rush/lexer/lex.hpp"
 
 #include <iostream>
 #include <string>
@@ -27,10 +28,18 @@
 namespace rush {
    class source;
 
-	rush::syntax_analysis parse(std::string const&, ast::context&, parser_options const& opts = {});
-   rush::syntax_analysis parse(rush::source const&, ast::context&, parser_options const& opts = {});
-	rush::syntax_analysis parse(std::istream&, ast::context&, parser_options const& opts = {});
+	rush::syntax_analysis parse(std::istream&, ast::context&, parser_options const& = {});
+	rush::syntax_analysis parse(std::string const&, ast::context&, parser_options const& = {});
+   rush::syntax_analysis parse(rush::source const&, ast::context&, parser_options const& = {});
+   rush::syntax_analysis parse(lexical_analysis const&, ast::context&, parser_options const& = {});
 
+   template <typename InIter>
+   inline rush::syntax_analysis parse(
+      InIter first, InIter last,
+      ast::context& ctx, parser_options const& opts = {}) {
+         auto lxa = rush::lex(first, last);
+         return rush::parse(lxa, ctx, opts);
+      }
 } // rush
 
 #endif // RUSH_PARSER_PARSE_HPP

@@ -31,5 +31,6 @@ func main(args: string[]):
 int main() {
 	std::cout << src << std::endl;
 	std::cout << "--------------------" << std::endl;
-	rush::dump(src);
+   auto ctx = rush::ast::context {};
+	rush::dump(rush::parse(src, ctx));
 }

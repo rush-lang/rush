@@ -19,7 +19,7 @@
 #define RUSH_LEXER_LEXER_HPP
 
 #include "rush/lexer/lex.hpp"
-#include "rush/lexer/analysis.hpp"
+#include "rush/lexer/result.hpp"
 
 #include <string_view>
 #include <iosfwd>

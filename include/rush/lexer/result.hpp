@@ -23,6 +23,7 @@
 
 #include <string>
 #include <string_view>
+#include <iterator>
 #include <iosfwd>
 #include <vector>
 
@@ -39,8 +40,8 @@ namespace rush {
 		lexical_analysis(lexical_analysis const&) = delete;
 		void operator = (lexical_analysis const&) = delete;
 
-		lexical_analysis(lexical_analysis&&);
-		void operator = (lexical_analysis&&);
+		lexical_analysis(lexical_analysis&&) = default;
+		lexical_analysis& operator = (lexical_analysis&&) = default;
 
       using reference = typename std::vector<lexical_token>::reference;
       using const_reference = typename std::vector<lexical_token>::const_reference;
@@ -48,8 +49,11 @@ namespace rush {
 		using iterator = typename std::vector<lexical_token>::iterator;
 		using const_iterator = typename std::vector<lexical_token>::const_iterator;
 
-      std::string_view id() const noexcept {
-         return _id;
+      void append(lexical_analysis&& other) {
+         std::move(
+            other._tokens.begin(),
+            other._tokens.end(),
+            std::back_inserter(_tokens));
       }
 
 		bool empty() const noexcept {
@@ -97,18 +101,11 @@ namespace rush {
 		}
 
 	private:
-      std::string _id;
 		std::vector<lexical_token> _tokens;
 
       explicit lexical_analysis(
          std::vector<lexical_token> toks)
          : _tokens(std::move(toks)) {}
-
-		explicit lexical_analysis(
-         std::string id,
-         std::vector<lexical_token> toks)
-			: _id { std::move(id) }
-         , _tokens(std::move(toks)) {}
 	};
 } // rush
 

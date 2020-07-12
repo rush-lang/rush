@@ -13,7 +13,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *************************************************************************/
-#include "rush/lexer/analysis.hpp"
+#include "rush/lexer/result.hpp"
 #include "rush/lexer/dump.hpp"
 #include "rush/lexer/lex.hpp"
 
@@ -25,8 +25,16 @@ namespace rush {
 	}
 
 	void dump(lexical_analysis const& input, std::ostream& out) {
-		for (auto& tok : input) out
-			<< rush::debug_string(tok)
-			<< std::endl;
+      rush::source const* src = nullptr;
+		for (auto& tok : input) {
+         if (src != &tok.source()) {
+            src = &tok.source();
+            if (src != nullptr)
+               out << "--- source: \'" <<  src->id() << '\'' << std::endl;
+         }
+
+         out << rush::debug_string(tok)
+             << std::endl;
+      }
 	}
 } // rush

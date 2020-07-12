@@ -19,7 +19,7 @@
 #define RUSH_LEXER_LEX_HPP
 
 #include "rush/lexer/token.hpp"
-#include "rush/lexer/analysis.hpp"
+#include "rush/lexer/result.hpp"
 
 #include <iostream>
 #include <string_view>
@@ -35,6 +35,15 @@ namespace rush {
 	lexical_analysis lex(std::istream&, std::string_view id, lexer_options const& = {});
 	lexical_analysis lex(std::string_view, std::string_view id, lexer_options const& = {});
    lexical_analysis lex(rush::source const&, lexer_options const& = {});
+
+   template <typename InIter>
+   lexical_analysis lex(InIter first, InIter last, lexer_options const& opts = {}) {
+      if (first == last) return lex("");
+      auto result = lex(*first++);
+      while (first != last)
+         result.append(lex(*first++));
+      return std::move(result);
+   }
 }
 
 #endif // RUSH_LEXER_LEX_HPP

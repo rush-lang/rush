@@ -33,7 +33,7 @@
 #include "rush/ast/context.hpp"
 
 #include "rush/lexer/token.hpp"
-#include "rush/lexer/analysis.hpp"
+#include "rush/lexer/result.hpp"
 
 #include "rush/parser/result.hpp"
 #include "rush/parser/options.hpp"
