@@ -28,7 +28,7 @@ namespace ptrns = ast::ptrns;
 
 TEST_CASE( "rush::ast::constant_declaration", "[unit][ast]" ) {
    auto ctx = ast::context {};
-	auto decl = decls::constant("abc", exprs::literal(1, ctx));
+	auto decl = decls::let("abc", exprs::literal(1, ctx));
    decl->attach(ctx);
 
 	REQUIRE( decl->names().begin()->name() == "abc" );
@@ -38,7 +38,7 @@ TEST_CASE( "rush::ast::constant_declaration", "[unit][ast]" ) {
 
 TEST_CASE( "rush::ast::variable_declaration", "[unit][ast]" ) {
    auto ctx = ast::context {};
-	auto decl = decls::variable("def", exprs::literal(1, ctx));
+	auto decl = decls::var("def", exprs::literal(1, ctx));
    decl->attach(ctx);
 
 	REQUIRE( decl->names().begin()->name() == "def" );

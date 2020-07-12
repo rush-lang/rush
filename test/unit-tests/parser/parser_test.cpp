@@ -32,9 +32,9 @@ bool valid_parse(std::string input, std::unique_ptr<ast::node> root) {
 }
 
 TEST_CASE("rush::parse", "[unit][parser]") {
-	// CHECK( valid_parse("let i = 0", decls::constant("i", ctx, exprs::literal(0))));
-	// CHECK( valid_parse("let d = 0.1", decls::constant("d", ieee64_type, exprs::literal(0))));
-	// CHECK( valid_parse("let s = \"abc\"", decls::constant("s", string_type, exprs::literal(0))));
+	// CHECK( valid_parse("let i = 0", decls::let("i", ctx, exprs::literal(0))));
+	// CHECK( valid_parse("let d = 0.1", decls::let("d", ieee64_type, exprs::literal(0))));
+	// CHECK( valid_parse("let s = \"abc\"", decls::let("s", string_type, exprs::literal(0))));
 }
 
 TEST_CASE( "rush::parse (expressions)", "[unit][parser]" ) {

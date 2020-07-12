@@ -31,14 +31,14 @@ namespace rush::ast {
 
 	namespace decls {
 		std::unique_ptr<variable_declaration>
-         variable(std::unique_ptr<ast::pattern> ptrn);
+         var(std::unique_ptr<ast::pattern> ptrn);
 	}
 
 	class variable_declaration : public storage_declaration {
 		struct factory_tag_t {};
 
 		friend std::unique_ptr<variable_declaration>
-			decls::variable(std::unique_ptr<ast::pattern>);
+			decls::var(std::unique_ptr<ast::pattern>);
 
 	public:
 		variable_declaration(
@@ -58,29 +58,29 @@ namespace rush::ast {
 
 	namespace decls {
       inline std::unique_ptr<ast::variable_declaration>
-         variable(std::unique_ptr<ast::pattern> ptrn) {
+         var(std::unique_ptr<ast::pattern> ptrn) {
             return std::make_unique<variable_declaration>(
                std::move(ptrn),
                variable_declaration::factory_tag_t {});
          }
 
       inline std::unique_ptr<ast::variable_declaration>
-         variable(std::string name, ast::type_ref type) {
-            return variable(ptrns::annotation(
+         var(std::string name, ast::type_ref type) {
+            return var(ptrns::annotation(
                ptrns::name(std::move(name)),
                type));
          }
 
       inline std::unique_ptr<ast::variable_declaration>
-         variable(std::string name, std::unique_ptr<ast::expression> init) {
-            return variable(ptrns::binding(
+         var(std::string name, std::unique_ptr<ast::expression> init) {
+            return var(ptrns::binding(
                ptrns::name(std::move(name)),
                std::move(init)));
          }
 
       inline std::unique_ptr<ast::variable_declaration>
-         variable(std::string name, ast::type_ref type, std::unique_ptr<ast::expression> init) {
-            return variable(ptrns::binding(
+         var(std::string name, ast::type_ref type, std::unique_ptr<ast::expression> init) {
+            return var(ptrns::binding(
                ptrns::annotation(
                   ptrns::name(std::move(name)),
                   std::move(type)),

@@ -56,12 +56,12 @@ namespace rush {
 
 	rush::parse_result<ast::declaration> parser::parse_constant_decl() {
 		assert(consume_skip_indent(keywords::let_) && "expected the 'let' keyword.");
-		return _parse_storage_decl([](auto ptrn) { return decls::constant(std::move(ptrn)); });
+		return _parse_storage_decl([](auto ptrn) { return decls::let(std::move(ptrn)); });
 	}
 
 	rush::parse_result<ast::declaration> parser::parse_variable_decl() {
 		assert(consume_skip_indent(keywords::var_) && "expected the 'var' keyword.");
-		return _parse_storage_decl([](auto ptrn) { return decls::variable(std::move(ptrn)); });
+		return _parse_storage_decl([](auto ptrn) { return decls::var(std::move(ptrn)); });
 	}
 
 	rush::parse_result<ast::pattern> parser::parse_parameter_list() {

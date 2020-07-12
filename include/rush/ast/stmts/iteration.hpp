@@ -53,7 +53,7 @@ namespace rush::ast {
          std::unique_ptr<ast::expression> expr,
          std::unique_ptr<ast::statement> body,
          factory_tag_t)
-         : _decl { decls::constant(std::move(ptrn)) }
+         : _decl { decls::let(std::move(ptrn)) }
          , _expr { std::move(expr) }
          , _body { std::move(body) }
          , _kind { kind } {
