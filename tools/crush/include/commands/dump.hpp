@@ -37,12 +37,14 @@ namespace crush::commands {
    void dump_lex(std::vector<rush::source>& srcs) {
       auto lxa = rush::lex(srcs.begin(), srcs.end());
       rush::dump(lxa);
+      std::cout << std::endl;
    }
 
    void dump_parse(std::vector<rush::source>& srcs) {
       auto ctx = rush::ast::context {};
       auto ast = rush::parse(srcs.begin(), srcs.end(), ctx);
       rush::dump(ast);
+      std::cout << std::endl;
    }
 }
 

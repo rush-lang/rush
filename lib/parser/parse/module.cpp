@@ -39,7 +39,7 @@ namespace rush {
       auto& source = tok.source();
       std::vector<std::unique_ptr<ast::node>> results;
       while (tok.is_not(symbols::eof) && &source == &tok.source()) {
-         consume_skip_indent(symbols::semi_colon); // ignore stray semi-colons
+         while (consume_skip_indent(symbols::semi_colon)); // ignore stray semi-colons
          auto exported = consume_skip_indent(keywords::export_);
          auto decl_result = parse_toplevel_decl();
          if (decl_result.failed())

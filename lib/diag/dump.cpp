@@ -26,6 +26,7 @@ static void dump_diag(rush::diagnostic const& d, std::string_view type, std::ost
       out << " \'" << d.source().id() << "\'";
    out << fmt::format(", ln:{}, col:{}]: {}",
       d.start().line(), d.start().column(), d.message());
+   out << std::endl;
 }
 
 namespace rush {

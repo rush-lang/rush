@@ -212,6 +212,22 @@ namespace rush {
          return temp != last ? *temp : _eof;
       }
 
+      bool consume_with_indent(symbol_token_t sym) {
+         if (peek_with_indent().is(sym)) {
+            next_with_indent();
+            return true;
+         }
+         return false;
+      }
+
+      bool consume_with_indent(keyword_token_t kw) {
+         if (peek_with_indent().is(kw)) {
+            next_with_indent();
+            return true;
+         }
+         return false;
+      }
+
       bool consume_skip_indent(symbol_token_t sym) {
          if (peek_skip_indent().is(sym)) {
             next_skip_indent();

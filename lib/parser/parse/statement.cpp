@@ -18,6 +18,7 @@
 #include "rush/diag/syntax_error.hpp"
 
 namespace errs = rush::diag::errs;
+namespace stmts = rush::ast::stmts;
 
 namespace rush {
 
@@ -43,34 +44,25 @@ namespace rush {
 
       auto expr_result = terminated(&parser::parse_expr);
       return (expr_result.success())
-         ? ast::stmts::expr_stmt(std::move(expr_result))
+         ? stmts::expr_stmt(std::move(expr_result))
          : std::move(expr_result).as<ast::statement>();
    }
 
    rush::parse_result<ast::statement> parser::parse_block_stmt() {
-      assert(peek_with_indent().is(symbols::indent) && "expected indentation at start of block.");
-      next_with_indent(); // consume indentation.
+      assert(consume_with_indent(symbols::indent) && "expected indentation at start of block.");
 
-      auto results = std::vector<rush::parse_result<ast::statement>> {};
-      auto tok = peek_with_indent();
-      while (tok.is_not(symbols::dedent)) {
-         // using a semi-colon cuts an expression short
-         // and helps to dis-ambiguate between statements.
-         if (tok.is(symbols::semi_colon)) {
-            next_with_indent();
-            continue;
-         }
+      auto results = std::vector<std::unique_ptr<ast::statement>> {};
+      while (!consume_skip_indent(symbols::dedent)) {
+         if (consume_skip_indent(symbols::semi_colon))
+            continue; // consume stray ';'
 
          auto result = parse_stmt();
-         if (result.failed()) return std::move(result);
+         if (result.failed())
+            return std::move(result);
          results.push_back(std::move(result));
-         tok = peek_with_indent();
       }
 
-      next_with_indent(); // consume dedentation.
-      auto stmts = std::vector<std::unique_ptr<ast::statement>> {};
-      std::move(results.begin(), results.end(), std::back_inserter(stmts));
-      return ast::stmts::block(std::move(stmts));
+      return stmts::block(std::move(results));
    }
 
    rush::parse_result<ast::statement> parser::parse_inline_stmt() {
@@ -90,7 +82,7 @@ namespace rush {
 
       auto stmts = std::vector<std::unique_ptr<ast::statement>> {};
       std::move(results.begin(), results.end(), std::back_inserter(stmts));
-      return ast::stmts::block(std::move(stmts));
+      return stmts::block(std::move(stmts));
    }
 
    rush::parse_result<ast::statement> parser::parse_if_stmt() {
@@ -106,13 +98,13 @@ namespace rush {
          ? parse_block_stmt()
          : peek_with_lbreak().is_not_any(symbols::lbreak, symbols::dedent)
          ? parse_inline_stmt()
-         : ast::stmts::block();
+         : stmts::block();
 
       if (then_result.failed())
          return std::move(then_result);
 
       if (!peek_skip_indent().is(keywords::else_)) {
-         return ast::stmts::if_(
+         return stmts::if_(
             std::move(cond_result),
             std::move(then_result));
       }
@@ -121,7 +113,7 @@ namespace rush {
       if (else_result.failed())
          return std::move(else_result);
 
-      return ast::stmts::if_(
+      return stmts::if_(
          std::move(cond_result),
          std::move(then_result),
          std::move(else_result));
@@ -136,7 +128,7 @@ namespace rush {
          ? parse_block_stmt()
          : peek_with_lbreak().is_not_any(symbols::lbreak, symbols::dedent, symbols::eof)
          ? parse_inline_stmt()
-         : ast::stmts::block();
+         : stmts::block();
       return std::move(result);
    }
 
@@ -162,11 +154,11 @@ namespace rush {
          ? parse_block_stmt()
          : peek_with_lbreak().is_not_any(symbols::lbreak, symbols::dedent)
          ? parse_inline_stmt()
-         : ast::stmts::block();
+         : stmts::block();
       if (then_result.failed())
          return std::move(then_result);
 
-      return ast::stmts::for_(
+      return stmts::for_(
          std::move(ptrn_result),
          std::move(expr_result),
          std::move(then_result));
@@ -185,12 +177,12 @@ namespace rush {
          ? parse_block_stmt()
          : peek_with_lbreak().is_not_any(symbols::lbreak, symbols::dedent)
          ? parse_inline_stmt()
-         : ast::stmts::block();
+         : stmts::block();
 
       if (then_result.failed())
          return std::move(then_result);
 
-      return ast::stmts::while_(
+      return stmts::while_(
          std::move(cond_result),
          std::move(then_result));
    }
@@ -205,11 +197,11 @@ namespace rush {
          symbols::semi_colon,
          symbols::dedent) ||
          peek_with_lbreak().is(symbols::lbreak))
-         return ast::stmts::return_();
+         return stmts::return_();
 
       auto result = parse_expr();
       return (result.success())
-         ? ast::stmts::return_(std::move(result))
+         ? stmts::return_(std::move(result))
          : std::move(result).as<ast::statement>();
    }
 
@@ -217,21 +209,21 @@ namespace rush {
       assert(peek_skip_indent().is(keywords::pass_) && "expected the 'pass' keyword.");
       next_skip_indent(); // consume 'pass' keyword.
 
-      return ast::stmts::pass();
+      return stmts::pass();
    }
 
    rush::parse_result<ast::statement> parser::parse_break_stmt() {
       assert(peek_skip_indent().is(keywords::break_) && "expected 'break' keyword.");
       next_skip_indent(); // consume 'break' keyword.
 
-      return ast::stmts::break_();
+      return stmts::break_();
    }
 
    rush::parse_result<ast::statement> parser::parse_continue_stmt() {
       assert(peek_skip_indent().is(keywords::continue_) && "expected 'continue' keyword.");
       next_skip_indent(); // consume 'continue' keyword.
 
-      return ast::stmts::continue_();
+      return stmts::continue_();
    }
 
    rush::parse_result<ast::statement> parser::parse_switch_stmt() {
@@ -262,7 +254,7 @@ namespace rush {
       auto result = parse_expr();
       if (result.failed())
          return std::move(result).as<ast::statement>();
-      return ast::stmts::yield_(std::move(result));
+      return stmts::yield_(std::move(result));
    }
 
    rush::parse_result<ast::statement> parser::parse_with_stmt() {
@@ -286,14 +278,14 @@ namespace rush {
       case keywords::let_: {
          auto decl = parse_constant_decl();
          result = decl.success()
-            ? ast::stmts::decl_stmt(std::move(decl))
+            ? stmts::decl_stmt(std::move(decl))
             : std::move(decl).as<ast::statement>();
          break;
       }
       case keywords::var_: {
          auto decl = parse_variable_decl();
          result = decl.success()
-            ? ast::stmts::decl_stmt(std::move(decl))
+            ? stmts::decl_stmt(std::move(decl))
             : std::move(decl).as<ast::statement>();
          break;
       }}
