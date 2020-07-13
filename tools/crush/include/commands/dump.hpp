@@ -21,26 +21,31 @@
 #include "rush/core/source.hpp"
 #include "rush/lexer/lex.hpp"
 #include "rush/parser/parse.hpp"
+#include "rush/irgen/llvm.hpp"
 #include "rush/lexer/dump.hpp"
 #include "rush/parser/dump.hpp"
 #include "rush/ast/context.hpp"
+#include "cxxopts/cxxopts.hpp"
 
 #include <iostream>
 #include <vector>
 
 namespace crush::commands {
 
-   void dump_llvm_ir(std::vector<rush::source>& srcs) {
-      std::cout << "error: not yet supported." << std::endl;
+   void dump_llvm_ir(std::vector<rush::source>& srcs, cxxopts::ParseResult& opts) {
+      auto ctx = rush::ast::context {};
+      auto ast = rush::parse(srcs.begin(), srcs.end(), ctx);
+      auto ir = rush::irgen::llvm(ast);
+      ir.dump();
    }
 
-   void dump_lex(std::vector<rush::source>& srcs) {
+   void dump_lex(std::vector<rush::source>& srcs, cxxopts::ParseResult& opts) {
       auto lxa = rush::lex(srcs.begin(), srcs.end());
       rush::dump(lxa);
       std::cout << std::endl;
    }
 
-   void dump_parse(std::vector<rush::source>& srcs) {
+   void dump_parse(std::vector<rush::source>& srcs, cxxopts::ParseResult& opts) {
       auto ctx = rush::ast::context {};
       auto ast = rush::parse(srcs.begin(), srcs.end(), ctx);
       rush::dump(ast);

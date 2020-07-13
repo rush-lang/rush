@@ -13,31 +13,14 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *************************************************************************/
-#pragma once
+#include "rush/irgen/llvm/memory.hpp"
 
-#ifndef RUSH_IRGEN_LLVM_HPP
-#define RUSH_IRGEN_LLVM_HPP
+namespace rush::irgen::llvm {
+   void alloc(IRBuilder<>& builder, rush::ast::storage_declaration const& decl) {
 
-#include "rush/parser/result.hpp"
-#include "rush/irgen/result.hpp"
+   }
 
-#include <memory>
+   void store(IRBuilder<>& builder, ast::nominal_declaration const&, ast::expression const&) {
 
-namespace rush::irgen {
-   class irgenerator_result {
-   public:
-      friend irgenerator_result llvm(rush::syntax_analysis const&);
-      ~irgenerator_result();
-
-      void dump();
-
-   private:
-      struct impl;
-      std::unique_ptr<impl> _pimpl;
-      irgenerator_result(std::unique_ptr<impl>);
-   };
-
-   irgenerator_result llvm(rush::syntax_analysis const&);
+   }
 }
-
-#endif // RUSH_IRGEN_LLVM_HPP

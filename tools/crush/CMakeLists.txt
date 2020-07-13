@@ -6,7 +6,9 @@ add_executable(crush
 )
 
 target_include_directories(crush PRIVATE include)
-target_link_libraries(crush PRIVATE tclr fmt cxxopts parser)
+
+llvm_map_components_to_libnames(llvm_libs support core irreader)
+target_link_libraries(crush PRIVATE tclr fmt cxxopts parser irgen ${llvm_libs})
 
 set_target_properties(crush PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})

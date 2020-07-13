@@ -84,6 +84,12 @@ namespace rush::ast {
       using literal_expression::literal_expression;
       std::uint64_t value() const { return literal_expression::value<std::uint64_t>(); }
 
+      bool is_signed() const noexcept {
+         return result_type()
+            .as<ast::builtin_integral_type>()
+            ->is_signed();
+      }
+
       using node::accept;
       virtual void accept(ast::visitor& v) const override { v.visit_literal_expr(*this); }
    };

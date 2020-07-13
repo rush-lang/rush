@@ -15,29 +15,18 @@
 *************************************************************************/
 #pragma once
 
-#ifndef RUSH_IRGEN_LLVM_HPP
-#define RUSH_IRGEN_LLVM_HPP
+#ifndef RUSH_IRGEN_LLVM_MEMORY_HPP
+#define RUSH_IRGEN_LLVM_MEMORY_HPP
 
-#include "rush/parser/result.hpp"
-#include "rush/irgen/result.hpp"
+#include "rush/ast/decls/nominal.hpp"
+#include "rush/ast/decls/storage.hpp"
+#include "rush/ast/exprs/expression.hpp"
 
-#include <memory>
+#include "llvm/IR/IRBuilder.h"
 
-namespace rush::irgen {
-   class irgenerator_result {
-   public:
-      friend irgenerator_result llvm(rush::syntax_analysis const&);
-      ~irgenerator_result();
-
-      void dump();
-
-   private:
-      struct impl;
-      std::unique_ptr<impl> _pimpl;
-      irgenerator_result(std::unique_ptr<impl>);
-   };
-
-   irgenerator_result llvm(rush::syntax_analysis const&);
+namespace rush::irgen::llvm {
+   void alloc(llvm_ir_generator&, ast::storage_declaration const&);
+   void store(llvm_ir_generator&, ast::nominal_declaration const&, ast::expression const&);
 }
 
-#endif // RUSH_IRGEN_LLVM_HPP
+#endif // RUSH_IRGEN_LLVM_ALLOC_HPP

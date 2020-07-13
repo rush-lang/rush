@@ -63,6 +63,7 @@ int main(int argc, char** argv) {
    opts.add_options()
       ("h,help", "Print usage information.")
       ("version", "Print version information.")
+      ("verbose", "Print verbose information.")
       ("dump-lex", "Display the results of lexical analysis as a list of tokens.")
       ("dump-parse", "Display the results of syntax analysis as a hierachical AST structure.")
       ("dump-llvm-ir", "Display the results of generating LLVM IR.")
@@ -113,10 +114,10 @@ int main(int argc, char** argv) {
       }
 
       bool run_default = true;
-      if (results["dump-lex"].count() > 0) { cmds::dump_lex(srcs); run_default = false; }
-      if (results["dump-parse"].count() > 0) { cmds::dump_parse(srcs); run_default = false; }
-      if (results["dump-llvm-ir"].count() > 0) { cmds::dump_llvm_ir(srcs); run_default = false; }
-      if (run_default) crush::commands::dump_llvm_ir(srcs); // default behavior.
+      if (results["dump-lex"].count() > 0) { cmds::dump_lex(srcs, results); run_default = false; }
+      if (results["dump-parse"].count() > 0) { cmds::dump_parse(srcs, results); run_default = false; }
+      if (results["dump-llvm-ir"].count() > 0) { cmds::dump_llvm_ir(srcs, results); run_default = false; }
+      if (run_default) crush::commands::dump_llvm_ir(srcs, results); // default behavior.
       return 0;
    }
    catch (cxxopts::option_not_exists_exception const& e) {
