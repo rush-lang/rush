@@ -32,6 +32,14 @@ namespace rush::ast {
    class traversal : public ast::visitor {
    public:
 
+      virtual void visit_module(ast::module_node const& mdl) override {
+         std::for_each(mdl.begin(), mdl.end(), [this](auto& n) { accept(n); });
+      }
+
+      virtual void visit_source(ast::source_node const& src) override {
+         std::for_each(src.begin(), src.end(), [this](auto& n) { accept(n); });
+      }
+
       virtual void visit_binding_ptrn(ast::binding_pattern const& ptrn) override {
          accept(ptrn.pattern());
          accept(ptrn.expression());
@@ -53,24 +61,16 @@ namespace rush::ast {
          accept(ptrn.pattern());
       }
 
-      virtual void visit_module(ast::module_node const& mdl) override {
-         std::for_each(mdl.begin(), mdl.end(), [this](auto& n) { accept(n); });
-      }
-
-      virtual void visit_source(ast::source_node const& src) override {
-         std::for_each(src.begin(), src.end(), [this](auto& n) { accept(n); });
-      }
-
-      virtual void visit_module_decl(ast::module_declaration const& exp) override {
-         accept(exp.declaration());
-      }
-
 		// declarations
-		virtual void visit_constant_decl(ast::constant_declaration const& decl) override {
-         accept(decl.pattern());
+      virtual void visit_module_decl(ast::module_declaration const& decl) override {
+         accept(decl.declaration());
       }
 
-		virtual void visit_variable_decl(ast::variable_declaration const& decl) override {
+      virtual void visit_extern_decl(ast::extern_declaration const& decl) override {
+         accept(decl.declaration());
+      }
+
+      virtual void visit_storage_decl(ast::storage_declaration const& decl) override {
          accept(decl.pattern());
       }
 
@@ -97,11 +97,7 @@ namespace rush::ast {
             [this](auto& m) { accept(m); });
       }
 
-      virtual void visit_variable_field_decl(ast::variable_field_declaration const& decl) override {
-         accept(decl.pattern());
-      }
-
-      virtual void visit_constant_field_decl(ast::constant_field_declaration const& decl) override {
+      virtual void visit_field_decl(ast::field_declaration const& decl) override {
          accept(decl.pattern());
       }
 

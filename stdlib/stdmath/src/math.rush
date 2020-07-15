@@ -1,43 +1,43 @@
-export extern func cos(x: float) -> float
-export extern func sin(x: float) -> float
-export extern func tan(x: float) -> float
+export extern func cos(float) -> float
+export extern func sin(float) -> float
+export extern func tan(float) -> float
 
-export extern func cos(x: double) -> double
-export extern func sin(x: double) -> double
-export extern func tan(x: double) -> double
+export extern func cos(double) -> double
+export extern func sin(double) -> double
+export extern func tan(double) -> double
 
-export extern func acos(x: float) -> float
-export extern func asin(x: float) -> float
-export extern func atan(x: float) -> float
+export extern func acos(float) -> float
+export extern func asin(float) -> float
+export extern func atan(float) -> float
 
-export extern func acos(x: double) -> double
-export extern func asin(x: double) -> double
-export extern func atan(x: double) -> double
+export extern func acos(double) -> double
+export extern func asin(double) -> double
+export extern func atan(double) -> double
 
-export extern func cosh(x: float) -> float
-export extern func sinh(x: float) -> float
-export extern func tanh(x: float) -> float
+export extern func cosh(float) -> float
+export extern func sinh(float) -> float
+export extern func tanh(float) -> float
 
-export extern func cosh(x: double) -> double
-export extern func sinh(x: double) -> double
-export extern func tanh(x: double) -> double
+export extern func cosh(double) -> double
+export extern func sinh(double) -> double
+export extern func tanh(double) -> double
 
-export extern func pow(b: float, exp: int) -> float
-export extern func pow(b: float, exp: float) -> float
-export extern func pow(b: double, exp: int) -> double
-export extern func pow(b: double, exp: double) -> double
+export extern func pow(float, int) -> float
+export extern func pow(float, float) -> float
+export extern func pow(double, int) -> double
+export extern func pow(double, double) -> double
 
-export extern func sqrt(x: float) -> float
-export extern func sqrt(x: double) -> double
+export extern func sqrt(float) -> float
+export extern func sqrt(double) -> double
 
-export extern func cbrt(x: float) -> float
-export extern func cbrt(x: double) -> double
+export extern func cbrt(float) -> float
+export extern func cbrt(double) -> double
 
-export extern func log(x: float) -> float
-export extern func log(x: double) -> double
+export extern func log(float) -> float
+export extern func log(double) -> double
 
-export extern func exp(x: float) -> float
-export extern func exp(x: double) -> double
+export extern func exp(float) -> float
+export extern func exp(double) -> double
 
 export let pi = acos(-1.0)
 export let pi_f = acos(-1.0f)

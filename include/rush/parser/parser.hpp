@@ -282,6 +282,7 @@ namespace rush {
       rush::parse_result<ast::module_node> parse_module();
       rush::parse_result<ast::source_node> parse_source();
       rush::parse_result<ast::import_declaration> parse_import_decl();
+      rush::parse_result<ast::declaration> parse_extern_decl();
 
       // types.
       rush::parse_type_result parse_type();

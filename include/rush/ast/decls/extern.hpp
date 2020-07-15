@@ -15,47 +15,30 @@
 *************************************************************************/
 #pragma once
 
-#ifndef RUSH_AST_DECLS_MODULE_HPP
-#define RUSH_AST_DECLS_MODULE_HPP
+#ifndef RUSH_AST_DECLS_EXTERN_HPP
+#define RUSH_AST_DECLS_EXTERN_HPP
 
-#include "rush/ast/node.hpp"
-#include "rush/ast/decls/access.hpp"
 #include "rush/ast/decls/declaration.hpp"
 
-#include <vector>
-#include <string>
+#include <memory>
 
 namespace rush::ast {
-   class declaration;
-
-   class module_declaration : public ast::declaration {
+   class extern_declaration : public virtual ast::declaration {
    public:
-      module_declaration(
-         std::unique_ptr<ast::declaration> decl,
-         ast::module_access acc)
-      : _decl { std::move(decl) }
-      , _access { acc }
-      { adopt(*_decl); }
+      explicit extern_declaration(std::unique_ptr<ast::declaration> decl)
+         : _decl { std::move(decl) } { adopt(*_decl); }
+
+      virtual declaration_kind kind() const noexcept override {
+         return _decl->kind();
+      }
 
       ast::declaration const& declaration() const noexcept {
          return *_decl;
       }
 
-		virtual declaration_kind kind() const override {
-         return _decl->kind();
-      }
-
-      ast::module_access access() const noexcept {
-         return _access;
-      }
-
-      bool is_extern() const noexcept {
-         return false;
-      }
-
       using node::accept;
       virtual void accept(ast::visitor& v) const override {
-         v.visit_module_decl(*this);
+         v.visit_extern_decl(*this);
       }
 
    protected:
@@ -68,19 +51,14 @@ namespace rush::ast {
       }
 
    private:
-      ast::module_access _access;
       std::unique_ptr<ast::declaration> _decl;
    };
 
    namespace decls {
-      inline std::unique_ptr<ast::module_declaration> internal(std::unique_ptr<ast::declaration> decl) {
-         return std::make_unique<ast::module_declaration>(std::move(decl), ast::module_access::internal);
+      inline std::unique_ptr<ast::extern_declaration> extern_(std::unique_ptr<ast::declaration> decl) {
+         return std::make_unique<ast::extern_declaration>(std::move(decl));
       }
-
-      inline std::unique_ptr<ast::module_declaration> exported(std::unique_ptr<ast::declaration> decl) {
-         return std::make_unique<ast::module_declaration>(std::move(decl), ast::module_access::exported);
-      }
-   } // rush::ast::decls
+   }
 } // rush::ast
 
-#endif // RUSH_AST_DECLS_MODULE_HPP
+#endif // RUSH_AST_DECLS_EXTERN_HPP

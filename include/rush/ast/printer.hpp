@@ -81,6 +81,11 @@ namespace rush::ast {
          indent_traverse(src);
       }
 
+      virtual void visit_extern_decl(ast::extern_declaration const& decl) override {
+         writeln("<[decl] extern>");
+         indent_traverse(decl);
+      }
+
       virtual void visit_import_decl(ast::import_declaration const& decl) override {
          writeln("<[decl] import: (name=\"{}\")>", decl.name());
       }
@@ -374,10 +379,9 @@ namespace rush::ast {
          write("<[decl] function: ");
          decl.type().accept(*this);
          write(" (name=\"{}\"", decl.name());
-         switch (_maccess) {
-         case ast::module_access::internal: writeln(", access=internal)>"); break;
-         case ast::module_access::exported: writeln(", access=exported)>"); break;
-         }
+         writeln(", access={})>", decl.is_export()
+            ? "exported"
+            : "internal");
 
          indent();
          writeln("<[ptrn] parameter-list>");

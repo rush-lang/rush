@@ -282,8 +282,7 @@ public:
             decl.parameters().accept(*this);
          }
 
-         virtual void visit_constant_decl(ast::constant_declaration const& decl) override { decl.pattern().accept(*this); }
-         virtual void visit_variable_decl(ast::variable_declaration const& decl) override { decl.pattern().accept(*this); }
+         virtual void visit_storage_decl(ast::storage_declaration const& decl) override { decl.pattern().accept(*this); }
          virtual void visit_parameter_decl(ast::parameter_declaration const& decl) override { decl.pattern().accept(*this); }
 
          virtual void visit_identifier_expr(ast::identifier_expression const& expr) override {
@@ -302,8 +301,7 @@ public:
       }
    }
 
-	virtual void visit_constant_decl(ast::constant_declaration const& decl) override { _decl = &decl; }
-	virtual void visit_variable_decl(ast::variable_declaration const& decl) override { _decl = &decl; }
+	virtual void visit_storage_decl(ast::storage_declaration const& decl) override { _decl = &decl; }
    virtual void visit_parameter_decl(ast::parameter_declaration const& decl) override { _decl = &decl; }
 
 private:

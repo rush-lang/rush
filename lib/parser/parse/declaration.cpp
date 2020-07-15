@@ -39,11 +39,32 @@ namespace rush {
          case keywords::class_: return parse_class_decl();
          case keywords::struct_: return parse_struct_decl();
          case keywords::import_: return parse_import_decl();
+         case keywords::extern_: return parse_extern_decl();
          default: break;
          }
       }
 
       return errs::expected_toplevel_decl(tok);
+   }
+
+   rush::parse_result<ast::declaration> parser::parse_extern_decl() {
+      assert(consume_skip_indent(keywords::extern_) && "expected 'extern' keyword.");
+      auto tok = peek_skip_indent();
+      if (tok.is_keyword()) {
+         rush::parse_result<ast::declaration> result;
+         switch (tok.keyword()) {
+            case keywords::let_: result = terminated(&parser::parse_constant_decl); break;
+            case keywords::var_: result = terminated(&parser::parse_variable_decl); break;
+            case keywords::func_: result = terminated(&parser::parse_function_decl); break;
+            default: break;
+         }
+
+         return result.success()
+           ? decls::extern_(std::move(result))
+           : std::move(result);
+      }
+
+      return nullptr;
    }
 
 	rush::parse_result<ast::declaration> parser::_parse_storage_decl(
@@ -151,16 +172,13 @@ namespace rush {
          stmt_result = stmts::return_(std::move(expr));
       }
 
-      // std::vector<std::unique_ptr<ast::statement>> stmts;
-      // stmts.push_back(std::move(stmt_result));
-      // return stmts::block(std::move(stmts));
       return std::move(stmt_result);
    }
 
    rush::parse_result<ast::statement> parser::parse_function_stmt_body() {
       consume_skip_indent(symbols::colon); // consume optional ':'
       if (peek_with_indent().is_not(symbols::indent)) {
-         return peek_with_lbreak().is_any(symbols::lbreak, symbols::dedent, symbols::eof)
+         return peek_with_lbreak().is_any(symbols::lbreak, symbols::dedent, symbols::semi_colon, symbols::eof)
               ? rush::parse_result<ast::statement> { stmts::block() }
               : errs::expected_function_stmt_body(peek_with_indent());
       }

@@ -26,23 +26,25 @@
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/IRBuilder.h"
 
-namespace rush::irgen {
-   class llvm_ir_type_generator : public llvm_ir_generator<llvm::Type> {
+namespace rush::irgen::llvm {
+   class llvm_ir_type_generator : public llvm_ir_generator<::llvm::Type> {
    public:
       llvm_ir_type_generator()
          : _result { nullptr } {}
 
-      virtual llvm::Type* result() const override { return _result; }
+      virtual ::llvm::Type* result() const override { return _result; }
 
       virtual void visit_builtin_void_type(ast::builtin_void_type const&) override;
       virtual void visit_builtin_bool_type(ast::builtin_bool_type const&) override;
       virtual void visit_builtin_integral_type(ast::builtin_integral_type const&) override;
       virtual void visit_builtin_floating_type(ast::builtin_floating_point_type const&) override;
+      virtual void visit_builtin_string_type(ast::builtin_string_type const&) override;
+
 
       virtual void visit_function_type(ast::function_type const&) override;
 
    private:
-      llvm::Type* _result;
+      ::llvm::Type* _result;
    };
 } // rush::irgen
 

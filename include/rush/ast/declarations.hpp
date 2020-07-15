@@ -24,6 +24,7 @@
 #include "rush/ast/decls/field.hpp"
 #include "rush/ast/decls/method.hpp"
 #include "rush/ast/decls/property.hpp"
+#include "rush/ast/decls/extern.hpp"
 #include "rush/ast/decls/class.hpp"
 #include "rush/ast/decls/struct.hpp"
 #include "rush/ast/decls/nested.hpp"

@@ -34,6 +34,9 @@ namespace rush::ast {
          return *_ptrn;
       }
 
+      bool is_mutable() const noexcept;
+      bool is_readonly() const noexcept;
+
       auto names() const -> decltype(ast::iterator_range<ast::named_pattern>());
       auto annotations() const -> decltype(ast::iterator_range<ast::type_annotation_pattern>());
       auto initializers() const -> decltype(ast::iterator_range<ast::binding_pattern>());

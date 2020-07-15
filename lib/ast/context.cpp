@@ -91,8 +91,7 @@ private:
 
    class function_body_traversal : public ast::traversal {
    public:
-      void visit_constant_decl(ast::constant_declaration const& decl) override { /* can safely ignore */ }
-      void visit_variable_decl(ast::variable_declaration const& decl) override { /* can safely ignore */ }
+      void visit_storage_decl(ast::storage_declaration const& decl) override { /* can safely ignore */ }
 
       void visit_unary_expr(ast::unary_expression const& expr) override { /* can safely ignore */ }
       void visit_binary_expr(ast::binary_expression const& expr) override { /* can safely ignore */ }

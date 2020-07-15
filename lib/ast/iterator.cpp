@@ -13,10 +13,13 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *************************************************************************/
-#include "rush/ast/types.hpp"
 #include "rush/ast/patterns.hpp"
+#include "rush/ast/statements.hpp"
 #include "rush/ast/expressions.hpp"
 #include "rush/ast/declarations.hpp"
+
+#include "rush/ast/module.hpp"
+#include "rush/ast/source.hpp"
 
 #include "rush/ast/visitor.hpp"
 #include "rush/ast/iterator.hpp"
@@ -29,8 +32,22 @@ namespace rush::ast::detail {
    public:
       node_iterator_traversal(ast::node_iterator& it) : _it { it } {}
 
+      virtual void visit_module(ast::module_node const& mdl) override {
+         visit_node_list(mdl);
+      }
+
+      virtual void visit_source(ast::source_node const& src) override {
+         visit_node_list(src);
+      }
+
       virtual void visit_nil_expr(ast::nil_expression const& expr) override {
          if (_it._curr == &expr) { pop(expr); return; }
+         push(expr);
+      }
+
+      virtual void visit_unary_expr(ast::unary_expression const& expr) override {
+         if (_it._curr == &expr.operand()) { pop(expr); return; }
+         if (_it._curr == &expr) { push(expr.operand()); return; }
          push(expr);
       }
 
@@ -41,7 +58,16 @@ namespace rush::ast::detail {
          push(expr);
       }
 
+      virtual void visit_expr_list(ast::expression_list const& expr) override {
+         visit_node_list(expr);
+      }
+
       virtual void visit_named_ptrn(ast::named_pattern const& ptrn) override {
+         if (_it._curr == &ptrn) { pop(ptrn); return; }
+         push(ptrn);
+      }
+
+      virtual void visit_discard_ptrn(ast::discard_pattern const& ptrn) override {
          if (_it._curr == &ptrn) { pop(ptrn); return; }
          push(ptrn);
       }
@@ -72,20 +98,7 @@ namespace rush::ast::detail {
       }
 
       virtual void visit_ptrn_list(ast::pattern_list const& ptrn) override {
-         if (_it._curr == ptrn.parent()) { push(ptrn); return; }
-         if (_it._curr == &ptrn.back()) { pop(ptrn); return; }
-         if (_it._curr == &ptrn) { push(ptrn.front()); return; }
-
-         // fixme?: very inefficient, but without a stack I see no way to maintain
-         // the current position in every list of the AST that may be traversed.
-         // It might not be so bad though as I don't imagine that iteration over
-         // an AST will be very lengthy. Iterators are intended for short operations
-         // in sub-trees of the AST, like collecting all the names in a pattern or
-         // finding a particular kind of ancestor node.
-         auto prev = std::find_if(ptrn.begin(), ptrn.end(),
-            [this](auto& c) { return &c == _it._curr; });
-         if (prev != ptrn.end()) push(*(++prev));
-         else pop(ptrn);
+         visit_node_list(ptrn);
       }
 
       virtual void visit_member_section_decl(ast::member_section_declaration const& decl) override {
@@ -93,13 +106,7 @@ namespace rush::ast::detail {
          push(decl);
       }
 
-      virtual void visit_constant_field_decl(ast::constant_field_declaration const& decl) override {
-         if (_it._curr == &decl.storage()) { pop(decl); return; }
-         if (_it._curr == &decl) { push(decl.storage()); return; }
-         push(decl);
-      }
-
-      virtual void visit_variable_field_decl(ast::variable_field_declaration const& decl) override {
+      virtual void visit_field_decl(ast::field_declaration const& decl) override {
          if (_it._curr == &decl.storage()) { pop(decl); return; }
          if (_it._curr == &decl) { push(decl.storage()); return; }
          push(decl);
@@ -116,13 +123,7 @@ namespace rush::ast::detail {
          push(decl);
       }
 
-      virtual void visit_constant_decl(ast::constant_declaration const& decl) override {
-         if (_it._curr == &decl.pattern()) { pop(decl); return; }
-         if (_it._curr == &decl) { push(decl.pattern()); return; }
-         push(decl);
-      }
-
-      virtual void visit_variable_decl(ast::variable_declaration const& decl) override {
+      virtual void visit_storage_decl(ast::storage_declaration const& decl) override {
          if (_it._curr == &decl.pattern()) { pop(decl); return; }
          if (_it._curr == &decl) { push(decl.pattern()); return; }
          push(decl);
@@ -142,6 +143,24 @@ namespace rush::ast::detail {
             if (_it._curr != _it._end)
                node.parent()->accept(*this);
          } else { _it._curr = nullptr; }
+      }
+
+      template <typename NodeT, typename BaseNodeT>
+      void visit_node_list(ast::node_list<NodeT, BaseNodeT> const& list) {
+         if (_it._curr == list.parent()) { push(list); return; }
+         if (_it._curr == &list.back()) { pop(list); return; }
+         if (_it._curr == &list) { push(list.front()); return; }
+
+         // fixme?: very inefficient, but without a stack I see no way to maintain
+         // the current position in every list of the AST that may be traversed.
+         // It might not be so bad though as I don't imagine that iteration over
+         // an AST will be very lengthy. Iterators are intended for short operations
+         // in sub-trees of the AST, like collecting all the names in a pattern or
+         // finding a particular kind of ancestor node.
+         auto prev = std::find_if(list.begin(), list.end(),
+            [this](auto& c) { return &c == _it._curr; });
+         if (prev != list.end()) push(*(++prev));
+         else pop(list);
       }
    };
 }

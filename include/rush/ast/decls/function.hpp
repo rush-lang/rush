@@ -23,6 +23,8 @@
 #include "rush/ast/types/builtin.hpp"
 #include "rush/ast/types/function.hpp"
 #include "rush/ast/stmts/statement.hpp"
+#include "rush/ast/decls/member.hpp"
+#include "rush/ast/decls/module.hpp"
 #include "rush/ast/decls/nominal.hpp"
 #include "rush/ast/types/nominal.hpp"
 #include "rush/ast/context.hpp"
@@ -73,6 +75,22 @@ namespace rush::ast {
 
       virtual ast::type_ref type() const noexcept override {
          return resolve_type();
+      }
+
+      bool is_member() const noexcept {
+         return !!dynamic_cast<ast::member_declaration const*>(parent());
+      }
+
+      bool is_export() const noexcept {
+         if (auto p = dynamic_cast<ast::module_declaration const*>(parent()))
+            return p->access() == ast::module_access::exported;
+         return false;
+      }
+
+      bool is_extern() const noexcept {
+         if (auto p = dynamic_cast<ast::module_declaration const*>(parent()))
+            return p->is_extern();
+         return false;
       }
 
       ast::type_ref return_type() const noexcept {

@@ -97,8 +97,10 @@ namespace rush::ast {
    class overloaded_declaration;
 
    class import_declaration;
+   class extern_declaration;
    class module_declaration;
 
+   class storage_declaration;
 	class constant_declaration;
 	class variable_declaration;
 	class function_declaration;
@@ -107,6 +109,7 @@ namespace rush::ast {
    class class_declaration;
    class struct_declaration;
    class member_section_declaration;
+   class field_declaration;
    class variable_field_declaration;
    class constant_field_declaration;
    class property_getter_declaration;
@@ -158,10 +161,12 @@ namespace rush::ast {
       virtual void visit_overloaded_decl(ast::overloaded_declaration const&) {};
 
       virtual void visit_import_decl(ast::import_declaration const&) {};
+      virtual void visit_extern_decl(ast::extern_declaration const&) {};
       virtual void visit_module_decl(ast::module_declaration const&) {};
 
-		virtual void visit_constant_decl(ast::constant_declaration const&) {};
-		virtual void visit_variable_decl(ast::variable_declaration const&) {};
+      virtual void visit_storage_decl(ast::storage_declaration const&) {};
+		virtual void visit_constant_decl(ast::constant_declaration const&);
+		virtual void visit_variable_decl(ast::variable_declaration const&);
 
       virtual void visit_parameter_decl(ast::parameter_declaration const&) {};
 		virtual void visit_function_decl(ast::function_declaration const&) {};
@@ -170,8 +175,9 @@ namespace rush::ast {
       virtual void visit_struct_decl(ast::struct_declaration const&) {};
       virtual void visit_member_section_decl(ast::member_section_declaration const&) {};
 
-      virtual void visit_variable_field_decl(ast::variable_field_declaration const&) {};
-      virtual void visit_constant_field_decl(ast::constant_field_declaration const&) {};
+      virtual void visit_field_decl(ast::field_declaration const&) {};
+      virtual void visit_variable_field_decl(ast::variable_field_declaration const&);
+      virtual void visit_constant_field_decl(ast::constant_field_declaration const&);
       virtual void visit_property_getter_decl(ast::property_getter_declaration const&) {};
       virtual void visit_property_setter_decl(ast::property_setter_declaration const&) {};
       virtual void visit_method_decl(ast::method_declaration const&) {};

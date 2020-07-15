@@ -44,6 +44,23 @@ namespace rush::ast {
          [this](auto& e) { e.accept(*this); });
    }
 
+   void visitor::visit_constant_decl(ast::constant_declaration const& decl) {
+      visit_storage_decl(decl);
+   }
+
+   void visitor::visit_variable_decl(ast::variable_declaration const& decl) {
+      visit_storage_decl(decl);
+   }
+
+   void visitor::visit_variable_field_decl(ast::variable_field_declaration const& decl) {
+      visit_field_decl(decl);
+   }
+
+   void visitor::visit_constant_field_decl(ast::constant_field_declaration const& decl) {
+      visit_field_decl(decl);
+   }
+
+
    void visitor::visit_throw_stmt(result_statement const& stmt) {
       visit_throw_stmt(static_cast<simple_statement const&>(stmt));
    }

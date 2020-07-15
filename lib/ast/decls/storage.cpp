@@ -15,11 +15,20 @@
 *************************************************************************/
 #include "rush/ast/iterator.hpp"
 #include "rush/ast/decls/storage.hpp"
+#include "rush/ast/decls/variable.hpp"
+#include "rush/ast/decls/constant.hpp"
 #include "rush/ast/ptrns/named.hpp"
 #include "rush/ast/ptrns/binding.hpp"
 #include "rush/ast/ptrns/type_annotation.hpp"
 
 namespace rush::ast {
+   bool storage_declaration::is_mutable() const noexcept {
+      return !!dynamic_cast<ast::variable_declaration const*>(this);
+   }
+
+   bool storage_declaration::is_readonly() const noexcept {
+      return !!dynamic_cast<ast::constant_declaration const*>(this);
+   }
 
    auto storage_declaration::names() const -> decltype(ast::iterator_range<ast::named_pattern>()) {
       return ast::iterator_range<ast::named_pattern>(_ptrn.get());
