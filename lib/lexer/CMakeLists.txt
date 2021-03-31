@@ -4,7 +4,6 @@ project(lexer VERSION ${RUSH_VERSION} LANGUAGES CXX)
 rush_add_library(lexer
 	${CMAKE_CURRENT_BINARY_DIR}/_symbols.cpp
 	${CMAKE_CURRENT_BINARY_DIR}/_keywords.cpp
-	analysis.cpp
 	token.cpp
 	lexer.cpp
 	dump.cpp
