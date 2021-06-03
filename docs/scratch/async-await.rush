@@ -1,0 +1,14 @@
+## await in non-async functions blocks the execution of the thread
+
+func foo(file: stream)
+	await write(file, "hello, world!") ## blocks the execution
+
+async func bar(file: stream)
+	await write(file, "hello, world!") ## resumes execution to the calling thread.
+
+## to create blocking functions from async ones you can create a non-async function
+## that calls the async function with await and forwards parameters, as the print
+## family of functions do for convenience.
+
+func print(args: ...any) => await write(stdout, args...)
+func println(args: ...any) => await writeln(stdout, args...)

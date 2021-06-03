@@ -42,7 +42,7 @@ namespace rush {
       for (
          ; tok.is_not(symbols::eof)
          && &source == &tok.source()
-         ; tok = peek_skip_indent()) {
+         ;  tok = peek_skip_indent()) {
 
          while (consume_skip_indent(symbols::semi_colon)); // ignore stray semi-colons
          auto exported = consume_skip_indent(keywords::export_);

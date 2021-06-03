@@ -1,0 +1,12 @@
+## class, struct and record types are sealed/final by default
+## to allow derivation of a type, the keyword 'base' can be used before the keyword 'class'.
+
+base class foo
+public:
+	virtual func method()
+		## do something..
+
+class bar : foo
+public:
+	override func method()
+		## do something else..

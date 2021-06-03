@@ -42,7 +42,7 @@ concept decrementable:
 		--a => decrementable
 		a-- => decrementable
 
-concept numerical:	equatable, orderable, signable, incrementable, decrementable
+concept numerical: equatable, orderable, signable, incrementable, decrementable
 	requires:
 		a + b => numerical
 		a - b => numerical
