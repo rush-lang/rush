@@ -1,0 +1,23 @@
+import std.io
+
+struct int64
+   let value: builtin::int64
+
+base class foo
+class bar : foo
+
+func fibonacci(lim: int)
+   var a = 0, b = 1
+   while b < lim
+      println(b)
+      {a, b} = (b, a + b)
+
+func main
+   let greeting = "hello"
+   let name = "world"
+
+   print("$greeting, $name!")
+   if x < 10 return 0
+
+   for i in 0..^10
+      println(i)

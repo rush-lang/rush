@@ -1,0 +1,31 @@
+import std.io
+
+
+base class foo
+private
+   let bar: float
+
+public
+   func foo(b: float)
+      this.bar = b
+
+   operator + (f: foo)
+      return new foo(bar + f.bar)
+
+func to_string(f: foo) => "foo: ${f.bar}"
+
+func write(os: @stream, fmt: string, args: ...any)
+   ## ...
+
+func main
+   let {fs, err} = try open("greet.txt").read()
+   if fs != nil
+      fs.write("hello, world!")
+      fs.close()
+
+   for x in [1, 2, 3, 4]
+      println(x)
+
+   return 0
+
+	write(stdout, "hello, world!")

@@ -1,5 +1,5 @@
-# Rush Programming Language Demo
-# This is a comment.
+## Rush Programming Language Demo
+## This is a comment.
 
 import std.io
 import std.math

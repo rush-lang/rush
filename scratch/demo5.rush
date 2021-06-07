@@ -1,0 +1,36 @@
+import std.io
+
+class lexer
+private
+	var _input: lookahead<char>
+	var _indent: indentation
+
+public
+	func lexer()
+		: this(new lexer_options())
+		## ...
+
+	func lexer(opts: lexer_options)
+		## ...
+
+	func tokenize(input: string)
+		let sstream = new string_stream(input)
+		return tokenize(sstream)
+
+	func tokenize(input: stream)
+		_input = new lookahead<char>(stream)
+		_indent = new indentation()
+
+		for {tok, err} in tokens()
+			if err != nil
+				errors.append(err)
+			else
+				tokens.append(tok)
+
+		return new lexical_analysis(tokens, errors)
+
+
+func main
+	let lex = new lexer()
+	let lxa = lex.tokenize("func main() => 0")
+
