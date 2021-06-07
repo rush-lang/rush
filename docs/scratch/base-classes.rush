@@ -2,11 +2,20 @@
 ## to allow derivation of a type, the keyword 'base' can be used before the keyword 'class'.
 
 base class foo
-public:
+public
 	virtual func method()
 		## do something..
 
 class bar : foo
-public:
+public
 	override func method()
 		## do something else..
+
+
+## Final/Sealed overrides
+## You can mark a virtual or abstract override as final/sealed with `override!`
+## which prevents further derived classes from overriding the member.
+
+class baz : bar
+public
+	override! func method()
