@@ -1,3 +1,36 @@
 
-export class ostream:
-export class istream:
+export base class istream
+public
+   virtual async func read(bytes: [byte], offset, count: int)
+      ## ...
+
+export base class ostream
+public
+   virtual async func write(bytes: [byte], offset, count: int)
+      ## ...
+
+
+export async func read(istr: @istream)
+   ## ...
+
+export async func readln(istr: @istream)
+   ## ...
+
+export async func write(ostr: @ostream, fmt: string, args: ...any)
+   ## ...
+
+export async func writeln(ostr: @ostream, fmt: string, args: ...any)
+   ## ...
+
+
+export func scan()
+   => await read(stdin.stream())
+
+export func scanln()
+   => await readln(stdin.stream())
+
+export func print(fmt: string, args: ...any)
+   => await write(stdout.stream(), fmt, args...)
+
+export func println(fmt: string, args: ...any)
+   => await writeln(stdout.stream(), fmt, args...)
