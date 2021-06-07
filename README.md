@@ -29,7 +29,7 @@ func add(a, b: int) => a + b
 Every word or symbol in the above function definition has a real purpose for being. Alternatively, you could expand the definition into its full glory as shown below.
 
 ```rush
-func add(a: int, b: int) -> int:
+func add(a: int, b: int) -> int
    return a + b
 ```
 
@@ -41,8 +41,8 @@ All variables, constants, and parameters, within Rush, collectively known as sto
 Take for example, the definition of the `map` function, which takes as it's parameters a source collection `src`, and a transformative function `fn` to apply to each element of the collection.
 
 ```rush
-func map<T, R>(src: @iterable<T>, fn: T -> R):
-   for elem in src:
+func map<T, R>(src: @iterable<T>, fn: T -> R)
+   for elem in src
       yield fn(elem)
 ```
 
@@ -50,8 +50,8 @@ This definition has been greatly simplified when compared to other programming l
 
 If you need a named storage entity that may or may not contain a value, you can specify a variable, or parameter as optional using `?` next to the type annotation, like so:
 
-```
-var x: int? = nil    # initialize an optional int 'x' with no value.
+```rush
+var x: int? = nil    ## initialize an optional int 'x' with no value.
 ```
 
 In this way we're being explicit that the variable or parameter may not contain a value and that it must also be explicitly checked for one before use.
@@ -64,41 +64,41 @@ Currently, the easiest way to build the project is through the [docker images](h
 
 ### Sample
 
-```
+```rush
+## main.rush
+
 import std.io
 import std.math
 
-struct vector2:
-public:
+struct vector2
+public
    let x, y: float
+
    get length => sqrt(dot(this, this))
 
-   func vector2(x, y: float):
+   func vector2()
+      : this(0, 0)
+
+   func vector2(x, y: float)
       this.x = x
       this.y = y
 
-   func add(u: vector2) => new vector2(x + u.x, y + u.y)
-   func sub(u: vector2) => new vector2(x - u.x, y - u.y)
+   static operator + (u, v: vector2) => new vector2(u.x + v.x, u.y + v.y)
+   static operator - (u, v: vector2) => new vector2(u.x - v.x, u.y - v.y)
+   static operator * (u: vector2, k: @float) => new vector2(u.x * k, u.y * k)
+   static operator / (u: vector2, k: float) => new vector2(u.x / k, u.y / k)
 
 func to_string({x, y}: @vector2) => "($x, $y)"
 
-func dot(u, v: @vector2):
+func dot(u, v: @vector2)
    let dx = u.x * v.x
    let dy = u.y * v.y
    return dx + dy
 
-func idiv(a, b: int) => (
-   a / b,
-   a % b
-)
-
-func main:
+func main
    let u = new vector2(1, 0)
-   if u.length == 1:
+   if u.length == 1
       println("$u is unit length.")
-
-   for x in [1, 2, 3]:
-      println(x)
 
    let vs = [
       new vector2(0, 2),
@@ -106,8 +106,10 @@ func main:
       new vector2(2, 0),
    ]
 
-   for {x, y} in vs:
+   for {x, y} in vs
       println("[$x, $y]")
 
-   return u.add(u).sub(u)
+   let sum = reduce(vs, (u, v) => u + v)
+
+   ## ...
 ```
