@@ -81,20 +81,6 @@ namespace rush::ast {
          indent_traverse(src);
       }
 
-      virtual void visit_extern_decl(ast::extern_declaration const& decl) override {
-         writeln("<[decl] extern>");
-         indent_traverse(decl);
-      }
-
-      virtual void visit_import_decl(ast::import_declaration const& decl) override {
-         writeln("<[decl] import: (name=\"{}\")>", decl.name());
-      }
-
-      virtual void visit_module_decl(ast::module_declaration const& decl) override {
-         auto r = rush::guard(_maccess, decl.access());
-         traverse(decl);
-      }
-
       virtual void visit_named_type(ast::named_type const& type) override {
          write("\"{}\"", type.name());
       };
@@ -236,17 +222,10 @@ namespace rush::ast {
          indent_traverse(ptrn);
       }
 
-		virtual void visit_unary_expr(ast::unary_expression const& expr) override {
-#        define RUSH_UNARY_EXPRESSION_PRINT_VISIT_SWITCH
-#        include "rush/ast/exprs/_operators.hpp"
-         indent_traverse(expr);
-		}
-
-		virtual void visit_binary_expr(ast::binary_expression const& expr) override {
-#        define RUSH_BINARY_EXPRESSION_PRINT_VISIT_SWITCH
-#        include "rush/ast/exprs/_operators.hpp"
-         indent_traverse(expr);
-		}
+      virtual void visit_block_stmt(ast::statement_block const& stmt) override {
+         writeln("<[stmt] block>");
+         indent_traverse(stmt);
+      }
 
       virtual void visit_simple_stmt(ast::simple_statement const& stmt) override {
 #        define RUSH_SIMPLE_STATEMENT_PRINT_VISIT_SWITCH
@@ -270,6 +249,18 @@ namespace rush::ast {
 #        define RUSH_SIMPLE_ITERATION_PRINT_VISIT_SWITCH
 #        include "rush/ast/stmts/_statements.hpp"
          indent_traverse(stmt);
+      }
+
+      virtual void visit_unary_expr(ast::unary_expression const& expr) override {
+#        define RUSH_UNARY_EXPRESSION_PRINT_VISIT_SWITCH
+#        include "rush/ast/exprs/_operators.hpp"
+         indent_traverse(expr);
+      }
+
+      virtual void visit_binary_expr(ast::binary_expression const& expr) override {
+#        define RUSH_BINARY_EXPRESSION_PRINT_VISIT_SWITCH
+#        include "rush/ast/exprs/_operators.hpp"
+         indent_traverse(expr);
       }
 
       virtual void visit_ternary_expr(ast::ternary_expression const& expr) override {
@@ -363,6 +354,20 @@ namespace rush::ast {
          indent_traverse(expr);
       }
 
+      virtual void visit_extern_decl(ast::extern_declaration const& decl) override {
+         writeln("<[decl] extern>");
+         indent_traverse(decl);
+      }
+
+      virtual void visit_import_decl(ast::import_declaration const& decl) override {
+         writeln("<[decl] import: (name=\"{}\")>", decl.name());
+      }
+
+      virtual void visit_module_decl(ast::module_declaration const& decl) override {
+         auto r = rush::guard(_maccess, decl.access());
+         traverse(decl);
+      }
+
 		virtual void visit_constant_decl(ast::constant_declaration const& decl) override {
 			print_storage_decl("constant", decl);
 		}
@@ -376,12 +381,26 @@ namespace rush::ast {
       }
 
       virtual void visit_function_decl(ast::function_declaration const& decl) override {
-         write("<[decl] function: ");
+         write("<[decl] ");
+         if (decl.is_async())
+            write("async ");
+
+         write("function: ");
          decl.type().accept(*this);
          write(" (name=\"{}\"", decl.name());
-         writeln(", access={})>", decl.is_export()
-            ? "exported"
-            : "internal");
+
+         switch (_maccess) {
+         case ast::module_access::internal: write(", access=internal"); break;
+         case ast::module_access::exported: write(", access=exported"); break;
+         }
+
+         switch (decl.modifier()) {
+         case ast::storage_modifier::static_: writeln(", modifier=static)>"); break;
+         case ast::storage_modifier::virtual_: writeln(", modifier=virtual)>"); break;
+         case ast::storage_modifier::abstract_: writeln(", modifier=abstract)>"); break;
+         case ast::storage_modifier::override_: writeln(", modifier=override)>"); break;
+         default: writeln(")>");
+         }
 
          indent();
          writeln("<[ptrn] parameter-list>");
@@ -391,7 +410,11 @@ namespace rush::ast {
       }
 
       virtual void visit_class_decl(ast::class_declaration const& decl) override {
-         write("<[decl] class: {}", decl.name());
+         write("<[decl] ");
+         if (decl.is_base())
+            write("base ");
+
+         write("class: {}", decl.name());
          switch (_maccess) {
          case ast::module_access::internal: writeln(" (access=internal)>"); break;
          case ast::module_access::exported: writeln(" (access=exported)>"); break;
@@ -462,11 +485,6 @@ namespace rush::ast {
          indent_accept(decl.parameters());
          dedent();
          indent_accept(decl.body());
-      }
-
-      virtual void visit_block_stmt(ast::statement_block const& stmt) override {
-         writeln("<[stmt] block>");
-         indent_traverse(stmt);
       }
 
    private:

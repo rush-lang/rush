@@ -294,6 +294,7 @@ namespace rush {
       rush::parse_type_result parse_function_type(ast::type_ref);
 
 		// declarations.
+      rush::parse_result<ast::declaration> parse_decl();
       rush::parse_result<ast::declaration> parse_toplevel_decl();
 
 		rush::parse_result<ast::declaration> _parse_storage_decl(
@@ -309,8 +310,14 @@ namespace rush {
       rush::parse_result<ast::statement> parse_function_stmt_body();
       rush::parse_result<ast::pattern> parse_parameter_list();
 
+      rush::parse_result<ast::declaration> parse_async_decl();
+      rush::parse_result<ast::declaration> parse_base_decl();
       rush::parse_result<ast::declaration> parse_class_decl();
       rush::parse_result<ast::declaration> parse_struct_decl();
+      rush::parse_result<ast::declaration> parse_static_decl();
+      rush::parse_result<ast::declaration> parse_virtual_decl();
+      rush::parse_result<ast::declaration> parse_abstract_decl();
+      rush::parse_result<ast::declaration> parse_override_decl();
       rush::parse_result<ast::member_declaration> parse_member_decl();
       rush::parse_result<ast::member_section_declaration> parse_member_section(ast::member_access);
       rush::parse_result<ast::member_declaration> parse_property_getter();

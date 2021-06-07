@@ -100,6 +100,10 @@ namespace rush::ast {
    class extern_declaration;
    class module_declaration;
 
+   class base_declaration;
+   class async_declaration;
+   class modified_declaration;
+
    class storage_declaration;
 	class constant_declaration;
 	class variable_declaration;
@@ -163,6 +167,10 @@ namespace rush::ast {
       virtual void visit_import_decl(ast::import_declaration const&) {};
       virtual void visit_extern_decl(ast::extern_declaration const&) {};
       virtual void visit_module_decl(ast::module_declaration const&) {};
+
+      virtual void visit_base_decl(ast::base_declaration const&) {};
+      virtual void visit_async_decl(ast::async_declaration const&) {};
+      virtual void visit_modified_decl(ast::modified_declaration const&) {};
 
       virtual void visit_storage_decl(ast::storage_declaration const&) {};
 		virtual void visit_constant_decl(ast::constant_declaration const&);

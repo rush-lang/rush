@@ -32,6 +32,9 @@
 #include "rush/ast/decls/parameter.hpp"
 #include "rush/ast/decls/import.hpp"
 #include "rush/ast/decls/module.hpp"
+#include "rush/ast/decls/base.hpp"
+#include "rush/ast/decls/async.hpp"
+#include "rush/ast/decls/modified.hpp"
 #include "rush/ast/decls/undeclared.hpp"
 
 #endif // RUSH_AST_DECLARATION_HPP

@@ -26,6 +26,8 @@
 #include "rush/ast/decls/member.hpp"
 #include "rush/ast/decls/module.hpp"
 #include "rush/ast/decls/nominal.hpp"
+#include "rush/ast/decls/modified.hpp"
+#include "rush/ast/decls/async.hpp"
 #include "rush/ast/types/nominal.hpp"
 #include "rush/ast/context.hpp"
 #include "rush/ast/scope.hpp"
@@ -77,6 +79,16 @@ namespace rush::ast {
          return resolve_type();
       }
 
+      ast::storage_modifier modifier() const noexcept {
+         if (auto p = dynamic_cast<ast::modified_declaration const*>(parent()))
+            return p->modifier();
+         return ast::storage_modifier::auto_;
+      }
+
+      bool is_async() const noexcept {
+         return !!dynamic_cast<ast::async_declaration const*>(parent());
+      }
+
       bool is_member() const noexcept {
          return !!dynamic_cast<ast::member_declaration const*>(parent());
       }
@@ -85,6 +97,22 @@ namespace rush::ast {
          if (auto p = dynamic_cast<ast::module_declaration const*>(parent()))
             return p->access() == ast::module_access::exported;
          return false;
+      }
+
+      bool is_static() const noexcept {
+         return this->modifier() == ast::storage_modifier::static_;
+      }
+
+      bool is_virtual() const noexcept {
+         return this->modifier() == ast::storage_modifier::virtual_;
+      }
+
+      bool is_abstract() const noexcept {
+         return this->modifier() == ast::storage_modifier::abstract_;
+      }
+
+      bool is_override() const noexcept {
+         return this->modifier() == ast::storage_modifier::override_;
       }
 
       bool is_extern() const noexcept {

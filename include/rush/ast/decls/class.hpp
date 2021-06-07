@@ -25,6 +25,7 @@
 #include "rush/ast/types/type_ref.hpp"
 
 #include "rush/ast/decls/type.hpp"
+#include "rush/ast/decls/base.hpp"
 #include "rush/ast/decls/member.hpp"
 
 #include <string>
@@ -62,6 +63,10 @@ namespace rush::ast {
          return rush::make_iterator_range(
             rush::make_deref_iterator(_sections.begin()),
             rush::make_deref_iterator(_sections.end()));
+      }
+
+      bool is_base() const noexcept {
+         return !!dynamic_cast<ast::base_declaration const*>(parent());
       }
 
       using node::accept;

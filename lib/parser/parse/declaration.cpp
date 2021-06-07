@@ -29,8 +29,8 @@ namespace errs = rush::diag::errs;
 
 namespace rush {
 
-   rush::parse_result<ast::declaration> parser::parse_toplevel_decl() {
-		auto tok = peek_skip_indent();
+   rush::parse_result<ast::declaration> parser::parse_decl() {
+      auto tok = peek_skip_indent();
       if (tok.is_keyword()) {
          switch (tok.keyword()) {
          case keywords::let_: return terminated(&parser::parse_constant_decl);
@@ -40,31 +40,103 @@ namespace rush {
          case keywords::struct_: return parse_struct_decl();
          case keywords::import_: return parse_import_decl();
          case keywords::extern_: return parse_extern_decl();
+         case keywords::static_: return parse_static_decl();
+         case keywords::virtual_: return parse_virtual_decl();
+         case keywords::abstract_: return parse_abstract_decl();
+         case keywords::override_: return parse_override_decl();
+         case keywords::async_: return parse_async_decl();
+         case keywords::base_:
+            if (peek_skip_indent(1).is(keywords::class_))
+               return parse_base_decl();
+            break;
          default: break;
          }
       }
 
-      return errs::expected_toplevel_decl(tok);
+      return {};
+   }
+
+   rush::parse_result<ast::declaration> parser::parse_toplevel_decl() {
+      auto result = parse_decl();
+      return result.success()
+           ? std::move(result)
+           : errs::expected_toplevel_decl(peek_skip_indent());
    }
 
    rush::parse_result<ast::declaration> parser::parse_extern_decl() {
       assert(consume_skip_indent(keywords::extern_) && "expected 'extern' keyword.");
+
       auto tok = peek_skip_indent();
-      if (tok.is_keyword()) {
-         rush::parse_result<ast::declaration> result;
-         switch (tok.keyword()) {
-            case keywords::let_: result = terminated(&parser::parse_constant_decl); break;
-            case keywords::var_: result = terminated(&parser::parse_variable_decl); break;
-            case keywords::func_: result = terminated(&parser::parse_function_decl); break;
-            default: break;
-         }
+      auto result = tok.is(keywords::func_)
+         ? terminated(&parser::parse_function_decl)
+         : parse_decl();
 
-         return result.success()
-           ? decls::extern_(std::move(result))
+      return result.success()
+         ? decls::extern_(std::move(result))
+         : std::move(result);
+   }
+
+   rush::parse_result<ast::declaration> parser::parse_async_decl() {
+      assert(consume_skip_indent(keywords::async_) && "expected the 'async' keyword.");
+
+      auto tok = peek_skip_indent();
+      if (tok.is_not(keywords::func_))
+         return errs::expected_function_decl(tok);
+
+      auto result = parse_function_decl();
+      return result.success()
+           ? decls::async(std::move(result))
            : std::move(result);
-      }
+   }
 
-      return nullptr;
+   rush::parse_result<ast::declaration> parser::parse_base_decl() {
+      assert(consume_skip_indent(keywords::base_) && "expected the 'base' keyword.");
+
+      auto tok = peek_skip_indent();
+      if (tok.is_not(keywords::class_))
+         return errs::expected_class_decl(tok);
+
+      auto result = parse_class_decl();
+      return result.success()
+           ? decls::base(std::move(result))
+           : std::move(result);
+   }
+
+   rush::parse_result<ast::declaration> parser::parse_static_decl() {
+      assert(consume_skip_indent(keywords::static_) && "expected 'static' keyword.");
+
+      auto result = parse_decl();
+      return result.success()
+           ? decls::static_(std::move(result))
+           : std::move(result);
+   }
+
+   rush::parse_result<ast::declaration> parser::parse_virtual_decl() {
+      assert(consume_skip_indent(keywords::virtual_) && "expected the 'virtual' keyword.");
+
+      auto result = parse_decl();
+      return result.success()
+           ? decls::virtual_(std::move(result))
+           : std::move(result);
+   }
+
+   rush::parse_result<ast::declaration> parser::parse_abstract_decl() {
+      assert(consume_skip_indent(keywords::abstract_) && "expected the 'abstract' keyword.");
+
+      auto result = parse_decl();
+      return result.success()
+           ? decls::abstract_(std::move(result))
+           : std::move(result);
+   }
+
+   rush::parse_result<ast::declaration> parser::parse_override_decl() {
+      assert(consume_skip_indent(keywords::override_) && "expected the 'override' keyword.");
+
+      auto sealed = consume_skip_indent(symbols::exclamation_mark);
+      auto result = parse_decl();
+      return result.success()
+           ? decls::override_(std::move(result))
+           : std::move(result);
    }
 
 	rush::parse_result<ast::declaration> parser::_parse_storage_decl(
@@ -107,7 +179,7 @@ namespace rush {
 
 
 	rush::parse_result<ast::declaration> parser::parse_function_decl() {
-		assert(peek_skip_indent().is(keywords::func_) && "expected the 'func' keyword.");
+		assert(peek_skip_indent().is_any(keywords::func_) && "expected the 'func' keyword.");
 		next_skip_indent(); // consume func keyword.
 
 		if (!peek_skip_indent().is_identifier())
@@ -324,6 +396,30 @@ namespace rush {
             result = std::move(r).as<ast::declaration>();
             break;
          }
+         // case keywords::static_: {
+         //    auto r = parse_static_member_decl();
+         //    if (result.success()) return std::move(r);
+         //    result = std::move(r).as<ast::declaration>();
+         //    break;
+         // }
+         // case keywords::abstract_: {
+         //    auto r = parse_abstract_member_decl();
+         //    if (result.success()) return std::move(r);
+         //    result = std::move(r).as<ast::declaration>();
+         //    break;
+         // }
+         // case keywords::virtual_: {
+         //    auto r = parse_virtual_member_decl();
+         //    if (result.success()) return std::move(r);
+         //    result = std::move(r).as<ast::declaration>();
+         //    break;
+         // }
+         // case keywords::override_: {
+         //    auto r = parse_override_member_decl();
+         //    if (result.success()) return std::move(r);
+         //    result = std::move(r).as<ast::declaration>();
+         //    break;
+         // }
          case keywords::func_: {
             result = parse_function_decl();
             if (result.success()) return decls::method(

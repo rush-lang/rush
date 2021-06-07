@@ -70,6 +70,18 @@ namespace rush::ast {
          accept(decl.declaration());
       }
 
+      virtual void visit_base_decl(ast::base_declaration const& decl) override {
+         accept(decl.declaration());
+      }
+
+      virtual void visit_async_decl(ast::async_declaration const& decl) override {
+         accept(decl.declaration());
+      }
+
+      virtual void visit_modified_decl(ast::modified_declaration const& decl) override {
+         accept(decl.declaration());
+      }
+
       virtual void visit_storage_decl(ast::storage_declaration const& decl) override {
          accept(decl.pattern());
       }

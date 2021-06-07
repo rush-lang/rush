@@ -15,8 +15,8 @@
 *************************************************************************/
 #pragma once
 
-#ifndef RUSH_AST_DECLS_EXTERN_HPP
-#define RUSH_AST_DECLS_EXTERN_HPP
+#ifndef RUSH_AST_DECLS_BASE_HPP
+#define RUSH_AST_DECLS_BASE_HPP
 
 #include "rush/ast/decls/declaration.hpp"
 
@@ -24,9 +24,10 @@
 
 namespace rush::ast {
 
-   class extern_declaration : public virtual ast::declaration {
+
+   class base_declaration : public virtual ast::declaration {
    public:
-      explicit extern_declaration(std::unique_ptr<ast::declaration> decl)
+      explicit base_declaration(std::unique_ptr<ast::declaration> decl)
          : _decl { std::move(decl) } { adopt(*_decl); }
 
       virtual declaration_kind kind() const noexcept override {
@@ -39,7 +40,7 @@ namespace rush::ast {
 
       using node::accept;
       virtual void accept(ast::visitor& v) const override {
-         v.visit_extern_decl(*this);
+         v.visit_base_decl(*this);
       }
 
    protected:
@@ -56,10 +57,10 @@ namespace rush::ast {
    };
 
    namespace decls {
-      inline std::unique_ptr<ast::extern_declaration> extern_(std::unique_ptr<ast::declaration> decl) {
-         return std::make_unique<ast::extern_declaration>(std::move(decl));
+      inline std::unique_ptr<ast::base_declaration> base(std::unique_ptr<ast::declaration> decl) {
+         return std::make_unique<ast::base_declaration>(std::move(decl));
       }
    }
 } // rush::ast
 
-#endif // RUSH_AST_DECLS_EXTERN_HPP
+#endif // RUSH_AST_DECLS_BASE_HPP
