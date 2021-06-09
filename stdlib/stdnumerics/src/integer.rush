@@ -1,3 +1,44 @@
-## Arbitrary precision integer
-export struct integer:
-public:
+import std.io.{istream, ostream}
+import std.collections.list
+
+## Arbitrary width integer
+export struct integer
+private
+	let _val: list<long>
+
+public
+	func new (val: long)
+		## initialize from long int
+
+	func new (str: string)
+		## initialize from string
+
+	func new (other: integer)
+		## copy initialize from another integer instance
+
+	operator this + (other: integer) => this.add(other)
+	operator this - (other: integer) => this.sub(other)
+	operator this * (other: integer) => this.mul(other)
+	operator this / (other: integer) => this.div(other)
+
+	operator this += (other: integer) => ref this = this + other
+	operator this -= (other: integer) => ref this = this - other
+	operator this *= (other: integer) => ref this = this * other
+	operator this /= (other: integer) => ref this = this / other
+
+private
+	func add(other: integer)
+		## ...
+		return result
+
+	func sub(other: integer)
+		## ...
+		return result
+
+	func mul(other: integer)
+		## ...
+		return result
+
+	func div(other: integer)
+		## ...
+		return result

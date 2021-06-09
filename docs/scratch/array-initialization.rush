@@ -1,0 +1,7 @@
+## Array Initialization
+
+let xs = [1, 2, 3] 	## array-literal
+
+let ys = new [int]	## empty array
+
+let zs = new [int:10]	## array of 10 ints (constructed using default initializer for each element)

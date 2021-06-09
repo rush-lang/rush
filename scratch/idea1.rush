@@ -1,12 +1,31 @@
+## Mutable Parameters
+## By default, parameters are constants and cannot be re-assigned
+## in the body of the function.
+
+func foo(x: int)
+	x = 10 	## error! parameter 'x' is a constant
+
+## Sometimes it's derisable to modify the value of a parameter
+## during the execution of the function. Parameters are made mutable
+## with the `var` keyword placed before the parameter name patterns
+
+func bar(var x: int)
+	x = 10	## OK! parameter 'x' is a variable.
 
 ## Transistive Immutability through the const keyword
+## While parameters themselves are immutable by default
+## ...
 
-struct bar:
-public:
-	var baz: int
+struct foo
+public
+	var value: int
 
-func foo(x: const bar):
-	x.baz = 10  ## error: 'x' is reference to a constant bar
+func bar(x: foo)
+	x.value = 10 	## OK! 'x' is modifying a mutable field of foo.
+
+func baz(x: const foo)
+	x.value = 10  	## error! 'x' is reference to a constant foo
+
 
 func main:
 	## underlying type of const is inferred.
@@ -15,7 +34,7 @@ func main:
 
 ## Explicit type-parameter constraints
 
-func <T> foo() => default(T)
+func foo<T: new()>() => new T
 
 ## '<:' symbol avoids ambiguity between explicit type-parameter
 ## constraints and less/greater than expressions.

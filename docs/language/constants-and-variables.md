@@ -1,14 +1,14 @@
 # Constants and Variables
 
-Constants and variables are a common programming language construct that allow you to store values (such as the integer `10`, or the string `"Hello"`) in memory. Once initialized, the value of a _constant_ cannot be changed, however, the value of a _variable_ can be re-assigned after initialization, as many times as you like.
+Constants and variables are a common programming language construct that allow you to store values (such as the integer `10`, or the string `"hello"`) in memory. Once initialized, the value of a _constant_ cannot be changed, however, the value of a _variable_ can be re-assigned after initialization, as many times as you like.
 
 ## Declaring Constants and Variables
 
-Declaring a constant or variable is done with the `let` and `var` keywords respectively. The following example demonstrates the declaration of a constant `my_constant` and a variable `my_variable`.
+Declaring a constant or variable is done with the `let` and `var` keywords respectively. The following example demonstrates the declaration of a constant named `constant` and a variable named `variable`.
 
 ```rush
-let my_constant = 10
-var my_variable = "Hello"
+let constant = 10
+var variable = "hello"
 ```
 > Note <br> It is often considered good practice to prefer immutable over mutable state, as such prefering constants over variables is common practice in Rush, unless the mutability of a variable is strictly required.
 

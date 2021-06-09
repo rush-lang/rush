@@ -1,10 +1,23 @@
+## declaring functions async automatically wraps the return value in a `promise<T>` or
+## a non-generic `promise` for functions that do not return a value. This occurs after
+## the definition so functions defined as:
+
+async func foo() -> void
+async func bar(x: int) -> int
+
+## are compiled as if they were written like:
+
+async func foo() -> promise
+async func bar(x: int) -> promise<int>
+
+
 ## await in non-async functions blocks the execution of the thread
 
 func foo(file: stream)
-	await write(file, "hello, world!") ## blocks the execution
+	await write(file, "hello, world!") ## blocks the execution of foo until write completes.
 
 async func bar(file: stream)
-	await write(file, "hello, world!") ## resumes execution to the calling thread.
+	await write(file, "hello, world!") ## suspends execution of bar and returns to the calling thread, until write completes.
 
 ## to create blocking functions from async ones you can create a non-async function
 ## that calls the async function with await and forwards parameters, as the print
@@ -12,3 +25,4 @@ async func bar(file: stream)
 
 func print(args: ...any) => await write(stdout, args...)
 func println(args: ...any) => await writeln(stdout, args...)
+

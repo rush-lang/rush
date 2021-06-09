@@ -1,7 +1,6 @@
 ## Numeric literal digits can be seperated by a series of back-ticks
 ## for easier reading. The back-ticks themselves hold no semantic
-## significance, it will be as if they were never even there,
-## once compiled.
+## significance, it will be as if they weren't even there once compiled.
 
 let long_num = 1`234`567`890
 
@@ -14,4 +13,4 @@ let n2 = 123`456`  ## error: trailing back-tick
 ## side of a back-tick, this is left to the disgression of the user.
 
 let n3 = 1`2`3`4`5`6          ## valid, but not recommended.
-let n4 = 12345678`12345678    ## valid.
+let n4 = 12345678`12345678    ## valid, but not recommended.

@@ -4,6 +4,7 @@ concept subtractable(a, b: any) => a - b -> typeof a
 concept multiplicable(a, b: any) => a * b -> typeof a
 concept modulable(a, b: any) => a % b -> typeof a
 
+concept bitwise_negatable(a: any) => ~!a -> typeof a
 concept bitwise_orable(a, b: any) => a ~| b -> typeof a
 concept bitwise_andable(a, b: any) => a ~& b -> typeof a
 concept bitwise_xorable(a, b: any) => a ~^ b -> typeof a
@@ -16,6 +17,7 @@ export operator -= (a, b: ref subtractable) => a = a - b
 export operator *= (a, b: ref multiplicable) => a = a * b
 export operator %= (a, b: ref modulable) => a = a % b
 
+export operator ~!= (a: ref bitwise_negatable) => a = ~!a
 export operator ~|= (a, b: ref bitwise_orable) => a = a ~| b
 export operator ~&= (a, b: ref bitwise_andable) => a = a ~& b
 export operator ~^= (a, b: ref bitwise_xorable) => a = a ~^ b

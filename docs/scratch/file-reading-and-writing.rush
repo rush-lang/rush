@@ -1,0 +1,31 @@
+import std.io
+
+## create and write to a file
+let {file, err} = try open("file.txt").write()
+if err != nil
+	print(err.message)
+	exit()
+
+file!.writeln("hello, world!")
+
+
+## open and append to a file
+
+let {file, err} = try open("file.txt").append()
+if err != nil
+	print(err.message)
+	exit()
+
+file!.writeln("hello, world!")
+
+
+## open and read a file
+
+let {file, err} = try open("file.txt").read()
+if err != nil
+	print(err.message)
+	exit()
+
+let text = file.readall()
+println(text)
+## ...

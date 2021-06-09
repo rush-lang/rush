@@ -4,44 +4,46 @@
 import std.io
 import std.math
 
-func sqrt(x: float) => x
-func println(args: ...string) => pass
+func sqrt(x: float) -> float
+func println(args: ...string) -> void
 
-struct vector2:
-public:
+struct vector2
+public
    let x, y: float
    get length => sqrt(dot(this, this))
 
-   func vector2 => this(0, 0)
+   func new : this(0, 0)
 
-   func vector2(x, y: float):
+   func new (x, y: float)
       this.x = x
       this.y = y
 
-   func add(u: vector2) => new vector2(x + u.x, y + u.y)
-   func sub(u: vector2) => new vector2(x - u.x, y - u.y)
+   operator +this => new vector2(+x, +y)
+   operator -this => new vector2(-x, -y)
+
+   operator this + (rhs: vector2) => new vector2(x + rhs.x, y + rhs.y)
+   operator this - (rhs: vector2) => new vector2(x - rhs.x, y - rhs.y)
+
+   operator this * (k: float) => new vector2(x * k, y * k)
+   operator this / (k: float) => new vector2(x / k, y / k)
+
+   ## commutative property of multiplication.
+   operator (k: float) * this => this * k
+
 
 func to_string({x, y}: @vector2) => "($x, $y)"
 
-func dot(u, v: @vector2):
-   let xx = u.x * v.x
-   let yy = u.y * v.y
-   return xx + yy
+func dot(u, v: @vector2)
+   let dx = u.x * v.x
+   let dy = u.y * v.y
+   return dx + dy
 
-func idiv(a, b: int) => (
-   a / b,
-   a % b)
-
-func main():
+func main
    let u = new vector2(1, 0)
-   if u.length == 1:
+   if u.length == 1
       println("$u is unit length.")
-   else:
+   else
       println("$u is not unit length.")
-
-   let xs = [1, 2, 3]
-   for x in xs:
-      println(x)
 
    let vs = [
       new vector2(0, 2),
@@ -49,7 +51,9 @@ func main():
       new vector2(2, 0),
    ]
 
-   for {x, y} in vs:
+   for {x, y} in vs
       println("[$x, $y]")
 
-   return u.add(u).sub(u)
+   let sum = reduce(vs, (u, v) => u + v)
+
+   ## ...

@@ -1,38 +1,148 @@
-
 ## Represents an 8 bit integer and is the
 ## underlying type of the built-in 'sbyte' type.
 export struct int8:
 private:
-   var _val: sbyte
+   let _val: __builtin.int8
+   func new : this(0)
+   func new (val: __builtin.int8)
+      _val = val
 
 public:
-   static func parse(val: string, b = 10) => pass
+   static let maximum: sbyte = 0x7f
+   static let minimum: sbyte = 0x80
 
-## Represents a 64-bit integer and is the
+   operator this == (other: sbyte) => _val == other._val
+   operator this  < (other: sbyte) => _val  < other._val
+
+   operator +this => new sbyte(+_val)
+   operator -this => new sbyte(-_val)
+   operator ~!this => new sbyte(~!_val)
+
+   operator ++this => new sbyte(++_val)
+   operator --this => new sbyte(--_val)
+
+   operator this + (other: sbyte) => new sbyte(_val + other._val)
+   operator this - (other: sbyte) => new sbyte(_val - other._val)
+   operator this * (other: sbyte) => new sbyte(_val * other._val)
+   operator this ^ (other: sbyte) => new sbyte(_val ^ other._val)
+   operator this / (other: sbyte) => new sbyte(_val / other._val)
+   operator this % (other: sbyte) => new sbyte(_val % other._val)
+
+   operator this ~^ (other: sbyte) => new sbyte(_val ~^ other._val)
+   operator this ~& (other: sbyte) => new sbyte(_val ~& other._val)
+   operator this ~| (other: sbyte) => new sbyte(_val ~| other._val)
+
+   static func parse(val: string, b = 10) => number.parse(val, number.integer, b)
+
+
+## Represents a 16-bit integer and is the
 ## underlying type of the built-in 'short' type.
 export struct int16:
 private:
-   var _val: short
+   var _val: __builtin.int16
+   func new : this(0)
+   func new (val: __builtin.int16)
+      _val = val
 
 public:
+   static let maximum: short = 0x7fff
+   static let minimum: short = 0x8000
+
+   operator this == (other: short) => _val == other._val
+   operator this  < (other: short) => _val  < other._val
+
+   operator +this => new short(+_val)
+   operator -this => new short(-_val)
+   operator ~!this => new short(~!_val)
+
+   operator ++this => new short(++_val)
+   operator --this => new short(--_val)
+
+   operator this + (other: short) => new short(_val + other._val)
+   operator this - (other: short) => new short(_val - other._val)
+   operator this * (other: short) => new short(_val * other._val)
+   operator this ^ (other: short) => new short(_val ^ other._val)
+   operator this / (other: short) => new short(_val / other._val)
+   operator this % (other: short) => new short(_val % other._val)
+
+   operator this ~^ (other: short) => new short(_val ~^ other._val)
+   operator this ~& (other: short) => new short(_val ~& other._val)
+   operator this ~| (other: short) => new short(_val ~| other._val)
+
    static func parse(val: string, b = 10) => pass
+
 
 ## Represents a 32-bit integer and is the
 ## underlying type of the built-in 'int' type.
 export struct int32:
 private:
-   var _val: int
+   var _val: __builtin.int32
+   func new : this(0)
+   func new (val: __builtin.int32)
+      _val = val
 
 public:
+   static let maximum: int = 0x7fff`ffff
+   static let minimum: int = 0x8000`0000
+
+   operator this == (other: int) => _val == other._val
+   operator this  < (other: int) => _val  < other._val
+
+   operator +this => new int(+_val)
+   operator -this => new int(-_val)
+   operator ~!this => new int(~!_val)
+
+   operator ++this => new int(++_val)
+   operator --this => new int(--_val)
+
+   operator this + (other: int) => new int(_val + other._val)
+   operator this - (other: int) => new int(_val - other._val)
+   operator this * (other: int) => new int(_val * other._val)
+   operator this ^ (other: int) => new int(_val ^ other._val)
+   operator this / (other: int) => new int(_val / other._val)
+   operator this % (other: int) => new int(_val % other._val)
+
+   operator this ~^ (other: int) => new int(_val ~^ other._val)
+   operator this ~& (other: int) => new int(_val ~& other._val)
+   operator this ~| (other: int) => new int(_val ~| other._val)
+
    static func parse(val: string, b = 10) => pass
+
 
 ## Represents a 64-bit integer and is the
 ## underlying type of the built-in 'long' type.
 export struct int64:
 private:
-   var _val: long
+   var _val: __builtin.int64
+   func new : this(0l)
+   func new (val: __builtin.int64)
+      _val = val
 
 public:
+   static let maximum: long = 0x7fff`ffff`ffff`ffffl
+   static let minimum: long = 0x8000`0000`0000`0000l
+
+   operator this == (other: long) => _val == other._val
+   operator this  < (other: long) => _val  < other._val
+
+   operator +this => new long(+_val)
+   operator -this => new long(-_val)
+   operator ~!this => new long(~!_val)
+
+   operator ++this => new long(++_val)
+   operator --this => new long(--_val)
+
+   operator this + (other: long) => new long(_val + other._val)
+   operator this - (other: long) => new long(_val - other._val)
+   operator this * (other: long) => new long(_val * other._val)
+   operator this ^ (other: long) => new long(_val ^ other._val)
+   operator this / (other: long) => new long(_val / other._val)
+   operator this % (other: long) => new long(_val % other._val)
+
+   operator this ~^ (other: long) => new long(_val ~^ other._val)
+   operator this ~& (other: long) => new long(_val ~& other._val)
+   operator this ~| (other: long) => new long(_val ~| other._val)
+
    static func parse(val: string, b = 10) => pass
 
 
@@ -40,11 +150,35 @@ public:
 ## underlying type of the built-in 'byte' type.
 export struct uint8:
 private:
-   var _val: byte
+   let _val: __builtin.uint8
+   func new : this(0u)
+   func new (val: __builtin.uint8)
+      _val = val
 
 public:
-   static let max: byte = 0xff
-   static let min: byte = 0x00
+   static let maximum: byte = 0xffu
+   static let minimum: byte = 0x00u
+
+   operator this == (other: byte) => _val == other._val
+   operator this  < (other: byte) => _val  < other._val
+
+   operator +this => new byte(+_val)
+   operator -this => new byte(-_val)
+   operator ~!this => new byte(~!_val)
+
+   operator ++this => new byte(++_val)
+   operator --this => new byte(--_val)
+
+   operator this + (other: byte) => new byte(_val + other._val)
+   operator this - (other: byte) => new byte(_val - other._val)
+   operator this * (other: byte) => new byte(_val * other._val)
+   operator this ^ (other: byte) => new byte(_val ^ other._val)
+   operator this / (other: byte) => new byte(_val / other._val)
+   operator this % (other: byte) => new byte(_val % other._val)
+
+   operator this ~^ (other: byte) => new byte(_val ~^ other._val)
+   operator this ~& (other: byte) => new byte(_val ~& other._val)
+   operator this ~| (other: byte) => new byte(_val ~| other._val)
 
    static func parse(val: string, b = 10) => pass
 
@@ -52,11 +186,35 @@ public:
 ## underlying type of the built-in 'ushort' type.
 export struct uint16:
 private:
-   var _val: ushort
+   let _val: __builtin.uint16
+   func new : this(0u)
+   func new (val: __builtin.uint16)
+      _val = val
 
 public:
-   static let max: ushort = 0xffff
-   static let min: ushort = 0x0000
+   static let maximum: ushort = 0xffffu
+   static let minimum: ushort = 0x0000u
+
+   operator this == (other: ushort) => _val == other._val
+   operator this  < (other: ushort) => _val  < other._val
+
+   operator +this => new ushort(+_val)
+   operator -this => new ushort(-_val)
+   operator ~!this => new ushort(~!_val)
+
+   operator ++this => new ushort(++_val)
+   operator --this => new ushort(--_val)
+
+   operator this + (other: ushort) => new ushort(_val + other._val)
+   operator this - (other: ushort) => new ushort(_val - other._val)
+   operator this * (other: ushort) => new ushort(_val * other._val)
+   operator this ^ (other: ushort) => new ushort(_val ^ other._val)
+   operator this / (other: ushort) => new ushort(_val / other._val)
+   operator this % (other: ushort) => new ushort(_val % other._val)
+
+   operator this ~^ (other: ushort) => new ushort(_val ~^ other._val)
+   operator this ~& (other: ushort) => new ushort(_val ~& other._val)
+   operator this ~| (other: ushort) => new ushort(_val ~| other._val)
 
    static func parse(val: string, b = 10) => pass
 
@@ -64,11 +222,35 @@ public:
 ## underlying type of the built-in 'uint' type.
 export struct uint32:
 private:
-   var _val: uint
+   let _val: __builtin.uint32
+   func new : this(0u)
+   func new (val: __builtin.uint32)
+      _val = val
 
 public:
-   static let max = 0xffff`ffffu
-   static let min = 0x0000`0000u
+   static let maximum = 0xffff`ffffu
+   static let minimum = 0x0000`0000u
+
+   operator this == (other: uint) => _val == other._val
+   operator this  < (other: uint) => _val  < other._val
+
+   operator +this => new uint(+_val)
+   operator -this => new uint(-_val)
+   operator ~!this => new uint(~!_val)
+
+   operator ++this => new uint(++_val)
+   operator --this => new uint(--_val)
+
+   operator this + (other: uint) => new uint(_val + other._val)
+   operator this - (other: uint) => new uint(_val - other._val)
+   operator this * (other: uint) => new uint(_val * other._val)
+   operator this ^ (other: uint) => new uint(_val ^ other._val)
+   operator this / (other: uint) => new uint(_val / other._val)
+   operator this % (other: uint) => new uint(_val % other._val)
+
+   operator this ~^ (other: uint) => new uint(_val ~^ other._val)
+   operator this ~& (other: uint) => new uint(_val ~& other._val)
+   operator this ~| (other: uint) => new uint(_val ~| other._val)
 
    static func parse(val: string, b = 10) => pass
 
@@ -76,11 +258,35 @@ public:
 ## underlying type of the built-in 'ulong' type.
 export struct uint64:
 private:
-   var _val: ulong
+   let _val: __builtin.uint64
+   func new : this(0ul)
+   func new (val: __builtin.uint64)
+      _val = val
 
 public:
-   static let max = 0xffff`ffff`ffff`fffful
-   static let min = 0x0000`0000`0000`0000ul
+   static let maximum = 0xffff`ffff`ffff`fffful
+   static let minimum = 0x0000`0000`0000`0000ul
+
+   operator this == (other: ulong) => _val == other._val
+   operator this  < (other: ulong) => _val  < other._val
+
+   operator +this => new ulong(+_val)
+   operator -this => new ulong(-_val)
+   operator ~!this => new ulong(~!_val)
+
+   operator ++this => new ulong(++_val)
+   operator --this => new ulong(--_val)
+
+   operator this + (other: ulong) => new ulong(_val + other._val)
+   operator this - (other: ulong) => new ulong(_val - other._val)
+   operator this * (other: ulong) => new ulong(_val * other._val)
+   operator this ^ (other: ulong) => new ulong(_val ^ other._val)
+   operator this / (other: ulong) => new ulong(_val / other._val)
+   operator this % (other: ulong) => new ulong(_val % other._val)
+
+   operator this ~^ (other: ulong) => new ulong(_val ~^ other._val)
+   operator this ~& (other: ulong) => new ulong(_val ~& other._val)
+   operator this ~| (other: ulong) => new ulong(_val ~| other._val)
 
    static func parse(val: string, b = 10) => pass
 

@@ -1,0 +1,81 @@
+## Operator overloading syntax.
+
+struct int32
+private
+	var _value: __builtin.int32
+
+public
+	## unary prefix-/postfix- operators.
+	operator +this => new int32(+_value)
+	operator -this => new int32(-_value)
+
+	operator ++this =>
+		++this._value
+		return ref this
+
+	operator --this
+		--this._value
+		return ref this
+
+	operator this++
+		let tmp = this; ++this
+		return tmp
+
+	operator this--
+		let tmp = this; ++this
+		return tmp
+
+	## member operator overloading
+	operator this + (other: int32) => new int32(_value + other._value)
+	operator this - (other: int32) => new int32(_value - other._value)
+	operator this * (other: int32) => new int32(_value * other._value)
+	operator this / (other: int32) => new int32(_value / other._value)
+	operator this % (other: int32) => new int32(_value % other._value)
+
+	## static operator overloading (alternative?)
+	static operator (lhs) + (rhs: int32) => new int32(lhs._value + rhs._value)
+	static operator (lhs) - (rhs: int32) => new int32(lhs._value - rhs._value)
+	static operator (lhs) * (rhs: int32) => new int32(lhs._value * rhs._value)
+	static operator (lhs) / (rhs: int32) => new int32(lhs._value / rhs._value)
+	static operator (lhs) % (rhs: int32) => new int32(lhs._value % rhs._value)
+
+	## assignment operator overloading (implemented by default when overriding related operators)
+	operator this += (other: int32) => ref this = this + other
+	operator this -= (other: int32) => ref this = this - other
+	operator this *= (other: int32) => ref this = this * other
+	operator this /= (other: int32) => ref this = this / other
+	operator this %= (other: int32) => ref this = this % other
+
+
+struct vector2
+public
+	let x, y: float
+
+	get length => sqrt(x^2 + y^2)
+
+	func new : this(0, 0)
+
+	func new (x, y: float)
+		this.x = x
+		this.y = y
+
+	operator +this => new vector2(+x, +y)
+	operator -this => new vector2(-x, -y)
+
+	operator this + (other: vector2) => new vector2(x + other.x, y + other.y)
+	operator this - (other: vector2) => new vector2(x - other.x, y - other.y)
+
+	operator this + ({x, y}: (float, float)) => new vector2(this.x + x, this.y + y)
+	operator this - ({x, y}: (float, float)) => new vector2(this.x - x, this.y - y)
+
+	operator this * (k: float) => new vector2(x * k, y * k)
+	operator this / (k: float) => new vector2(x / k, y / k)
+
+	## commutative ops
+	operator ({x, y}: (float, float)) + this => new vector2(x + this.x, y + this.y)
+	operator ({x, y}: (float, float)) - this => new vector2(x - this.x, y - this.y)
+
+	operator (k: float) * this => this * k
+
+	## assignment ops
+	operator this = ({x, y}: (float, float)) => ref this = new vector(x, y)

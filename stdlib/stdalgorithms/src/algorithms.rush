@@ -17,7 +17,7 @@ export func all<T>(src: @iterable<T>, pred: T -> bool)
 		if !pred(item) return false
 	return true
 
-export func take<T>(count: var int, src: @iterable<T>)
+export func take<T>(var count: int, src: @iterable<T>)
 	let it = src.iterator()
 	while count-- > 0 && it.next()
 		yield it.value
@@ -27,7 +27,7 @@ export func take<T>(src: @iterable<T>, pred: T -> bool)
 	while it.next() && pred(it.value)
 		yield it.value
 
-export func skip<T>(count: var int, src: @iterable<T>)
+export func skip<T>(var count: int, src: @iterable<T>)
 	let it = src.iterator()
 	while count-- > 0 && it.next()
 	while it.next() yield it.value
@@ -46,37 +46,36 @@ export func filter<T>(src: @iterable<T>, fn: T -> bool)
 		if fn(item) yield item
 
 export func reduce<T>(src: @iterable<T>, fn: (T, T) -> T)
-	let it = src.iterator()
-	if it.next()
-		var result = it.value
-		while it.next()
-			result = fn(result, it.value)
-		return result
+	return reduce(
+		src.skip(1),
+		src.first(), fn)
 
-export func reduce<T, R>(src: @iterable<T>, init: var R, fn: (R, T) -> R)
-	let it = src.iterator()
-	while it.next()
-		init = fn(init, it.value)
+export func reduce<T, R>(src: @iterable<T>, var init: R, fn: (R, T) -> R)
+	for item in src
+		init = fn(init, item)
 	return init
 
-## interweaves the inner value between the collection of items.
-## think of it as a generic string.join
-export func lace<T>(src: @iterable<T>, inner: T, fn: (T, T) -> T)
+## interweaves the delim value between the collection of items.
+export func lace<T>(src: @iterable<T>, delim: T)
 	let it = src.iterator()
 	while it.next()
+		yield it.value
+		if it.next()
+			yield delim
+			yield it.value
+		else break
 
 
 export func first<T>(src: @iterable<T>)
    let it = src.iterator()
-   if it.next() == false
-      throw new sequence_error("The collection is empty.")
-
+   if !it.next()
+		throw new sequence_error("The collection is empty.")
    return it.value
 
 
 export func first<T>(src: @iterable<T>, pred: T -> bool)
 	let it = src.iterator()
-	if it.next() == false
+	if !it.next()
 		throw new sequence_error("The collection is empty.")
 
 	if pred(it.value)

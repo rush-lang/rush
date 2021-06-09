@@ -13,9 +13,17 @@ public
 
 
 ## Final/Sealed overrides
-## You can mark a virtual or abstract override as final/sealed with `override!`
+## You can mark virtual or abstract member overrides as final/sealed with `override!`
 ## which prevents further derived classes from overriding the member.
 
-class baz : bar
+base class baz : foo
 public
 	override! func method()
+		## do something..
+
+class quux : baz
+public
+	override func method()
+		## error! baz marked method as final/sealed.
+
+
