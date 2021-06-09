@@ -65,7 +65,8 @@ Currently, the easiest way to build the project is through the [docker images](h
 ### Sample
 
 ```rush
-## main.rush
+## Rush Programming Language Demo
+## This is a comment.
 
 import std.io
 import std.math
@@ -76,17 +77,24 @@ public
 
    get length => sqrt(dot(this, this))
 
-   func vector2()
-      : this(0, 0)
+   func new : this(0, 0)
 
-   func vector2(x, y: float)
+   func new (x, y: float)
       this.x = x
       this.y = y
 
-   static operator + (u, v: vector2) => new vector2(u.x + v.x, u.y + v.y)
-   static operator - (u, v: vector2) => new vector2(u.x - v.x, u.y - v.y)
-   static operator * (u: vector2, k: @float) => new vector2(u.x * k, u.y * k)
-   static operator / (u: vector2, k: float) => new vector2(u.x / k, u.y / k)
+   operator +this => new vector2(+x, +y)
+   operator -this => new vector2(-x, -y)
+
+   operator this + (rhs: vector2) => new vector2(x + rhs.x, y + rhs.y)
+   operator this - (rhs: vector2) => new vector2(x - rhs.x, y - rhs.y)
+
+   operator this * (k: float) => new vector2(x * k, y * k)
+   operator this / (k: float) => new vector2(x / k, y / k)
+
+   ## commutative property of multiplication.
+   operator (k: float) * this => this * k
+
 
 func to_string({x, y}: @vector2) => "($x, $y)"
 
