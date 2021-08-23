@@ -23,12 +23,24 @@ public:
 export
 struct <T> optional:
 public:
+   get value => _value.unwrap()
+   get has_value => _value == .none
+
    func optional():
-      this.value = .none
+      this._value = .none
 
    func optional(val: T):
-      this.value = .some(val);
+      this._value = .some(val);
 
-   func value() => .value.unwrap()
-   func has_value() => .value == .none;
+   ## func value() => .value.unwrap()
+   ## func has_value() => .value == .none;
+
+   func exists(fn: T -> void)
+      if has_value:
+         fn(value)
+
+   func exists<R?>(fn: T -> R?)
+      return has_value
+           ? fn(value)
+           : nil
 

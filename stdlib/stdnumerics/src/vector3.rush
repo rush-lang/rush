@@ -1,37 +1,72 @@
 import std.math
 
-## 2-Dimensional Vector
-export struct vector3f
+## Represents a 3-Dimensional Vector
+export struct vector3
 public:
    let x, y, z: float
 
-   get length
-      => sqrt(dot(this, this))
+   get length => sqrt(length_sqr)
+   get length_sqr => dot(this, this)
 
-   func vector3f(x, y, z: float):
+   func new : this(0, 0)
+   func new (x, y, z: float):
       this.x = x
       this.y = y
       this.z = z
 
-export struct vector3
-public:
-   let x, y, z: double
+   operator +this => new vector3(+x, +y, +z)
+	operator -this => new vector3(-x, -y, -z)
 
-   get length
-      => sqrt(dot(this, this))
+	operator this + (other: vector3) => new vector3(x + other.x, y + other.y, z + other.z)
+	operator this - (other: vector3) => new vector3(x - other.x, y - other.y, z - other.z)
 
-   func vector3(x, y, z: double):
-      this.x = x
-      this.y = y
-      this.z = z
+   operator this + (other: (float, float, float)) => new vector2(x + other.x, y + other.y, z + other.z)
+	operator this - (other: (float, float, float)) => new vector2(x - other.x, y - other.y, z - other.z)
 
+	operator (other: (float, float, float)) + this => this + other
+	operator (other: (float, float, float)) - this => new vector2(other.x - x, other.y - y, other.z - z)
 
-export func dot(u, v: @vector3f)
-   => u.x * v.x
-    + u.y * v.y
-    + u.z * v.z
+	operator this * (scalar: float) => new vector3(x * scalar, y * scalar, z * scalar)
+	operator this / (scalar: float) => new vector3(x / scalar, y / scalar, z / scalar)
+
+	## commutative property of multiplication.
+	operator (scalar: float) * this => this * scalar
+
+export func to_string({x, y, z}: @vector3) => "($x, $y, $z)"
 
 export func dot(u, v: @vector3)
    => u.x * v.x
     + u.y * v.y
     + u.z * v.z
+
+## Returns the a vector of unit length in the
+## same direction as the vector specified.
+export func normalized(vec: @vector3) => vec / length
+
+## Returns the scalar distance between two vectors
+export func distance(u, v: vector3) => (v - u).length
+
+## Returns the scalar distance squared between two vectors.
+export func distance_sqr(u, v: vector3) => (v - u).length_sqr
+
+## Returns the projection of a vector onto a
+## straight line parallel to another vector.
+export func project(vec, ray: vector3) => ray*(dot(vec, ray) / ray.length_sqr)
+
+## Returns the reflection of a vector from a
+## surface that has the specified normal
+export func reflect(vec, norm: vector3) => vec - 2*project(vec, norm)
+
+## Returns a vector with components equivalent to the minimum
+## of each pair of components, of the two specified vectors.
+export func min(u, v: vector3) => new vector3(
+   min(u.x, v.x),
+   min(u.y, v.y),
+   min(u.z, v.z))
+
+## Returns a vector with components equivalent to the maximum
+## of each pair of components, of the two specified vectors.
+export func max(u, v: vector3) => new vector3(
+   max(u.x, v.x),
+   max(u.y, v.y),
+   max(u.z, v.z))

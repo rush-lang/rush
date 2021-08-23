@@ -1,0 +1,9 @@
+func pow(x: float, y: int) match:
+	case (x, 1) => x
+	case (x, 2) => x * x
+	case (x, 3) => x * x * x
+	case (x, y) => _pow(x, y)
+
+func head(xs: [int]) -> int match:
+	case [] => throw new error("empty!")
+	case [x, ...rest] => x

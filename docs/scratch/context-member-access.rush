@@ -1,0 +1,21 @@
+## Contextual member access
+
+class foo
+public
+	let value = 0
+
+	func method()
+		## current context of the expression is the
+		## class instance, thus the expression resolves to
+		## this.value
+		return .value
+
+## Left hand side of the expression is of type
+## declaration_kind so the contextual resolution of
+## the type member access on the right resolves to that
+
+get is_undeclared
+	=> resolve_declaration().kind == .undeclared
+
+get is_overloaded
+	=> resolve_declaration().kind == .overloaded

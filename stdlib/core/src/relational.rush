@@ -1,0 +1,7 @@
+## default implementations for the relational operators
+## that can be defined in terms equatability and/or orderability.
+
+operator (lhs) != (rhs: equatable) => !(lhs == rhs)
+operator (lhs) <= (rhs: orderable) => !(rhs < lhs)
+operator (lhs) >= (rhs: orderable) => !(lhs < rhs)
+operator (lhs)  > (rhs: orderable) => (rhs < lhs)

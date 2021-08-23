@@ -1,0 +1,18 @@
+
+## Return statements should always be the last statement in a statement block.
+## They may return an expression or where the next token is a dedent (end of the block)
+## they act as empty return statements
+
+func foo
+	## statements
+	return	## empty return statement
+	## dedent (end of block)
+
+func bar
+	## statements
+	return
+	expression	## result return statement
+	## dedent (end of block)
+
+## given the above, there is no need for <break> tokens anymore which can fix a few
+## edge cases of spacing...

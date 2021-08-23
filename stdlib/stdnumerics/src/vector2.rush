@@ -1,31 +1,69 @@
-## 2-Dimensional Vector
-export struct vector2f
-public:
-   let x, y: float
+import std.math
 
-   get length
-      => sqrt(dot(this, this))
-
-   func vector2f(x, y: float):
-      this.x = x
-      this.y = y
-
+## Represents a 2-Dimensional Vector.
 export struct vector2
-public:
-   let x, y: double
+public
+   var x, y: float
 
-   get length
-      => sqrt(dot(this, this))
+   get length => sqrt(length_sqr)
+   get length_sqr => dot(this, this)
 
-   func vector2(x, y: double):
+	func new : this(0, 0)
+   func new (x, y: float)
       this.x = x
       this.y = y
 
+   operator +this => new vector2(+x, +y)
+	operator -this => new vector2(-x, -y)
 
-export func dot(u, v: @vector2f)
-   => u.x * v.x
-    + u.y * v.y
+	operator this + (other: vector2) => new vector2(x + other.x, y + other.y)
+	operator this - (other: vector2) => new vector2(x - other.x, y - other.y)
 
+   operator this + (other: (float, float)) => new vector2(x + other.x, y + other.y)
+	operator this - (other: (float, float)) => new vector2(x - other.x, y - other.y)
+
+	operator (other: (float, float)) + this => this + other
+	operator (other: (float, float)) - this => new vector2(other.x - x, other.y - y)
+
+	operator this * (scalar: float) => new vector2(x * scalar, y * scalar)
+	operator this / (scalar: float) => new vector2(x / scalar, y / scalar)
+
+	## commutative property of multiplication.
+	operator (scalar: float) * this => this * scalar
+
+export func to_string({x, y}: @vector2) => "($x, $y)"
+
+## Returns the dot product of two vectors.
 export func dot(u, v: @vector2)
    => u.x * v.x
     + u.y * v.y
+
+## Returns a vector of unit length in the
+## same direction as the vector specified.
+export func normalized(vec: @vector2) => vec / length
+
+## Returns the scalar distance between two vectors
+export func distance(u, v: vector2) => (v - u).length
+
+## Returns the scalar distance squared between two vectors.
+export func distance_sqr(u, v: vector2) => (v - u).length_sqr
+
+## Returns the projection of a vector onto a
+## straight line parallel to another vector.
+export func project(vec, ray: vector2) => ray*(dot(vec, ray) / ray.length_sqr)
+
+## Returns the reflection of a vector from a
+## surface that has the specified normal
+export func reflect(vec, norm: vector2) => vec - 2*project(vec, norm)
+
+## Returns a vector with components equivalent to the minimum
+## of each pair of components, of the two specified vectors.
+export func min(u, v: vector2) => new vector2(
+   min(u.x, v.x),
+   min(u.y, v.y))
+
+## Returns a vector with components equivalent to the maximum
+## of each pair of components, of the two specified vectors.
+export func max(u, v: vector2) => new vector2(
+   max(u.x, v.x),
+   max(u.y, v.y))

@@ -1,0 +1,7 @@
+enum mode
+	read,
+	write,
+	create,
+	append
+public
+	get values => [read, write, create, append]

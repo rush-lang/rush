@@ -1,0 +1,38 @@
+## builder initialization
+
+## address is an immutable object once initialised.
+## we can use builder initialization to dynamically
+## initialise it's members.
+
+let addr = new address:
+	if something
+		postcode = "NN1 1NN"
+
+addr.postcode = "NN1 2NW"	## ERROR: property addr.postcode is immutable.
+
+## OR..
+
+record address
+	let line1,
+		 line2,
+		 town,
+		 city,
+		 postcode: string
+
+func build(addr: mutable address)
+	addr.line1 = "line1"
+	addr.line2 = "line2"
+	## ...
+	addr.postcode = "postcode"
+
+## valid assignments between mutable and constant references
+## are uni-directional in the following way:
+
+## const type <- type <- mutable type
+
+## you cannot assign a reference of 'const type' to 'type'
+## and likewise, a reference of 'type' to 'mutable type' is invalid.
+
+## all 'var' fields of a const type behave as if they were declared with 'let' (mutating getters/setters/methods are also unavailable)
+## all 'let' fields of a mutable type behave as if they were declared with 'var'
+

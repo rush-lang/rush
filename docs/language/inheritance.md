@@ -1,8 +1,8 @@
 # Inheritance
 
-Inheritance is a primary characteristic of object-oriented programming. It allows you to define a class with fields, properties, methods - otherwise known as members - that other types can derive their implementations from.
+Inheritance is a primary characteristic of object-oriented programming. It allows you to define a class with fields, properties, methods, operators, etc. - otherwise known as members - that other types can derive their implementations from.
 
-Inheritance is defined by a _base class_ and a _derived class_. Derived classes can call and access the members of their base class, and override `virtual` or `abstract` methods and properties to refine or modify their behaviour.
+Inheritance is defined by a _base class_ and a _derived class_. Derived classes can call and access the members of their base class, and override `virtual` or `abstract` members to refine or modify their behaviour.
 
 A class may only derive a single base class directly. However, inheritance is transistive. If class `C` derives class `B`, and class `B` derives class `A`, class `C` inherits the members declared in class' `B` and `A`.
 
@@ -16,8 +16,8 @@ The following example defines a `base class` called `animal`. Further more, the 
 
 ```rush
 base class animal
-public
-	virtual func speak()
+public:
+	virtual func speak():
 		## do nothing
 ```
 
@@ -32,9 +32,9 @@ let a = new animal()
 The following example defines a class, `dog`, that derives the base class `animal`. The dog class also defines an overridden implementation of the base class' `speak` method, with behaviour specific to the dogs.
 
 ```rush
-class dog : animal
-public
-	override func speak()
+class dog inherits animal
+public:
+	override func speak():
 		println("woof!")
 ```
 
@@ -47,6 +47,19 @@ d.speak() 			## prints "woof!" to the console.
 
 ## Polymorphism
 
+The above example partially demonstrates a key concept of inheritance; _Polymorphism_. Polymorphic classes substitute the implementation of one or more methods, properties, and operators. When instances of derived classes are referenced via the base class type, the overridden member implementation in the derived class will be invoked.
 
+```rush
+class cat inherits animal
+public:
+	override func speak():
+		println("meow!")
+
+var a = new dog() as animal ## 'a' is a reference to an 'animal' that points to an instance of 'dog'.
+a.speak() ## prints 'woof!' to the console.
+
+a = new cat() ## 'a' is now a reference to an 'animal' that points to an instance of 'cat'
+a.speak() ## prints 'meow!' to the console.
+```
 
 ## Abstract Base Classes

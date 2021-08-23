@@ -1,0 +1,23 @@
+## Namespaces
+
+## namespaces can be defined using the keyboard namespace followed by the qualified namespace name.
+## all declarations following the namespace declaration reside within it until a new namespace is declared.
+
+namespace foo.bar
+## declarations here-after reside within the 'foo.bar' namespace
+## foo.bar declarations
+
+namespace baz
+## now in namespace baz
+## baz declarations
+
+## to nest a namespace within the current namespace you can use a '.' prefix followed by the nested namespace name
+
+namespace .thing
+## baz.thing declarations
+
+
+## modules define implicit namespaces according to the name of the module.
+## as such namespaces can be scoped just as modules are scoped, with the '::' operator
+
+baz::thing::my_declaration

@@ -1,4 +1,5 @@
-export class <T> list:
+
+export class list<T>
 private:
    var _items: [unsafe T]
    var _size: int
@@ -28,11 +29,11 @@ public:
 
    get capacity => _items.length
 
-   get [index: int]:
+   get this[index: int]:
       _check_range(index)
       return _items[index]
 
-   set [index: int]:
+   set this[index: int]:
       _check_range(index)
       _items[index] = value
 

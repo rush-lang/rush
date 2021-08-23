@@ -1,0 +1,28 @@
+## Interface implementations can be defined in the body of a class
+## depending on the access modifier currently in effect, interface
+## implementations maybe implicit or explicit
+
+## implicit implementation
+
+class foo
+public:
+	implements bar:
+		func method()
+			## do something..
+
+let f = new foo
+f.method()			## OK! method is implemented publicly/implicitly
+
+## explicit implementation
+
+class foo
+private:
+	implements bar:
+		func method()
+			## do something..
+
+let f = new foo
+f.method()			## ERROR! method is implemented privately/explicitly
+
+let b = f as bar
+b.method()			## OK!
