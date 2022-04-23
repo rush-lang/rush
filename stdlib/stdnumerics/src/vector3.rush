@@ -8,8 +8,9 @@ public:
    get length => sqrt(length_sqr)
    get length_sqr => dot(this, this)
 
-   func new : this(0, 0)
-   func new (x, y, z: float):
+   default => this(0, 0, 0)
+
+   construct (x, y, z: float)
       this.x = x
       this.y = y
       this.z = z
@@ -20,11 +21,11 @@ public:
 	operator this + (other: vector3) => new vector3(x + other.x, y + other.y, z + other.z)
 	operator this - (other: vector3) => new vector3(x - other.x, y - other.y, z - other.z)
 
-   operator this + (other: (float, float, float)) => new vector2(x + other.x, y + other.y, z + other.z)
-	operator this - (other: (float, float, float)) => new vector2(x - other.x, y - other.y, z - other.z)
+   operator this + ({x, y, z}: (float, float, float)) => new vector3(this.x + x, this.y + y, this.z + z)
+	operator this - ({x, y, z}: (float, float, float)) => new vector3(this.x - x, this.y - y, this.z - z)
 
-	operator (other: (float, float, float)) + this => this + other
-	operator (other: (float, float, float)) - this => new vector2(other.x - x, other.y - y, other.z - z)
+	operator ({x, y, z}: (float, float, float)) + this => new vector3(x + this.x, y + this.y, z + this.z)
+	operator ({x, y, z}: (float, float, float)) - this => new vector3(x - this.x, y - this.y, z - this.z)
 
 	operator this * (scalar: float) => new vector3(x * scalar, y * scalar, z * scalar)
 	operator this / (scalar: float) => new vector3(x / scalar, y / scalar, z / scalar)
@@ -32,16 +33,23 @@ public:
 	## commutative property of multiplication.
 	operator (scalar: float) * this => this * scalar
 
-export func to_string({x, y, z}: @vector3) => "($x, $y, $z)"
+   operator this == (other: vector3)
+      => x == other.x
+      && y == other.y
+      && z == other.z
 
-export func dot(u, v: @vector3)
+export func hash({x, y, z}: extends vector3) => hash(x, y, z)
+
+export func to_string({x, y, z}: extends vector3) => "($x, $y, $z)"
+
+export func dot(u, v: extends vector3)
    => u.x * v.x
     + u.y * v.y
     + u.z * v.z
 
 ## Returns the a vector of unit length in the
 ## same direction as the vector specified.
-export func normalized(vec: @vector3) => vec / length
+export func normalized(vec: extends vector3) => vec / length
 
 ## Returns the scalar distance between two vectors
 export func distance(u, v: vector3) => (v - u).length

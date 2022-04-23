@@ -1,22 +1,24 @@
+import env from std.os
 
-export concept <T> printable(arg: T):
-requires:
-   to_string(arg) -> string
+export async func read(istr: istream) => pass
+export async func readln(istr: istream) => pass
 
-export func read(istr: istream) => pass
-export func readln(istr: istream) => pass
+export async func write(ostr: ostream, args: ...formattable) => pass
+export async func writeln(ostr: ostream, args: ...formattable):
+   write(ostr, args...)
+   write(ostr, env.newline)
 
-export func write(ostr: ostream, args: ...printable) => pass
-export func writeln(ostr: ostream, args: ...printable) => pass
+export async func write(ostr: ostream, fmt: string, args: ...formattable) => pass
+export async func writeln(ostr: ostream, fmt: string, args: ...formattable):
+   write(ostr, fmt, args...)
+   write(ostr, env.newline)
 
-export func write(ostr: ostream, fmt: string, args: ...printable) => pass
-export func writeln(ostr: ostream, fmt: string, args: ...printable) => pass
+export func scan() => await read(stdin)
+export func scanln() => await readln(stdin)
 
-export func scan() => read(stdin)
-export func scanln() => readln(stdin)
+export func print(args: ...formattable) => await write(stdout, args...)
+export func println(args: ...formattable) => await writeln(stdout, args...)
 
-export func print(args: ...printable) => writeln(stdout, args...)
-export func println(args: ...printable) => writeln(stdout, args...)
+export func print(fmt: string, args: ...formattable) => await write(stdout, fmt, args...)
+export func println(fmt: string, args: ...formattable) => await writeln(stdout, fmt, args...)
 
-export func print(fmt: string, args: ...printable) => writeln(stdout, fmt, args...)
-export func println(fmt: string, args: ...printable) => writeln(stdout, fmt, args...)

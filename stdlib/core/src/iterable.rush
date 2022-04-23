@@ -1,6 +1,10 @@
-interface <T> iterator:
-   get value -> T
+interface iterator<T>
+   get value: T
    func next -> bool
 
-interface <T> iterable:
+interface iterable<T>
    func iterator() -> iterator<T>
+
+static class iterable
+public
+   func empty<T>() -> iterable<T>

@@ -7,13 +7,13 @@ private
 	let _val: list<long>
 
 public
-	func new (val: long)
+	construct (val: long)
 		## initialize from long int
 
-	func new (str: string)
+	construct (str: string)
 		## initialize from string
 
-	func new (other: integer)
+	construct (other: integer)
 		## copy initialize from another integer instance
 
 	operator this + (other: integer) => this.add(other)

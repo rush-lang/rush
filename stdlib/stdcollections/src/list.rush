@@ -1,3 +1,8 @@
+class list_iterator<T>
+public:
+	implements iterator<T>
+		get value => ...
+		func next => ...
 
 export class list<T>
 private:
@@ -15,19 +20,8 @@ private:
          throw new argument_out_of_range(nameof(index))
 
 public:
-   func list => this(5)
-
-   func list(cap: int):
-      _items = new [unsafe T : cap]
-      _size = 0
-
-   func list(src: iterable<T>):
-      _items = new [unsafe T] (src)
-      _size = _items.length
-
-   get count => _size
-
-   get capacity => _items.length
+   get size => _size
+	get capacity => _items.size
 
    get this[index: int]:
       _check_range(index)
@@ -36,6 +30,16 @@ public:
    set this[index: int]:
       _check_range(index)
       _items[index] = value
+
+   construct => this(5)
+
+   construct (cap: int):
+      _items = new [unsafe T : cap]
+      _size = 0
+
+   construct (src: iterable<T>):
+      _items = new [unsafe T] (src)
+      _size = _items.length
 
    func clear() => pass
 

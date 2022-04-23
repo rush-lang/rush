@@ -21,26 +21,22 @@ public:
 ## A type that represents a value or 'nil' (no value).
 ##
 export
-struct <T> optional:
-public:
+struct optional<T>:
+public
    get value => _value.unwrap()
    get has_value => _value == .none
 
-   func optional():
+   default
       this._value = .none
 
-   func optional(val: T):
+   construct (val: T)
       this._value = .some(val);
 
    ## func value() => .value.unwrap()
    ## func has_value() => .value == .none;
 
    func exists(fn: T -> void)
-      if has_value:
-         fn(value)
+      if has_value fn(value.unwrap())
 
    func exists<R?>(fn: T -> R?)
-      return has_value
-           ? fn(value)
-           : nil
-
+      return has_value ? fn(value.unwrap()) : nil

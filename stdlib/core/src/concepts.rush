@@ -1,36 +1,40 @@
 
-# The only constraint of the 'any' concept is that the parameter
-# be of it's type, this is true for all parameters and as such all
-# types satisfy the 'any' constraint.
-export concept <T> any(val: T) => val -> T
-
-export concept equatable(lhs: any, rhs = lhs):
-requires equatable(rhs, lhs)
-requires:
-   lhs == rhs -> bool
-
-export concept orderable(lhs: any, rhs = lhs)
-requires orderable(rhs, lhs)
-requires:
-   lhs < rhs -> bool
-
-export concept comparable(lhs: any, rhs = lhs)
-requires orderable(lhs, rhs)
-       & equatable(lhs, rhs)
-
+## The only constraint of the 'any' concept is that the parameter
+## be of it's type, this is true for all parameters and as such all
+## types satisfy the 'any' constraint.
+export concept any<T>(val: T) => val -> T
 export concept hashable(arg: any) => hash(arg) -> uint
-export concept formattable(arg: any) => format(arg, "") -> string
+
+export concept equatable(lhs, rhs: any) => lhs == rhs -> bool
+export concept orderable(lhs, rhs: any) => lhs  < rhs -> bool
+export type comparable = equatable & orderable
+
+concept parameterless_formattable(arg: any) => format(arg) -> string
+concept parameterized_formattable(arg: any) => format(arg, @string) -> string
+export type formattable = parameterless_formattable | parameterized_formattable
+
+## formattable example:
+## export func format(arg: parameterless_formattable) => format(arg)
+## export func format(arg: parameterized_formattable, fmt: string) => format(arg, fmt)
+
+## export func log(msg: string, args: ...formattable):
+## 	let parts = parse_msg(msg)
+## 	for p in parts:
+## 		if p.type == "literal":
+## 			append(p.value)
+## 		else if p.type == "formatted":
+## 			append(format(a))
+## 		else if p.type == "param formatted"
+## 			append(format(a, p.arg))
+
 
 export concept signable(val: any):
-requires:
    +val -> typeof val
    -val -> typeof val
 
-export concept numerical(lhs: any, rhs = lhs)
-requires signable(lhs)
-       & numerical(rhs, lhs)
-       & comparable(lhs, rhs)
-requires:
+export concept numerical(lhs: signable, rhs = lhs)
+   requires comparable(lhs, rhs)
+
    lhs + rhs -> numerical
    lhs - rhs -> numerical
    lhs * rhs -> numerical
@@ -42,9 +46,6 @@ requires:
    lhs /= rhs -> ref typeof lhs
 
 export concept integral(lhs: numerical, rhs = lhs):
-requires numerical(lhs, rhs)
-       & integral(rhs, lhs)
-requires:
    ++lhs -> ref typeof lhs
    --lhs -> ref typeof lhs
 
@@ -52,9 +53,6 @@ requires:
    lhs %= rhs -> ref typeof lhs
 
 export concept floating(lhs: numerical, rhs = lhs):
-requires numerical(lhs, rhs)
-       & floating(rhs, lhs)
-requires:
    pow(lhs, rhs) -> floating
 
    sin(lhs) -> floating

@@ -1,9 +1,9 @@
 ## Represents the built in Array type.
 export class array<T>
 public
-   func new ()
-   func new (cap: int)
-   func new (src: iterable<T>)
-   func new (repeat: T, count: int)
+   construct ()
+   construct (cap: int)
+   construct (src: iterable<T>)
+   construct (repeat: T, count: int)
 
    get length: int

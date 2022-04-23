@@ -8,8 +8,9 @@ public
    get length => sqrt(length_sqr)
    get length_sqr => dot(this, this)
 
-	func new : this(0, 0)
-   func new (x, y: float)
+	default => this(0, 0)
+
+   construct (x, y: float)
       this.x = x
       this.y = y
 
@@ -19,11 +20,11 @@ public
 	operator this + (other: vector2) => new vector2(x + other.x, y + other.y)
 	operator this - (other: vector2) => new vector2(x - other.x, y - other.y)
 
-   operator this + (other: (float, float)) => new vector2(x + other.x, y + other.y)
-	operator this - (other: (float, float)) => new vector2(x - other.x, y - other.y)
+   operator this + ({x, y}: (float, float)) => new vector2(this.x + x, this.y + y)
+	operator this - ({x, y}: (float, float)) => new vector2(this.x - x, this.y - y)
 
-	operator (other: (float, float)) + this => this + other
-	operator (other: (float, float)) - this => new vector2(other.x - x, other.y - y)
+	operator ({x, y}: (float, float)) + this => new vector2(x + this.x, y + this.y)
+	operator ({x, y}: (float, float)) - this => new vector2(x - this.x, y - this.y)
 
 	operator this * (scalar: float) => new vector2(x * scalar, y * scalar)
 	operator this / (scalar: float) => new vector2(x / scalar, y / scalar)
@@ -31,16 +32,22 @@ public
 	## commutative property of multiplication.
 	operator (scalar: float) * this => this * scalar
 
-export func to_string({x, y}: @vector2) => "($x, $y)"
+   operator this == (other: vector2)
+      return x == other.x
+          && y == other.y
+
+export func hash({x, y}: extends vector2) => hash(x, y)
+
+export func to_string({x, y}: extends vector2) => "($x, $y)"
 
 ## Returns the dot product of two vectors.
-export func dot(u, v: @vector2)
+export func dot(u, v: extends vector2)
    => u.x * v.x
     + u.y * v.y
 
 ## Returns a vector of unit length in the
 ## same direction as the vector specified.
-export func normalized(vec: @vector2) => vec / length
+export func normalized(vec: extends vector2) => vec / length
 
 ## Returns the scalar distance between two vectors
 export func distance(u, v: vector2) => (v - u).length

@@ -53,9 +53,9 @@ public
 
 	get length => sqrt(x^2 + y^2)
 
-	func new : this(0, 0)
+	default => this(0, 0)
 
-	func new (x, y: float)
+	construct (x, y: float)
 		this.x = x
 		this.y = y
 
