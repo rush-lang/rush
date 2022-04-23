@@ -35,11 +35,15 @@ namespace rush::ast {
       class node_iterator_traversal;
    }
 
-   class node_iterator : public std::iterator<std::forward_iterator_tag, ast::node const> {
+   class node_iterator {
       friend class detail::node_iterator_traversal;
-      using base_iterator = std::iterator<std::forward_iterator_tag, ast::node const>;
    public:
-      using pointer = typename base_iterator::pointer;
+      // std::iterator_traits
+      using iterator_category = std::forward_iterator_tag;
+      using value_type = ast::node const;
+      using pointer = value_type*;
+      using reference = value_type&;
+      using difference_type = std::ptrdiff_t;
 
       explicit node_iterator(pointer n = nullptr, pointer e = nullptr)
          : _curr { n }
@@ -129,11 +133,18 @@ namespace rush::ast {
    };
 
    template <typename NodeT>
-   class typed_node_iterator : public std::iterator<std::forward_iterator_tag, NodeT> {
+   class typed_node_iterator {
       template <typename NodeU>
       friend class typed_node_iterator;
 
    public:
+      // std::iterator_traits
+      using iterator_category = std::forward_iterator_tag;
+      using value_type = NodeT;
+      using pointer = value_type*;
+      using reference = value_type&;
+      using difference_type = std::ptrdiff_t;
+
       typed_node_iterator()
          : _it { node_iterator {} }
          , _end { node_iterator {} } {}

@@ -39,21 +39,13 @@ namespace rush {
    }
 
    template <typename IterT>
-   class dereferencing_iterator
-      : public std::iterator<
-         typename std::iterator_traits<IterT>::iterator_category,
-         typename detail::remove_pointer<typename std::iterator_traits<IterT>::value_type>::type> {
-   private:
-      using _base_type = std::iterator<
-         typename std::iterator_traits<IterT>::iterator_category,
-         typename detail::remove_pointer<typename std::iterator_traits<IterT>::value_type>::type>;
-
+   class dereferencing_iterator {
    public:
-      using typename _base_type::value_type;
-      using typename _base_type::pointer;
-      using typename _base_type::reference;
-      using typename _base_type::difference_type;
-      using typename _base_type::iterator_category;
+      using iterator_category = typename std::iterator_traits<IterT>::iterator_category;
+      using value_type = typename detail::remove_pointer<typename std::iterator_traits<IterT>::value_type>::type;
+      using pointer = value_type*;
+      using reference = value_type&;
+      using difference_type = std::ptrdiff_t;
 
       explicit dereferencing_iterator(IterT it) : _it { it } {}
 
