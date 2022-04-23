@@ -1,0 +1,33 @@
+concept member_parameterless_formattable(arg: any) => arg.format() -> string
+concept member_parameterized_formattable(arg: any) => arg.format("") -> string
+
+concept free_parameterless_formattable(arg: any) => format(arg) -> string
+concept free_parameterized_formattable(arg: any) => format(arg, "") -> string
+
+concept member_formattable =
+	| member_parameterless_formattable
+	| member_parameterized_formattable
+
+concept free_formattable =
+	| free_parameterless_formattable
+	| free_parameterized_formattable
+
+export concept formattable =
+	| member_formattable
+	| free_formattable
+
+export func format(arg: formattable)
+	return match typeof arg
+		case free_parameterless_formattable as x => format(x)
+		case free_parameterized_formattable as x => format(x, "")
+		case member_parameterless_formattable as x => x.format()
+		case member_parameterized_formattable as x => x.format("")
+
+export func format(arg: formattable, fmt: string)
+	return match typeof arg
+		case free_parameterless_formattable as x => format(x)
+		case free_parameterized_formattable as x => format(x, fmt)
+		case member_parameterless_formattable as x => x.format()
+		case member_parameterized_formattable as x => x.format(fmt)
+
+

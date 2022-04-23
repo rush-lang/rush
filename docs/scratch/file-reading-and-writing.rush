@@ -29,3 +29,20 @@ if err != nil
 let text = file.readall()
 println(text)
 ## ...
+
+import std.io
+import std.os.path
+import std.text.json
+
+let log = services.get<:logger>()
+
+func is_rush_project_file(filename: string)
+	let {file, err} = try open(filename).reader()
+	if err != nil:
+		log.error(err!)
+		return false
+
+	let jobj = json.parse(file!)
+	return jobj
+		.property("project")?
+		.value == "rush"

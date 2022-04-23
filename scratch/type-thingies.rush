@@ -1,0 +1,9 @@
+## Type thingies
+
+func foo(x: [])				## declares a function 'foo' that accepts an array of untyped elements.
+func bar(x: {})				## declares a function 'bar' that accepts any object
+
+func foo(x: [int])			## declares a function 'foo' that accepts an array of type int elements.
+func bar(x: { id: int })	## declares a function 'bar' that accepts any object with the property 'id' of type int.
+
+func foo(x: [:10])			## declares a function 'foo' that accepts an array of 10 untyped elements.

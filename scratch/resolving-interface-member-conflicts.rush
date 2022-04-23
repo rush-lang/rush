@@ -1,0 +1,18 @@
+interface A
+	func method()	## abstract method
+
+interface B
+	func method()	## abstract method
+
+class C
+	implements A
+		func method()
+			## do stuff..
+
+	implements B
+		func method()
+			## do stuff..
+public
+	## hides interface implementations of method and
+	## calls interface A's method implementation explicitly.
+	func method() => this<:A>.method()

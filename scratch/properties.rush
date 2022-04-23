@@ -1,0 +1,53 @@
+
+class foo
+public
+	## declares a mutable auto-property
+	var property: int
+
+	## equivalent to:
+	get property: int => field
+	set property: int => field = value
+
+
+class foo
+public
+	## declares a read-only auto-property
+	let property: int
+
+	## equivalent to:
+	get property: int => field
+
+
+class foo
+public
+	var property: int = 0
+		get => field
+		private set => field = value
+
+class foo
+public
+	## when multiple names are declared in
+	## the property declaration, all except
+	## the last one are declared auto-properties.
+	var _field, property: int = 0
+		get => _field
+		set => _field = value
+
+
+interface foo
+	var prop1: int 	## get/set property.
+	get prop2: int 	## get only property.
+	set prop3: int 	## set only property.
+	let prop4: int		## invalid on interfaces.
+
+base class foo
+public
+	abstract let name: string
+
+class bar inherits foo
+public
+	override get name => "bar"
+
+class baz inherits foo
+public
+	override get name => "baz"

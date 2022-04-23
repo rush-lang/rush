@@ -1,0 +1,14 @@
+## fix: use prior ignored indentation
+## that has yet to be dedented
+## could be achieved by 'pinning' the depth
+## of indentation at 'func' and checking
+## the difference when indentation is relevant.
+func add(
+	a,
+	b: int)
+	return a + b
+
+
+## === Segmentation fault. =====================
+let f(x: int) =>  ## figure out fault, fix + implement
+	return x^2		## multi-line lambda's.

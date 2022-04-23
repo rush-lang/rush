@@ -1,0 +1,47 @@
+## Declaraing symbols internal with the 'intern' keyword ensures that the symbols
+## will not be automatically added to the current scope of the import declaration.
+
+## [inside std.text.json module]
+export intern func parse(json: string):
+	...
+
+## [inside the importing module]
+import std.text.json
+
+func qualified:
+	## format method requires at least one level
+	## of it's fully-qualified name.
+	let jj = json.parse(`{ "id" = 1 }`)
+	...
+
+## [POSSBILITY]
+## using declaration can be used to import the
+## internal symbol into the current scope directly.
+
+using json.parse
+
+func unqualified:
+	## calling unqualified parse function of the
+	## std.text.json module.
+	let jj = parse(`{ "id" = 1 }`)
+	...
+
+## POSSIBLE ALTERNATIVE SYNTAX ######################################
+export func module.foo()
+export func namespace.bar()
+
+## Could extend this to explicit interface implementations.
+export func namespace.foo()
+
+class foo
+public
+	implements bar
+		func interface.method()
+
+## An importing modules could potentially add a 'use' statement to bring
+## explicit module/namespace declarations into scope.
+
+use <module-name>.*		## import all explicit scoped declarations
+use <module-name>.foo 	## alternatively use individually.
+
+foo()

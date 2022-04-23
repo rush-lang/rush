@@ -1,0 +1,10 @@
+## Keywords AND/OR can be used in conditional statements to build
+## logical expressions.
+
+## logical AND expression of an IF condition.
+if condition1 and condition2
+	## do something..
+
+## logical OR expression in while loop.
+while condition1 or condition2
+	## do something repeatedly..
