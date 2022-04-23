@@ -82,9 +82,9 @@ public
 
    get length => sqrt(dot(this, this))
 
-   func new : this(0, 0)
+   default => this(0, 0)
 
-   func new (x, y: float)
+   construct (x, y: float)
       this.x = x
       this.y = y
 

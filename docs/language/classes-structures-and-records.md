@@ -8,36 +8,31 @@ Structures and classes encapsulate fields, properties, and methods, collectively
 - Classes support inheritance, and by extension polymorphism.
 - Structures with default constructors are default initializable.
 
-## Reference types
+## Declaring Structures and Classes
 
-A type that is defined with the keyword `class` is a _reference type_. At run-time, when you create an instance of a reference type, enough memory is allocated on the managed heap for that specific object. Any constant or variable assigned to the newly created instance holds only a reference to the location of said object.
-
-## Declaring Classes
-
-Classes are declared by using the `class` keyword followed by a unique identifier, as shown in the following example:
+Classes are declared using the `class` keyword followed by a unique identifier:
+Structures are declared by using the `struct` keyword followed by a unique identifier:
 
 ```rush
-class person
+class my_class
 	## class definition goes here.
+	## fields, properties, methods, etc.
+
+struct my_structure
+	## struct definition goes here.
 	## fields, properties, methods, etc.
 ```
 
-## Creating objects
+## Creating Instances of Structures and Classes
 
 ```rush
-let p = new person()
+let x = new my_class()
+let y = new my_structure()
 ```
 
-## Value types
+## Reference and Value Types
 
-A type that is defined with the keyword `struct` is a _value type_. At run-time, when yuo create an instance of a value type, enough memory is allocated on the stack for that specific object. Any constant or variable assigned to the newly created instance holds
+A type that is defined with the keyword `class` is a _reference type_. At run-time, when you create an instance of a reference type, enough memory is allocated on the managed heap for that specific object. Any constant or variable assigned to the newly created instance holds only a reference to the location of the newly constructed object. A count of the number of references to a class is maintained by the run-time, once each reference goes out of scope and the count reaches zero, the instance destructor is called, and the memory will be reclaimed by the garbage collector at some later stage of the programs execution.
 
-## Declaring Structures
+A type that is defined with the keyword `struct` is a _value type_. At run-time, when you create an instance of a value type, enough memory is allocated on the stack for that specific object. Any constant or variable assigned to the newly created instance is responsible for the instance itself, once the constant or variable goes out of scope the instance destructor is called and the memory used by the instance is cleaned up.
 
-Structures are declared by using the `struct` keyword followed by a unique identifier, as shown in the following example:
-
-```rush
-class person
-	## class definition goes here.
-	## fields, properties, methods, etc.
-```

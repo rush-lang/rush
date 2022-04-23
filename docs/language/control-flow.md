@@ -70,6 +70,16 @@ for item in collection
 for item in collection ## inline statement to be executed for each item in the range.
 ```
 
+## For-Else Statements
+
+```rush
+for i in 0..^3
+	if 5 < i
+		break
+else
+	print("less than 5")
+```
+
 ## Control Transfer Statements
 
 Control transfer statements alter the flow of program execution. There are five control transfer statements in Rush:
