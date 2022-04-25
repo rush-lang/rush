@@ -38,8 +38,8 @@ struct ::irgen::irgenerator_result::impl {
    std::unique_ptr<::llvm::Module> module;
 };
 
-class llvm_ir_module_generator : public irgen::llvm_ir_generator<llvm::Module> {
-   using value_map_type = std::unordered_map<ast::nominal_declaration const*, llvm::Value*>;
+class llvm_ir_module_generator : public irgen::llvm_ir_generator<::llvm::Module> {
+   using value_map_type = std::unordered_map<ast::nominal_declaration const*, ::llvm::Value*>;
 private:
    std::unique_ptr<::llvm::Module> _module;
    ::llvm::IRBuilder<> _builder;
@@ -53,7 +53,7 @@ public:
       , _builder { ctx }
       , _values { } {}
 
-   virtual llvm::Module* result() const override {
+   virtual ::llvm::Module* result() const override {
       return _module.get();
    }
 

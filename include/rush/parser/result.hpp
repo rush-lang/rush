@@ -34,8 +34,8 @@
 #include <type_traits>
 
 namespace rush {
+	struct parser_options;
    class parser;
-	class parser_options;
 	class lexical_analysis;
 
    template <typename NodeT>

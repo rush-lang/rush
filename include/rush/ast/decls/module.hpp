@@ -19,6 +19,7 @@
 #define RUSH_AST_DECLS_MODULE_HPP
 
 #include "rush/ast/node.hpp"
+#include "rush/ast/visitor.hpp"
 #include "rush/ast/decls/access.hpp"
 #include "rush/ast/decls/declaration.hpp"
 

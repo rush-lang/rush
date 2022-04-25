@@ -34,13 +34,13 @@ namespace rush::irgen {
       template <typename IRNodeU>
       friend class llvm_ir_generator;
 
-      using value_map_type = std::unordered_map<ast::nominal_declaration const*, llvm::Value*>;
+      using value_map_type = std::unordered_map<ast::nominal_declaration const*, ::llvm::Value*>;
       virtual IRNodeT* result() const {
          return nullptr;
       }
 
-   protected:
-      llvm::Value* lookup(ast::nominal_declaration const& decl) {
+   public:
+      ::llvm::Value* lookup(ast::nominal_declaration const& decl) {
          assert(_values);
          auto it = _values->find(&decl);
          return it != _values->end()
@@ -48,23 +48,23 @@ namespace rush::irgen {
               : nullptr;
       }
 
-      llvm::Value* insert(ast::nominal_declaration const& decl, llvm::Value* value) {
+      ::llvm::Value* insert(ast::nominal_declaration const& decl, ::llvm::Value* value) {
          assert(_values);
          (*_values)[&decl] = value;
          return value;
       }
 
-      llvm::Module& module_() {
+      ::llvm::Module& module_() {
          assert(_module);
          return *_module;
       }
 
-      llvm::LLVMContext& context() {
+      ::llvm::LLVMContext& context() {
          assert(_context);
          return *_context;
       }
 
-      llvm::IRBuilder<>& builder() {
+      ::llvm::IRBuilder<>& builder() {
          assert(_builder);
          return *_builder;
       }
@@ -82,9 +82,9 @@ namespace rush::irgen {
       }
 
       void initialize(
-         llvm::Module& module_,
-         llvm::LLVMContext& context,
-         llvm::IRBuilder<>& builder,
+         ::llvm::Module& module_,
+         ::llvm::LLVMContext& context,
+         ::llvm::IRBuilder<>& builder,
          value_map_type& values) {
             _module = &module_;
             _context = &context;
@@ -93,9 +93,9 @@ namespace rush::irgen {
          }
 
    private:
-      llvm::Module* _module;
-      llvm::LLVMContext* _context;
-      llvm::IRBuilder<>* _builder;
+      ::llvm::Module* _module;
+      ::llvm::LLVMContext* _context;
+      ::llvm::IRBuilder<>* _builder;
       value_map_type* _values;
    };
 }

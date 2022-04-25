@@ -22,10 +22,12 @@
 #include "rush/ast/decls/access.hpp"
 #include "rush/ast/decls/nominal.hpp"
 #include "rush/ast/iterator.hpp"
+#include "rush/ast/visitor.hpp"
 
 #include <vector>
 #include <string>
 #include <cassert>
+#include <algorithm>
 
 
 namespace rush::ast {

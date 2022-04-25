@@ -24,6 +24,7 @@
 #include <string>
 #include <iostream>
 #include <algorithm>
+#include <cwctype>
 
 
 namespace rush::cui {

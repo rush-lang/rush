@@ -18,6 +18,7 @@
 #ifndef RUSH_AST_TYPES_STRING_HPP
 #define RUSH_AST_TYPES_STRING_HPP
 
+#include "rush/ast/visitor.hpp"
 #include "rush/ast/types/type.hpp"
 
 namespace rush::ast {

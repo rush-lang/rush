@@ -24,25 +24,25 @@
 namespace rush {
    struct source::impl {
    public:
-      llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>> buffer;
+      ::llvm::ErrorOr<std::unique_ptr<::llvm::MemoryBuffer>> buffer;
 
-      impl() : buffer { llvm::MemoryBuffer::getMemBuffer("") } {}
-      impl(llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>> buf)
+      impl() : buffer { ::llvm::MemoryBuffer::getMemBuffer("") } {}
+      impl(::llvm::ErrorOr<std::unique_ptr<::llvm::MemoryBuffer>> buf)
          : buffer { std::move(buf) } {}
    };
 
    source const source::none = source();
 
    source source::from_file(std::filesystem::path path, bool is_volatile) {
-      return { std::make_unique<source::impl>(llvm::MemoryBuffer::getFile(
-         llvm::StringRef { path.string() },
+      return { std::make_unique<source::impl>(::llvm::MemoryBuffer::getFile(
+         ::llvm::StringRef { path.string() },
          -1L, true, is_volatile)) };
    }
 
    source source::from_string(std::string_view input, std::string_view id) {
-      return { std::make_unique<source::impl>(llvm::MemoryBuffer::getMemBuffer(
-         llvm::StringRef { input.begin(), input.size() },
-         llvm::StringRef { id.begin(), id.size() })) };
+      return { std::make_unique<source::impl>(::llvm::MemoryBuffer::getMemBuffer(
+         ::llvm::StringRef { input.data(), input.size() },
+         ::llvm::StringRef { id.data(), id.size() })) };
    }
 
    source source::from_stream(std::istream& input, std::string_view id) {
@@ -89,10 +89,16 @@ namespace rush {
    }
 
    std::string_view::const_iterator source::begin() const {
-      return (*_pimpl->buffer)->getBufferStart();
+      auto sv = std::string_view {
+         (*_pimpl->buffer)->getBufferStart(),
+         (*_pimpl->buffer)->getBufferSize() };
+      return std::cbegin(sv);
    }
 
    std::string_view::const_iterator source::end() const {
-      return (*_pimpl->buffer)->getBufferEnd();
+      auto sv = std::string_view {
+         (*_pimpl->buffer)->getBufferStart(),
+         (*_pimpl->buffer)->getBufferSize() };
+      return std::cend(sv);
    }
 }

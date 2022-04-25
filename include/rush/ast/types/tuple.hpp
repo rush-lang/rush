@@ -19,6 +19,8 @@
 #define RUSH_AST_TYPES_TUPLE_HPP
 
 #include "rush/extra/iterator_range.hpp"
+
+#include "rush/ast/visitor.hpp"
 #include "rush/ast/types/type.hpp"
 #include "rush/ast/types/type_ref.hpp"
 

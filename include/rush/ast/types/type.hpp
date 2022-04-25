@@ -19,7 +19,6 @@
 #define RUSH_AST_TYPE_HPP
 
 #include "rush/ast/node.hpp"
-#include "rush/ast/visitor.hpp"
 
 #include <memory>
 #include <string>

@@ -21,8 +21,9 @@
 #include "rush/extra/iterator_range.hpp"
 #include "rush/extra/dereferencing_iterator.hpp"
 
-#include "rush/ast/exprs/expression.hpp"
+#include "rush/ast/visitor.hpp"
 #include "rush/ast/types/string.hpp"
+#include "rush/ast/exprs/expression.hpp"
 
 #include <string>
 #include <string_view>

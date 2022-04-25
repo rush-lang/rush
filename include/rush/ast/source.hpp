@@ -20,6 +20,7 @@
 
 #include "rush/ast/node.hpp"
 #include "rush/ast/scope.hpp"
+#include "rush/ast/visitor.hpp"
 #include "rush/core/source.hpp"
 
 #include <vector>

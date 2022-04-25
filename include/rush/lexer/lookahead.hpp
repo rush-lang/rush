@@ -18,6 +18,7 @@
 #ifndef RUSH_LEXER_LOOKAHEAD_HPP
 #define RUSH_LEXER_LOOKAHEAD_HPP
 
+#include "rush/platform.hpp"
 #include "rush/extra/ring.hpp"
 #include "rush/extra/iterator.hpp"
 #include "rush/extra/algorithm.hpp"
@@ -56,7 +57,7 @@ namespace rush {
 			return _buf.capacity();
 		}
 
-		reference peek(difference_type offset = 0) {
+		reference peek(size_type offset = 0) {
 			_check_offset(offset);
 			return *rush::advance__new(
 				_buf.begin(),
@@ -74,7 +75,7 @@ namespace rush {
 			}
 		}
 
-		void skip(difference_type offset) {
+		void skip(size_type offset) {
 			for (; offset > 0; --offset) skip();
 		}
 
@@ -91,14 +92,22 @@ namespace rush {
 			return _iter == _last;
 		}
 
-		void _check_offset(difference_type offset) const {
+		void _check_offset(size_type offset) const {
 			if (offset >= _buf.size()) throw std::out_of_range("offset out of range");
 		}
 
 		void _initialize() {
+#if RUSH_PLATFORM_WINDOWS
 			rush::copy_n(
+				rush::iterator_ref(_iter),
+            std::min<std::size_t>(N,
+               std::distance(_iter, _last)),
+				std::back_inserter(_buf));
+#elif RUSH_PLATFORM_LINUX
+         rush::copy_n(
 				rush::iterator_ref(_iter), _last, N,
 				std::back_inserter(_buf));
+#endif
 		}
 	};
 

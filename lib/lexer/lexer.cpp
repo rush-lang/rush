@@ -54,8 +54,8 @@ namespace rush {
       std::vector<lexical_token> tokenize(InIter first, InIter last) {
          auto toks = std::vector<lexical_token> {};
          _lab = std::make_unique<lookahead_buffer_type>(
-            lexer_iterator { first, *first, {} },
-            lexer_iterator { last, 0, rush::location::undefined});
+            lexer_iterator { first, {} },
+            lexer_iterator { last, rush::location::undefined });
          _indent = {};
 
          if (!eof()) {
@@ -68,8 +68,8 @@ namespace rush {
       }
 
    private:
-      using lookahead_buffer_type = typename rush::lookahead_buffer<
-         lexer_iterator<InIter>, 8>;
+      using lookahead_buffer_type =
+         typename rush::lookahead_buffer<lexer_iterator<InIter>, 8>;
 
       lexer_options _opts;
       std::unique_ptr<lookahead_buffer_type> _lab;

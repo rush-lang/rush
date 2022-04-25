@@ -26,7 +26,7 @@ namespace rush {
 	using source_index_t = std::size_t;
 	using source_difference_t = std::size_t;
 
-	class location;
+	struct location;
 
 	inline bool operator < (location const& lhs, location const& rhs) noexcept;
 	inline bool operator > (location const& lhs, location const& rhs) noexcept;

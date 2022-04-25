@@ -107,8 +107,8 @@ namespace rush {
       }
 
       std::string::iterator find_template_substitution(std::string::iterator first, std::string::iterator last) {
-         auto prev = first - 1;
-         for (; first != last; ++first, ++prev) {
+         auto prev = first;
+         for (; first != last; prev = first++) {
             if (*first == '$' && *prev != '\\') {
                auto next = first + 1;
                if (next != last) {

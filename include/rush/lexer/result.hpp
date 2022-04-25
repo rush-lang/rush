@@ -29,9 +29,8 @@
 
 
 namespace rush {
-
+	struct lexer_options;
 	class lexer;
-	class lexer_options;
 
 	class lexical_analysis final {
 		friend class lexer;

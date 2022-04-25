@@ -128,11 +128,11 @@ namespace rush {
       lexical_token const& peek_with_lbreak(lxa_iterator& first, lxa_iterator const& last, lxa_iterator_difference_type offset = 0) {
          auto temp = first;
          std::size_t indent_offset = 0;
-         for (; temp != last &&
+         for (; temp != last && (
             (temp->is_comment()) ||
             (temp->is(symbols::indent)) ||
             ((temp->is(symbols::dedent) && is_indent_skipped(indent_offset++))
-            || offset-- > 0); ++temp) ;
+            || offset-- > 0)); ++temp) ;
          return temp != last ? *temp : _eof;
       }
 
@@ -140,23 +140,22 @@ namespace rush {
          auto temp = _range.first;
          auto& last = _range.second;
          std::size_t indent_offset = 0;
-         for (; temp != last &&
+         for (; temp != last && (
             (temp->is_comment()) ||
             (temp->is(symbols::lbreak)) ||
             ((temp->is(symbols::dedent) && is_indent_skipped(indent_offset++)) ||
-            offset-- > 0); ++temp) ;
+            offset-- > 0)); ++temp) ;
          return temp != last ? *temp : _eof;
 		}
 
       lexical_token const& peek_skip_indent(lxa_iterator& first, lxa_iterator const& last, lxa_iterator_difference_type offset = 0) {
          auto temp = first;
          std::size_t indent_offset = 0;
-         for (; temp != last &&
+         for (; temp != last && (
             (temp->is_comment()) ||
             (temp->is(symbols::lbreak)) ||
-            (temp->is(symbols::indent) ||
-            (temp->is(symbols::dedent) && is_indent_skipped(indent_offset++))
-            || offset-- > 0); ++temp) ;
+            (temp->is(symbols::indent) || (temp->is(symbols::dedent) && is_indent_skipped(indent_offset++)) || offset-- > 0))
+            ; ++temp) ;
          return temp != last ? *temp : _eof;
       }
 

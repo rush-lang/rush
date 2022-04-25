@@ -344,10 +344,10 @@ namespace rush {
 		auto tok = next_skip_indent();
 		auto val = tok.integer_value();
 		switch (tok.suffix()) {
-		case lexical_token_suffix::none: return exprs::literal(static_cast<int>(val), *_context);
-		case lexical_token_suffix::long_literal: return exprs::literal(static_cast<long>(val), *_context);
-		case lexical_token_suffix::unsigned_literal: return exprs::literal(static_cast<unsigned>(val), *_context);
-		case lexical_token_suffix::unsigned_long_literal: return exprs::literal(static_cast<unsigned long>(val), *_context);
+		case lexical_token_suffix::none: return exprs::literal(static_cast<std::int32_t>(val), *_context);
+		case lexical_token_suffix::long_literal: return exprs::literal(static_cast<std::int64_t>(val), *_context);
+		case lexical_token_suffix::unsigned_literal: return exprs::literal(static_cast<std::uint32_t>(val), *_context);
+		case lexical_token_suffix::unsigned_long_literal: return exprs::literal(static_cast<std::uint64_t>(val), *_context);
 		default: throw;
 		}
 	}

@@ -38,14 +38,18 @@ namespace rush {
       struct remove_pointer<std::shared_ptr<T>> : std::remove_pointer<T*> {};
    }
 
+   // Iterator adapter designed to adapt containers with values of pointer types
+   // such that when the iterator is dereferenced, a reference instead of a pointer
+   // is obtained.
    template <typename IterT>
    class dereferencing_iterator {
    public:
       using iterator_category = typename std::iterator_traits<IterT>::iterator_category;
+      using difference_type = typename std::iterator_traits<IterT>::difference_type;
       using value_type = typename detail::remove_pointer<typename std::iterator_traits<IterT>::value_type>::type;
       using pointer = value_type*;
       using reference = value_type&;
-      using difference_type = std::ptrdiff_t;
+      using size_type = std::size_t;
 
       explicit dereferencing_iterator(IterT it) : _it { it } {}
 
@@ -57,6 +61,28 @@ namespace rush {
 
       dereferencing_iterator operator ++(int) { return { _it++ }; }
       dereferencing_iterator operator --(int) { return { _it-- }; }
+
+      dereferencing_iterator& operator +=(size_type offset) { _it += offset; return *this; }
+      dereferencing_iterator& operator -=(size_type offset) { _it -= offset; return *this; }
+
+      dereferencing_iterator& operator += (dereferencing_iterator const& other) { _it += other._it; return *this; }
+      dereferencing_iterator& operator -= (dereferencing_iterator const& other) { _it -= other._it; return *this; }
+
+      friend dereferencing_iterator operator + (
+         dereferencing_iterator const& deref_it, size_type offset)
+         { return dereferencing_iterator { deref_it._it } += offset; }
+
+      friend dereferencing_iterator operator + (
+         size_type offset, dereferencing_iterator const& deref_it)
+         { return dereferencing_iterator { deref_it._it } += offset; }
+
+      friend dereferencing_iterator operator - (
+         dereferencing_iterator const& deref_it, size_type offset)
+         { return dereferencing_iterator { deref_it._it } -= offset; }
+
+      friend size_type operator - (
+         dereferencing_iterator const& lhs, dereferencing_iterator const& rhs)
+         { return lhs._it - rhs._it; }
 
       template <typename IterU>
       constexpr friend bool operator == (

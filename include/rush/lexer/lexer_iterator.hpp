@@ -27,89 +27,87 @@ using namespace rush;
 using namespace ascii;
 
 namespace rush {
-	template <typename InIter>
-	class lexer_iterator {
-	public:
-		struct element {
-		private:
-			rush::location _loc;
-			typename std::iterator_traits<InIter>::value_type _val;
-			friend class lexer_iterator;
+   template <typename InIter>
+   class lexer_iterator {
+   public:
+      struct element {
+         friend class lexer_iterator;
 
-		public:
-			element()
-				: _val { }
-				, _loc { } {}
+      private:
+         rush::location _loc;
+         InIter _iter;
 
-			element(typename std::iterator_traits<InIter>::value_type val, rush::location loc)
-				: _val(val)
-				, _loc(loc) {}
+      public:
+         element()
+            : _iter { }
+            , _loc  { } {}
 
-			auto elem() const noexcept -> decltype(_val) { return _val; }
-			auto location() const noexcept -> rush::location const& { return _loc; }
-		};
+         element(InIter iter, rush::location loc)
+            : _iter(iter)
+            , _loc(loc) {}
 
-		using iterator_category = std::forward_iterator_tag;
-		using value_type = element;
-		using pointer = value_type const*;
-		using reference = value_type const&;
-		using difference_type = typename std::iterator_traits<InIter>::difference_type;
+         auto elem() const noexcept -> decltype(*_iter) { return *_iter; }
+         auto location() const noexcept -> rush::location const& { return _loc; }
+      };
 
-		lexer_iterator(InIter it, location loc = {})
-			: _iter { it }
-			, _e { *it, loc } {}
+      using iterator_category = std::forward_iterator_tag;
+      using value_type = element;
+      using pointer = value_type const*;
+      using reference = value_type const&;
+      using difference_type = typename std::iterator_traits<InIter>::difference_type;
 
-		lexer_iterator(InIter it, typename std::iterator_traits<InIter>::value_type val, location loc = {})
-			: _iter { it }
-			, _e { val, loc } {}
+      lexer_iterator(InIter it, location loc = {})
+         : _e { it, loc } {}
 
-		reference operator *() const {
-			return _elem();
-		}
+      rush::location const& location() const {
+         return _e._loc;
+      }
 
-		pointer operator ->() const {
-			return std::addressof(_elem());
-		}
+      reference operator *() const {
+         return _e;
+      }
 
-		lexer_iterator& operator ++() {
-			_increment();
-			return *this;
-		}
+      pointer operator ->() const {
+         return std::addressof(_e);
+      }
 
-		lexer_iterator const operator ++(int) {
-			auto temp = *this;
-			_increment();
-			return temp;
-		}
+      lexer_iterator& operator ++() {
+         _increment();
+         return *this;
+      }
 
-		friend bool operator == (
-			lexer_iterator const& lhs,
-			lexer_iterator const& rhs) noexcept {
-			return lhs._iter == rhs._iter;
-		}
+      lexer_iterator const operator ++(int) {
+         auto temp = *this;
+         _increment();
+         return temp;
+      }
 
-		friend bool operator != (
-			lexer_iterator const& lhs,
-			lexer_iterator const& rhs) noexcept {
-			return !(lhs == rhs);
-		}
+      friend bool operator == (
+         lexer_iterator const& lhs,
+         lexer_iterator const& rhs) noexcept {
+         return lhs._iterator() == rhs._iterator();
+      }
 
-	private:
-		InIter _iter;
-		element _e;
+      friend bool operator != (
+         lexer_iterator const& lhs,
+         lexer_iterator const& rhs) noexcept {
+         return !(lhs == rhs);
+      }
 
-		reference _elem() const {
-			return _e;
-		}
+   private:
+      element _e;
 
-		void _increment() {
-			_e._loc = is_newline(*_iter)
-				? _e._loc.next_line()
-				: _e._loc.next_column();
-			++_iter;
-			_e._val = *_iter;
-		}
-	};
+      InIter _iterator() const {
+         return _e._iter;
+      }
+
+      void _increment() {
+         _e._loc = is_newline(*_e._iter)
+            ? _e._loc.next_line()
+            : _e._loc.next_column();
+         ++_e._iter;
+      }
+   };
 }
 
 #endif // RUSH_LEXER_LEXER_ITERATOR_HPP

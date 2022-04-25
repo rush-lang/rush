@@ -21,32 +21,32 @@
 using namespace rush;
 
 
-// class llvm_integral_binary_operation : public irgen::llvm_ir_generator<llvm::Value> {
+// class llvm_integral_binary_operation : public irgen::llvm_ir_generator<::llvm::Value> {
 // private:
 //    ast::expression const& _binexpr;
-//    llvm::Value* _result;
-//    llvm::Value* _lhs;
-//    llvm::Value* _rhs;
+//    ::llvm::Value* _result;
+//    ::llvm::Value* _lhs;
+//    ::llvm::Value* _rhs;
 
 // public:
-//    llvm_integral_binary_operation(ast::expression const& expr, llvm::Value* lhs, llvm::Value* rhs) {
+//    llvm_integral_binary_operation(ast::expression const& expr, ::llvm::Value* lhs, ::llvm::Value* rhs) {
 
 //    }
 // }
 
-// class llvm_floating_binary_operation : public irgen::llvm_ir_generator<llvm::Value> {
+// class llvm_floating_binary_operation : public irgen::llvm_ir_generator<::llvm::Value> {
 // private:
-//    llvm::Value* _result;
-//    llvm::Value* _lhs;
-//    llvm::Value* _rhs;
+//    ::llvm::Value* _result;
+//    ::llvm::Value* _lhs;
+//    ::llvm::Value* _rhs;
 
 // public:
-//    llvm_ir_right_shift(llvm::Value* lhs, llvm::Value* rhs)
+//    llvm_ir_right_shift(::llvm::Value* lhs, ::llvm::Value* rhs)
 //       : _result { nullptr }
 //       , _lhs { lhs }
 //       , _rhs { rhs } {}
 
-//    virtual llvm::Value* result() const noexcept override {
+//    virtual ::llvm::Value* result() const noexcept override {
 //       return _result;
 //    }
 
@@ -55,19 +55,19 @@ using namespace rush;
 //    }
 // };
 
-class llvm_ir_modulo : public irgen::llvm_ir_generator<llvm::Value> {
+class llvm_ir_modulo : public irgen::llvm_ir_generator<::llvm::Value> {
 private:
-   llvm::Value* _result;
-   llvm::Value* _lhs;
-   llvm::Value* _rhs;
+   ::llvm::Value* _result;
+   ::llvm::Value* _lhs;
+   ::llvm::Value* _rhs;
 
 public:
-   llvm_ir_modulo(llvm::Value* lhs, llvm::Value* rhs)
+   llvm_ir_modulo(::llvm::Value* lhs, ::llvm::Value* rhs)
       : _result { nullptr }
       , _lhs { lhs }
       , _rhs { rhs } {}
 
-   virtual llvm::Value* result() const noexcept override {
+   virtual ::llvm::Value* result() const noexcept override {
       return _result;
    }
 
@@ -78,18 +78,18 @@ public:
    }
 };
 
-class llvm_ir_addition : public irgen::llvm_ir_generator<llvm::Value> {
+class llvm_ir_addition : public irgen::llvm_ir_generator<::llvm::Value> {
 private:
-   llvm::Value* _result;
-   llvm::Value* _lhs;
-   llvm::Value* _rhs;
+   ::llvm::Value* _result;
+   ::llvm::Value* _lhs;
+   ::llvm::Value* _rhs;
 public:
-   llvm_ir_addition(llvm::Value* lhs, llvm::Value* rhs)
+   llvm_ir_addition(::llvm::Value* lhs, ::llvm::Value* rhs)
       : _result { nullptr }
       , _lhs { lhs }
       , _rhs { rhs } {}
 
-   virtual llvm::Value* result() const noexcept override {
+   virtual ::llvm::Value* result() const noexcept override {
       return _result;
    }
 
@@ -102,19 +102,19 @@ public:
    }
 };
 
-class llvm_ir_subtraction : public irgen::llvm_ir_generator<llvm::Value> {
+class llvm_ir_subtraction : public irgen::llvm_ir_generator<::llvm::Value> {
 private:
-   llvm::Value* _result;
-   llvm::Value* _lhs;
-   llvm::Value* _rhs;
+   ::llvm::Value* _result;
+   ::llvm::Value* _lhs;
+   ::llvm::Value* _rhs;
 
 public:
-   llvm_ir_subtraction(llvm::Value* lhs, llvm::Value* rhs)
+   llvm_ir_subtraction(::llvm::Value* lhs, ::llvm::Value* rhs)
       : _result { nullptr }
       , _lhs { lhs }
       , _rhs { rhs } {}
 
-   virtual llvm::Value* result() const noexcept override {
+   virtual ::llvm::Value* result() const noexcept override {
       return _result;
    }
 
@@ -127,19 +127,19 @@ public:
    }
 };
 
-class llvm_ir_division : public irgen::llvm_ir_generator<llvm::Value> {
+class llvm_ir_division : public irgen::llvm_ir_generator<::llvm::Value> {
 private:
-   llvm::Value* _result;
-   llvm::Value* _lhs;
-   llvm::Value* _rhs;
+   ::llvm::Value* _result;
+   ::llvm::Value* _lhs;
+   ::llvm::Value* _rhs;
 
 public:
-   llvm_ir_division(llvm::Value* lhs, llvm::Value* rhs)
+   llvm_ir_division(::llvm::Value* lhs, ::llvm::Value* rhs)
       : _result { nullptr }
       , _lhs { lhs }
       , _rhs { rhs } {}
 
-   virtual llvm::Value* result() const noexcept override {
+   virtual ::llvm::Value* result() const noexcept override {
       return _result;
    }
 
@@ -154,19 +154,19 @@ public:
    }
 };
 
-class llvm_ir_multiplication : public irgen::llvm_ir_generator<llvm::Value> {
+class llvm_ir_multiplication : public irgen::llvm_ir_generator<::llvm::Value> {
 private:
-   llvm::Value* _result;
-   llvm::Value* _lhs;
-   llvm::Value* _rhs;
+   ::llvm::Value* _result;
+   ::llvm::Value* _lhs;
+   ::llvm::Value* _rhs;
 
 public:
-   llvm_ir_multiplication(llvm::Value* lhs, llvm::Value* rhs)
+   llvm_ir_multiplication(::llvm::Value* lhs, ::llvm::Value* rhs)
       : _result { nullptr }
       , _lhs { lhs }
       , _rhs { rhs } {}
 
-   virtual llvm::Value* result() const noexcept override {
+   virtual ::llvm::Value* result() const noexcept override {
       return _result;
    }
 
@@ -179,19 +179,19 @@ public:
    }
 };
 
-class llvm_ir_left_shift : public irgen::llvm_ir_generator<llvm::Value> {
+class llvm_ir_left_shift : public irgen::llvm_ir_generator<::llvm::Value> {
 private:
-   llvm::Value* _result;
-   llvm::Value* _lhs;
-   llvm::Value* _rhs;
+   ::llvm::Value* _result;
+   ::llvm::Value* _lhs;
+   ::llvm::Value* _rhs;
 
 public:
-   llvm_ir_left_shift(llvm::Value* lhs, llvm::Value* rhs)
+   llvm_ir_left_shift(::llvm::Value* lhs, ::llvm::Value* rhs)
       : _result { nullptr }
       , _lhs { lhs }
       , _rhs { rhs } {}
 
-   virtual llvm::Value* result() const noexcept override {
+   virtual ::llvm::Value* result() const noexcept override {
       return _result;
    }
 
@@ -200,19 +200,19 @@ public:
    }
 };
 
-class llvm_ir_right_shift : public irgen::llvm_ir_generator<llvm::Value> {
+class llvm_ir_right_shift : public irgen::llvm_ir_generator<::llvm::Value> {
 private:
-   llvm::Value* _result;
-   llvm::Value* _lhs;
-   llvm::Value* _rhs;
+   ::llvm::Value* _result;
+   ::llvm::Value* _lhs;
+   ::llvm::Value* _rhs;
 
 public:
-   llvm_ir_right_shift(llvm::Value* lhs, llvm::Value* rhs)
+   llvm_ir_right_shift(::llvm::Value* lhs, ::llvm::Value* rhs)
       : _result { nullptr }
       , _lhs { lhs }
       , _rhs { rhs } {}
 
-   virtual llvm::Value* result() const noexcept override {
+   virtual ::llvm::Value* result() const noexcept override {
       return _result;
    }
 
@@ -245,7 +245,7 @@ namespace rush::irgen::llvm {
       if (!lhs || !rhs) return;
 
       // if (expr.left_operand().result_type() != expr.result_type())
-      //    lhs = builder().CreateCast(llvm::Instruction::CastOps::)
+      //    lhs = builder().CreateCast(::llvm::Instruction::CastOps::)
 
       _result = nullptr;
       switch (expr.opkind()) {
