@@ -1,4 +1,9 @@
-<img alt="Rush Logo" height="64" src="https://raw.githubusercontent.com/rush-lang/rush/develop/docs/rush-logo.svg">
+<br />
+<picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/rush-lang/rush/master/docs/rush-logo-dark.svg">
+   <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/rush-lang/rush/master/docs/rush-logo-light.svg">
+   <img alt="Rush Logo" height="64" src="https://raw.githubusercontent.com/rush-lang/rush/master/docs/rush-logo-light.svg">
+</picture>
 
 A general purpose programming language.
 
