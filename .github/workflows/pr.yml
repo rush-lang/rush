@@ -1,0 +1,17 @@
+name: Pull Request
+
+on:
+  pull_request:
+    branches: [master]
+
+jobs:
+  build-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    uses: ./.github/workflows/main.yml
+    with:
+      runs-on: ${{ matrix.os }}
+      release: false
+    secrets: inherit

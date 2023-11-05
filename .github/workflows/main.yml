@@ -1,29 +1,69 @@
-name: CI
-
 on:
-  push:
-    branches: [master]
-  pull_request:
-    branches: [master]
+  workflow_call:
+    inputs:
+      runs-on:
+        type: string
+        description: 'Operating System'
+        required: true
+        default: 'ubuntu-latest'
+      release:
+        type: boolean
+        description: 'Release Build'
+        required: true
+        default: false
+
+permissions:
+  contents: read
 
 jobs:
-  build-test:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-    uses: ./.github/workflows/build-test.yml
-    with:
-      runs-on: ${{ matrix.os }}
-    secrets: inherit
+  build:
+    runs-on: ${{ inputs.runs-on }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure
+        shell: bash
+        run: mkdir -p ./build
+
+      - name: Create Build files
+        shell: bash
+        working-directory: ./build
+        run: |
+          cmake ../ \
+            -DCMAKE_C_COMPILER=clang \
+            -DCMAKE_CXX_COMPILER=clang++
+
+      - name: Build Binary files
+        shell: bash
+        working-directory: ./build
+        run: cmake --build . -j 4
+
+      - name: Verify Build
+        shell: bash
+        working-directory: ./build
+        run: ./crush --version
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: build-artifacts
+          path: ./build
+
+
+  unit-test:
+    runs-on: ${{ inputs.runs-on }}
+    needs: build
+    steps:
+      ## actually don't want to do this, we want to pull in the artifacts from the build and run that.
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
   release:
-    needs: build-test
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-    uses: ./.github/workflows/release.yml
-    with:
-      runs-on: ${{ matrix.os }}
-    secrets: inherit
+    runs-on: ${{ inputs.runs-on }}
+    if: ${{ inputs.release }}
+    needs: unit-test
+    steps:
+      - name: Hello World
+        shell: bash
+        run: echo "Hello World"
