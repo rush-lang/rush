@@ -13,7 +13,7 @@ permissions:
 jobs:
   release:
     runs-on: ${{ inputs.runs-on }}
-    shell: bash
     steps:
-      - run: echo "Hello World"
+      - shell: bash
+        run: echo "Hello World"
 
