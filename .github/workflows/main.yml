@@ -17,6 +17,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Configure
+        shell: bash
+        run: mkdir -p ./build
+
       - name: Create Build Files
         shell: bash
         working-directory: ./build
