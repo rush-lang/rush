@@ -7,12 +7,23 @@ on:
     branches: [master]
 
 jobs:
-  os-matrix:
+  build-test:
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
     uses: ./.github/workflows/build-test.yml
+    with:
+      runs-on: ${{ matrix.os }}
+    secrets: inherit
+
+  release:
+    needs: build-test
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    uses: ./.github/workflows/release.yml
     with:
       runs-on: ${{ matrix.os }}
     secrets: inherit
