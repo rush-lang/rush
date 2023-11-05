@@ -1,9 +1,7 @@
-name: Build & Test
-
 on:
   workflow_call:
     inputs:
-      os:
+      runs-on:
         type: string
         description: 'Operating System'
         required: true
@@ -14,7 +12,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: ${{ inputs.os }}
+    runs-on: ${{ inputs.runs-on }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -42,7 +40,7 @@ jobs:
         run: ./crush --version
 
   unit-test:
-    runs-on: ${{ inputs.os }}
+    runs-on: ${{ inputs.runs-on }}
     needs: build
     steps:
       ## actually don't want to do this, we want to pull in the artifacts from the build and run that.
