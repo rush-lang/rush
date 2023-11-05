@@ -1,0 +1,36 @@
+name: CI / CD
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create Build Files
+        shell: bash
+        working-directory: ./build
+        run: |
+          cmake ../ \
+            -DCMAKE_C_COMPILER=clang \
+            -DCMAKE_CXX_COMPILER=clang++
+
+      - name: Build Binary Files
+        shell: bash
+        working-directory: ./build
+        run: cmake --build . -j 4
+
+      - name: Verify Build
+        shell: bash
+        working-directory: ./build
+        run: ./crush --version
