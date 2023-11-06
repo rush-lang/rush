@@ -36,35 +36,74 @@ namespace rush::irgen::llvm {
          virtual void visit_block_stmt(ast::statement_block const& stmt) override {
             auto func = builder().GetInsertBlock()->getParent();
 
-            auto then = ::llvm::BasicBlock::Create(context(), "then", func);
-            auto end = ::llvm::BasicBlock::Create(context(), "endif", func);
-            builder().CreateCondBr(_cond, then, end);
+            auto then_block = ::llvm::BasicBlock::Create(context(), "then", func);
+            auto merge = ::llvm::BasicBlock::Create(context(), "endif");
+            builder().CreateCondBr(_cond, then_block, merge);
 
-            // Then
-            builder().SetInsertPoint(then);
+            // Emit then block.
+            builder().SetInsertPoint(then_block);
+
             auto gen = llvm_ir_statement_generator {};
-            auto body = generate(stmt, gen).result();
-            if (body) return;
+            auto then_body = generate(stmt, gen).result();
+            if (!then_body) return;
 
-            then = builder().GetInsertBlock();
+            builder().CreateBr(merge);
+            then_block = builder().GetInsertBlock();
 
-            // Emit merge block.
-            func->getBasicBlockList().push_back(then);
-            builder().SetInsertPoint(end);
+            // Emit merge.
+            func->insert(func->end(), merge);
+            builder().SetInsertPoint(merge);
             ::llvm::PHINode* pn =
                builder().CreatePHI(::llvm::Type::getDoubleTy(context()), 2, "iftmp");
 
-            pn->addIncoming(body, then);
+            pn->addIncoming(then_body, then_block);
             _result = pn;
-
-            builder().SetInsertPoint(end);
          }
 
          virtual void visit_alternating_stmt(ast::alternating_statement const& stmt) override {
+            auto func = builder().GetInsertBlock()->getParent();
+
+            auto then_block = ::llvm::BasicBlock::Create(context(), "then", func);
+            auto else_block = ::llvm::BasicBlock::Create(context(), "else");
+            auto merge = ::llvm::BasicBlock::Create(context(), "endif");
+            builder().CreateCondBr(_cond, then_block, else_block);
+
+            // Emit then block.
+            builder().SetInsertPoint(then_block);
+
+            auto gen = llvm_ir_statement_generator {};
+            auto then_body = generate(stmt.primary(), gen).result();
+            if (!then_body) return;
+
+            builder().CreateBr(merge);
+            then_block = builder().GetInsertBlock();
+
+            // Emit else block.
+            func->insert(func->end(), else_block);
+            builder().SetInsertPoint(else_block);
+
+            gen = llvm_ir_statement_generator {};
+            auto else_body = generate(stmt.alternate(), gen).result();
+            if (!else_body) return;
+
+            builder().CreateBr(merge);
+            else_block = builder().GetInsertBlock();
+
+            // Emit merge.
+            func->insert(func->end(), merge);
+            builder().SetInsertPoint(merge);
+            ::llvm::PHINode* pn =
+               builder().CreatePHI(::llvm::Type::getDoubleTy(context()), 2, "iftmp");
+
+            pn->addIncoming(then_body, then_block);
+            pn->addIncoming(else_body, else_block);
+            _result = pn;
          }
       };
 
-      auto cond = generate(stmt.condition(), llvm_ir_expression_generator {}).result();
+      auto expr = generate(stmt.condition(), llvm_ir_expression_generator {}).result();
+      auto cond = builder().CreateFCmpONE(expr,
+         ::llvm::ConstantFP::get(context(), ::llvm::APFloat(0.0)), "ifcond");
       _result = generate(stmt.body(), conditional_branch_generator { cond }).result();
    }
 

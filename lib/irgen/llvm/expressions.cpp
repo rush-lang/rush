@@ -326,7 +326,7 @@ namespace rush::irgen::llvm {
 
    void llvm_ir_expression_generator::visit_identifier_expr(ast::identifier_expression const& expr) {
       if ((_result = lookup(expr.declaration()))) {
-         _result = builder().CreateLoad(_result, std::string { expr.name() });
+         // _result = builder().CreateLoad(_result, std::string { expr.name() });
       }
    }
 
