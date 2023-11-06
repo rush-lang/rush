@@ -13,12 +13,12 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *************************************************************************/
-#ifndef HEADER_RUSH_VERSION_HPP
-#define HEADER_RUSH_VERSION_HPP
+#ifndef RUSH_VERSION_HPP
+#define RUSH_VERSION_HPP
 
 #define RUSH_VERSION_MAJOR "@RUSH_VERSION_MAJOR@"
 #define RUSH_VERSION_MINOR "@RUSH_VERSION_MINOR@"
 #define RUSH_VERSION_PATCH "@RUSH_VERSION_PATCH@"
 #define RUSH_VERSION "@RUSH_VERSION@"
 
-#endif /* HEADER_RUSH_VERSION_HPP */
+#endif /* RUSH_VERSION_HPP */

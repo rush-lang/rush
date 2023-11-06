@@ -15,8 +15,8 @@
 *************************************************************************/
 #pragma once
 
-#ifndef HEADER_RUSH_NAMESPACES_HPP
-#define HEADER_RUSH_NAMESPACES_HPP
+#ifndef RUSH_NAMESPACES_HPP
+#define RUSH_NAMESPACES_HPP
 
 // forward declarations.
 namespace rush {
@@ -52,4 +52,4 @@ namespace rush::namespaces {
 	namespace sema = ::rush::sema;
 }
 
-#endif // HEADER_RUSH_NAMESPACES_HPP
+#endif // RUSH_NAMESPACES_HPP

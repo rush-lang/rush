@@ -28,11 +28,16 @@ message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
 include_directories(${LLVM_INCLUDE_DIRS})
 add_definitions(${LLVM_DEFINITIONS})
 
-
+## Set the standard library implementation to use for clang.
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
 endif()
 
+## Use CCache if available.
+find_program(CCACHE_FOUND ccache)
+if(CCACHE_FOUND)
+   set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+endif(CCACHE_FOUND)
 
 add_subdirectory(external)
 add_subdirectory(utils)

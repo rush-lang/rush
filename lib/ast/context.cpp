@@ -36,6 +36,7 @@ bool is_infinitely_recursive_type(ast::type_ref type) {
    return rush::visit(type, infinite_recursion_type_checker {}).result;
 }
 
+// TODO: move into ast::types::reduce implementation
 ast::type_ref reduce_expression_types(ast::type_ref lt, ast::type_ref rt) {
    return is_infinitely_recursive_type(lt)
         ? is_infinitely_recursive_type(rt)
@@ -44,6 +45,7 @@ ast::type_ref reduce_expression_types(ast::type_ref lt, ast::type_ref rt) {
         ? lt : ast::types::reduce(lt, rt);
 }
 
+// TODO: move into ast::types::reduce implementation
 ast::type_ref reduce_return_types(ast::type_ref lt, ast::type_ref rt) {
    return lt.kind() == ast::type_kind::error
         ? rt.kind() == ast::type_kind::error
