@@ -1,27 +1,24 @@
 
-class <T> wrapper:
+class wrapper<T>
 public:
    func unwrap() -> T
 
 
-class <T> none:
-   @class wrapper<T>
+class none<T> inherits wrapper<T>
 public:
    override func unwrap() -> T:
       throw new dereferenced_nil()
 
-class <T> some:
-   @class wrapper<T>
+class some<T> inherits wrapper<T>
 private:
    let _val: T
 public:
-   override func unwrap() => _val;
+   override func unwrap() => _val
 
 
-## A type that represents a value or 'nil' (no value).
+## A type that represents an optional value, 'nil' representing no value.
 ##
-export
-struct optional<T>:
+export struct optional<T>:
 public
    get value => _value.unwrap()
    get has_value => _value == .none
@@ -30,10 +27,10 @@ public
       this._value = .none
 
    construct (val: T)
-      this._value = .some(val);
+      this._value = .some(val)
 
    ## func value() => .value.unwrap()
-   ## func has_value() => .value == .none;
+   ## func has_value() => .value == .none
 
    func exists(fn: T -> void)
       if has_value fn(value.unwrap())

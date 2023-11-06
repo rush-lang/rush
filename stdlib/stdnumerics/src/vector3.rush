@@ -1,19 +1,11 @@
 import std.math
 
 ## Represents a 3-Dimensional Vector
-export struct vector3
-public:
-   let x, y, z: float
-
+export data struct vector3(x, y, z: float)
    get length => sqrt(length_sqr)
    get length_sqr => dot(this, this)
 
    default => this(0, 0, 0)
-
-   construct (x, y, z: float)
-      this.x = x
-      this.y = y
-      this.z = z
 
    operator +this => new vector3(+x, +y, +z)
 	operator -this => new vector3(-x, -y, -z)
@@ -33,14 +25,8 @@ public:
 	## commutative property of multiplication.
 	operator (scalar: float) * this => this * scalar
 
-   operator this == (other: vector3)
-      => x == other.x
-      && y == other.y
-      && z == other.z
-
-export func hash({x, y, z}: extends vector3) => hash(x, y, z)
-
-export func to_string({x, y, z}: extends vector3) => "($x, $y, $z)"
+   implements formattable
+      func format() => "($x, $y, $z)"
 
 export func dot(u, v: extends vector3)
    => u.x * v.x

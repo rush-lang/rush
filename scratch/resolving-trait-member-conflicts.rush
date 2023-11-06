@@ -1,7 +1,7 @@
-interface A
+trait A
 	func method()	## abstract method
 
-interface B
+trait B
 	func method()	## abstract method
 
 class C
@@ -13,6 +13,6 @@ class C
 		func method()
 			## do stuff..
 public
-	## hides interface implementations of method and
-	## calls interface A's method implementation explicitly.
-	func method() => this<:A>.method()
+	## hides trait implementations of method and
+	## calls trait A's method implementation explicitly.
+	func method() => (this as A).method()

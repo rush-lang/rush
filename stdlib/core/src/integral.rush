@@ -1,17 +1,17 @@
 ## Represents an 8 bit integer and is the
 ## underlying type of the built-in 'sbyte' type.
-export struct int8:
-private:
+export struct int8
+private
    let _val: __builtin.int8
    construct (val: __builtin.int8)
       _val = val
 
-public:
+public
    static let maximum: sbyte = 0x7f
    static let minimum: sbyte = 0x80
 
    default => this(0)
-   construct (val: sbyte) => ...
+   construct (val: sbyte) => this(val._val)
 
    operator this == (other: sbyte) => _val == other._val
    operator this  < (other: sbyte) => _val  < other._val
@@ -36,25 +36,25 @@ public:
 
    static func parse(val: string, base_ = 10) => number.parse(val, number.integer, b)
 
-   operator this as implicit short => new short(_val)
-   operator this as implicit int => new int(_val)
-   operator this as implicit long => new long(_val)
+   operator this as short => new short(_val)
+   operator this as int => new int(_val)
+   operator this as long => new long(_val)
 
 
 ## Represents a 16-bit integer and is the
 ## underlying type of the built-in 'short' type.
-export struct int16:
-private:
+export struct int16
+private
    let _val: __builtin.int16
    construct (val: __builtin.int16)
       _val = val
 
-public:
+public
    static let maximum: short = 0x7fff
    static let minimum: short = 0x8000
 
    default => this(0)
-   construct (val: short) => ...
+   construct (val: short) => this(val._val)
 
    operator this == (other: short) => _val == other._val
    operator this  < (other: short) => _val  < other._val
@@ -79,21 +79,24 @@ public:
 
    static func parse(val: string, base_ = 10) => pass
 
+   operator this as int => new int(_val)
+   operator this as long => new long(_val)
+
 
 ## Represents a 32-bit integer and is the
 ## underlying type of the built-in 'int' type.
-export struct int32:
-private:
+export struct int32
+private
    let _val: __builtin.int32
    construct (val: __builtin.int32)
       _val = val
 
-public:
+public
    static let maximum: int = 0x7fff`ffff
    static let minimum: int = 0x8000`0000
 
    default => this(0)
-   construct (val: int) => ...
+   construct (val: int) => this(val._val)
 
    operator this == (other: int) => _val == other._val
    operator this  < (other: int) => _val  < other._val
@@ -118,21 +121,23 @@ public:
 
    static func parse(val: string, base_ = 10) => pass
 
+   operator this as long => new long(_val)
+
 
 ## Represents a 64-bit integer and is the
 ## underlying type of the built-in 'long' type.
-export struct int64:
-private:
+export struct int64
+private
    let _val: __builtin.int64
    construct (val: __builtin.int64)
       _val = val
 
-public:
+public
    static let maximum: long = 0x7fff`ffff`ffff`ffffl
    static let minimum: long = 0x8000`0000`0000`0000l
 
    default => this(0l)
-   construct (val: long) => ...
+   construct (val: long) => this(val._val)
 
    operator this == (other: long) => _val == other._val
    operator this  < (other: long) => _val  < other._val
@@ -160,18 +165,18 @@ public:
 
 ## Represents an 8 bit unsigned integer and is the
 ## underlying type of the built-in 'byte' type.
-export struct uint8:
-private:
+export struct uint8
+private
    let _val: __builtin.uint8
    construct (val: __builtin.uint8)
       _val = val
 
-public:
+public
    static let maximum: byte = 0xffu
    static let minimum: byte = 0x00u
 
    default => this(0u)
-   construct (val: byte) => ...
+   construct (val: byte) => this(val._val)
 
    operator this == (other: byte) => _val == other._val
    operator this  < (other: byte) => _val  < other._val
@@ -196,20 +201,25 @@ public:
 
    static func parse(val: string, base_ = 10) => pass
 
+   operator this as ushort => new ushort(_val)
+   operator this as uint => new uint(_val)
+   operator this as ulong => new ulong(_val)
+
+
 ## Represents a 64-bit unsigned integer and is the
 ## underlying type of the built-in 'ushort' type.
-export struct uint16:
-private:
+export struct uint16
+private
    let _val: __builtin.uint16
    construct (val: __builtin.uint16)
       _val = val
 
-public:
+public
    static let maximum: ushort = 0xffffu
    static let minimum: ushort = 0x0000u
 
    default => this(0u)
-   construct (val: ushort) => ...
+   construct (val: ushort) => this(val._val)
 
    operator this == (other: ushort) => _val == other._val
    operator this  < (other: ushort) => _val  < other._val
@@ -234,20 +244,24 @@ public:
 
    static func parse(val: string, base_ = 10) => pass
 
+   operator this as uint => new uint(_val)
+   operator this as ulong => new ulong(_val)
+
+
 ## Represents a 32-bit unsigned integer and is the
 ## underlying type of the built-in 'uint' type.
-export struct uint32:
-private:
+export struct uint32
+private
    let _val: __builtin.uint32
    construct (val: __builtin.uint32)
       _val = val
 
-public:
+public
    static let maximum = 0xffff`ffffu
    static let minimum = 0x0000`0000u
 
    default => this(0u)
-   construct (val: uint) => ...
+   construct (val: uint) => this(val._val)
 
    operator this == (other: uint) => _val == other._val
    operator this  < (other: uint) => _val  < other._val
@@ -272,20 +286,23 @@ public:
 
    static func parse(val: string, base_ = 10) => pass
 
+   operator this as ulong => new ulong(_val)
+
+
 ## Represents a 64-bit unsigned integer and is the
 ## underlying type of the built-in 'ulong' type.
-export struct uint64:
-private:
+export struct uint64
+private
    let _val: __builtin.uint64
    construct (val: __builtin.uint64)
       _val = val
 
-public:
+public
    static let maximum = 0xffff`ffff`ffff`fffful
    static let minimum = 0x0000`0000`0000`0000ul
 
    default => this(0u)
-   construct (val: ulong) => ...
+   construct (val: ulong) => this(val._val)
 
    operator this == (other: ulong) => _val == other._val
    operator this  < (other: ulong) => _val  < other._val
@@ -309,6 +326,7 @@ public:
    operator this ~| (other: ulong) => new ulong(_val ~| other._val)
 
    static func parse(val: string, base_ = 10) => pass
+
 
 export func hash(x: sbyte) -> int => x
 export func hash(x: short) -> int => x

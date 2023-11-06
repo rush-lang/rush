@@ -1,0 +1,15 @@
+import std.io
+
+func main
+	let quotes = '\"\"\"'
+	let newline = '\n'
+	let source = @"""
+import std.io
+
+func main
+	let quotes = '\"\"\"'
+	let newline = '\n'
+	let source = @{}
+	print(string.format(source, quotes + newline + source + quotes))
+	""":
+	print(string.format(source, quotes + newline + source + quotes))

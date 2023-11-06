@@ -1,6 +1,11 @@
 import std.io
 
-func <T> swap(a, b: ref T):
+func swap<T>(a, b: T) where T : class
+   let tmp = a
+   a = b
+   b = tmp
+
+func swap<T>(a, b: ref T) where T : struct
    let tmp = a
    a = b
    b = tmp
@@ -21,14 +26,14 @@ func sort(xs: [orderable]):
 
 struct <...Ts> tuple
 public:
-   func tuple(first, elems: ...Ts):
+   func tuple(first, ...elems: Ts):
       pass
 
-func <T> zip(src: iterable<T>) -> (T):
+func zip<T>(src: iterable<T>) -> (T):
    for elem in src:
       yield new tuple(elem)
 
-func <T, ...Ts> zip(first: iterable<T>, rest: ...iterable<Ts>):
+func zip<T, ...Ts>(first: iterable<T>, ...rest: iterable<Ts>):
    let it1 = first.iterator()
    let it2 = zip(...rest).iterator()
    while it1.next() && it2.next():

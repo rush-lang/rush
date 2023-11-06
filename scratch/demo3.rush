@@ -14,7 +14,7 @@ public
 
 func to_string(f: foo) => "foo: ${f.bar}"
 
-func write(os: @stream, fmt: string, args: ...any)
+func write(os: @stream, fmt: string, ...args: any)
    ## ...
 
 func main

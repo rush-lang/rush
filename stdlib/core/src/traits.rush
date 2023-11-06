@@ -1,0 +1,58 @@
+export trait any
+
+export trait equatable<T = self>
+	operator this == (other: T) -> bool
+	operator this != (other: T) => !(this == other)
+
+export trait orderable<T = self>
+	operator this <  (other: T) -> bool
+	operator this >  (other: T) => (other < this)
+	operator this <= (other: T) => !(other < this)
+	operator this >= (other: T) => !(this < other)
+
+export alias comparable<T = self> =
+	& equatable<T>
+	& orderable<T>
+
+export trait formattable
+   func format() -> string
+   private func format(fmt: string) -> string
+      throw new unsupported_error()
+
+export trait hashable extends equatable
+   func hash_code() -> int
+
+## incrementable and decrementable are used
+## to determine if ... is a range or variadic
+## argument.
+export trait incrementable
+	operator ++ this -> self
+	operator this ++
+		where self : struct
+		let tmp = this; ++this
+		return tmp
+
+export trait decrementable
+	operator -- this -> self
+	operator this --
+		where self : struct
+		let tmp = this; --this
+		return tmp
+
+## Implement to avoid writing boiler-plate code
+## for the commutative and compound-assignment operations.
+trait arithmetic<T = self, Result = self>
+	operator this + (other: T) -> Result
+	operator this - (other: T) -> Result
+	operator this * (other: T) -> Result
+	operator this / (other: T) -> Result
+
+	operator (other: T) + this where T : !self => this + other
+	operator (other: T) - this where T : !self -> Result
+	operator (other: T) * this where T : !self => this * other
+	operator (other: T) / this where T : !self -> Result
+
+	operator this += (other: T) where self : struct => this = this + other
+	operator this -= (other: T) where self : struct => this = this - other
+	operator this *= (other: T) where self : struct => this = this * other
+	operator this /= (other: T) where self : struct => this = this / other

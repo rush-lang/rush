@@ -1,8 +1,50 @@
 
-## Represents a UTF-8 codepoint and is the
+## Represents an immutable UTF-8 codepoint and is the
 ## underlying type of the built in 'char' type.
-class u8char:
+export const class u8char
 
-## Represents a UTF-8 string and is the
+
+export func to_lower(ch: extends char)
+export func to_upper(ch: extends char)
+
+## Represents an immutable UTF-8 string and is the
 ## underlying type of the built in 'string' type.
-class u8string:
+export const class u8string
+private:
+   let _chars: [char]
+
+public:
+   construct ()
+      _chars = []
+
+   construct (other: string):
+      copy(other._chars, _chars)
+
+   construct (src: iterable<char>):
+      _chars = condense(src.to_array())
+
+   func insert(pos: index, value: string)
+      ## do insert ..
+      return this
+
+   func append(value: string)
+      return insert(^0, value)
+
+   func prepend(value: string)
+      return insert(0, value)
+
+   func replace(section: slice, value: string)
+      ## do replace..
+      return this
+
+   implements iterable<char>
+      func iterator() => new string_iterator(_chars)
+
+   trait formattable
+      func format(fmt: string) -> string
+
+   static func format(fmt: string, ...args: string | global.formattable | string.formattable)
+
+
+export func to_lower(str: extends string)
+export func to_upper(str: extends string)

@@ -1,9 +1,25 @@
-## Represents the built in Array type.
+## Represents the built in Array type, an immutable Sequential Array.
 export class array<T>
-public
-   construct ()
-   construct (cap: int)
-   construct (src: iterable<T>)
+   construct (size: int) where T : default
    construct (repeat: T, count: int)
+   construct (source: iterable<T>)
 
-   get length: int
+   operator this[index: int]
+      get => ...
+      set => ...
+
+   operator this[slice: range]
+      get => ...
+      set => ...
+
+   get length -> int
+
+## Represents the built in Table type, an immutable Associative Array.
+export class table<Key : hashable, Val>
+   construct (source: iterable<(Key, Val)>)
+
+   operator this[key: string]
+      get => ...
+      set => ...
+
+   get length -> int

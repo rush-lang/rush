@@ -1,44 +1,29 @@
 import std.math
 
 ## Represents a 2-Dimensional Vector.
-export struct vector2
-public
-   var x, y: float
-
+export data struct vector2(x, y: float)
    get length => sqrt(length_sqr)
    get length_sqr => dot(this, this)
 
 	default => this(0, 0)
 
-   construct (x, y: float)
-      this.x = x
-      this.y = y
+   implements formattable
+      func format() => "($x, $y)"
 
    operator +this => new vector2(+x, +y)
 	operator -this => new vector2(-x, -y)
 
-	operator this + (other: vector2) => new vector2(x + other.x, y + other.y)
-	operator this - (other: vector2) => new vector2(x - other.x, y - other.y)
+   implements arithmetic
+		operator this + (other: self) => new vector2(x + other.x, y + other.y)
+		operator this - (other: self) => new vector2(x - other.x, y - other.y)
 
-   operator this + ({x, y}: (float, float)) => new vector2(this.x + x, this.y + y)
-	operator this - ({x, y}: (float, float)) => new vector2(this.x - x, this.y - y)
+	implements arithmetic<(float, float)>
+		operator this + ({x, y}: (float, float)) => new vector2(this.x + x, this.y + y)
+		operator this - ({x, y}: (float, float)) => new vector2(this.x - x, this.y - y)
 
-	operator ({x, y}: (float, float)) + this => new vector2(x + this.x, y + this.y)
-	operator ({x, y}: (float, float)) - this => new vector2(x - this.x, y - this.y)
-
-	operator this * (scalar: float) => new vector2(x * scalar, y * scalar)
-	operator this / (scalar: float) => new vector2(x / scalar, y / scalar)
-
-	## commutative property of multiplication.
-	operator (scalar: float) * this => this * scalar
-
-   operator this == (other: vector2)
-      return x == other.x
-          && y == other.y
-
-export func hash({x, y}: extends vector2) => hash(x, y)
-
-export func to_string({x, y}: extends vector2) => "($x, $y)"
+	implements arithmetic<float>
+		operator this * (scalar: float) => new vector2(x * scalar, y * scalar)
+		operator this / (scalar: float) => new vector2(x / scalar, y / scalar)
 
 ## Returns the dot product of two vectors.
 export func dot(u, v: extends vector2)

@@ -1,118 +1,133 @@
 import std.collections
 
-export func each<T>(src: extends iterable<T>, fn: T -> void)
-	for item in src
-		fn(item)
+export func each<T>(items: extends iterable<T>, action: (item: T) -> void)
+   for item in items
+      action(item)
 
-export func any<T>(src: extends iterable<T>)
-	return src.iterator().next()
+export func each<T>(items: extends iterable<T>, action: (item: T) -> void)
+   for item in items
+      action(item)
+      yield item
 
-export func any<T>(src: extends iterable<T>, pred: T -> bool)
-	for item in src
-		if pred(item) return true
-	return false
+export func empty<T>(items: extends iterable<T>)
+   return any_of(items, _ => noop)
 
-export func all<T>(src: extends iterable<T>, pred: T -> bool)
-	for item in src
-		if !pred(item) return false
-	return true
+export func all_of<T>(items: extends iterable<T>, predicate: (item: T) -> bool)
+   for item in items
+      if !predicate(item) return false
+   return true
 
-export func take<T>(var count: int, src: extends iterable<T>)
-	let it = src.iterator()
-	while count-- > 0 && it.next()
-		yield it.value
+export func any_of<T>(items: extends iterable<T>, predicate: (item: T) -> bool)
+   for item in items
+      if predicate(item) return true
+   return false
 
-export func take<T>(src: extends iterable<T>, pred: T -> bool)
-	let it = src.iterator()
-	while it.next() && pred(it.value)
-		yield it.value
+export func take<T>(var count: int, items: extends iterable<T>)
+   let it = items.iterator()
+   while count-- > 0 && it.next()
+      yield it.value
 
-export func skip<T>(var count: int, src: extends iterable<T>)
-	let it = src.iterator()
-	while count-- > 0 && it.next()
-	while it.next() yield it.value
+export func take<T>(items: extends iterable<T>, predicate: (item: T) -> bool)
+   let it = items.iterator()
+   while it.next() && predicate(it.value)
+      yield it.value
 
-export func skip<T>(src: extends iterable<T>, pred: T -> bool)
-	let it = src.iterator()
-	while it.next() && pred(it.value)
-	while it.next() yield it.value
+export func skip<T>(var count: int, items: extends iterable<T>)
+   let it = items.iterator()
+   while count-- > 0 && it.next()
+   while it.next() yield it.value
 
-export func map<T, R>(src: extends iterable<T>, fn: T -> R)
-	for item in src
-		yield fn(item)
+export func skip<T>(items: extends iterable<T>, predicate: (item: T) -> bool)
+   let it = items.iterator()
+   while it.next() && predicate(it.value)
+   while it.next() yield it.value
 
-export func flatmap<T, R>(src: extends iterable<T>, fn: T -> iterable<R>)
-	for item in src
-		for inner in fn(item)
-			yield inner
+## brief: Projects each element of the items collection into a new form.
+## type-params:
+##   - T: The type of elements in the ${items} collection.
+##   - R: The type returned by the ${transform} parameter
+## params:
+##   - items:   The items collection to map items from.
+##   - transform: A function that maps items to the new form.
+## returns: >-
+##   An @{iterable<T>} whose items are the same type as the return
+##   type of ${transform}.
+export func map<T, R>(items: extends iterable<T>, transform: (item: T) -> R)
+   for item in items
+      yield transform(item)
 
-export func filter<T>(src: extends iterable<T>, fn: T -> bool)
-	for item in src
-		if fn(item) yield item
+export func flatmap<T, R>(items: extends iterable<T>, transform: (item: T) -> iterable<R>)
+   for item in items
+      for inner in transform(item)
+         yield inner
 
-export func reduce<T>(src: extends iterable<T>, fn: (T, T) -> T)
-	return reduce(
-		src.skip(1),
-		src.first(), fn)
+export func filter<T>(items: extends iterable<T>, predicate: (item: T) -> bool)
+   for item in items
+      if predicate(item) yield item
 
-export func reduce<T, R>(src: extends iterable<T>, var init: R, fn: (R, T) -> R)
-	for item in src
-		init = fn(init, item)
-	return init
+export func reduce<T>(items: extends iterable<T>, collector: (result: T, item: T) -> T)
+   return reduce(
+      items.skip(1),
+      items.first(), collector)
+
+export func reduce<T, R>(items: extends iterable<T>, var init: R, collector: (result: R, item: T) -> R)
+   for item in items
+      init = collector(init, item)
+   return init
 
 func chunk_part<T>(iter: iterator<T>, var size: int)
-	while iter.next() && size-- > 0
-		yield iter.value
+   while iter.next() && size-- > 0
+      yield iter.value
 
-export func chunk<T>(src: extends iterable<T>, size: int)
-	let it = src.iterator()
-	while it.next()
-		yield chunk_part(it, size)
+export func chunk<T>(items: extends iterable<T>, size: int)
+   let it = items.iterator()
+   while it.next()
+      yield chunk_part(it, size)
 
-export func partition<T>(src: extends iterable<T>, parts: int)
-	=> chunk(src, src.count() / parts + 1)
+export func partition<T>(items: extends iterable<T>, parts: int)
+   => chunk(items, items.count() / parts + 1)
 
 ## interweaves the delim value between the collection of items.
-export func lace<T>(src: extends iterable<T>, delim: T)
-	let it = src.iterator()
-	if it.next()
-		yield it.value
-		while it.next()
-			yield delim
-			yield it.value
+export func lace<T>(items: extends iterable<T>, delim: T)
+   let it = items.iterator()
+   if it.next()
+      yield it.value
+      while it.next()
+         yield delim
+         yield it.value
 
 
-export func first<T>(src: extends iterable<T>)
-   let it = src.iterator()
+export func first<T>(items: extends iterable<T>)
+   let it = items.iterator()
    if !it.next()
-		throw new sequence_error("The collection is empty.")
+      throw new sequence_error("The collection is empty.")
    return it.value
 
 
-export func first<T>(src: extends iterable<T>, pred: T -> bool)
-	let it = src.iterator()
-	if !it.next()
-		throw new sequence_error("The collection is empty.")
-
-	if pred(it.value)
-		return it.value
-
-	while it.next()
-		if pred(it.value)
-			return it.value
-
-	throw new sequence_error("Item not found.")
-
-
-export func last<T>(src: extends indexable<T>)
-   if src.length == 0
+export func first<T>(items: extends iterable<T>, predicate: (item: T) -> bool)
+   let it = items.iterator()
+   if !it.next()
       throw new sequence_error("The collection is empty.")
 
-   return src[src.length - 1]
+   if predicate(it.value)
+      return it.value
+
+   while it.next()
+      if predicate(it.value)
+         return it.value
+
+   throw new sequence_error("Item not found.")
 
 
-export func last<T>(src: extends iterable<T>)
-   let it = src.iterator()
+export func last<T>(items: extends indexable<T>)
+   if items.length == 0
+      throw new sequence_error("The collection is empty.")
+
+   return items[items.length - 1]
+
+
+export func last<T>(items: extends iterable<T>)
+   let it = items.iterator()
    if it.next() == false
       throw new sequence_error("The collection is empty.")
 

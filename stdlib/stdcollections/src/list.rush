@@ -1,8 +1,8 @@
 class list_iterator<T>
 public:
-	implements iterator<T>
-		get value => ...
-		func next => ...
+   implements iterator<T>
+      get value => ...
+      func next => ...
 
 export class list<T>
 private:
@@ -12,7 +12,7 @@ private:
    func resize(count, offset: int):
       if _items.length < count:
          let cap = _items.length * 2
-         _items = new [unsafe T : cap] (_items);
+         _items = new array<unsafe T>(cap, _items);
       _size = count;
 
    func _check_range(index: int):
@@ -21,7 +21,7 @@ private:
 
 public:
    get size => _size
-	get capacity => _items.size
+   get capacity => _items.size
 
    get this[index: int]:
       _check_range(index)
@@ -30,6 +30,10 @@ public:
    set this[index: int]:
       _check_range(index)
       _items[index] = value
+
+   operator this[slice: range]
+      get => ...
+      set => ...
 
    construct => this(5)
 
@@ -41,15 +45,19 @@ public:
       _items = new [unsafe T] (src)
       _size = _items.length
 
-   func clear() => pass
+   func clear() => noop
 
-   func insert(index: int, item: T) => pass
+   func insert(item: T, index: int) => noop
 
-   func append(item: T) => insert(_size, item)
-   func prepend(item: T) => insert(0, item)
+   func append(item: T) => insert(item, _size)
+   func prepend(item: T) => insert(item, 0)
 
-   func remove(index: int) => pass
-   func remove(item: T) requires equatable<T> => pass
+   func remove(item: T) where T : equatable => noop
+   func remove_at(index: int) => noop
 
-   func sort() requires orderable<T> => pass
-   func sort(cmp: (T, T) -> bool) => pass
+   func sort() where T : orderable => noop
+   func sort(cmp: (T, T) -> bool) => noop
+
+   implements iterable<T>
+      func iterator() => new list_iterator<T>(this)
+

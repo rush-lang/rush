@@ -1,4 +1,3 @@
-
 ## The only constraint of the 'any' concept is that the parameter
 ## be of it's type, this is true for all parameters and as such all
 ## types satisfy the 'any' constraint.
@@ -17,7 +16,7 @@ export type formattable = parameterless_formattable | parameterized_formattable
 ## export func format(arg: parameterless_formattable) => format(arg)
 ## export func format(arg: parameterized_formattable, fmt: string) => format(arg, fmt)
 
-## export func log(msg: string, args: ...formattable):
+## export func log(msg: string, ...args: formattable):
 ## 	let parts = parse_msg(msg)
 ## 	for p in parts:
 ## 		if p.type == "literal":

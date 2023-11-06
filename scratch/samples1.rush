@@ -1,0 +1,174 @@
+import std.io
+import std.async
+import std.data.sql
+
+func any(...tasks: future)
+   let resolved = false
+   return new promise((resolve, reject) => {
+      each(tasks, task => task
+         .fatal(err => reject(err))
+         .next(() => {
+            if !resolved
+               resolved = true
+               resolve()
+         }))
+   })
+
+func when(...tasks: future, completion: () -> void)
+   return tasks.map(t => t
+      .next(completion)
+      .fatal(failure))
+
+func main
+   let t1 = foo()
+   let t2 = bar()
+
+   await async.any([ t1, t2 ])
+   await async.all([ t1, t2 ])
+
+func query(sql: string) -> iterable<:datarow>
+func query(sql: string) -> future<:iterable<:data_row>>
+
+func map<T, R>(items: extends iterable<:T>, transform: (T)->R)
+
+func main
+   with db = new sql.connection()
+      dyn user = await db
+         .query(@sql"select * from users where id = 1")
+         .first()
+
+      println("user info:")
+      println("- id: $user.id")
+      println("- email: $user.email")
+      println("- created: $user.created_at")
+
+   map(1...10, x => x ^ 2)
+      .each(x => print(x))
+      .filter(x => x < 2)
+      .each(x => print(x))
+
+   return 0
+
+
+## =====================================================================
+
+import std.io
+
+trait class service
+   async func _get()
+      return db.select("users")
+
+class controller(private svc: service) extends base_controller
+   async func index()
+      let users = await svc._get()
+      return hal(users)
+
+struct vector2(x, y: float)
+
+   ## brief: Default constructs a vector2 instance.
+   construct => this(0, 0)
+
+   ## brief: Returns the magnitude of the vector2 instance.
+   get length => sqrt(x^2 + y^2)
+
+   ## brief: Gets the string representation of the vector2 instance.
+   func format => "($x, $y)"
+
+   operator this + (other: self) => new self(
+      x + other.x,
+      y + other.y)
+
+   operator this + ({x, y}: (float, float)) => new self(
+      this.x + x,
+      this.y + y)
+
+   operator this - (other: self) => new self(
+      x - other.x,
+      y - other.y)
+
+func main
+   let u = new vector2(0, 0)
+   let x = u.length == 1f ? " is" : " is not"
+   println("the vector $u$x unit length.")
+
+## =====================================================================
+
+import {print} from std.io
+import std.algorithm
+
+export print from std.io
+
+data class user([
+   =id int = 0,
+   email string,
+   username string,
+   lastname? string,
+   firstname? string,
+   created_at? datetime,
+   updated_at? datetime,
+])
+
+trait formattable
+   func format() -> string
+
+data struct point(x, y float)
+   implements formattable
+      func format() => "($x, $y)"
+
+func main
+   let p = new point(0, 0)
+   let q = new point(0, 0)
+
+   if p == q
+      print("$p is equal to $q")
+   else
+      print("$p is not equal to $q")
+
+   with db = sql.connect(connection_string)
+      let users = new list<user>
+      users.append({
+         name: name,
+         email: email, {
+            password_hash,
+            password_salt,
+         }: hash(password),
+      })
+
+      db.commit(users)
+
+   return 0
+
+## =====================================================================
+
+import std.io
+import std.net.http
+
+async func hal(res: extends future<response>) => (await res).hal()
+async func json(res: extends future<response>) => (await res).json()
+
+func add(a, b: int) {
+   return 0
+}
+
+func main
+   dyn result = await http
+      .get('localhost:3030/users')
+      .hal()
+
+   println("total: $result.total")
+   println("count: $result.count")
+
+   for user in result.users
+      ## do stuff..
+
+   ## ===============================
+
+   dyn result = await http
+      .get('localhost:3030/users')
+      .json()
+
+   println("total: $result.total")
+   println("count: $result.count")
+
+   ## blah..
+

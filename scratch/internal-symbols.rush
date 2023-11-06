@@ -26,7 +26,7 @@ func unqualified:
 	let jj = parse(`{ "id" = 1 }`)
 	...
 
-## POSSIBLE ALTERNATIVE SYNTAX ######################################
+## POSSIBLE ALTERNATIVE SYNTAX 1 ######################################
 export func module.foo()
 export func namespace.bar()
 
@@ -45,3 +45,23 @@ use <module-name>.*		## import all explicit scoped declarations
 use <module-name>.foo 	## alternatively use individually.
 
 foo()
+
+## POSSIBLE ALTERNATIVE SYNTAX 2 ######################################
+
+## Instead of using the export keyword, use module to allow access to
+## to symbols without introducing them to the current scope.
+
+module func foo()
+
+## POSSIBLE ALTERNATIVE SYNTAX 3 ######################################
+
+namespace module
+
+func parse(json: string)
+func format(obj: any)
+
+## POSSIBLE ALTERNATIVE SYNTAX 4 ######################################
+
+expose func parse(json: string)
+export func parse(json: string)
+

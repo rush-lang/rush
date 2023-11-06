@@ -16,10 +16,10 @@ export async func read(istr: @istream)
 export async func readln(istr: @istream)
    ## ...
 
-export async func write(ostr: @ostream, fmt: string, args: ...formattable)
+export async func write(ostr: @ostream, fmt: string, args: formattable)
    ## ...
 
-export async func writeln(ostr: @ostream, fmt: string, args: ...formattable)
+export async func writeln(ostr: @ostream, fmt: string, args: formattable)
    ## ...
 
 
@@ -29,8 +29,17 @@ export func scan()
 export func scanln()
    => await readln(stdin.stream())
 
-export func print(fmt: string, args: ...formattable)
-   => await write(stdout.stream(), fmt, args...)
+export func print(fmt: string, args: formattable)
+   => await write(stdout.stream(), fmt, ...args)
 
-export func println(fmt: string, args: ...formattable)
-   => await writeln(stdout.stream(), fmt, args...)
+export func println(fmt: string, args: formattable)
+   => await writeln(stdout.stream(), fmt, ...args)
+
+export func write(os: ostream, args: formattable)
+   for arg in args:
+      let buf = format(arg).chars()
+      os.write(buf, 0, buf.length)
+
+export func writeln(os: ostream, args: formattable)
+   write(os, ...args)
+   write(os, '\n')

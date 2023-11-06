@@ -1,0 +1,25 @@
+import std.io
+
+trait A
+	func method()
+
+trait B
+	func method()
+
+class C
+	func method() => noop
+
+class D
+	implements A
+		func method() => noop
+
+## optional-unwrap cast as it is not known at
+## compile-time if 'x' implements 'B'
+func foo(x: A) => x as! B
+
+## optional cast as it is not known at
+## compile-time if 'x' implements 'B'
+func bar(x: A) => x as? B
+
+func main
+	print("hello, world!")

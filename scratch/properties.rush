@@ -5,8 +5,8 @@ public
 	var property: int
 
 	## equivalent to:
-	get property: int => field
-	set property: int => field = value
+	get property -> int => field
+	set property -> int => field = value
 
 
 class foo
@@ -15,7 +15,7 @@ public
 	let property: int
 
 	## equivalent to:
-	get property: int => field
+	get property -> int => field
 
 
 class foo
@@ -24,6 +24,7 @@ public
 		get => field
 		private set => field = value
 
+## NOPE.
 class foo
 public
 	## when multiple names are declared in
@@ -36,8 +37,8 @@ public
 
 interface foo
 	var prop1: int 	## get/set property.
-	get prop2: int 	## get only property.
-	set prop3: int 	## set only property.
+	get prop2 -> int 	## get only property.
+	set prop3 -> int 	## set only property.
 	let prop4: int		## invalid on interfaces.
 
 base class foo

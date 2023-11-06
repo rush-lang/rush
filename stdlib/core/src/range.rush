@@ -1,12 +1,49 @@
-func incrange(start, end: integral):
-   while start <= end:
-      yield start++
+func incrange_iterator<T : orderable & incrementable>(start: T, end: T?):
+	yield start
+	if end != nil
+      while start <= end: yield ++start
+   else
+      while true: yield ++start
 
-func decrange(start, end: integral):
-   while end <= start:
-      yield start--
+func decrange_iterator<T : orderable & decrementable>(start: T, end: T?):
+	yield start
+   if end != nil
+      while end <= start: yield --start
+   else
+      while true: yield --start
 
-export func range(start, end: integral):
-   return start < end
-        ? incrange(start, end)
-        : decrange(start, end)
+export data struct forward_range<
+   T : orderable & incrementable>(
+      start: T,
+      end: T? = nil,
+      exclusive = false)
+public
+   construct (end: T) where T : default
+      => this(default, end)
+
+	implements iterable<T>
+		func iterator() => incrange_iterator(start, end)
+
+   implements formattable where T : formattable
+      func format() => string.join(this, ", ")
+
+export data struct reverse_range<
+   T : orderable & decrementable>(
+      start: T,
+      end: T? = nil,
+      exlusive = false)
+public
+   construct (end: T) where T : default
+      => this(default, end)
+
+	implements iterable<T>
+		func iterator() => decrange_iterator(start, end)
+
+   implements formattable where T : formattable
+      func format() => string.join(this, ", ")
+
+
+export alias range<T> =
+	| forward_range<T>
+	| reverse_range<T>
+

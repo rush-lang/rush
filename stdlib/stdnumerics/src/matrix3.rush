@@ -1,15 +1,32 @@
-export struct matrix3f:
-private:
-   let _vals: [float]
+data struct matrix3f
+   private let rows: [vector3]
 
-public:
-   let static identity: const = new matrix3f()
+   const zero = new matrix3f [
+      [0, 0, 0],
+      [0, 0, 0],
+      [0, 0, 0],
+   ]
 
-   get [row, _: int] -> vector3f ## ??? maybe?
+   const identity = new matrix3f [
+      [1, 0, 0],
+      [0, 1, 0],
+      [0, 0, 1],
+   ]
 
-   get [_, col: int] -> vector3f ## ??? maybe?
+   construct (src: [vector3])
+      this.rows = new array<vector3> [
+         src[0], src[1], src[2]
+      ]
 
-   get [row, col: int]:
-      let index = row + col * 3
-      _check_index(index)
-      return _vals[index]
+   construct (src: [[float]])
+      this.rows = new array<vector3> [
+         new (src[0, 0], src[0, 1], src[0, 2])
+         new (src[1, 0], src[1, 1], src[1, 2])
+         new (src[2, 0], src[2, 1], src[2, 2])
+      ]
+
+   operator this + (other: matrix3f) -> matrix3f
+   operator this - (other: matrix3f) -> matrix3f
+
+   operator this[index: int] -> vector3
+      get => this.rows[index]

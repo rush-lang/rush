@@ -1,24 +1,47 @@
-import env from std.os
+import std.os
 
-export async func read(istr: istream) => pass
-export async func readln(istr: istream) => pass
+export default func read(istr: istream) => noop
+export async   func read(istr: istream) => noop
+export default func readln(istr: istream) => noop
+export async   func readln(istr: istream) => noop
 
-export async func write(ostr: ostream, args: ...formattable) => pass
-export async func writeln(ostr: ostream, args: ...formattable):
-   write(ostr, args...)
-   write(ostr, env.newline)
+export default func write(ostr: ostream, ...args: formattable) => noop
+export async   func write(ostr: ostream, ...args: formattable) => noop
 
-export async func write(ostr: ostream, fmt: string, args: ...formattable) => pass
-export async func writeln(ostr: ostream, fmt: string, args: ...formattable):
-   write(ostr, fmt, args...)
-   write(ostr, env.newline)
+export default func writeln(ostr: ostream, ...args: formattable)
+   write(ostr, ...args)
+   write(ostr, os.newline)
 
-export func scan() => await read(stdin)
-export func scanln() => await readln(stdin)
+export async func writeln(ostr: ostream, ...args: formattable):
+   await write(ostr, ...args)
+   await write(ostr, os.newline)
 
-export func print(args: ...formattable) => await write(stdout, args...)
-export func println(args: ...formattable) => await writeln(stdout, args...)
+export default func writef(ostr: ostream, fmt: string, ...args: formattable | string_formattable) => noop
+export async   func writef(ostr: ostream, fmt: string, ...args: formattable | string_formattable) => noop
 
-export func print(fmt: string, args: ...formattable) => await write(stdout, fmt, args...)
-export func println(fmt: string, args: ...formattable) => await writeln(stdout, fmt, args...)
+export default func writefn(ostr: ostream, fmt: string, ...args: formattable | string_formattable):
+   writef(ostr, fmt, ...args)
+   write(ostr, os.newline)
+
+export async func writefn(ostr: ostream, fmt: string, ...args: formattable | string_formattable):
+   await writef(ostr, fmt, ...args)
+   await write(ostr, os.newline)
+
+export default func scan() => read(os.stdin)
+export async   func scan() => read(os.stdin)
+
+export default func scanln() => readln(os.stdin)
+export async   func scanln() => readln(os.stdin)
+
+export default func print(...args: string | formattable) => write(os.stdout, ...args)
+export async   func print(...args: string | formattable) => write(os.stdout, ...args)
+
+export default func println(...args: string | formattable) => writeln(os.stdout, ...args)
+export async   func println(...args: string | formattable) => writeln(os.stdout, ...args)
+
+export default func printf(fmt: string, ...args: string | formattable | string.formattable) => writef(os.stdout, fmt, ...args)
+export async   func printf(fmt: string, ...args: string | formattable | string.formattable) => writef(os.stdout, fmt, ...args)
+
+export default func printfn(fmt: string, ...args: string | formattable | string.formattable) => writefn(os.stdout, fmt, ...args)
+export async   func printfn(fmt: string, ...args: string | formattable | string.formattable) => writefn(os.stdout, fmt, ...args)
 

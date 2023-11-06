@@ -1,27 +1,59 @@
 ## Dynamic variables
 
+### VERSION 3 ###
 
+base class token
+   operator this as int => this.value
+   operator this as string => this.value
+
+   operator (value: int) as self => new token(value)
+   operator (value: string) as self => new token(value)
+   operator (dyn value: []) as self => new array(value)
+   operator (dyn value: {}) as self => new object(value)
+
+class object(private dyn var value: {}) extends token
+   operator this[key: string] -> token
+      get => this.value[key]
+      set => this.value[key] = value
+
+class array(private dyn var value: []) extends token
+   operator this[index: int] -> token
+      get => this.value[index]
+      set => this.value[index] = value
+
+func parse(json: string) -> token
+func format<T>(val: T) -> string
+
+func main
+   dyn jj = json.parse(@json'{ "id": 1 }')
+   jj.role = 'admin'
+   jj.claims = [
+      { 'user:email': 'reegan.layzell@rush-lang.org' },
+      { 'user:name': 'rtlayzell' }
+   ]
+
+   let x = jj.claims['user:email'] as string
 
 ### VERSION 2 ###
 
 export base class jtoken
 public
-	override func dyn(expr: expression)
-		let v = new jtoken_dynamic_resolver(this)
-		expression.accept(v)
-		return v.result
+   override func dyn(expr: expression)
+      let v = new jtoken_dynamic_resolver(this)
+      expression.accept(v)
+      return v.result
 
 export class jarray inherits jtoken
 public
-	operator this[index: int]
-		get => at(index)
-		set => at(index, value)
+   operator this[index: int]
+      get => at(index)
+      set => at(index, value)
 
 export class jobject inherits jtoken
 public
-	operator this[key: string]
-		get => property(key)
-		set => upsert(key, value)
+   operator this[key: string]
+      get => property(key)
+      set => upsert(key, value)
 
 ### VERSION 1 ###
 
@@ -29,60 +61,68 @@ import std.text.json
 
 base class jtoken
 public:
-	## required for dynamic variables to get/set "properties"
-	## it is not necessary to apply the storage modifier "dyn"
-	## it's is included to allow for nested dynamic objects.
-	operator this[key: string] -> dyn jtoken:
-		get => ...
-		set => ...
+   ## required for dynamic variables to get/set "properties"
+   ## it is not necessary to apply the storage modifier "dyn"
+   ## it's is included to allow for nested dynamic objects.
+   operator this[key: string] -> dyn jtoken:
+      get => ...
+      set => ...
 
-	operator this[index: int] -> dyn jtoken:
-		get => ...
-		set => ...
+   operator this[index: int] -> dyn jtoken:
+      get => ...
+      set => ...
 
 class jobject inherits jtoken
 
 func json_jobject_example:
-	## create a new dynamic jobject
-	dyn obj = new jobject
+   ## create a new dynamic jobject
+   dyn obj = new jobject
 
-	## add properties to dynamic jobject
-	obj.firstname = "reegan"
-	obj.surname = "layzell"
+   ## add properties to dynamic jobject
+   obj.firstname = "reegan"
+   obj.surname = "layzell"
 
-	## nested dynamic jobjects.
-	## as the type of jobject's subscript
-	## operator is dynamic, this is allowed.
-	obj.details = new jobject
-	obj.details.foo = "string"
+   ## nested dynamic jobjects.
+   ## as the type of jobject's subscript
+   ## operator is dynamic, this is allowed.
+   obj.details = new jobject
+   obj.details.foo = "string"
 
-	## print jobject json
-	println("$obj")
+   ## print jobject json
+   println("$obj")
 
 func object_literal_example:
-	## Initializing a dynamic variable with an object literal
-	## creates a dynamic anonymous object. Dynamic anonymous objects include
-	## the necessary subscript operator to support adding properties dynamically.
-	dyn obj = {}
-	obj.id = 1
-	obj.details = {}
-	obj.details.list = [1, 2, 3]
+   ## Initializing a dynamic variable with an object literal
+   ## creates a dynamic object. Dynamic objects include
+   ## the necessary subscript operator to support adding properties dynamically.
+   dyn obj = {}
+   obj.id = 1
+   obj.role = 'admin'
 
-## Possiblity????
+   ## Note: all properties of the object graph are equally
+   ## treated as though they were declared dynamic.
+   obj.details = {}
+   obj.details.list = [1, 2, 3]
+
+
 func array_literal_example:
-	## Initializing a dynamic variable with an array literal
-	## creates a `list` of type `T` rather than a fixed length array
-	## in other words, a 'dynamic array'.
-	dyn xs = [1, 2, 3]
-	xs.append(4)
-	xs.append(5)
-	xs.append(6)
+   ## Initializing a dynamic variable with an array literal
+   ## creates a dynamic `array` as opposed to a fixed length array.
+   ## Dynamic arrays support variable sizing throughout the life-time
+   ## of the object similar to 'list<T>' except that the contents of
+   ## dynamic arrays is heterogeneous, meaning they may contain elements
+   ## not restricted to a single type.
+   dyn xs = []
+   xs.append(4)
+   xs.append('hello')
+   xs.append(new foo())
 
+## Possiblity???
 func hashmap_example:
-	## as hashmaps with string keys provide the required
-	## subscript operator, they can also use the dynamic feature of
-	## adding key/value pairs with property get/set syntax.
-	dyn kvs = new hashmap<string, int>()
-	kvs.key1 = 10
-	kvs.key2 = 20
-	kvs.key3 = 30
+   ## as hashmaps with string keys provide the required
+   ## subscript operator, they can also use the dynamic feature of
+   ## adding key/value pairs with property get/set syntax.
+   dyn kvs = new hash_map<string, int>()
+   kvs.key1 = 10
+   kvs.key2 = 20
+   kvs.key3 = 30

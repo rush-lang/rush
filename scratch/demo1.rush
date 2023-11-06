@@ -5,7 +5,7 @@ import std.io
 import std.math
 
 func sqrt(x: float) -> float
-func println(args: ...string) -> void
+func println(...args: string) -> void
 
 struct vector2
 public

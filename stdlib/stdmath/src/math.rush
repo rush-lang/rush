@@ -1,5 +1,16 @@
+## @brief Returns the sine of an angle given in radians.
+## @param x The angle.
+## @return The sine of the angle in the range [-1, 1].
 export extern func sin(x: float) -> float
+
+## @brief Returns the cosine of an angle given in radians.
+## @param x The angle.
+## @return The cosine of the angle in the range [-1, 1].
 export extern func cos(x: float) -> float
+
+## @brief Returns the tangent of an angle given in radians.
+## @param x The angle.
+## @return The tangent of the angle in the range [-1, 1].
 export extern func tan(x: float) -> float
 
 export extern func sin(x: double) -> double
@@ -42,11 +53,11 @@ export extern func exp(x: double) -> double
 export let module.pi = acos(-1.0)
 export let module.pi_f = acos(-1.0f)
 
-func min(a: orderable) => a
-func max(a: orderable) => a
+func min<T : orderable>(a: T) => a
+func max<T : orderable>(a: T) => a
 
-export func min(a, b, rest: ...orderable) => min(a < b ? a : b, rest...)
-export func max(a, b, rest: ...orderable) => max(a < b ? b : a, rest...)
+export func min<T : orderable>(a, b, ...rest: T) => min(a < b ? a : b, ...rest)
+export func max<T : orderable>(a, b, ...rest: T) => max(a < b ? b : a, ...rest)
 
 export func lerp(v0, v1, t: float) => (1 - t) * v0 + t * v1
 export func lerp(v0, v1, t: double) => (1 - t) * v0 + t * v1

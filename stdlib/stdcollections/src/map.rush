@@ -1,36 +1,44 @@
-export class hash_map<K, V>
-   requires K is hashable
+export class hash_map<TKey : hashable, TVal>
 public
-   get keys => pass
-   get values => pass
+   get keys -> iterable<TKey> => noop
+   get values -> iterable<TVal> => noop
 
-   operator this[key: K]
-      get => pass
-      set => pass
+   operator this[key: TKey] -> TVal
+      get => noop
+      set => noop
 
-   construct => this(iterable.empty<:(K, V)>())
-   construct(src: iterable<(K, V)>) => pass
+   construct => this(iterable<(TKey, TVal)>.empty())
+   construct (source: iterable<(TKey, TVal)>)
+   construct (source: iterable<{ key: TKey, value: TVal }>)
+      => this(source.map({key, value} => (key, value)))
 
-   func clear() => pass
+   func clear() => noop
 
-   func remove(key: K) => pass
-   func insert(key: K, value: V) -> bool => pass
+   func remove(key: TKey) => noop
+   func insert(key: TKey, value: TVal) -> bool => noop
+
+   implements iterable<(key: TKey, value: TVal)>
+      func iterator() => new hash_map_iterator<(key: TKey, value: TVal)>(this)
 
 
-export class multi_map<K, V>
-   requires K is hashable
+export class multi_map<TKey : hashable, TVal>
 public
-   get keys => pass
-   get values => pass
+   get keys -> iterable<TKey> => noop
+   get values -> iterable<TVal> => noop
 
-   get this[key: K] => pass
+   get this[key: TKey] -> TVal => noop
 
-   construct => this(iterable.empty<:(K, V)>())
-   construct(src: iterable<(K, V)>) => pass
+   construct => this(iterable<(TKey, TVal)>.empty())
+   construct(source: iterable<(TKey, TVal)>) => noop
+   construct (source: iterable<{ key: TKey, value: TVal }>)
+      => this(source.map({key, value} => (key, value)))
 
-   func clear() => pass
+   func clear() => noop
 
-   func remove(key: K) => pass
-   func remove(key: K, value: V) requires V is equatable => pass
+   func remove(key: TKey) => noop
+   func remove(key: TKey, value: TVal) where TVal : equatable => noop
 
-   func insert(key: K, value: V) => pass
+   func insert(key: TKey, value: TVal) => noop
+
+   implements iterable<(key: TKey, value: [TVal])>
+      func iterator() => new multi_map_iterator<(key: TKey, value: [TVal])>(this)

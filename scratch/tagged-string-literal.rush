@@ -1,0 +1,19 @@
+class user(
+   id: int,
+   role: string,
+   active = false)
+public
+   implements equatable
+      operator this == (other: self)
+         => id == other.id
+
+async func get_users(active = true)
+   => await db.query<user>(@sql"""
+      select * from users
+      where active=${(active ? 1 : 0)}
+      order by id
+   """)
+
+async func main
+   for user in await get_active_users()
+      println("user-id: $user.id")
