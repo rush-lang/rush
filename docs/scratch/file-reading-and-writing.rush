@@ -1,35 +1,29 @@
 import std.io
 
 ## create and write to a file
-let {file, err} = try open("file.txt").write()
-if err != nil
-	print(err.message)
-	exit()
-
-file!.writeln("hello, world!")
-
+with {fs, err} = try open("greet.txt")
+   if fs await writeln(fs, "hello, world!")
+   else
+      print(err!.message)
+      exit()
 
 ## open and append to a file
-
-let {file, err} = try open("file.txt").append()
-if err != nil
-	print(err.message)
-	exit()
-
-file!.writeln("hello, world!")
-
+with {fs, err} = try open("greet.txt").append()
+   if fs await writeln(fs, "hello, world!")
+   else
+      print(err!.message)
+      exit()
 
 ## open and read a file
+with {fs, err} = try open("greet.txt")
+   if err
+      print(err!.message)
+      exit()
 
-let {file, err} = try open("file.txt").read()
-if err != nil
-	print(err.message)
-	exit()
+   let text = await readall(fs)
+   println(text)
 
-let text = file.readall()
-println(text)
 ## ...
-
 import std.io
 import std.os.path
 import std.text.json
@@ -37,12 +31,10 @@ import std.text.json
 let log = services.get<:logger>()
 
 func is_rush_project_file(filename: string)
-	let {file, err} = try open(filename).reader()
-	if err != nil:
-		log.error(err!)
-		return false
+   with {file, err} = try open(filename)
+      if err
+         log.error(err)
+         return false
 
-	let jobj = json.parse(file!)
-	return jobj
-		.property("project")?
-		.value == "rush"
+      dyn jobj = json.parse(file!)
+      return jobj.project == "rush"

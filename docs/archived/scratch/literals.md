@@ -45,19 +45,25 @@ let values = [1, 2, 3]
 
 Can't use this syntax because I would want type syntax (e.g. `[string:int]`) to go with it, but we already have `[type:size]` for fixed size sequential arrays, making the syntax kind of awkward/confusing.
 
-That said, it may be ok to have this syntax as `[type:type]` and `[type:integer]` are unambigous. (* `new [type:expression]` might be weird though)
+That said, it may be ok to have this syntax as `[type:type]` and `[type:integer]` are unambigous, and we don't allow the syntactic sugar for array and hash map types in `new` expressions.
 
 ```rush
-let titles = [
-	"mr": 1,
-	"ms": 2,
-	"miss": 3,
-	"dr": 4
+let dice_roll = [
+   (1, 1): "snake eyes",
+   (6, 6): "box cars"
 ]
 
-let dice_roll = [
-	(1, 1): "snake eyes",
-	(6, 6): "box cars"
+let titles: [string:int] = [
+   "mr": 1,
+   "ms": 2,
+   "miss": 3,
+   "dr": 4
+]
+
+let kvs = new hash<string, int> [
+   "key1": 10,
+   "key2": 20,
+   "key3": 30,
 ]
 ```
 
@@ -76,16 +82,21 @@ for i in 0..^len
 ```
 
 ```rush
-## closed range
+## closed inclusive range
 1...5 	## [ 1, 2, 3, 4, 5 ]
 
-## [something] range
+## closed exclusive range
 1..^5		## [ 1, 2, 3, 4 ]
 
-## one-sided range
+## open range
+0..>     ## [ 0, 1, 2, ..., +inf ]
+0..<     ## [ 0, -1, -2, ..., -inf ]
+
+## one-sided range (OLD)
 0..* 		## [ 0, 1, 2, ..., +inf ]
 *..5		## [ -inf, ..., 3, 4, 5 ]
 ..^5		## [ -inf, ..., 2, 3, 4 ]
+
 ```
 
 ## Slice Literal
@@ -109,20 +120,26 @@ public
 
 ```rush
 ## tuple
-let foo = (1, "text")
+let foo = (1, 'text')
 
 ## named tuple
-let bar = (first: 1, second: "text")
+let bar = (first: 1, second: 'text')
 ```
 
 ## Object Literals
 
 ```rush
 let address = {
-	postcode = "ABC DEF",
-	street = "Street",
-	city: string = "City"
+	postcode: 'ABC DEF',
+	street: 'Street',
+	city: 'City'
 }
+```
+
+```rush
+let obj = { 'some-property': 'value' }
+
+let val = obj['some-property'] as string
 ```
 
 ## Function Literals

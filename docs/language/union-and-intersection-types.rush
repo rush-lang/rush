@@ -1,0 +1,18 @@
+concept func formattable(arg: any) =>
+	|> format(arg) -> string
+	|> format(arg, "") -> string
+	|> arg.format() -> string
+	|> arg.format("") -> string
+
+func write(fs: stream, arg: formattable)
+	let val = formattable(arg)
+
+func foo(val: string | [string])
+	let x =
+		|> join(val, ' ')
+		|> val
+
+func join(strs: string | extends iterable<string>, delim: string)
+   return
+      |> reduce(strs, (x, y) => "$x$delim$y")
+      |> strs

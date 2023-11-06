@@ -29,7 +29,7 @@ let a = new animal()
 
 ## Deriving a Base Class
 
-The following example defines a class, `dog`, that derives the base class `animal`. The dog class also defines an overridden implementation of the base class' `speak` method, with behaviour specific to the dogs.
+The following example defines a class, `dog`, that derives the base class `animal`. The dog class also overrides the implementation of the base class' `speak` method, with behaviour specific to the dogs.
 
 ```rush
 class dog inherits animal

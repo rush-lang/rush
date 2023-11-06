@@ -1,0 +1,61 @@
+import std.io
+
+## OWNERSHIP MEMORY MANAGEMENT
+
+## x may own or reference it's value, it doesn't matter.
+## the caller and receiver of the value will then either
+## be an owner or borrower depending on the context in which
+## the function is called.
+func foo(x: string) => x
+
+## e.g. owning situation
+let x = foo("hello")
+
+## e.g. borrowing situation
+let x = "hello"
+let y = foo(x)
+
+func main
+   var x = "hello"   ## initial binding, 'x' takes ownership
+   let y = x         ## binding to owned value, 'y' borrows
+   x = "world"       ## cannot assign to 'x' because it is borrowed.
+   print("$x $y")
+
+## sometimes we want to deep clone a reference type
+## need to figure out a satisfactory way to do it.
+
+let x = "hello"            ## 'x' takes ownership.
+let y = x.append(" world") ## want to clone 'x' and append
+                           ## without having to bake that
+                           ## into the append method.
+
+let z = x.clone().append(" world")  ## possiblity 1.
+
+## interesting problem
+func foo(ys: vector<string>)
+   let v = "hello"
+   ys.append(v)   ## append must either copy or move the value,
+                  ## but the default is to borrow.
+                  ## how can we solve this without introducing
+                  ## special syntax on the method parameter?
+                  ## possibility 1. last use of owning l-value is moved
+
+let xs = ["world"]
+foo(xs)
+
+class vector<T>
+   func append(value: T)
+      let v = value.move_or_clone()   ## possibility 2.
+
+
+func foo(x: string)
+   return x ## - if 'x' is owner
+            ##    - if last use of 'x' before it goes out of scope
+            ##       - move 'x'
+            ##    - else
+            ##       - borrow 'x'
+            ## - else 'x' is borrowed
+            ##    - if the lifetime of the lhs exceeds 'x'
+            ##       - copy 'x'
+            ##    - else
+            ##       - borrow 'x'

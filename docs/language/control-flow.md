@@ -56,6 +56,15 @@ while condition
 while condition ## inline statement to execute while condition is true
 ```
 
+## While-Else
+
+```
+while <condition>
+   <statements>
+else
+   <final/alternative-statements>
+```
+
 ## Iterative Statements
 
 ## For-In Loops

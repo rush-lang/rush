@@ -1,0 +1,17 @@
+name: sample
+version: 0.0.0-semantic-release
+modules:
+  - stdlib
+dev-modules:
+  - semantic-release
+scripts:
+  publish:
+    - run: semantic-release
+syntax:
+  mode: offside
+rules:
+  unused-variables: warn
+  missing-block-colon: error
+  missing-empty-parenthesis: error
+  space-before-function-parens: [fix, 0]
+  space-before-constructor-parens: [fix, 1]
