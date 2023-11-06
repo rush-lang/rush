@@ -64,7 +64,11 @@ install(TARGETS
    LIBRARY DESTINATION ${LIBRARY_DEST})
 
 if(RUSH_BUILD_TESTS)
+	find_package(Catch2 3 REQUIRED)
+
+   include(CTest)
 	include(Catch)
+
 	enable_testing()
 	add_subdirectory(test)
 endif()

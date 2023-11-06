@@ -13,7 +13,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *************************************************************************/
-#include "catch2/catch.hpp"
+#include <catch2/catch_all.hpp>
 #include "rush/extra/ring.hpp"
 #include "rush/extra/iterator.hpp"
 
