@@ -58,6 +58,8 @@ install(TARGETS
    diag
    lexer
    parser
+   sema
+   irgen
    crush
    rupl
    RUNTIME DESTINATION ${RUNTIME_DEST}
