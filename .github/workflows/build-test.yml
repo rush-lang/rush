@@ -1,0 +1,64 @@
+permissions:
+  contents: read
+
+on:
+  workflow_call:
+    inputs:
+      runs-on:
+        type: string
+        description: 'Operating System'
+        required: true
+        default: 'ubuntu-latest'
+      compiler:
+        type: string
+        description: 'Compiler to use'
+
+env:
+
+  # CC: ${{ inputs.compiler == 'clang' && 'clang' || inputs.compiler == 'gcc' && 'cl' || 'gcc' }}
+  # CXX: ${{ inputs.compiler == 'clang' && 'clang++' || inputs.compiler == 'gcc' && 'cl' || 'g++' }}
+  ARTIFACTS_NAME: ${{ startsWith(inputs.runs-on, 'windows') && 'win32' || (startsWith(inputs.runs-on, 'linux') && 'linux' || 'macos') }}-${{ inputs.compiler }}
+
+jobs:
+  build:
+    runs-on: ${{ inputs.runs-on }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup LLVM 14
+        uses: rush-lang/setup-llvm-action@v1
+        with:
+          llvm-version: 14
+
+      - name: Fetch Dependencies
+        uses: ./.github/workflows/fetch-dependencies
+
+      - name: Create Build files
+        run: cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build and Install Binary files
+        run: cmake --build build --target install -j 2
+
+      - name: Verify Build
+        run: ./build/Release/crush --version
+
+      - name: Upload Build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.ARTIFACTS_NAME }}
+          path: ./build
+
+  unit-test:
+    runs-on: ${{ inputs.runs-on }}
+    needs: build
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ env.ARTIFACTS_NAME }}
+          path: ./build
+
+      - name: Run Unit tests
+        working-directory: ./build
+        run: ctest -j 2
