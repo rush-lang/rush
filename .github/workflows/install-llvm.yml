@@ -1,0 +1,22 @@
+name: Install LLVM
+
+on:
+  workflow_dispatch:
+    inputs:
+      os:
+        description: 'The Operating System to build LLVM for.'
+        required: true
+        default: ubuntu
+      compiler:
+        description: 'The Compiler to build LLVM with.'
+        required: true
+        default: clang
+
+jobs:
+  install:
+    runs-on: ${{ inputs.os }}-latest
+    steps:
+      - uses: rush-lang/setup-llvm-action@v1
+        with:
+          compiler: ${{ inputs.compiler }}
+          llvm-version: 14

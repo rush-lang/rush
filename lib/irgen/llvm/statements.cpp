@@ -51,7 +51,7 @@ namespace rush::irgen::llvm {
             then_block = builder().GetInsertBlock();
 
             // Emit merge.
-            func->insert(func->end(), merge);
+            func->getBasicBlockList().push_back(merge);
             builder().SetInsertPoint(merge);
             ::llvm::PHINode* pn =
                builder().CreatePHI(::llvm::Type::getDoubleTy(context()), 2, "iftmp");
@@ -79,7 +79,7 @@ namespace rush::irgen::llvm {
             then_block = builder().GetInsertBlock();
 
             // Emit else block.
-            func->insert(func->end(), else_block);
+            func->getBasicBlockList().push_back(else_block);
             builder().SetInsertPoint(else_block);
 
             gen = llvm_ir_statement_generator {};
@@ -90,7 +90,7 @@ namespace rush::irgen::llvm {
             else_block = builder().GetInsertBlock();
 
             // Emit merge.
-            func->insert(func->end(), merge);
+            func->getBasicBlockList().push_back(merge);
             builder().SetInsertPoint(merge);
             ::llvm::PHINode* pn =
                builder().CreatePHI(::llvm::Type::getDoubleTy(context()), 2, "iftmp");

@@ -14,9 +14,8 @@ on:
         description: 'Compiler to use'
 
 env:
-
-  # CC: ${{ inputs.compiler == 'clang' && 'clang' || inputs.compiler == 'gcc' && 'cl' || 'gcc' }}
-  # CXX: ${{ inputs.compiler == 'clang' && 'clang++' || inputs.compiler == 'gcc' && 'cl' || 'g++' }}
+  CC: ${{ inputs.compiler == 'clang' && 'clang' || 'gcc' }}
+  CXX: ${{ inputs.compiler == 'clang' && 'clang++' || 'g++' }}
   ARTIFACTS_NAME: ${{ startsWith(inputs.runs-on, 'windows') && 'win32' || (startsWith(inputs.runs-on, 'linux') && 'linux' || 'macos') }}-${{ inputs.compiler }}
 
 jobs:
@@ -25,20 +24,23 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          submodules: true
 
       - name: Setup LLVM 14
         uses: rush-lang/setup-llvm-action@v1
         with:
+          compiler: ${{ inputs.compiler }}
           llvm-version: 14
-
-      - name: Fetch Dependencies
-        uses: ./.github/workflows/fetch-dependencies
-
       - name: Create Build files
-        run: cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+        run: >-
+          cmake -B build -S .
+          -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_C_COMPILER=$CC
+          -DCMAKE_CXX_COMPILER=$CXX
 
       - name: Build and Install Binary files
-        run: cmake --build build --target install -j 2
+        run: cmake --build build --target install -j 2 --config Release
 
       - name: Verify Build
         run: ./build/Release/crush --version
