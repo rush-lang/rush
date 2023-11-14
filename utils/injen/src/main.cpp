@@ -13,8 +13,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *************************************************************************/
-#include "nlohmann/json.hpp"
-#include "inja/inja.hpp"
+#include <inja/inja.hpp>
 #include "options.hpp"
 
 #include <iostream>
@@ -59,17 +58,6 @@ void render(options::options& opts) {
       auto rhs = args.at(1)->get<inja::json>();
       lhs.insert(lhs.end(), rhs.begin(), rhs.end());
       return lhs;
-   });
-
-   env.add_callback("join", 2, [](inja::Arguments& args) {
-      auto delim = args.at(0)->get<std::string>();
-      auto jval = args.at(1)->get<inja::json>();
-
-      if (!jval.is_array()
-      || std::any_of(jval.begin(), jval.end(), [](auto& x) { return !x.is_string(); }))
-         throw std::invalid_argument("expected an array of strings.");
-
-      return join(delim, jval.begin(), jval.end());
    });
 
    env.add_callback("prepend", 2, [](inja::Arguments& args) {
@@ -146,14 +134,17 @@ void render(options::options& opts) {
 }
 
 int main(int argc, char** argv) {
+   try {
+      auto opts = options::parse(argc, argv);
+      if (opts.has_help()) {
+         opts.display_help();
+         return 0;
+      }
 
-	auto opts = options::parse(argc, argv);
-
-	if (opts.has_help()) {
-		opts.display_help();
-		return 0;
-	}
-
-	render(opts);
+      render(opts);
+   } catch (std::exception const& e) {
+      std::cerr << e.what() << std::endl;
+      return 1;
+   }
 }
 

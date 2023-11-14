@@ -1,3 +1,6 @@
 [submodule "external/catch2"]
 	path = external/catch2
 	url = https://github.com/catchorg/Catch2.git
+[submodule "external/inja"]
+	path = external/inja
+	url = https://github.com/pantor/inja.git
