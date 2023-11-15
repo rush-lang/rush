@@ -1,7 +1,10 @@
-add_subdirectory(fmt)
 execute_process(COMMAND git submodule update --init -- external/inja
                 WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 add_subdirectory(inja)
+
+execute_process(COMMAND git submodule update --init -- external/fmtlib
+                WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+add_subdirectory(fmtlib)
 
 if(RUSH_BUILD_TOOLS)
    execute_process(COMMAND git submodule update --init -- external/cxxopts
