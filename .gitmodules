@@ -4,3 +4,6 @@
 [submodule "external/inja"]
 	path = external/inja
 	url = https://github.com/pantor/inja.git
+[submodule "external/cxxopts"]
+	path = external/cxxopts
+	url = https://github.com/jarro2783/cxxopts.git

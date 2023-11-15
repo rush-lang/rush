@@ -18,7 +18,7 @@
 #ifndef INJEN_OPTIONS_HPP
 #define INJEN_OPTIONS_HPP
 
-#include "cxxopts/cxxopts.hpp"
+#include "cxxopts.hpp"
 #include <string>
 
 namespace options {

@@ -18,7 +18,7 @@
 #include "rush/core/source.hpp"
 #include "commands/help.hpp"
 #include "commands/dump.hpp"
-#include "cxxopts/cxxopts.hpp"
+#include <cxxopts.hpp>
 #include "tclr/tclr.hpp"
 
 #include <vector>
@@ -120,7 +120,7 @@ int main(int argc, char** argv) {
       if (run_default) crush::commands::dump_llvm_ir(srcs, results); // default behavior.
       return 0;
    }
-   catch (cxxopts::option_not_exists_exception const& e) {
+   catch (cxxopts::exceptions::exception const& e) {
       log_error("{}.\n", to_lower(e.what()));
       // std::cout << "crush: " << tc::fg("error", tc::red) << ": " << to_lower(e.what()) << ".\n" << std::endl;
       return 1;

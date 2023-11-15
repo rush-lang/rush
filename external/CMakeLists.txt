@@ -1,10 +1,14 @@
 add_subdirectory(fmt)
-add_subdirectory(tclr)
-add_subdirectory(cxxopts)
-
 execute_process(COMMAND git submodule update --init -- external/inja
                 WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 add_subdirectory(inja)
+
+if(RUSH_BUILD_TOOLS)
+   execute_process(COMMAND git submodule update --init -- external/cxxopts
+                   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+   add_subdirectory(cxxopts)
+   add_subdirectory(tclr)
+endif()
 
 if(RUSH_BUILD_TESTS AND NOT Catch2_FOUND)
    message(STATUS "Catch2 not found, using bundled version")
