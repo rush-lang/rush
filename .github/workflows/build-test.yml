@@ -18,6 +18,7 @@ on:
 env:
   CC: ${{ inputs.compiler == 'clang' && 'clang' || 'gcc' }}
   CXX: ${{ inputs.compiler == 'clang' && 'clang++' || 'g++' }}
+  BIN_PATH: ${{ inputs.compiler == 'msvc' && './build/Release' || './build' }}
   ARTIFACTS_NAME: ${{ startsWith(inputs.runs-on, 'windows') && 'win32' || (startsWith(inputs.runs-on, 'linux') && 'linux' || 'macos') }}-${{ inputs.compiler }}
 
 jobs:
@@ -45,7 +46,7 @@ jobs:
         run: cmake --build build -j 2 --config Release
 
       - name: Verify Build
-        run: ./build/Release/crush --version
+        run: ${{ env.BIN_PATH }}/crush --version
 
       - name: Upload Build artifacts
         uses: actions/upload-artifact@v3

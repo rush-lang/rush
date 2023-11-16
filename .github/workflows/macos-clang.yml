@@ -16,18 +16,6 @@ on:
       - '**.cmake'
       - '**CMakeListst.txt'
 
-  pull_request:
-    paths:
-      - .github/**
-      - external/**
-      - '**.hpp'
-      - '**.hpp.in'
-      - '**.hpp.j2'
-      - '**.cpp'
-      - '**.cpp.j2'
-      - '**.cmake'
-      - '**CMakeListst.txt'
-
 jobs:
   macos-clang:
     uses: ./.github/workflows/build-test.yml
