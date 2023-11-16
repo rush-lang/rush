@@ -33,10 +33,12 @@
 
 using namespace rush;
 
-struct ::irgen::irgenerator_result::impl {
-   std::unique_ptr<::llvm::LLVMContext> context;
-   std::unique_ptr<::llvm::Module> module;
-};
+namespace rush::irgen {
+   struct irgenerator_result::impl {
+      std::unique_ptr<::llvm::LLVMContext> context;
+      std::unique_ptr<::llvm::Module> module;
+   };
+}
 
 class llvm_ir_module_generator : public irgen::llvm_ir_generator<::llvm::Module> {
    using value_map_type = std::unordered_map<ast::nominal_declaration const*, ::llvm::Value*>;

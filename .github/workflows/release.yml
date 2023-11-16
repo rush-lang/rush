@@ -11,7 +11,7 @@ jobs:
   linux-gcc:
     uses: ./.github/workflows/build-test.yml
     with:
-      runs-on: ubuntu-latest
+      runs-on: ubuntu-20.04
       compiler: gcc
     secrets: inherit
   win32-msvc:

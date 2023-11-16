@@ -3,7 +3,30 @@ name: win32-msvc
 permissions:
   contents: read
 
-on: [push, pull_request]
+on:
+  push:
+    paths:
+      - '**.hpp'
+      - '**.hpp.in'
+      - '**.hpp.j2'
+      - '**.cpp'
+      - '**.cpp.j2'
+      - '**.cmake'
+      - '**CMakeListst.txt'
+      - external/**
+      - .gitlab/**
+
+  pull_request:
+    paths:
+      - '**.hpp'
+      - '**.hpp.in'
+      - '**.hpp.j2'
+      - '**.cpp'
+      - '**.cpp.j2'
+      - '**.cmake'
+      - '**CMakeListst.txt'
+      - external/**
+      - .gitlab/**
 
 jobs:
   win32-msvc:

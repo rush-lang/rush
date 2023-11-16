@@ -3,12 +3,35 @@ name: linux-gcc
 permissions:
   contents: read
 
-on: [push, pull_request]
+on:
+  push:
+    paths:
+      - '**.hpp'
+      - '**.hpp.in'
+      - '**.hpp.j2'
+      - '**.cpp'
+      - '**.cpp.j2'
+      - '**.cmake'
+      - '**CMakeListst.txt'
+      - external/**
+      - .gitlab/**
+
+  pull_request:
+    paths:
+      - '**.hpp'
+      - '**.hpp.in'
+      - '**.hpp.j2'
+      - '**.cpp'
+      - '**.cpp.j2'
+      - '**.cmake'
+      - '**CMakeListst.txt'
+      - external/**
+      - .gitlab/**
 
 jobs:
   linux-gcc:
     uses: ./.github/workflows/build-test.yml
     with:
-      runs-on: ubuntu-latest
+      runs-on: ubuntu-20.04
       compiler: gcc
     secrets: inherit
