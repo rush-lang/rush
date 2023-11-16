@@ -1,10 +1,12 @@
+name: win32-msvc
+
 permissions:
   contents: read
 
 on: [push, pull_request]
 
 jobs:
-  build-test:
+  win32-msvc:
     uses: ./.github/workflows/build-test.yml
     with:
       runs-on: windows-latest

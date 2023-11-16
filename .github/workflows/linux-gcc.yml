@@ -1,10 +1,12 @@
+name: linux-gcc
+
 permissions:
   contents: read
 
 on: [push, pull_request]
 
 jobs:
-  build-test:
+  linux-gcc:
     uses: ./.github/workflows/build-test.yml
     with:
       runs-on: ubuntu-latest

@@ -1,3 +1,5 @@
+name: release
+
 permissions:
   contents: read # to checkout the repository
 

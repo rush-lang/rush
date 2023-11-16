@@ -1,3 +1,5 @@
+name: build-test
+
 permissions:
   contents: read
 
