@@ -14,7 +14,7 @@ A general purpose programming language.
 
 | **Platform** | **Architecture** | **Compiler** | **Status** |
 |:---|:---:|:---:|:---|
-| **Ubuntu 20.04** | x86-64 | GNU GCC | [![linux-gcc](https://github.com/rush-lang/rush/actions/workflows/linux-gcc.yml/badge.svg)](https://github.com/rush-lang/rush/actions/workflows/linux-gcc.yml) |
+| **Ubuntu 20.04** | x86-64 | GCC 13 | [![linux-gcc](https://github.com/rush-lang/rush/actions/workflows/linux-gcc.yml/badge.svg)](https://github.com/rush-lang/rush/actions/workflows/linux-gcc.yml) |
 | **Windows** | x86-64 | MSVC 2022 | [![win32-msvc](https://github.com/rush-lang/rush/actions/workflows/win32-msvc.yml/badge.svg)](https://github.com/rush-lang/rush/actions/workflows/win32-msvc.yml) |
 | **MacOS** | x86-64 | Clang 14 | [![macos-clang](https://github.com/rush-lang/rush/actions/workflows/macos-clang.yml/badge.svg)](https://github.com/rush-lang/rush/actions/workflows/macos-clang.yml) |
 

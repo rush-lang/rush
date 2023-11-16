@@ -14,7 +14,7 @@ option(RUSH_BUILD_STATIC_LIBS "Generate build targets for static libraries." ON)
 option(RUSH_BUILD_SHARED_LIBS "Generate build targets for shared libraries." OFF)
 
 configure_file(include/rush/version.hpp.in include/rush/version.hpp)
-project(rush VERSION ${RUSH_VERSION} LANGUAGES CXX)
+project(rush VERSION ${RUSH_VERSION} LANGUAGES C CXX)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/modules")
 
 include(RushAdd)
