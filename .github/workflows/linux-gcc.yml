@@ -1,0 +1,12 @@
+permissions:
+  contents: read
+
+on: [push, pull_request]
+
+jobs:
+  build-test:
+    uses: ./.github/workflows/build-test.yml
+    with:
+      runs-on: ubuntu-latest
+      compiler: gcc
+    secrets: inherit
