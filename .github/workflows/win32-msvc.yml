@@ -6,6 +6,8 @@ permissions:
 on:
   push:
     paths:
+      - .github/**
+      - external/**
       - '**.hpp'
       - '**.hpp.in'
       - '**.hpp.j2'
@@ -13,11 +15,11 @@ on:
       - '**.cpp.j2'
       - '**.cmake'
       - '**CMakeListst.txt'
-      - external/**
-      - .gitlab/**
 
   pull_request:
     paths:
+      - .github/**
+      - external/**
       - '**.hpp'
       - '**.hpp.in'
       - '**.hpp.j2'
@@ -25,8 +27,6 @@ on:
       - '**.cpp.j2'
       - '**.cmake'
       - '**CMakeListst.txt'
-      - external/**
-      - .gitlab/**
 
 jobs:
   win32-msvc:
