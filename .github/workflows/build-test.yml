@@ -41,8 +41,8 @@ jobs:
           -DCMAKE_C_COMPILER=$CC
           -DCMAKE_CXX_COMPILER=$CXX
 
-      - name: Build and Install Binary files
-        run: cmake --build build --target install -j 2 --config Release
+      - name: Build Binary files
+        run: cmake --build build -j 2 --config Release
 
       - name: Verify Build
         run: ./build/Release/crush --version
