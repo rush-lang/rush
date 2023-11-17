@@ -2,11 +2,11 @@
 <picture>
    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/rush-lang/rush/master/docs/rush-logo-dark.svg">
    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/rush-lang/rush/master/docs/rush-logo-light.svg">
-   <img alt="Rush Logo" height="64" src="https://raw.githubusercontent.com/rush-lang/rush/master/docs/rush-logo-light.svg">
+   <img alt="Rush Logo" height="64" src="https://raw.githubusercontent.com/rush-lang/rush/master/docs/rush-logo-lght.svg">
 </picture>
-<span style="margin-left: 8px">
+<a style="margin-left: 8px" href="https://github.com/rush-lang/rush/releases">
 <img alt="GitHub Release" src="https://img.shields.io/github/v/release/rush-lang/rush">
-</span>
+</a>
 
 A general purpose programming language.
 
