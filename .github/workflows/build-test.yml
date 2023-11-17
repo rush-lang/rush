@@ -35,12 +35,14 @@ jobs:
         with:
           compiler: ${{ inputs.compiler }}
           llvm-version: 14
+          install-prefix: '~/llvm'
       - name: Create Build files
         run: >-
           cmake -B build -S .
           -DCMAKE_BUILD_TYPE=Release
           -DCMAKE_C_COMPILER=$CC
           -DCMAKE_CXX_COMPILER=$CXX
+          -DCMAKE_PREFIX_PATH=~/llvm
 
       - name: Build Binary files
         run: cmake --build build -j 2 --config Release
