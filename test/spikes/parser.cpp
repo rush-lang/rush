@@ -20,17 +20,18 @@
 #include "rush/ast/iterator.hpp"
 #include <iostream>
 
-char const* src = R"(
+char const* sprog = R"(
 import std.io;
 
-func main(args: string[]):
+func main(args: [string]):
    let msg = "hello, world!"
    println(msg)
 )";
 
 int main() {
-	std::cout << src << std::endl;
+	std::cout << sprog << std::endl;
 	std::cout << "--------------------" << std::endl;
    auto ctx = rush::ast::context {};
+   auto src = rush::source::from_string(sprog);
 	rush::dump(rush::parse(src, ctx));
 }

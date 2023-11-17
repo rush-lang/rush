@@ -104,7 +104,8 @@ namespace rush {
    }
 
    rush::parse_result<ast::pattern> parser::parse_array_destructure_pattern() {
-      assert(consume_skip_indent(symbols::left_bracket) && "expected '{' parsing destructure pattern.");
+      assert(peek_skip_indent(symbols::left_bracket) && "expected '{' parsing destructure pattern.");
+      consume_skip_indent(symbols::left_bracket);
       auto result = parse_destructure_pattern();
       return !consume_skip_indent(symbols::right_bracket)
            ? errs::expected_closing_bracket(peek_skip_indent())
@@ -112,7 +113,8 @@ namespace rush {
    }
 
    rush::parse_result<ast::pattern> parser::parse_object_destructure_pattern() {
-      assert(consume_skip_indent(symbols::left_brace) && "expected '{' parsing destructure pattern.");
+      assert(peek_skip_indent(symbols::left_brace) && "expected '{' parsing destructure pattern.");
+      consume_skip_indent(symbols::left_brace);
       auto result = parse_destructure_pattern();
       return !consume_skip_indent(symbols::right_brace)
            ? errs::expected_closing_bracket(peek_skip_indent())
@@ -120,7 +122,8 @@ namespace rush {
    }
 
    rush::parse_result<ast::pattern> parser::parse_type_annotation_pattern(rush::parse_result<ast::pattern> lhs) {
-      assert(consume_skip_indent(symbols::colon) && "expected a type annotation symbol ':'");
+      assert(peek_skip_indent(symbols::colon) && "expected a type annotation symbol ':'");
+      consume_skip_indent(symbols::colon);
 
       if (consume_skip_indent(symbols::ellipses))
          lhs = ptrns::rest(std::move(lhs));
@@ -148,7 +151,8 @@ namespace rush {
    }
 
    rush::parse_result<ast::pattern> parser::parse_rest_pattern() {
-      assert(consume_skip_indent(symbols::ellipses) && "expected a type annotation symbol ':'");
+      assert(peek_skip_indent(symbols::ellipses) && "expected a type annotation symbol ':'");
+      consume_skip_indent(symbols::ellipses);
       auto tok = peek_skip_indent();
       auto result = rush::parse_result<ast::pattern> {};
       if (tok.is_identifier()) {
@@ -169,7 +173,7 @@ namespace rush {
 
    rush::parse_result<ast::pattern> parser::parse_pattern_list(
       rush::function_ref<rush::parse_result<ast::pattern>()> parseFn) {
-         std::vector<rush::parse_result<ast::pattern>> results;
+         auto results = std::vector<rush::parse_result<ast::pattern>> {};
          do { results.push_back(parseFn()); }
          while (consume_skip_indent(symbols::comma));
          if (results.size() == 1)

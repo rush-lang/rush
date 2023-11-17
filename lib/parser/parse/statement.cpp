@@ -49,7 +49,8 @@ namespace rush {
    }
 
    rush::parse_result<ast::statement> parser::parse_block_stmt() {
-      assert(consume_with_indent(symbols::indent) && "expected indentation at start of block.");
+      assert(peek_with_indent(symbols::indent) && "expected indentation at start of block.");
+      consume_with_indent(symbols::indent);
 
       auto results = std::vector<std::unique_ptr<ast::statement>> {};
       while (!consume_skip_indent(symbols::dedent)) {

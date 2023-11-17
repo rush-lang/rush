@@ -687,7 +687,8 @@ namespace rush {
    }
 
    rush::parse_result<ast::expression> parser::parse_spread_expr() {
-      assert(consume_skip_indent(symbols::ellipses) && "expected '...' symbol.");
+      assert(peek_skip_indent(symbols::ellipses) && "expected '...' symbol.");
+      consume_skip_indent(symbols::ellipses);
 
       auto expr_result = parse_primary_expr();
       if (expr_result.failed())

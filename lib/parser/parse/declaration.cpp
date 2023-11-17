@@ -64,7 +64,8 @@ namespace rush {
    }
 
    rush::parse_result<ast::declaration> parser::parse_extern_decl() {
-      assert(consume_skip_indent(keywords::extern_) && "expected 'extern' keyword.");
+      assert(peek_skip_indent(keywords::extern_) && "expected 'extern' keyword.");
+      consume_skip_indent(keywords::extern_);
 
       auto tok = peek_skip_indent();
       auto result = tok.is(keywords::func_)
@@ -77,7 +78,8 @@ namespace rush {
    }
 
    rush::parse_result<ast::declaration> parser::parse_async_decl() {
-      assert(consume_skip_indent(keywords::async_) && "expected the 'async' keyword.");
+      assert(peek_skip_indent(keywords::async_) && "expected the 'async' keyword.");
+      consume_skip_indent(keywords::async_);
 
       auto tok = peek_skip_indent();
       if (tok.is_not(keywords::func_))
@@ -90,7 +92,8 @@ namespace rush {
    }
 
    rush::parse_result<ast::declaration> parser::parse_base_decl() {
-      assert(consume_skip_indent(keywords::base_) && "expected the 'base' keyword.");
+      assert(peek_skip_indent(keywords::base_) && "expected the 'base' keyword.");
+      consume_skip_indent(keywords::base_);
 
       auto tok = peek_skip_indent();
       if (tok.is_not(keywords::class_))
@@ -103,7 +106,8 @@ namespace rush {
    }
 
    rush::parse_result<ast::declaration> parser::parse_static_decl() {
-      assert(consume_skip_indent(keywords::static_) && "expected 'static' keyword.");
+      assert(peek_skip_indent(keywords::static_) && "expected 'static' keyword.");
+      consume_skip_indent(keywords::static_);
 
       auto result = parse_decl();
       return result.success()
@@ -112,7 +116,8 @@ namespace rush {
    }
 
    rush::parse_result<ast::declaration> parser::parse_virtual_decl() {
-      assert(consume_skip_indent(keywords::virtual_) && "expected the 'virtual' keyword.");
+      assert(peek_skip_indent(keywords::virtual_) && "expected the 'virtual' keyword.");
+      consume_skip_indent(keywords::virtual_);
 
       auto result = parse_decl();
       return result.success()
@@ -121,7 +126,8 @@ namespace rush {
    }
 
    rush::parse_result<ast::declaration> parser::parse_abstract_decl() {
-      assert(consume_skip_indent(keywords::abstract_) && "expected the 'abstract' keyword.");
+      assert(peek_skip_indent(keywords::abstract_) && "expected the 'abstract' keyword.");
+      consume_skip_indent(keywords::virtual_);
 
       auto result = parse_decl();
       return result.success()
@@ -130,7 +136,8 @@ namespace rush {
    }
 
    rush::parse_result<ast::declaration> parser::parse_override_decl() {
-      assert(consume_skip_indent(keywords::override_) && "expected the 'override' keyword.");
+      assert(peek_skip_indent(keywords::override_) && "expected the 'override' keyword.");
+      consume_skip_indent(keywords::override_);
 
       auto sealed = consume_skip_indent(symbols::exclamation_mark);
       auto result = parse_decl();
@@ -148,12 +155,14 @@ namespace rush {
 	}
 
 	rush::parse_result<ast::declaration> parser::parse_constant_decl() {
-		assert(consume_skip_indent(keywords::let_) && "expected the 'let' keyword.");
+		assert(peek_skip_indent(keywords::let_) && "expected the 'let' keyword.");
+      consume_skip_indent(keywords::let_);
 		return _parse_storage_decl([](auto ptrn) { return decls::let(std::move(ptrn)); });
 	}
 
 	rush::parse_result<ast::declaration> parser::parse_variable_decl() {
-		assert(consume_skip_indent(keywords::var_) && "expected the 'var' keyword.");
+		assert(peek_skip_indent(keywords::var_) && "expected the 'var' keyword.");
+      consume_skip_indent(keywords::var_);
 		return _parse_storage_decl([](auto ptrn) { return decls::var(std::move(ptrn)); });
 	}
 
