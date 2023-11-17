@@ -36,7 +36,7 @@ jobs:
           compiler: ${{ inputs.compiler }}
           llvm-version: 14
           install-prefix: '~/llvm'
-      - name: Create Build files
+      - name: Create build files
         run: >-
           cmake -B build -S .
           -DCMAKE_BUILD_TYPE=Release
@@ -44,28 +44,32 @@ jobs:
           -DCMAKE_CXX_COMPILER=$CXX
           -DCMAKE_PREFIX_PATH=~/llvm
 
-      - name: Build Binary files
-        run: cmake --build build -j 2 --config Release
+      - name: Build binary files
+        run:
+          cmake --build build -j 2 --config Release
 
-      - name: Verify Build
-        run: ${{ env.BIN_PATH }}/crush --version
+      - name: Archive build files
+        run: tar -cvf build.tar ./build
 
-      - name: Upload Build artifacts
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v3
         with:
           name: ${{ env.ARTIFACTS_NAME }}
-          path: ./build
+          path: ./build.tar
 
   unit-test:
     runs-on: ${{ inputs.runs-on }}
     needs: build
     steps:
-      - name: Download artifacts
+      - name: Download build artifacts
         uses: actions/download-artifact@v3
         with:
           name: ${{ env.ARTIFACTS_NAME }}
-          path: ./build
+          path: ./
 
-      - name: Run Unit tests
+      - name: Extract build artifacts
+        run: tar -xvf build.tar
+
+      - name: Run unit tests
         working-directory: ./build
-        run: ctest -j 2
+        run: ctest --parallel 2 --output-on-failure
