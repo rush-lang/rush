@@ -14,7 +14,7 @@ on:
       - '**.cpp'
       - '**.cpp.j2'
       - '**.cmake'
-      - '**CMakeListst.txt'
+      - '**CMakeLists.txt'
 
 jobs:
   macos-clang:
