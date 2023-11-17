@@ -68,10 +68,10 @@ namespace rush {
       lexical_token suffixed_floating_literal(double, lexical_token_suffix, location const& = location::undefined, rush::source const& = rush::source::none);
    }
 
-   class lexical_token final {
+   template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
+   template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
 
-      template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
-      template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
+   class lexical_token final {
 
       struct error_t {
          std::string msg;
@@ -162,7 +162,7 @@ namespace rush {
       }
 
       // \brief Returns the location in source of the token.
-      location const& location() const noexcept {
+      rush::location const& location() const noexcept {
          return this->_loc;
       }
 

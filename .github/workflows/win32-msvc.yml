@@ -1,0 +1,25 @@
+name: win32-msvc
+
+permissions:
+  contents: read
+
+on:
+  push:
+    paths:
+      - .github/**
+      - external/**
+      - '**.hpp'
+      - '**.hpp.in'
+      - '**.hpp.j2'
+      - '**.cpp'
+      - '**.cpp.j2'
+      - '**.cmake'
+      - '**CMakeLists.txt'
+
+jobs:
+  win32-msvc:
+    uses: ./.github/workflows/build-test.yml
+    with:
+      runs-on: windows-latest
+      compiler: msvc
+    secrets: inherit

@@ -4,17 +4,19 @@
    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/rush-lang/rush/master/docs/rush-logo-light.svg">
    <img alt="Rush Logo" height="64" src="https://raw.githubusercontent.com/rush-lang/rush/master/docs/rush-logo-light.svg">
 </picture>
+<span style="margin-left: 8px">
+<img alt="GitHub Release" src="https://img.shields.io/github/v/release/rush-lang/rush">
+</span>
 
 A general purpose programming language.
 
 ---
 
-| | **Architecture** | **Status** |
-|---|:---:|:---:|
-| **Ubuntu 20.04** | x86_64 | [![rushlang](https://circleci.com/gh/rush-lang/rush.svg?style=shield)](https://app.circleci.com/pipelines/github/rush-lang/rush) |
-| **Windows (VS 2019)** | x86_64 | Coming Soon |
-
-# Welcome to Rush
+| **Platform** | **Architecture** | **Compiler** | **Status** |
+|:---|:---:|:---:|:---|
+| **Ubuntu 20.04** | x86-64 | GCC 13 | [![linux-gcc](https://github.com/rush-lang/rush/actions/workflows/linux-gcc.yml/badge.svg)](https://github.com/rush-lang/rush/actions/workflows/linux-gcc.yml) |
+| **Windows** | x86-64 | MSVC 2022 | [![win32-msvc](https://github.com/rush-lang/rush/actions/workflows/win32-msvc.yml/badge.svg)](https://github.com/rush-lang/rush/actions/workflows/win32-msvc.yml) |
+| **MacOS** | x86-64 | Clang 14 | [![macos-clang](https://github.com/rush-lang/rush/actions/workflows/macos-clang.yml/badge.svg)](https://github.com/rush-lang/rush/actions/workflows/macos-clang.yml) |
 
 Rush is a new programming language that builds atop many of today's most popular languages. It is intended to be a general purpose, strongly typed, multi-paradigm, and expressive language, rich with features that promote best practices and the convergence of Object Oriented and Functional programming techniques.
 
@@ -23,6 +25,7 @@ It is the hope of the Rush Programming Language non-profit organisation for Rush
 ## Feature Highlights
 
 #### Infer all the things!
+
 Rush wants you to type as little as possible to get the job done, and to get it done well. As such type inference, among others, is featured heavily in Rush. If you've ever heard of the DRY principle (**D**on't **R**epeat **Y**ourself), this is DRY at the compiler level.
 
 Take for example the following simple function definition that adds two integers, `a` and `b` together, and gives you back the result of that operation.
@@ -41,6 +44,7 @@ func add(a: int, b: int) -> int
 But why repeat yourself when the compiler already knows what you intended?
 
 #### Definitive Initialization
+
 All variables, constants, and parameters, within Rush, collectively known as storage, must be initialized. Initialization must occur during declaration for locals or globals, invocation for function parameters, or in the case of member fields, the body of a type's constructor. This simple compiler enforced rule means that all named storage entities are guaranteed to have a value. Alleviating the need for what's known as null-checking, or worse, null reference exceptions; a common source of serious bugs in the software industry, eliminated.
 
 Take for example, the definition of the `map` function, which takes as it's parameters a source collection `src`, and a transformative function `fn` to apply to each element of the collection.
@@ -61,68 +65,8 @@ var x: int? = nil    ## initialize an optional int 'x' with no value.
 
 In this way we're being explicit that the variable or parameter may not contain a value and that it must also be explicitly checked for one before use.
 
-#### More to come...
+#### More to come
 
 ## Building the Compiler and Tools
 
 Currently, the easiest way to build the project is through the [docker images](https://hub.docker.com/repository/docker/rushlang/rush-ci-x86-64-linux-gnu) hosted on Docker Hub. If you want to build Rush outside of docker you can also follow the instructions laid out by the Dockerfiles found in this repository and the [rush-lang/docker](https://github.com/rush-lang/docker) repository hosted here on Github. Full documentation and instructions for building and contributing to Rush will be available soon.
-
-### Sample
-
-```rush
-## Rush Programming Language Demo
-## This is a comment.
-
-import std.io
-import std.math
-
-struct vector2
-public
-   let x, y: float
-
-   get length => sqrt(dot(this, this))
-
-   default => this(0, 0)
-
-   construct (x, y: float)
-      this.x = x
-      this.y = y
-
-   operator +this => new vector2(+x, +y)
-   operator -this => new vector2(-x, -y)
-
-   operator this + (rhs: vector2) => new vector2(x + rhs.x, y + rhs.y)
-   operator this - (rhs: vector2) => new vector2(x - rhs.x, y - rhs.y)
-
-   operator this * (k: float) => new vector2(x * k, y * k)
-   operator this / (k: float) => new vector2(x / k, y / k)
-
-   ## commutative property of multiplication.
-   operator (k: float) * this => this * k
-
-
-func to_string({x, y}: @vector2) => "($x, $y)"
-
-func dot(u, v: @vector2)
-   let dx = u.x * v.x
-   let dy = u.y * v.y
-   return dx + dy
-
-func main
-   let u = new vector2(1, 0)
-   if u.length == 1
-      println("$u is unit length.")
-
-   let vs = [
-      new vector2(0, 2),
-      new vector2(1, 1),
-      new vector2(2, 0),
-   ]
-
-   for {x, y} in vs
-      println("[$x, $y]")
-
-   let sum = reduce(vs, (u, v) => u + v)
-
-   ## ...
-```

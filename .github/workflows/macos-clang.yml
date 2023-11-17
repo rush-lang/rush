@@ -1,0 +1,25 @@
+name: macos-clang
+
+permissions:
+  contents: read
+
+on:
+  push:
+    paths:
+      - .github/**
+      - external/**
+      - '**.hpp'
+      - '**.hpp.in'
+      - '**.hpp.j2'
+      - '**.cpp'
+      - '**.cpp.j2'
+      - '**.cmake'
+      - '**CMakeLists.txt'
+
+jobs:
+  macos-clang:
+    uses: ./.github/workflows/build-test.yml
+    with:
+      runs-on: macos-latest
+      compiler: clang
+    secrets: inherit

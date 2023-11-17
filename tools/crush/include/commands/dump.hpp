@@ -25,7 +25,7 @@
 #include "rush/lexer/dump.hpp"
 #include "rush/parser/dump.hpp"
 #include "rush/ast/context.hpp"
-#include "cxxopts/cxxopts.hpp"
+#include "cxxopts.hpp"
 
 #include <iostream>
 #include <vector>

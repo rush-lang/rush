@@ -1,3 +1,5 @@
+name: build-test
+
 permissions:
   contents: read
 
@@ -16,6 +18,7 @@ on:
 env:
   CC: ${{ inputs.compiler == 'clang' && 'clang' || 'gcc' }}
   CXX: ${{ inputs.compiler == 'clang' && 'clang++' || 'g++' }}
+  BIN_PATH: ${{ inputs.compiler == 'msvc' && './build/Release' || './build' }}
   ARTIFACTS_NAME: ${{ startsWith(inputs.runs-on, 'windows') && 'win32' || (startsWith(inputs.runs-on, 'linux') && 'linux' || 'macos') }}-${{ inputs.compiler }}
 
 jobs:
@@ -32,35 +35,41 @@ jobs:
         with:
           compiler: ${{ inputs.compiler }}
           llvm-version: 14
-      - name: Create Build files
+          install-prefix: '~/llvm'
+      - name: Create build files
         run: >-
           cmake -B build -S .
           -DCMAKE_BUILD_TYPE=Release
           -DCMAKE_C_COMPILER=$CC
           -DCMAKE_CXX_COMPILER=$CXX
+          -DCMAKE_PREFIX_PATH=~/llvm
 
-      - name: Build and Install Binary files
-        run: cmake --build build --target install -j 2 --config Release
+      - name: Build binary files
+        run:
+          cmake --build build -j 2 --config Release
 
-      - name: Verify Build
-        run: ./build/Release/crush --version
+      - name: Archive build files
+        run: tar -cvf build.tar ./build
 
-      - name: Upload Build artifacts
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v3
         with:
           name: ${{ env.ARTIFACTS_NAME }}
-          path: ./build
+          path: ./build.tar
 
   unit-test:
     runs-on: ${{ inputs.runs-on }}
     needs: build
     steps:
-      - name: Download artifacts
+      - name: Download build artifacts
         uses: actions/download-artifact@v3
         with:
           name: ${{ env.ARTIFACTS_NAME }}
-          path: ./build
+          path: ./
 
-      - name: Run Unit tests
+      - name: Extract build artifacts
+        run: tar -xvf build.tar
+
+      - name: Run unit tests
         working-directory: ./build
-        run: ctest -j 2
+        run: ctest --parallel 2 --output-on-failure
