@@ -12,11 +12,10 @@ A general purpose programming language.
 
 ---
 
-| **Platform** | **Architecture** | **Compiler** | **Status** |
-|:---|:---:|:---:|:---|
-| **Ubuntu 20.04** | x86-64 | GCC 13 | [![linux-gcc](https://github.com/rush-lang/rush/actions/workflows/linux-gcc.yml/badge.svg)](https://github.com/rush-lang/rush/actions/workflows/linux-gcc.yml) |
-| **Windows** | x86-64 | MSVC 2022 | [![win32-msvc](https://github.com/rush-lang/rush/actions/workflows/win32-msvc.yml/badge.svg)](https://github.com/rush-lang/rush/actions/workflows/win32-msvc.yml) |
-| **MacOS** | x86-64 | Clang 14 | [![macos-clang](https://github.com/rush-lang/rush/actions/workflows/macos-clang.yml/badge.svg)](https://github.com/rush-lang/rush/actions/workflows/macos-clang.yml) |
+ [![linux-gcc](https://github.com/rush-lang/rush/actions/workflows/linux-gcc.yml/badge.svg)](https://github.com/rush-lang/rush/actions/workflows/linux-gcc.yml)
+ [![win32-msvc](https://github.com/rush-lang/rush/actions/workflows/win32-msvc.yml/badge.svg)](https://github.com/rush-lang/rush/actions/workflows/win32-msvc.yml)
+ [![macos-clang](https://github.com/rush-lang/rush/actions/workflows/macos-clang.yml/badge.svg)](https://github.com/rush-lang/rush/actions/workflows/macos-clang.yml)
+
 
 Rush is a new programming language that builds atop many of today's most popular languages. It is intended to be a general purpose, strongly typed, multi-paradigm, and expressive language, rich with features that promote best practices and the convergence of Object Oriented and Functional programming techniques.
 
