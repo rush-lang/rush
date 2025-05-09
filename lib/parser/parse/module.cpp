@@ -40,20 +40,20 @@ namespace rush {
       std::vector<std::unique_ptr<ast::node>> results;
 
       for (
-         ; tok.is_not(symbols::eof)
-         && &source == &tok.source()
-         ;  tok = peek_skip_indent()) {
+         ; tok.is_not(symbols::eof) && &source == &tok.source()
+         ; tok = peek_skip_indent()) {
 
          while (consume_skip_indent(symbols::semi_colon)); // ignore stray semi-colons
          auto exported = consume_skip_indent(keywords::export_);
-         auto decl_result = parse_toplevel_decl();
+
+         auto decl_result = parse_decl();
          if (decl_result.failed()) {
-            auto expr_result = parse_expr();
-            if (expr_result.failed())
-               return std::move(decl_result).as<ast::source_node>();
+            auto stmt_result = parse_stmt();
+            if (stmt_result.failed())
+               return std::move(stmt_result).as<ast::source_node>();
 
             results.push_back(
-               std::move(expr_result).as<ast::node>());
+               std::move(stmt_result).as<ast::node>());
          }
          else {
             results.push_back(exported

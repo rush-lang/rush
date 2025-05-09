@@ -20,18 +20,34 @@
 #include "rush/ast/iterator.hpp"
 #include <iostream>
 
-char const* sprog = R"(
-import std.io;
+#include "yaml-cpp/yaml.h"
 
-func main(args: [string]):
-   let msg = "hello, world!"
-   println(msg)
+const char* input = R"(
+fixture:
+  before: 'let x: int'
+  tests:
+    - input: x
+      expect: |
+         <[expr] identifier: int (name=x)>
 )";
 
 int main() {
-	std::cout << sprog << std::endl;
-	std::cout << "--------------------" << std::endl;
-   auto ctx = rush::ast::context {};
-   auto src = rush::source::from_string(sprog);
-	rush::dump(rush::parse(src, ctx));
+   auto doc = YAML::Load(input);
+
 }
+
+// char const* sprog = R"(
+// import std.io;
+
+// func main(args: [string]):
+//    let msg = "hello, world!"
+//    println(msg)
+// )";
+
+// int main() {
+// 	std::cout << sprog << std::endl;
+// 	std::cout << "--------------------" << std::endl;
+//    auto ctx = rush::ast::context {};
+//    auto src = rush::source::from_string(sprog);
+// 	rush::dump(rush::parse(src, ctx));
+// }

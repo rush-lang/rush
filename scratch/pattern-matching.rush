@@ -1,0 +1,11 @@
+func type_pattern<T>(x: T) => when x
+   is int => "int",
+   is string => "string",
+   else => (typeof x).format()
+
+
+func array_pattern(xs: [string]) => when xs
+   [] => "empty!"
+   [single] => "one!"
+   [...many, last] => "${many.join(',')} and $last"
+

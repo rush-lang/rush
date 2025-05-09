@@ -47,11 +47,7 @@ namespace rush::ast {
          { adopt(*_decl); }
 
       bool is_constructor() const {
-         assert(parent());
-         auto it = ast::find_ancestor<ast::type_declaration>(this);
-         return it != ast::ancestor_iterator()
-              ? it->name() == name()
-              : false;
+         return _decl->name() == "$construct";
       }
 
       virtual ast::declaration_kind kind() const noexcept override {

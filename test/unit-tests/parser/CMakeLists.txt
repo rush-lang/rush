@@ -1,7 +1,11 @@
 add_executable(parser-test
-	parser_test.cpp
-   result_test.cpp
+   driver.cpp
 )
 
-target_link_libraries(parser-test PRIVATE Catch2::Catch2WithMain parser)
+file(COPY fixtures DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+target_link_libraries(parser-test PRIVATE
+   Catch2::Catch2WithMain
+   yaml-cpp::yaml-cpp
+   parser)
 catch_discover_tests(parser-test)

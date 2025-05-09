@@ -1,3 +1,4 @@
+# Loops
 
 ## While Loop
 
@@ -11,12 +12,12 @@ while condition
 ```rush
 do
    statements
-until condition
+   until condition
 ```
 
 ## For Loop
 
-```
+```plaintext
 for [ dyn ] <name-pattern> in <expression>
    <statement-list>
 ```

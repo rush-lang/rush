@@ -13,19 +13,16 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *************************************************************************/
+#if defined(_MSC_VER) ||                                            \
+   (defined(__GNUC__) && (__GNUC__ == 3 && __GNUC_MINOR__ >= 4) || \
+   (__GNUC__ >= 4))  // GCC supports "pragma once" correctly since 3.4
 #pragma once
+#endif
 
 #ifndef RUSH_AST_NODE_HPP
 #define RUSH_AST_NODE_HPP
 
-#include "rush/extra/dereferencing_iterator.hpp"
 #include "rush/core/location.hpp"
-
-#include <vector>
-#include <memory>
-#include <cassert>
-#include <algorithm>
-
 
 namespace rush::ast {
    class visitor;
@@ -78,66 +75,6 @@ namespace rush::ast {
    private:
       ast::node* _parent;
       ast::context* _context;
-   };
-
-   template <typename NodeT, typename BaseNodeT = NodeT>
-   class node_list : public BaseNodeT {
-   private:
-      std::vector<std::unique_ptr<NodeT>> _children;
-
-   public:
-      using BaseNodeT::attach;
-      using BaseNodeT::detach;
-
-      using iterator = decltype(make_deref_iterator(_children.begin()));
-      using const_iterator = decltype(make_deref_iterator(_children.cbegin()));
-
-      using value_type = typename iterator::value_type;
-      using pointer = typename iterator::pointer;
-      using reference = typename iterator::reference;
-      using const_pointer = typename const_iterator::reference;
-      using const_reference = typename const_iterator::reference;
-      using size_type = typename std::vector<std::unique_ptr<NodeT>>::size_type;
-
-      node_list()
-      : _children {} {}
-
-      explicit node_list(std::vector<std::unique_ptr<NodeT>> nodes)
-         : _children { std::move(nodes) } {
-            std::for_each(_children.begin(), _children.end(),
-               [this](auto& p) { this->adopt(*p); });
-         }
-
-      bool empty() const noexcept { return _children.empty(); }
-      size_type size() const noexcept { return _children.size(); }
-
-      ptrdiff_t index_of(const_reference) const noexcept;
-
-      reference front() noexcept { return *_children.front(); }
-      reference back() noexcept { return *_children.back(); }
-
-      const_reference front() const noexcept { return *_children.front(); }
-      const_reference back() const noexcept { return *_children.back(); }
-
-      iterator begin() noexcept { return make_deref_iterator(_children.begin()); }
-      iterator end() noexcept { return make_deref_iterator(_children.end()); }
-
-      const_iterator cbegin() const noexcept { return make_deref_iterator(_children.cbegin()); }
-      const_iterator cend() const noexcept { return make_deref_iterator(_children.cend()); }
-
-      const_iterator begin() const noexcept { return make_deref_iterator(_children.begin()); }
-      const_iterator end() const noexcept { return make_deref_iterator(_children.end()); }
-
-   protected:
-      virtual void attached(ast::scope& scope, ast::context&) override {
-         std::for_each(_children.begin(), _children.end(),
-            [this, &scope](auto& p) { attach(scope, *p); });
-      }
-
-      virtual void detached(ast::context&) override {
-         std::for_each(_children.begin(), _children.end(),
-            [this](auto& p) { detach(*p); });
-      }
    };
 } // rush::ast
 

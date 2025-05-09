@@ -20,6 +20,8 @@
 
 #include "rush/extra/dereferencing_iterator.hpp"
 
+#include "rush/ast/node.hpp"
+#include "rush/ast/list.hpp"
 #include "rush/ast/stmts/statement.hpp"
 #include "rush/ast/stmts/forwarding.hpp"
 
@@ -28,8 +30,8 @@
 namespace rush::ast {
 	class statement_block : public ast::node_list<ast::statement> {
 	public:
-      using node_list<ast::statement>::accept;
-      using node_list<ast::statement>::node_list;
+      using ast::node_list<ast::statement>::accept;
+      using ast::node_list<ast::statement>::node_list;
 
       virtual ast::statement_kind kind() const noexcept override {
          return ast::statement_kind::block;

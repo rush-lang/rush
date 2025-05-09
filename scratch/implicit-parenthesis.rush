@@ -1,0 +1,14 @@
+import std.io
+import std.json
+
+func main
+   ## As .bind begins on a newline and has been indented,
+   ## the previous line behaves as though it has been implicitly wrapped in parenthesis.
+   try open('file.txt')
+      .bind(file => try file.readln())
+      .result(
+         (line) => println(line),
+         (error) => println("error occurred: '$error.message'"))
+
+   return x.id
+

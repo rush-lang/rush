@@ -18,16 +18,18 @@
 #ifndef RUSH_AST_PTRNS_LIST_HPP
 #define RUSH_AST_PTRNS_LIST_HPP
 
+#include "rush/ast/node.hpp"
+#include "rush/ast/list.hpp"
 #include "rush/ast/ptrns/pattern.hpp"
 
 #include <memory>
 #include <vector>
 
 namespace rush::ast {
-   class pattern_list : public node_list<ast::pattern> {
+   class pattern_list : public ast::node_list<ast::pattern> {
    public:
-      using node_list<ast::pattern>::accept;
-      using node_list<ast::pattern>::node_list;
+      using ast::node_list<ast::pattern>::accept;
+      using ast::node_list<ast::pattern>::node_list;
       virtual void accept(ast::visitor& v) const override {
          v.visit_ptrn_list(*this);
       }

@@ -6,6 +6,12 @@ execute_process(COMMAND git submodule update --init -- external/fmtlib
                 WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 add_subdirectory(fmtlib)
 
+if (RUSH_BUILD_TOOLS OR RUSH_BUILD_TESTS)
+   execute_process(COMMAND git submodule update --init --recursive -- external/yaml-cpp
+                   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+   add_subdirectory(yaml-cpp)
+endif()
+
 if(RUSH_BUILD_TOOLS)
    execute_process(COMMAND git submodule update --init -- external/cxxopts
                    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})

@@ -97,7 +97,7 @@ namespace rush {
       consume_skip_indent(symbols::colon); // consume optional ':'.
       auto then_result = (peek_with_indent().is(symbols::indent))
          ? parse_block_stmt()
-         : peek_with_lbreak().is_not_any(symbols::lbreak, symbols::dedent)
+         : peek_with_lbreak().is_not_any(symbols::lbreak, symbols::dedent, symbols::eof)
          ? parse_inline_stmt()
          : stmts::block();
 
@@ -153,7 +153,7 @@ namespace rush {
       consume_skip_indent(symbols::colon); // consume optional ':'.
       auto then_result = (peek_with_indent().is(symbols::indent))
          ? parse_block_stmt()
-         : peek_with_lbreak().is_not_any(symbols::lbreak, symbols::dedent)
+         : peek_with_lbreak().is_not_any(symbols::eof, symbols::lbreak, symbols::dedent)
          ? parse_inline_stmt()
          : stmts::block();
       if (then_result.failed())
@@ -176,7 +176,7 @@ namespace rush {
       consume_skip_indent(symbols::colon); // consume optional ':'.
       auto then_result = (peek_with_indent().is(symbols::indent))
          ? parse_block_stmt()
-         : peek_with_lbreak().is_not_any(symbols::lbreak, symbols::dedent)
+         : peek_with_lbreak().is_not_any(symbols::lbreak, symbols::dedent, symbols::eof)
          ? parse_inline_stmt()
          : stmts::block();
 

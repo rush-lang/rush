@@ -18,6 +18,8 @@
 #ifndef RUSH_AST_EXPRS_LIST_HPP
 #define RUSH_AST_EXPRS_LIST_HPP
 
+#include "rush/ast/node.hpp"
+#include "rush/ast/list.hpp"
 #include "rush/ast/visitor.hpp"
 #include "rush/ast/exprs/expression.hpp"
 

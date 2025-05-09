@@ -17,6 +17,8 @@
 #include "rush/ast/scope.hpp"
 #include "rush/ast/context.hpp"
 
+#include <cassert>
+
 namespace rush::ast {
    void node::attach(ast::context& context) {
       if (_context != nullptr) detach(*this);

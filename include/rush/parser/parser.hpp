@@ -294,7 +294,6 @@ namespace rush {
 
 		// declarations.
       rush::parse_result<ast::declaration> parse_decl();
-      rush::parse_result<ast::declaration> parse_toplevel_decl();
 
 		rush::parse_result<ast::declaration> _parse_storage_decl(
          rush::function_ref<std::unique_ptr<ast::declaration>(std::unique_ptr<ast::pattern>)>);
@@ -317,6 +316,7 @@ namespace rush {
       rush::parse_result<ast::declaration> parse_virtual_decl();
       rush::parse_result<ast::declaration> parse_abstract_decl();
       rush::parse_result<ast::declaration> parse_override_decl();
+      rush::parse_result<ast::declaration> parse_constructor_decl();
       rush::parse_result<ast::member_declaration> parse_member_decl();
       rush::parse_result<ast::member_section_declaration> parse_member_section(ast::member_access);
       rush::parse_result<ast::member_declaration> parse_property_getter();

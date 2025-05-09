@@ -53,14 +53,7 @@ namespace rush {
          }
       }
 
-      return {};
-   }
-
-   rush::parse_result<ast::declaration> parser::parse_toplevel_decl() {
-      auto result = parse_decl();
-      return result.success()
-           ? std::move(result)
-           : errs::expected_toplevel_decl(peek_skip_indent());
+      return errs::expected_toplevel_decl(peek_skip_indent());
    }
 
    rush::parse_result<ast::declaration> parser::parse_extern_decl() {
@@ -186,6 +179,21 @@ namespace rush {
       return std::move(params);
 	}
 
+   rush::parse_result<ast::declaration> parser::parse_constructor_decl() {
+      assert(peek_skip_indent().is_any(keywords::construct_) && "expected the 'func' keyword.");
+		next_skip_indent(); // consume func keyword.
+
+      auto plist_result = peek_skip_indent().is(symbols::left_parenthesis)
+                        ? parse_parameter_list()
+                        : ptrns::list();
+      if (plist_result.failed())
+         return std::move(plist_result).as<ast::declaration>();
+
+      auto body_result = parse_function_body();
+      return body_result.success()
+         ? decls::function("$construct", std::move(plist_result), std::move(body_result))
+         : std::move(body_result).as<ast::declaration>();
+   }
 
 	rush::parse_result<ast::declaration> parser::parse_function_decl() {
 		assert(peek_skip_indent().is_any(keywords::func_) && "expected the 'func' keyword.");
@@ -381,6 +389,12 @@ namespace rush {
          rush::parse_result<ast::declaration> result;
 
          switch (tok.keyword()) {
+         case keywords::construct_: {
+            result = parse_constructor_decl();
+            if (result.success()) return decls::method(
+               std::move(result).as<ast::function_declaration>());
+            break;
+         }
          case keywords::let_: {
             result = terminated(&parser::parse_constant_decl);
             if (result.success()) return decls::field(

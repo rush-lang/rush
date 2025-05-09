@@ -46,8 +46,17 @@ namespace rush {
             return errs::expected(tok, "pattern");
          });
 
-      if (result.success() && peek_skip_indent().is(symbols::colon))
-         result = parse_type_annotation_pattern(std::move(result));
+      if (result.success()) {
+         if (consume_skip_indent(symbols::colon)) {
+            result = parse_type_annotation_pattern(std::move(result));
+         } else {
+            auto tok = peek_skip_indent();
+            if (tok.is_keyword() || tok.is_identifier() ||
+                tok.is_any(symbols::left_parenthesis, symbols::left_bracket)) {
+               result = parse_type_annotation_pattern(std::move(result));
+            }
+         }
+      }
 
       if (result.success() && peek_skip_indent().is_any(symbols::equals, symbols::colon_equals))
          result = parse_binding_pattern(std::move(result));
@@ -122,8 +131,8 @@ namespace rush {
    }
 
    rush::parse_result<ast::pattern> parser::parse_type_annotation_pattern(rush::parse_result<ast::pattern> lhs) {
-      assert(peek_skip_indent(symbols::colon) && "expected a type annotation symbol ':'");
-      consume_skip_indent(symbols::colon);
+      // assert(peek_skip_indent(symbols::colon) && "expected a type annotation symbol ':'");
+      // consume_skip_indent(symbols::colon);
 
       if (consume_skip_indent(symbols::ellipses))
          lhs = ptrns::rest(std::move(lhs));

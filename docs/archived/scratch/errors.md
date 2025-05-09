@@ -2,25 +2,21 @@
 
 ## Try Expressions
 
-```
-let (val, err) = try parse("main() => 0")
-if err != nil:
-	...
+```rush
+let result = try parse("main() => 0") ## returns union of result type and possible exceptions
+if result is error != nil:
+   print "error: $result.message"
+
+print result
 ```
 
-```
+```rush
+## not sure what I was doing here.
 let val = try? parse("main() => 0")
 if val != nil:
-	...
+   print val
 ```
 
 ## Try-Catch Blocks
 
-```
-try:
-	...
-catch e: error:
-	...
-finally:
-	...
-```
+Perhaps rush should not support exception blocks in favour of a mixed Exception/Result pattern solution. For example when exceptions are thrown they bubble up the stack trace as normal but developers can use the `try` expression to get Result pattern like behaviour.

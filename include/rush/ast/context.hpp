@@ -79,7 +79,7 @@ namespace std {
          std::hash<rush::ast::type_ref> hasher;
          return std::accumulate(
             key.types.begin(),
-            key.types.end(), 0,
+            key.types.end(), 0ull,
             [&hasher](auto& result, auto& type) {
                return result ^ hasher(type) + 0x9e3779b9 + (result<<6) + (result>>2);
             });

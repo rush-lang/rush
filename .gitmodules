@@ -10,3 +10,6 @@
 [submodule "external/fmtlib"]
 	path = external/fmtlib
 	url = https://github.com/fmtlib/fmt.git
+[submodule "external/yaml-cpp"]
+	path = external/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp.git

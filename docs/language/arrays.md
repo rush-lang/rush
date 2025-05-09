@@ -5,13 +5,22 @@ let array = [1, 2, 3]
 
 ```
 
-
-
 ```rush
 func foo(data: [[int]])
    ## subscripting can be chained with the comma operator
    ## for convenience, as opposed to writing 'data[0][1]'
    return data[0, 1]
+```
+
+## Indexing, Slicing and Ranges
+
+```rush
+let xs = [1, 2, 3, 4]
+
+## Slices
+let ys = xs[1:^2]  ## slice excluding the first and last elements.
+let ys = xs[:^2]   ## slice from the beginning up until the 2nd from last element
+let ys = xs[1:]    ## slice from the second element up to the remainder of the array.
 ```
 
 ## Array Initialization

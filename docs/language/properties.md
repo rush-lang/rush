@@ -133,3 +133,32 @@ public
    construct ()
       bar = 'some new value'  ## ERROR: bar declared 'const'
 ```
+
+```rush
+class foo
+   ## full property definition.
+   prop x: int
+      get => field
+      set => field = value
+
+   ## short hand for get only prop
+   ## C#: public int x { get; }
+   get x -> int
+      return field
+
+   ## short hand for set only prop
+   ## C#: public int x { set; }
+   set x(int)
+      field = value
+
+   ## variable auto-property definition
+   ## C#: public int x { get; set; }
+   var x: int
+
+   ## constant auto-property definition
+   ## C#: public int x { get; init; }
+   let x: int
+
+   ## immutable auto-property definition
+   const x: reference_type
+```

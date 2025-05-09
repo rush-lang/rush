@@ -79,7 +79,7 @@ class trait reference_type_trait
 class service
    func perform() => noop
 
-class depedent(svc: service trait)
+class dependent(svc: service trait)
 
 ## in test..
 

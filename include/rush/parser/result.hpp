@@ -236,6 +236,14 @@ namespace rush {
 	public:
       using error_range_type = rush::parse_result<ast::node>::const_error_range_type;
 
+      bool success() const noexcept {
+         return _result.success();
+      }
+
+      bool failed() const noexcept {
+         return _result.failed();
+      }
+
       error_range_type errors() const noexcept {
          return _result.errors();
       }

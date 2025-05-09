@@ -18,6 +18,8 @@
 #ifndef RUSH_AST_DECLS_MEMBER_HPP
 #define RUSH_AST_DECLS_MEMBER_HPP
 
+#include "rush/extra/dereferencing_iterator.hpp"
+
 #include "rush/ast/node.hpp"
 #include "rush/ast/decls/access.hpp"
 #include "rush/ast/decls/nominal.hpp"

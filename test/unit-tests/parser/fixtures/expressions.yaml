@@ -1,0 +1,82 @@
+parser::expressions::literal:
+  fixtures:
+    - input: '0'
+      expect: |
+        <[expr] literal: int (value=0)>
+    - input: '1.0f'
+      expect: |
+        <[expr] literal: float (value=1.0)>
+    - input: "'string'"
+      expect: |
+        <[expr] literal: string (value=)>
+    - input: '"other string"'
+      expect: |
+        <[expr] literal: string (value=)>
+
+parser::expressions::identifier:
+  before: 'let a: int'
+  fixtures:
+    - input: 'a'
+      expect: |
+        <[expr] identifier: int (name=a)>
+    - input: 'b'
+      expect: |
+        <[expr] identifier: <error-type: undefined> (name=b)>
+
+parser::expressions::unary:
+  before: 'let a: int'
+  fixtures:
+    - input: '-1'
+      expect: |
+        <[expr] negative: int>
+          <[expr] literal: int (value=1)>
+    - input: '+a'
+      expect: |
+        <[expr] positive: int>
+          <[expr] identifier: int (name=a)>
+
+parser::expressions::binary:
+  before: 'let a, b: int'
+  fixtures:
+    - input: '1 + 2'
+      expect: |
+        <[expr] addition: int>
+          <[expr] literal: int (value=1)>
+          <[expr] literal: int (value=2)>
+    - input: 'a - b'
+      expect: |
+        <[expr] subtraction: int>
+          <[expr] identifier: int (name=a)>
+          <[expr] identifier: int (name=b)>
+    - input: 'a * 2'
+      expect: |
+        <[expr] multiplication: int>
+          <[expr] identifier: int (name=a)>
+          <[expr] literal: int (value=2)>
+    - input: '1 / b'
+      expect: |
+        <[expr] division: int>
+          <[expr] literal: int (value=1)>
+          <[expr] identifier: int (name=b)>
+    - input: 'a ^ b'
+      expect: |
+        <[expr] exponentiation: int>
+          <[expr] identifier: int (name=a)>
+          <[expr] identifier: int (name=b)>
+
+parser::expression::invoke:
+  before: |
+    func foo() => 0
+    func bar(a: int) => a
+  fixtures:
+    - input: 'foo()'
+      expect: |
+        <[expr] invoke: int>
+          <[expr] identifier: () -> int (name=foo)>
+          <[expr] argument-list>
+    - input: bar 1
+      expect: |
+        <[expr] invoke: int>
+          <[expr] identifier: (int) -> int (name=bar)>
+          <[expr] argument-list>
+            <[expr] literal: int (value=1)>
